@@ -62,10 +62,23 @@ type OrchestratorJob struct {
 }
 
 type OrchestratorCampaignPlan struct {
-	CampaignID string                         `json:"campaignId"`
-	SpecSHA256 string                         `json:"specSha256"`
-	Definition OrchestratorCampaignDefinition `json:"definition"`
-	Jobs       []OrchestratorJob              `json:"jobs"`
+	CampaignID        string                         `json:"campaignId"`
+	SpecSHA256        string                         `json:"specSha256"`
+	MaxAttemptsPerJob int                            `json:"maxAttemptsPerJob,omitempty"`
+	Definition        OrchestratorCampaignDefinition `json:"definition"`
+	Jobs              []OrchestratorJob              `json:"jobs"`
+}
+
+const DefaultOrchestratorMaxAttemptsPerJob = 3
+
+func normalizedOrchestratorMaxAttemptsPerJob(value int) (int, error) {
+	if value == 0 {
+		return DefaultOrchestratorMaxAttemptsPerJob, nil
+	}
+	if value < 1 {
+		return 0, fmt.Errorf("max attempts per job must be positive")
+	}
+	return value, nil
 }
 
 type OrchestratorLease struct {
@@ -195,6 +208,10 @@ func OpenOrchestrator(path string) (*Orchestrator, error) {
 		_ = db.Close()
 		return nil, fmt.Errorf("initialize hub observations: %w", err)
 	}
+	if err := ensureCampaignAttemptCapColumn(db); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("initialize campaign attempt cap: %w", err)
+	}
 	return orchestrator, nil
 }
 
@@ -217,7 +234,7 @@ func PlanOrchestratorCampaign(definition OrchestratorCampaignDefinition) (Orches
 	for i := range jobs {
 		jobs[i] = OrchestratorJob{ID: fmt.Sprintf("%s:%s:%d", campaignID, OrchestratorJobSurfaceRuntimeShard, i), Kind: OrchestratorJobSurfaceRuntimeShard, ShardIndex: i, SurfaceIDs: append([]string(nil), definition.Shards[i]...)}
 	}
-	return OrchestratorCampaignPlan{CampaignID: campaignID, SpecSHA256: specSHA, Definition: definition, Jobs: jobs}, nil
+	return OrchestratorCampaignPlan{CampaignID: campaignID, SpecSHA256: specSHA, MaxAttemptsPerJob: DefaultOrchestratorMaxAttemptsPerJob, Definition: definition, Jobs: jobs}, nil
 }
 
 func WriteOrchestratorBatchBinding(path string, plan OrchestratorCampaignPlan, lease OrchestratorLease) (OrchestratorBatchBinding, error) {
@@ -257,6 +274,10 @@ func (o *Orchestrator) InitCampaign(plan OrchestratorCampaignPlan) error {
 	if err := validateOrchestratorPlan(plan); err != nil {
 		return err
 	}
+	maxAttempts, err := normalizedOrchestratorMaxAttemptsPerJob(plan.MaxAttemptsPerJob)
+	if err != nil {
+		return err
+	}
 	inputs, _ := json.Marshal(plan.Definition.ControlledInputSHA256)
 	tx, err := o.db.Begin()
 	if err != nil {
@@ -264,12 +285,13 @@ func (o *Orchestrator) InitCampaign(plan OrchestratorCampaignPlan) error {
 	}
 	defer tx.Rollback()
 	var storedSpec, candidateCommit, candidateSHA, toolsCommit, toolsSHA, scopePath, scopeSHA, storedInputs string
-	err = tx.QueryRow(`SELECT spec_sha256, candidate_commit, candidate_sha256, tools_commit, tools_sha256, scope_path, scope_sha256, controlled_inputs_json FROM campaigns WHERE id = ?`, plan.CampaignID).Scan(&storedSpec, &candidateCommit, &candidateSHA, &toolsCommit, &toolsSHA, &scopePath, &scopeSHA, &storedInputs)
+	var storedMaxAttempts int
+	err = tx.QueryRow(`SELECT spec_sha256, candidate_commit, candidate_sha256, tools_commit, tools_sha256, scope_path, scope_sha256, controlled_inputs_json, max_attempts_per_job FROM campaigns WHERE id = ?`, plan.CampaignID).Scan(&storedSpec, &candidateCommit, &candidateSHA, &toolsCommit, &toolsSHA, &scopePath, &scopeSHA, &storedInputs, &storedMaxAttempts)
 	if errors.Is(err, sql.ErrNoRows) {
-		if _, err := tx.Exec(`INSERT INTO campaigns (id, spec_sha256, candidate_commit, candidate_sha256, tools_commit, tools_sha256, scope_path, scope_sha256, controlled_inputs_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, plan.CampaignID, plan.SpecSHA256, plan.Definition.Candidate.Commit, plan.Definition.Candidate.SHA256, plan.Definition.Tools.Commit, plan.Definition.Tools.SHA256, plan.Definition.ScopePath, plan.Definition.ScopeSHA256, string(inputs), time.Now().UTC().UnixMilli()); err != nil {
+		if _, err := tx.Exec(`INSERT INTO campaigns (id, spec_sha256, candidate_commit, candidate_sha256, tools_commit, tools_sha256, scope_path, scope_sha256, controlled_inputs_json, max_attempts_per_job, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, plan.CampaignID, plan.SpecSHA256, plan.Definition.Candidate.Commit, plan.Definition.Candidate.SHA256, plan.Definition.Tools.Commit, plan.Definition.Tools.SHA256, plan.Definition.ScopePath, plan.Definition.ScopeSHA256, string(inputs), maxAttempts, time.Now().UTC().UnixMilli()); err != nil {
 			return fmt.Errorf("initialize immutable campaign: %w", err)
 		}
-	} else if err != nil || storedSpec != plan.SpecSHA256 || candidateCommit != plan.Definition.Candidate.Commit || candidateSHA != plan.Definition.Candidate.SHA256 || toolsCommit != plan.Definition.Tools.Commit || toolsSHA != plan.Definition.Tools.SHA256 || scopePath != plan.Definition.ScopePath || scopeSHA != plan.Definition.ScopeSHA256 || storedInputs != string(inputs) {
+	} else if err != nil || storedSpec != plan.SpecSHA256 || candidateCommit != plan.Definition.Candidate.Commit || candidateSHA != plan.Definition.Candidate.SHA256 || toolsCommit != plan.Definition.Tools.Commit || toolsSHA != plan.Definition.Tools.SHA256 || scopePath != plan.Definition.ScopePath || scopeSHA != plan.Definition.ScopeSHA256 || storedInputs != string(inputs) || storedMaxAttempts != maxAttempts {
 		return fmt.Errorf("campaign binding drift")
 	}
 	for _, job := range plan.Jobs {
@@ -302,12 +324,33 @@ func (o *Orchestrator) Lease(campaignID, worker string, now time.Time, duration 
 		return OrchestratorLease{}, err
 	}
 	defer tx.Rollback()
+	var maxAttempts int
+	if err := tx.QueryRow(`SELECT max_attempts_per_job FROM campaigns WHERE id = ?`, campaignID).Scan(&maxAttempts); err != nil {
+		return OrchestratorLease{}, fmt.Errorf("read campaign attempt cap: %w", err)
+	}
+	if maxAttempts, err = normalizedOrchestratorMaxAttemptsPerJob(maxAttempts); err != nil {
+		return OrchestratorLease{}, err
+	}
+	result, err := tx.Exec(`UPDATE jobs SET status = 'failed' WHERE campaign_id = ? AND status = 'running' AND generation >= ? AND lease_until <= ?`, campaignID, maxAttempts, now.UTC().UnixMilli())
+	if err != nil {
+		return OrchestratorLease{}, fmt.Errorf("close capped orchestrator jobs: %w", err)
+	}
+	cappedJobs, _ := result.RowsAffected()
+	if _, err := tx.Exec(`UPDATE attempts SET status = 'failed' WHERE campaign_id = ? AND status = 'running' AND generation >= ? AND EXISTS (SELECT 1 FROM jobs WHERE jobs.campaign_id = attempts.campaign_id AND jobs.id = attempts.job_id AND jobs.generation = attempts.generation AND jobs.status = 'failed')`, campaignID, maxAttempts); err != nil {
+		return OrchestratorLease{}, fmt.Errorf("close capped orchestrator attempts: %w", err)
+	}
 	var lease OrchestratorLease
 	var kind string
 	var surfaces string
 	var previousStatus string
-	if err := tx.QueryRow(`SELECT id, kind, shard_index, surface_ids_json, generation, status FROM jobs WHERE campaign_id = ? AND (status = 'queued' OR (status = 'running' AND lease_until <= ?)) ORDER BY CASE status WHEN 'running' THEN 0 ELSE 1 END, shard_index LIMIT 1`, campaignID, now.UTC().UnixMilli()).Scan(&lease.JobID, &kind, &lease.ShardIndex, &surfaces, &lease.Generation, &previousStatus); err != nil {
+	if err := tx.QueryRow(`SELECT id, kind, shard_index, surface_ids_json, generation, status FROM jobs WHERE campaign_id = ? AND (status = 'queued' OR (status = 'running' AND lease_until <= ? AND generation < ?)) ORDER BY CASE status WHEN 'running' THEN 0 ELSE 1 END, shard_index LIMIT 1`, campaignID, now.UTC().UnixMilli(), maxAttempts).Scan(&lease.JobID, &kind, &lease.ShardIndex, &surfaces, &lease.Generation, &previousStatus); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
+			if cappedJobs > 0 {
+				if err := tx.Commit(); err != nil {
+					return OrchestratorLease{}, err
+				}
+				return OrchestratorLease{}, fmt.Errorf("no leaseable orchestrator job: attempt cap exhausted")
+			}
 			return OrchestratorLease{}, fmt.Errorf("no leaseable orchestrator job")
 		}
 		return OrchestratorLease{}, err
@@ -324,7 +367,7 @@ func (o *Orchestrator) Lease(campaignID, worker string, now time.Time, duration 
 			return OrchestratorLease{}, err
 		}
 	}
-	result, err := tx.Exec(`UPDATE jobs SET status = 'running', generation = ?, leased_by = ?, lease_until = ?, heartbeat_at = ? WHERE campaign_id = ? AND id = ? AND generation = ?`, lease.Generation, worker, lease.LeaseUntil.UnixMilli(), now.UTC().UnixMilli(), campaignID, lease.JobID, lease.Generation-1)
+	result, err = tx.Exec(`UPDATE jobs SET status = 'running', generation = ?, leased_by = ?, lease_until = ?, heartbeat_at = ? WHERE campaign_id = ? AND id = ? AND generation = ?`, lease.Generation, worker, lease.LeaseUntil.UnixMilli(), now.UTC().UnixMilli(), campaignID, lease.JobID, lease.Generation-1)
 	if err != nil {
 		return OrchestratorLease{}, err
 	}
@@ -681,9 +724,10 @@ func (o *Orchestrator) recordReceipt(request OrchestratorReceiptRequest, now tim
 	}
 	lease := request.Lease
 	var scopePath, scopeSHA, specSHA, candidateCommit, candidateSHA, toolsCommit, toolsSHA, inputsJSON, surfacesJSON, jobStatus, jobKind, attemptStatus string
+	var maxAttempts int
 	var shardIndex int
 	var jobLeaseUntil, attemptLeaseUntil int64
-	err := o.db.QueryRow(`SELECT c.scope_path, c.scope_sha256, c.spec_sha256, c.candidate_commit, c.candidate_sha256, c.tools_commit, c.tools_sha256, c.controlled_inputs_json, j.surface_ids_json, j.status, j.kind, j.shard_index, j.lease_until, a.status, a.lease_until FROM campaigns c JOIN jobs j ON j.campaign_id = c.id JOIN attempts a ON a.campaign_id = j.campaign_id AND a.job_id = j.id AND a.generation = j.generation WHERE c.id = ? AND j.id = ? AND j.generation = ? AND a.worker = ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker).Scan(&scopePath, &scopeSHA, &specSHA, &candidateCommit, &candidateSHA, &toolsCommit, &toolsSHA, &inputsJSON, &surfacesJSON, &jobStatus, &jobKind, &shardIndex, &jobLeaseUntil, &attemptStatus, &attemptLeaseUntil)
+	err := o.db.QueryRow(`SELECT c.scope_path, c.scope_sha256, c.spec_sha256, c.candidate_commit, c.candidate_sha256, c.tools_commit, c.tools_sha256, c.controlled_inputs_json, c.max_attempts_per_job, j.surface_ids_json, j.status, j.kind, j.shard_index, j.lease_until, a.status, a.lease_until FROM campaigns c JOIN jobs j ON j.campaign_id = c.id JOIN attempts a ON a.campaign_id = j.campaign_id AND a.job_id = j.id AND a.generation = j.generation WHERE c.id = ? AND j.id = ? AND j.generation = ? AND a.worker = ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker).Scan(&scopePath, &scopeSHA, &specSHA, &candidateCommit, &candidateSHA, &toolsCommit, &toolsSHA, &inputsJSON, &maxAttempts, &surfacesJSON, &jobStatus, &jobKind, &shardIndex, &jobLeaseUntil, &attemptStatus, &attemptLeaseUntil)
 	if err != nil {
 		return OrchestratorReceipt{}, fmt.Errorf("receipt requires current campaign attempt")
 	}
@@ -710,7 +754,7 @@ func (o *Orchestrator) recordReceipt(request OrchestratorReceiptRequest, now tim
 		return OrchestratorReceipt{}, err
 	}
 	storedPlan := OrchestratorCampaignPlan{
-		CampaignID: lease.CampaignID, SpecSHA256: specSHA,
+		CampaignID: lease.CampaignID, SpecSHA256: specSHA, MaxAttemptsPerJob: maxAttempts,
 		Definition: OrchestratorCampaignDefinition{
 			Candidate: OrchestratorArtifact{Commit: candidateCommit, SHA256: candidateSHA}, Tools: OrchestratorArtifact{Commit: toolsCommit, SHA256: toolsSHA},
 			ScopePath: scopePath, ScopeSHA256: scopeSHA, ControlledInputSHA256: controlledInputs,
@@ -985,7 +1029,14 @@ func validateOrchestratorPlan(plan OrchestratorCampaignPlan) error {
 			return fmt.Errorf("unknown orchestrator job kind %q", job.Kind)
 		}
 	}
-	if !reflect.DeepEqual(plan, want) {
+	maxAttempts, err := normalizedOrchestratorMaxAttemptsPerJob(plan.MaxAttemptsPerJob)
+	if err != nil {
+		return err
+	}
+	normalized := plan
+	normalized.MaxAttemptsPerJob = maxAttempts
+	want.MaxAttemptsPerJob = maxAttempts
+	if !reflect.DeepEqual(normalized, want) {
 		return fmt.Errorf("orchestrator plan drift")
 	}
 	return nil
@@ -1097,6 +1148,37 @@ func ensureHubObservationColumns(db *sql.DB) error {
 	return nil
 }
 
+func ensureCampaignAttemptCapColumn(db *sql.DB) error {
+	rows, err := db.Query(`PRAGMA table_info(campaigns)`)
+	if err != nil {
+		return err
+	}
+	found := false
+	for rows.Next() {
+		var cid, notNull, primaryKey int
+		var name, columnType string
+		var defaultValue sql.NullString
+		if err := rows.Scan(&cid, &name, &columnType, &notNull, &defaultValue, &primaryKey); err != nil {
+			return err
+		}
+		if name == "max_attempts_per_job" {
+			found = true
+			break
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	if err := rows.Close(); err != nil {
+		return err
+	}
+	if found {
+		return nil
+	}
+	_, err = db.Exec(`ALTER TABLE campaigns ADD COLUMN max_attempts_per_job INTEGER NOT NULL DEFAULT 3 CHECK (max_attempts_per_job > 0)`)
+	return err
+}
+
 const orchestratorSchema = `
 CREATE TABLE IF NOT EXISTS campaigns (
   id TEXT PRIMARY KEY,
@@ -1108,6 +1190,7 @@ CREATE TABLE IF NOT EXISTS campaigns (
   scope_path TEXT NOT NULL,
   scope_sha256 TEXT NOT NULL,
   controlled_inputs_json TEXT NOT NULL,
+  max_attempts_per_job INTEGER NOT NULL DEFAULT 3 CHECK (max_attempts_per_job > 0),
   created_at INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS jobs (

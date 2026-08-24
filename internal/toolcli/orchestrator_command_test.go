@@ -40,6 +40,9 @@ func TestCorpusAssuranceOrchestratorPlansInitializesAndRejectsArbitraryCommands(
 	}
 	var plan corpusassurance.OrchestratorCampaignPlan
 	readOrchestratorCLIJSON(t, planPath, &plan)
+	if plan.MaxAttemptsPerJob != corpusassurance.DefaultOrchestratorMaxAttemptsPerJob {
+		t.Fatalf("plan max attempts per job = %d, want %d", plan.MaxAttemptsPerJob, corpusassurance.DefaultOrchestratorMaxAttemptsPerJob)
+	}
 	if len(plan.Jobs) != 2 || plan.Jobs[0].Kind != corpusassurance.OrchestratorJobSurfaceRuntimeShard || plan.Jobs[1].Kind != corpusassurance.OrchestratorJobSurfaceRuntimeShard {
 		t.Fatalf("plan jobs = %#v", plan.Jobs)
 	}
