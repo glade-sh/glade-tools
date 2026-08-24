@@ -1950,7 +1950,7 @@ func salesforcePreflightArgs(alias string) [][]string {
 }
 
 func salesforceOrgCreateArgs(definition, devHub, alias, marker string) []string {
-	return []string{"org", "create", "scratch", "--target-dev-hub", devHub, "--definition-file", definition, "--alias", alias, "--name", marker, "--duration-days", "1", "--json"}
+	return []string{"org", "create", "scratch", "--target-dev-hub", devHub, "--definition-file", definition, "--alias", alias, "--name", marker, "--duration-days", "30", "--json"}
 }
 
 func validSalesforceOrgCreation(creation SalesforceOrgCreation, bundleSHA, bundlePath, devHub, alias string) bool {

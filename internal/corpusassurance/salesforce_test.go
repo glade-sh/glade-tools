@@ -799,7 +799,7 @@ func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
 		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
 		}
-		if path != salesforceCLIPath || !containsString(args, "--definition-file") || !containsString(args, "sealed-dev-hub") {
+		if path != salesforceCLIPath || !containsString(args, "--definition-file") || !containsString(args, "sealed-dev-hub") || len(args) < 3 || !reflect.DeepEqual(args[len(args)-3:], []string{"--duration-days", "30", "--json"}) {
 			return salesforceCommandOutput{}, fmt.Errorf("unexpected create invocation %s %v", path, args)
 		}
 		deadline, ok := ctx.Deadline()
