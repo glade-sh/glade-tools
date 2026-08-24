@@ -433,7 +433,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			if err := corpusassurance.RunOrchestratorCleanupTakeover(orchestrator, request); err != nil {
 				return err
 			}
-			return writeOrchestratorOutput(w, map[string]string{"status": "cleanup-closed", "allocation": request.Claim.AllocationAlias})
+			return writeOrchestratorOutput(w, map[string]string{"status": "cleanup-closed"})
 		})
 	case "plan":
 		flags := orchestratorFlags("plan")
@@ -640,6 +640,9 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			var claim corpusassurance.OrchestratorCleanupClaim
 			var err error
 			if *leasePath != "" || *allocation != "" {
+				if *campaign != "" {
+					return errors.New("campaign-wide and exact cleanup claims are mutually exclusive")
+				}
 				if err := requiredAssuranceFlags(*leasePath, *allocation); err != nil {
 					return errors.New("exact cleanup claim requires lease and allocation")
 				}

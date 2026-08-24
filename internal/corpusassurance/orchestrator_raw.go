@@ -212,6 +212,14 @@ func (o *Orchestrator) closeRawAcceptanceJob(lease OrchestratorLease) error {
 }
 
 func RunRawSalesforceShard(request RawSalesforceShardRequest) (result RawSalesforceShardResult, err error) {
+	if err := validateRawSalesforceShardRequest(request); err != nil {
+		return result, err
+	}
+	release, err := acquireWorkerLifecycleLock(request.OutputRoot)
+	if err != nil {
+		return result, err
+	}
+	defer release()
 	return runRawSalesforceShardAt(request, func() time.Time { return time.Now().UTC() })
 }
 

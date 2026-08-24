@@ -379,7 +379,9 @@ glade-tools corpus assurance orchestrator cleanup-claim \
 Set the cleanup request's `ssh` object to the coordinator plan, lease, failed
 dispatch, host, worker binary, distinct worker-side plan, lease, bundle,
 Salesforce binary and lifecycle-root paths, plus a coordinator-local fetched
-receipt path. The coordinator rebinds the failed or timed-out dispatch to the
+receipt path. SSH mode leaves the local bundle, creation, preflight, target-org,
+and Salesforce-binary fields empty; campaign-wide and exact cleanup claims are
+also mutually exclusive. The coordinator rebinds the failed or timed-out dispatch to the
 stored campaign and exact original SSH command. It then runs the fixed
 `worker-cleanup` command where the bundle and credentials already live.
 Reservation-only, canonical invalidated-creation, and completed-creation

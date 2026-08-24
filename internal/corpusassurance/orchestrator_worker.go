@@ -83,6 +83,9 @@ func runOrchestratorCleanupTakeover(orchestrator *Orchestrator, request Orchestr
 
 func runOrchestratorCleanupTakeoverAt(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest, clock func() time.Time, cleanup salesforceOrgCleanupRunner) error {
 	if request.SSH != nil {
+		if request.BundlePath != "" || request.CreationPath != "" || request.PreflightPath != "" || request.TargetOrg != "" || request.SFBin != "" {
+			return fmt.Errorf("local and SSH cleanup modes are mutually exclusive")
+		}
 		_, err := runOrchestratorSSHCleanupTakeover(request.SSH.coordinatorRequest(orchestrator, request.Claim, request.OutputPath), orchestratorSSHCleanupTimeout)
 		return err
 	}

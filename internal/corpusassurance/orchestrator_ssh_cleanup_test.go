@@ -13,7 +13,7 @@ import (
 func TestOrchestratorWorkerCleanupClosesEveryPreflightCrashStageAndReplays(t *testing.T) {
 	for _, stage := range []string{"reservation-only", "invalidated-creation", "created-before-preflight"} {
 		t.Run(stage, func(t *testing.T) {
-			plan, lease, request := workerCleanupTestRequest(t, stage)
+			plan, lease, request, _ := workerCleanupTestRequest(t, stage)
 			calls := 0
 			request.cleanup = func(cleanupRequest SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
 				calls++
@@ -71,7 +71,7 @@ func TestOrchestratorWorkerCleanupRejectsTamperedOrProofEligibleLifecycle(t *tes
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			_, _, request := workerCleanupTestRequest(t, "created-before-preflight")
+			_, _, request, _ := workerCleanupTestRequest(t, "created-before-preflight")
 			mutate(t, request)
 			called := false
 			request.cleanup = func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
@@ -80,6 +80,32 @@ func TestOrchestratorWorkerCleanupRejectsTamperedOrProofEligibleLifecycle(t *tes
 			}
 			if _, err := RunOrchestratorWorkerCleanup(request); err == nil || called {
 				t.Fatalf("tamper accepted: called=%t err=%v", called, err)
+			}
+		})
+	}
+}
+
+func TestOrchestratorWorkerCleanupResumesAfterCleanupReceiptWrite(t *testing.T) {
+	for _, stage := range []string{"reservation-only", "invalidated-creation", "created-before-preflight"} {
+		t.Run(stage, func(t *testing.T) {
+			_, _, request, cleanup := workerCleanupTestRequest(t, stage)
+			cleanupPath := filepath.Join(request.OutputRoot, "ORG_CLEANUP.json")
+			if stage == "reservation-only" {
+				var err error
+				cleanup, err = RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: request.BundlePath, CreationPath: filepath.Join(request.OutputRoot, "ORG_CREATION.json"), TargetOrg: request.TargetOrg, DevHub: request.DevHub, SFBin: request.SFBin, OutputPath: cleanupPath, runner: cleanupRunnerForTest()})
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else if err := WriteNewJSON(cleanupPath, cleanup); err != nil {
+				t.Fatal(err)
+			}
+			request.cleanup = func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+				t.Fatal("recovery reran Salesforce cleanup")
+				return SalesforceOrgCleanup{}, nil
+			}
+			receipt, err := RunOrchestratorWorkerCleanup(request)
+			if err != nil || !receipt.ResidueAbsent || !sha256Pattern.MatchString(receipt.OrgCleanupSHA256) {
+				t.Fatalf("receipt=%#v cleanup=%#v err=%v", receipt, cleanup, err)
 			}
 		})
 	}
@@ -115,6 +141,15 @@ func TestOrchestratorSSHCleanupTakeoverUsesSeparateRemotePathsAndPermanentlyBloc
 	if !receipt.Passed || receipt.Status != "cleanup-closed" || !receipt.ResidueAbsent || receipt.ProofCredit != 0 || !receipt.CleanupPermanentlyBlocked || !sha256Pattern.MatchString(receipt.WorkerReceiptSHA256) {
 		t.Fatalf("coordinator receipt = %#v", receipt)
 	}
+	encoded, err := json.Marshal(receipt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, synthetic := range []string{"durationMs", "copyStdoutSha256", "copyStderrSha256"} {
+		if strings.Contains(string(encoded), synthetic) {
+			t.Fatalf("success receipt retained synthetic field %q: %s", synthetic, encoded)
+		}
+	}
 	if len(gotArgs) != 5 || !strings.Contains(gotArgs[4], request.RemoteBundlePath) || strings.Contains(gotArgs[4], request.PlanPath) || request.RemoteBundlePath == request.PlanPath {
 		t.Fatalf("remote cleanup command did not preserve host path separation: %#v", gotArgs)
 	}
@@ -131,6 +166,30 @@ func TestOrchestratorSSHCleanupTakeoverUsesSeparateRemotePathsAndPermanentlyBloc
 	}
 	if cleanupState != "closed" || allocationState != "closed" || blocks != 1 || credits != 0 {
 		t.Fatalf("cleanup=%q allocation=%q blocks=%d credits=%d", cleanupState, allocationState, blocks, credits)
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRejectsMixedLocalAndSSHMode(t *testing.T) {
+	request, _ := coordinatorCleanupTestRequest(t)
+	called := false
+	binding := OrchestratorSSHCleanupBinding{
+		PlanPath: request.PlanPath, LeasePath: request.LeasePath, FailedDispatchPath: request.FailedDispatchPath,
+		Host: request.Host, WorkerBin: request.WorkerBin, RemotePlanPath: request.RemotePlanPath, RemoteLeasePath: request.RemoteLeasePath,
+		RemoteBundlePath: request.RemoteBundlePath, RemoteSFBin: request.RemoteSFBin, RemoteRoot: request.RemoteRoot, FetchedReceiptPath: request.FetchedReceiptPath,
+		sshRunner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
+			called = true
+			return salesforceCommandOutput{}, nil
+		},
+	}
+	err := runOrchestratorCleanupTakeoverAt(request.Coordinator, OrchestratorCleanupTakeoverRequest{
+		Claim: request.Claim, BundlePath: "/ignored/bundle", CreationPath: "/ignored/creation", PreflightPath: "/ignored/preflight",
+		TargetOrg: request.Claim.AllocationAlias, SFBin: "/ignored/sf", OutputPath: request.OutputPath, SSH: &binding,
+	}, time.Now, func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		t.Fatal("mixed request ran local cleanup")
+		return SalesforceOrgCleanup{}, nil
+	})
+	if err == nil || !strings.Contains(err.Error(), "mutually exclusive") || called {
+		t.Fatalf("mixed cleanup mode: called=%t err=%v", called, err)
 	}
 }
 
@@ -291,6 +350,15 @@ func TestClaimCleanupForLeaseSelectsOnlyExactJournalAndReclaimsExpiry(t *testing
 	if err := orchestrator.Reserve(second, "sealed-hub", "scratch-second", now.Add(time.Second)); err != nil {
 		t.Fatal(err)
 	}
+	forged := second
+	forged.LeaseUntil = forged.LeaseUntil.Add(time.Minute)
+	if _, err := orchestrator.ClaimCleanupForLease(forged, "scratch-second", now.Add(time.Minute), 6*time.Minute); err == nil {
+		t.Fatal("forged exact lease claimed cleanup")
+	}
+	var untouched string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = 'scratch-second'`).Scan(&untouched); err != nil || untouched != "pending" {
+		t.Fatalf("forged lease mutated cleanup journal: state=%q err=%v", untouched, err)
+	}
 	claim, err := orchestrator.ClaimCleanupForLease(second, "scratch-second", now.Add(time.Minute), 6*time.Minute)
 	if err != nil {
 		t.Fatal(err)
@@ -317,11 +385,15 @@ func TestClaimCleanupForLeaseSelectsOnlyExactJournalAndReclaimsExpiry(t *testing
 	}
 }
 
-func workerCleanupTestRequest(t *testing.T, stage string) (OrchestratorCampaignPlan, OrchestratorLease, OrchestratorWorkerCleanupRequest) {
+func workerCleanupTestRequest(t *testing.T, stage string) (OrchestratorCampaignPlan, OrchestratorLease, OrchestratorWorkerCleanupRequest, SalesforceOrgCleanup) {
 	t.Helper()
 	_, plan, lease, _, _, _ := readyOrchestratorWorker(t)
 	root := t.TempDir()
 	bundlePath, sourceCreation, _, sourceCleanup := writeValidCleanupTakeoverFiles(t, root, "scratch-a")
+	cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](sourceCleanup)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if err := os.Remove(sourceCleanup); err != nil {
 		t.Fatal(err)
 	}
@@ -364,7 +436,7 @@ func workerCleanupTestRequest(t *testing.T, stage string) (OrchestratorCampaignP
 		Plan: plan, Lease: lease, PlanSHA256: replayBytesSHA256(append(planBytes, '\n')), LeaseSHA256: replayBytesSHA256(append(leaseBytes, '\n')), FailedSSHReceiptSHA256: strings.Repeat("f", 64),
 		BundlePath: bundlePath, DevHub: creation.DevHub, TargetOrg: creation.Alias, SFBin: salesforceCLIPath, OutputRoot: outputRoot,
 		ExecutedTools: RuntimeArtifact{Commit: plan.Definition.Tools.Commit, OS: "darwin", Arch: "arm64", SHA256: plan.Definition.Tools.SHA256},
-	}
+	}, cleanup
 }
 
 func coordinatorCleanupTestRequest(t *testing.T) (OrchestratorSSHCleanupTakeoverRequest, OrchestratorWorkerCleanupReceipt) {

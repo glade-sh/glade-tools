@@ -584,8 +584,12 @@ func (o *Orchestrator) ClaimCleanup(campaignID, worker string, now time.Time, du
 // ClaimCleanupForLease claims only the allocation reserved by the current
 // lease. Campaign-wide ClaimCleanup remains the expired-lease takeover path.
 func (o *Orchestrator) ClaimCleanupForLease(lease OrchestratorLease, allocationAlias string, now time.Time, duration time.Duration) (OrchestratorCleanupClaim, error) {
-	if !safeOrchestratorToken(lease.Worker) || !safeOrchestratorToken(allocationAlias) || duration <= 0 {
+	if !safeOrchestratorToken(lease.Worker) || !safeOrchestratorToken(allocationAlias) || lease.DurationMS <= 0 || lease.LeaseUntil.IsZero() || duration <= 0 {
 		return OrchestratorCleanupClaim{}, fmt.Errorf("current lease, safe allocation, and positive cleanup lease are required")
+	}
+	surfaces, err := json.Marshal(lease.SurfaceIDs)
+	if err != nil {
+		return OrchestratorCleanupClaim{}, err
 	}
 	tx, err := o.db.Begin()
 	if err != nil {
@@ -596,7 +600,7 @@ func (o *Orchestrator) ClaimCleanupForLease(lease OrchestratorLease, allocationA
 		CampaignID: lease.CampaignID, JobID: lease.JobID, Generation: lease.Generation,
 		AllocationAlias: allocationAlias, Worker: lease.Worker, ClaimUntil: now.UTC().Add(duration),
 	}
-	if err := tx.QueryRow(`SELECT a.hub_alias FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND (c.state = 'pending' OR (c.state = 'running' AND c.claim_until <= ?)) AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until > ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, now.UTC().UnixMilli(), lease.Worker, now.UTC().UnixMilli()).Scan(&claim.HubAlias); err != nil {
+	if err := tx.QueryRow(`SELECT a.hub_alias FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id JOIN attempts x ON x.campaign_id = c.campaign_id AND x.job_id = c.job_id AND x.generation = c.generation JOIN lease_terms l ON l.campaign_id = c.campaign_id AND l.job_id = c.job_id AND l.generation = c.generation WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND (c.state = 'pending' OR (c.state = 'running' AND c.claim_until <= ?)) AND j.kind = ? AND j.shard_index = ? AND j.surface_ids_json = ? AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until = ? AND j.lease_until > ? AND x.worker = ? AND x.status = 'running' AND x.lease_until = ? AND l.duration_ms = ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, now.UTC().UnixMilli(), lease.Kind, lease.ShardIndex, string(surfaces), lease.Worker, lease.LeaseUntil.UTC().UnixMilli(), now.UTC().UnixMilli(), lease.Worker, lease.LeaseUntil.UTC().UnixMilli(), lease.DurationMS).Scan(&claim.HubAlias); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return OrchestratorCleanupClaim{}, fmt.Errorf("current lease cleanup journal is not claimable")
 		}

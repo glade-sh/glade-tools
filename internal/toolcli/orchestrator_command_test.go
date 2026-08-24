@@ -255,6 +255,13 @@ func TestCorpusAssuranceOrchestratorWorkerCleanupAndExactClaimHaveFixedBindings(
 	writeOrchestratorCLIJSON(t, leasePath, lease)
 	stdout.Reset()
 	stderr.Reset()
+	mixedPath := filepath.Join(root, "mixed-claim.json")
+	mixedArgs := []string{"corpus", "assurance", "orchestrator", "cleanup-claim", "--db", database, "--campaign", plan.CampaignID, "--lease", leasePath, "--allocation", "scratch-a", "--worker", "worker-a", "--seconds", "360", "--output", mixedPath}
+	if code := Run(context.Background(), mixedArgs, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "mutually exclusive") {
+		t.Fatalf("mixed exact/campaign cleanup claim accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	stdout.Reset()
+	stderr.Reset()
 	claimPath := filepath.Join(root, "exact-claim.json")
 	args := []string{"corpus", "assurance", "orchestrator", "cleanup-claim", "--db", database, "--lease", leasePath, "--allocation", "scratch-a", "--worker", "worker-a", "--seconds", "360", "--output", claimPath}
 	if code := Run(context.Background(), args, &stdout, &stderr); code != 0 {

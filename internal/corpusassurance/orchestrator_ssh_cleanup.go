@@ -60,6 +60,18 @@ type OrchestratorWorkerCleanupRequest struct {
 // RunOrchestratorWorkerCleanup validates the worker-local lifecycle authority,
 // runs the existing no-preflight cleanup, and seals a zero-credit receipt.
 func RunOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (OrchestratorWorkerCleanupReceipt, error) {
+	if !filepath.IsAbs(request.OutputRoot) || filepath.Clean(request.OutputRoot) != request.OutputRoot {
+		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("absolute clean worker cleanup paths are required")
+	}
+	release, err := acquireWorkerLifecycleLock(request.OutputRoot)
+	if err != nil {
+		return OrchestratorWorkerCleanupReceipt{}, err
+	}
+	defer release()
+	return runOrchestratorWorkerCleanup(request)
+}
+
+func runOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (OrchestratorWorkerCleanupReceipt, error) {
 	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.FailedSSHReceiptSHA256) || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) || request.ExecutedTools == (RuntimeArtifact{}) || !validOrchestratorExecutedTools(request.ExecutedTools, request.Plan) {
 		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("invalid worker cleanup binding")
 	}
@@ -67,9 +79,6 @@ func RunOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (Orc
 		if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 			return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("absolute clean worker cleanup paths are required")
 		}
-	}
-	if request.Plan.CampaignID != request.Lease.CampaignID {
-		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("worker cleanup plan and lease differ")
 	}
 	stage, authoritySHA, bindingSHA, err := validateWorkerCleanupLifecycle(request)
 	if err != nil {
@@ -100,9 +109,15 @@ func RunOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (Orc
 	if runner == nil {
 		runner = RunSalesforceOrgCleanup
 	}
-	cleanup, err := runner(SalesforceOrgCleanupRequest{BundlePath: request.BundlePath, CreationPath: filepath.Join(request.OutputRoot, "ORG_CREATION.json"), TargetOrg: request.TargetOrg, DevHub: request.DevHub, SFBin: request.SFBin, OutputPath: cleanupPath})
+	cleanup, err := existingWorkerSalesforceCleanup(request, cleanupPath)
+	if os.IsNotExist(err) {
+		cleanup, err = runner(SalesforceOrgCleanupRequest{BundlePath: request.BundlePath, CreationPath: filepath.Join(request.OutputRoot, "ORG_CREATION.json"), TargetOrg: request.TargetOrg, DevHub: request.DevHub, SFBin: request.SFBin, OutputPath: cleanupPath})
+	}
 	if err != nil || !cleanup.ResidueAbsent {
 		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("worker Salesforce cleanup failed")
+	}
+	if afterStage, afterAuthority, afterBinding, afterErr := validateWorkerCleanupLifecycle(request); afterErr != nil || afterStage != stage || afterAuthority != authoritySHA || afterBinding != bindingSHA {
+		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("worker cleanup lifecycle changed during cleanup")
 	}
 	want.OrgCleanupSHA256, err = sha256File(cleanupPath)
 	if err != nil {
@@ -112,6 +127,54 @@ func RunOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (Orc
 		return OrchestratorWorkerCleanupReceipt{}, err
 	}
 	return want, nil
+}
+
+func existingWorkerSalesforceCleanup(request OrchestratorWorkerCleanupRequest, path string) (SalesforceOrgCleanup, error) {
+	if _, err := os.Lstat(path); err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	cleanup, _, err := readMode0600JSON[SalesforceOrgCleanup](path)
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	records := append([]CommandResult{cleanup.DevHubCommand}, cleanup.Commands...)
+	index := 0
+	runner := func(_ context.Context, binary string, args ...string) (salesforceCommandOutput, error) {
+		if index >= len(records) || !reflect.DeepEqual(records[index].Command, append([]string{binary}, args...)) || records[index].Output == nil {
+			return salesforceCommandOutput{}, fmt.Errorf("existing worker Salesforce cleanup command drift")
+		}
+		record := records[index]
+		index++
+		return salesforceCommandOutput{Stdout: record.Output.Stdout, Stderr: record.Output.Stderr, ExitCode: record.ExitCode}, nil
+	}
+	temporary, err := os.CreateTemp(filepath.Dir(path), ".validate-cleanup-")
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	temporaryPath := temporary.Name()
+	defer os.Remove(temporaryPath)
+	if err := temporary.Close(); err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	if err := os.Remove(temporaryPath); err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	replayed, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: request.BundlePath, CreationPath: filepath.Join(request.OutputRoot, "ORG_CREATION.json"), TargetOrg: request.TargetOrg, DevHub: request.DevHub, SFBin: request.SFBin, OutputPath: temporaryPath, runner: runner})
+	if err != nil || index != len(records) {
+		return SalesforceOrgCleanup{}, fmt.Errorf("existing worker Salesforce cleanup is invalid")
+	}
+	replayed.DevHubCommand.DurationMS = 0
+	cleanup.DevHubCommand.DurationMS = 0
+	for i := range replayed.Commands {
+		replayed.Commands[i].DurationMS = 0
+	}
+	for i := range cleanup.Commands {
+		cleanup.Commands[i].DurationMS = 0
+	}
+	if !reflect.DeepEqual(replayed, cleanup) {
+		return SalesforceOrgCleanup{}, fmt.Errorf("existing worker Salesforce cleanup is invalid")
+	}
+	return cleanup, nil
 }
 
 func validateWorkerCleanupLifecycle(request OrchestratorWorkerCleanupRequest) (string, string, string, error) {
@@ -141,7 +204,7 @@ func validateWorkerCleanupLifecycle(request OrchestratorWorkerCleanupRequest) (s
 		return "", "", "", fmt.Errorf("worker cleanup reservation mode is invalid")
 	}
 	reservation, reservationBytes, err := readExactJSONBytes[salesforceOrgReservation](reservationPath)
-	if err != nil || !validSalesforceOrgReservation(reservation, bundleSHA, request.BundlePath, request.DevHub, request.TargetOrg) {
+	if err != nil || reservation.SchemaVersion != 1 || reservation.BundleSHA256 != bundleSHA || reservation.DevHub != request.DevHub || reservation.Alias != request.TargetOrg || !validSalesforceScratchMarker(reservation.Marker) || !validSalesforceReservedAliasAbsence(reservation.AliasAbsent, request.BundlePath, request.TargetOrg) {
 		return "", "", "", fmt.Errorf("worker cleanup reservation is invalid")
 	}
 	reservationSHA := replayBytesSHA256(reservationBytes)
@@ -251,10 +314,7 @@ type OrchestratorSSHCleanupTakeoverReceipt struct {
 	WorkerReceiptSHA256       string `json:"workerReceiptSha256,omitempty"`
 	FailedSSHReceiptSHA256    string `json:"failedSshReceiptSha256,omitempty"`
 	OrgCleanupSHA256          string `json:"orgCleanupSha256,omitempty"`
-	CopyStdoutSHA256          string `json:"copyStdoutSha256,omitempty"`
-	CopyStderrSHA256          string `json:"copyStderrSha256,omitempty"`
 	ExitCode                  int    `json:"exitCode"`
-	DurationMS                int64  `json:"durationMs"`
 	TimeoutMS                 int64  `json:"timeoutMs"`
 	TimedOut                  bool   `json:"timedOut"`
 	Passed                    bool   `json:"passed"`
@@ -294,9 +354,8 @@ func runOrchestratorSSHCleanupTakeover(request OrchestratorSSHCleanupTakeoverReq
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	started := time.Now()
 	output, runErr := runner(ctx, orchestratorSSHBinary, args...)
-	receipt.ExitCode, receipt.DurationMS, receipt.TimedOut = output.ExitCode, time.Since(started).Milliseconds(), ctx.Err() == context.DeadlineExceeded
+	receipt.ExitCode, receipt.TimedOut = output.ExitCode, ctx.Err() == context.DeadlineExceeded
 	if runErr != nil && receipt.ExitCode == 0 {
 		receipt.ExitCode = -1
 	}
@@ -407,8 +466,8 @@ func existingSSHCleanupTakeoverReceipt(request OrchestratorSSHCleanupTakeoverReq
 func successfulSSHCleanupTakeoverReceipt(request OrchestratorSSHCleanupTakeoverRequest, worker OrchestratorWorkerCleanupReceipt, workerBytes []byte, commandSHA string, timeout time.Duration) OrchestratorSSHCleanupTakeoverReceipt {
 	return OrchestratorSSHCleanupTakeoverReceipt{
 		SchemaVersion: 1, Status: "cleanup-closed", LifecycleStage: worker.LifecycleStage, CampaignID: request.Claim.CampaignID, JobID: request.Claim.JobID, Generation: request.Claim.Generation,
-		CommandSHA256: commandSHA, WorkerReceiptSHA256: replayBytesSHA256(workerBytes), FailedSSHReceiptSHA256: worker.FailedSSHReceiptSHA256, OrgCleanupSHA256: worker.OrgCleanupSHA256, CopyStdoutSHA256: replayBytesSHA256(nil), CopyStderrSHA256: replayBytesSHA256(nil),
-		ExitCode: 0, DurationMS: 0, TimeoutMS: timeout.Milliseconds(), Passed: true, ResidueAbsent: true, ProofCredit: 0, CleanupPermanentlyBlocked: true,
+		CommandSHA256: commandSHA, WorkerReceiptSHA256: replayBytesSHA256(workerBytes), FailedSSHReceiptSHA256: worker.FailedSSHReceiptSHA256, OrgCleanupSHA256: worker.OrgCleanupSHA256,
+		ExitCode: 0, TimeoutMS: timeout.Milliseconds(), Passed: true, ResidueAbsent: true, ProofCredit: 0, CleanupPermanentlyBlocked: true,
 	}
 }
 
@@ -516,8 +575,4 @@ func orchestratorSSHWorkerCleanupCommand(request OrchestratorSSHCleanupTakeoverR
 func validWorkerCleanupCompletion(receipt OrchestratorWorkerCleanupReceipt, plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA, leaseSHA, failedSHA string) bool {
 	stages := map[string]bool{"reservation-only": true, "invalidated-creation": true, "created-before-preflight": true}
 	return receipt.SchemaVersion == 1 && receipt.Status == "cleanup-closed" && stages[receipt.LifecycleStage] && receipt.CampaignID == lease.CampaignID && receipt.JobID == lease.JobID && receipt.ShardIndex == lease.ShardIndex && receipt.Generation == lease.Generation && receipt.SpecSHA256 == plan.SpecSHA256 && receipt.PlanSHA256 == planSHA && receipt.LeaseSHA256 == leaseSHA && receipt.FailedSSHReceiptSHA256 == failedSHA && sha256Pattern.MatchString(receipt.OrchestratorBindingSHA256) && sha256Pattern.MatchString(receipt.LifecycleAuthoritySHA256) && sha256Pattern.MatchString(receipt.OrgCleanupSHA256) && receipt.ResidueAbsent && receipt.ProofCredit == 0 && validOrchestratorExecutedTools(receipt.ExecutedTools, plan) && receipt.ExecutedTools != (RuntimeArtifact{})
-}
-
-func validSalesforceOrgReservation(reservation salesforceOrgReservation, bundleSHA, bundlePath, devHub, alias string) bool {
-	return reservation.SchemaVersion == 1 && reservation.BundleSHA256 == bundleSHA && reservation.DevHub == devHub && reservation.Alias == alias && validSalesforceScratchMarker(reservation.Marker) && validSalesforceReservedAliasAbsence(reservation.AliasAbsent, bundlePath, alias)
 }
