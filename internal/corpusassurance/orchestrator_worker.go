@@ -274,6 +274,9 @@ func runOrchestratorWorkerOnce(ctx context.Context, orchestrator *Orchestrator, 
 		return result, orchestratorWorkerError{failureCode}
 	}
 	if cleanupState == "pending" {
+		if err = stopHeartbeat(); err != nil {
+			return result, orchestratorWorkerError{failureCode}
+		}
 		now = clock().UTC()
 		if err = orchestrator.Heartbeat(request.Lease, now, heartbeat); err != nil {
 			return result, orchestratorWorkerError{failureCode}
