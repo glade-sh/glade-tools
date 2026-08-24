@@ -58,13 +58,14 @@ type OrchestratorWorkerTransfer struct {
 // and the existing typed Salesforce cleanup inputs. It intentionally has no
 // proof-credit fields: takeover can close cleanup only.
 type OrchestratorCleanupTakeoverRequest struct {
-	Claim         OrchestratorCleanupClaim `json:"claim"`
-	BundlePath    string                   `json:"bundlePath"`
-	CreationPath  string                   `json:"creationPath"`
-	PreflightPath string                   `json:"preflightPath"`
-	TargetOrg     string                   `json:"targetOrg"`
-	SFBin         string                   `json:"sfBin"`
-	OutputPath    string                   `json:"outputPath"`
+	Claim         OrchestratorCleanupClaim       `json:"claim"`
+	BundlePath    string                         `json:"bundlePath"`
+	CreationPath  string                         `json:"creationPath"`
+	PreflightPath string                         `json:"preflightPath"`
+	TargetOrg     string                         `json:"targetOrg"`
+	SFBin         string                         `json:"sfBin"`
+	OutputPath    string                         `json:"outputPath"`
+	SSH           *OrchestratorSSHCleanupBinding `json:"ssh,omitempty"`
 }
 
 type salesforceOrgCleanupRunner func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error)
@@ -81,6 +82,13 @@ func runOrchestratorCleanupTakeover(orchestrator *Orchestrator, request Orchestr
 }
 
 func runOrchestratorCleanupTakeoverAt(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest, clock func() time.Time, cleanup salesforceOrgCleanupRunner) error {
+	if request.SSH != nil {
+		if request.BundlePath != "" || request.CreationPath != "" || request.PreflightPath != "" || request.TargetOrg != "" || request.SFBin != "" {
+			return fmt.Errorf("local and SSH cleanup modes are mutually exclusive")
+		}
+		_, err := runOrchestratorSSHCleanupTakeover(OrchestratorSSHCleanupTakeoverRequest{Coordinator: orchestrator, Claim: request.Claim, OrchestratorSSHCleanupBinding: *request.SSH, OutputPath: request.OutputPath}, orchestratorSSHCleanupTimeout)
+		return err
+	}
 	if orchestrator == nil || cleanup == nil || request.Claim.CampaignID == "" || request.Claim.JobID == "" || request.Claim.Generation < 1 || request.Claim.AllocationAlias == "" || request.Claim.Worker == "" {
 		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
 	}
@@ -266,11 +274,16 @@ func runOrchestratorWorkerOnce(ctx context.Context, orchestrator *Orchestrator, 
 		return result, orchestratorWorkerError{failureCode}
 	}
 	if cleanupState == "pending" {
+		if err = stopHeartbeat(); err != nil {
+			return result, orchestratorWorkerError{failureCode}
+		}
 		now = clock().UTC()
 		if err = orchestrator.Heartbeat(request.Lease, now, heartbeat); err != nil {
 			return result, orchestratorWorkerError{failureCode}
 		}
-		claim, claimErr := orchestrator.ClaimCleanupForLease(request.Lease, request.AllocationAlias, now, heartbeat)
+		renewedLease := request.Lease
+		renewedLease.LeaseUntil = time.UnixMilli(now.Add(heartbeat).UnixMilli()).UTC()
+		claim, claimErr := orchestrator.ClaimCleanupForLease(renewedLease, request.AllocationAlias, now, heartbeat)
 		if claimErr != nil || claim.JobID != request.Lease.JobID || claim.Generation != request.Lease.Generation || claim.AllocationAlias != request.AllocationAlias || claim.HubAlias != request.HubAlias {
 			return result, orchestratorWorkerError{failureCode}
 		}

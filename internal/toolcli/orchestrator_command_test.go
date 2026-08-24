@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/glade-sh/glade/tools/internal/corpusassurance"
 )
@@ -192,6 +193,84 @@ func TestCorpusAssuranceOrchestratorWorkerOnceHasOnlyTypedFixedFlags(t *testing.
 	var stdout, stderr bytes.Buffer
 	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "flag provided but not defined") {
 		t.Fatalf("worker-once accepted coordinator DB/arbitrary flags: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorWorkerCleanupAndExactClaimHaveFixedBindings(t *testing.T) {
+	root := t.TempDir()
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "worker-cleanup", "--db", filepath.Join(root, "orchestrator.db")}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "flag provided but not defined") {
+		t.Fatalf("worker-cleanup accepted coordinator DB: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	leasePath := filepath.Join(root, "lease.json")
+	writeOrchestratorCLIJSON(t, leasePath, corpusassurance.OrchestratorLease{CampaignID: "campaign-a", JobID: "job-a", Generation: 1, Worker: "worker-a"})
+	base := []string{"corpus", "assurance", "orchestrator", "cleanup-claim", "--db", filepath.Join(root, "orchestrator.db"), "--output", filepath.Join(root, "claim.json")}
+	for name, extra := range map[string][]string{
+		"missing allocation": {"--lease", leasePath, "--seconds", "360", "--worker", "worker-a"},
+		"short duration":     {"--lease", leasePath, "--allocation", "scratch-a", "--seconds", "250", "--worker", "worker-a"},
+		"worker drift":       {"--lease", leasePath, "--allocation", "scratch-a", "--seconds", "360", "--worker", "worker-b"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			stdout.Reset()
+			stderr.Reset()
+			args := append(append([]string(nil), base...), extra...)
+			if code := Run(context.Background(), args, &stdout, &stderr); code == 0 {
+				t.Fatalf("invalid exact cleanup claim accepted: stdout=%q stderr=%q", stdout.String(), stderr.String())
+			}
+		})
+	}
+	scopePath := filepath.Join(root, "scope.json")
+	writeOrchestratorCLIJSON(t, scopePath, corpusassurance.SurfaceOracleScope{SchemaVersion: 1, Kind: "all-runtime", SourceProfileSHA256: strings.Repeat("1", 64), LedgerSHA256: strings.Repeat("2", 64), PolicySHA256: strings.Repeat("3", 64), Total: 2, ByDisposition: map[string]int{"deterministic-mock-required": 1, "local-runtime-required": 1}, Rows: []corpusassurance.SurfaceOracleScopeRow{{SurfaceID: "apex:System.One", Disposition: "deterministic-mock-required"}, {SurfaceID: "apex:System.Two", Disposition: "local-runtime-required"}}})
+	plan, err := corpusassurance.PlanOrchestratorCampaign(corpusassurance.OrchestratorCampaignDefinition{
+		Candidate: corpusassurance.OrchestratorArtifact{Commit: strings.Repeat("a", 40), SHA256: strings.Repeat("b", 64)}, Tools: corpusassurance.OrchestratorArtifact{Commit: strings.Repeat("c", 40), SHA256: strings.Repeat("d", 64)},
+		ScopePath: scopePath, ScopeSHA256: orchestratorCLIFileSHA256(t, scopePath), ControlledInputSHA256: map[string]string{"oracle-plan": strings.Repeat("e", 64)}, Shards: [][]string{{"apex:System.One", "apex:System.Two"}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	database := filepath.Join(root, "orchestrator.db")
+	orchestrator, err := corpusassurance.OpenOrchestrator(database)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer orchestrator.Close()
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Now().UTC()
+	lease, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	remaining := 1
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.ObserveHub(corpusassurance.OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, DailyScratchOrgsRemaining: &remaining, ActiveScratchOrgsRemaining: &remaining}); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-a", now); err != nil {
+		t.Fatal(err)
+	}
+	writeOrchestratorCLIJSON(t, leasePath, lease)
+	stdout.Reset()
+	stderr.Reset()
+	mixedPath := filepath.Join(root, "mixed-claim.json")
+	mixedArgs := []string{"corpus", "assurance", "orchestrator", "cleanup-claim", "--db", database, "--campaign", plan.CampaignID, "--lease", leasePath, "--allocation", "scratch-a", "--worker", "worker-a", "--seconds", "360", "--output", mixedPath}
+	if code := Run(context.Background(), mixedArgs, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "mutually exclusive") {
+		t.Fatalf("mixed exact/campaign cleanup claim accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	stdout.Reset()
+	stderr.Reset()
+	claimPath := filepath.Join(root, "exact-claim.json")
+	args := []string{"corpus", "assurance", "orchestrator", "cleanup-claim", "--db", database, "--lease", leasePath, "--allocation", "scratch-a", "--worker", "worker-a", "--seconds", "360", "--output", claimPath}
+	if code := Run(context.Background(), args, &stdout, &stderr); code != 0 {
+		t.Fatalf("exact cleanup claim code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	var claim corpusassurance.OrchestratorCleanupClaim
+	readOrchestratorCLIJSON(t, claimPath, &claim)
+	if claim.JobID != lease.JobID || claim.Generation != lease.Generation || claim.AllocationAlias != "scratch-a" || claim.Worker != lease.Worker || !claim.ClaimUntil.After(now.Add(corpusassurance.MinimumOrchestratorSSHCleanupClaimDuration)) {
+		t.Fatalf("exact cleanup claim = %#v", claim)
 	}
 }
 

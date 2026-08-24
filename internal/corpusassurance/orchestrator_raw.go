@@ -222,6 +222,11 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 	if err := validateRawSalesforceShardRequestAt(request, clock().UTC()); err != nil {
 		return result, err
 	}
+	release, err := acquireWorkerLifecycleLock(request.OutputRoot)
+	if err != nil {
+		return result, err
+	}
+	defer release()
 	validateBundle := request.validateBundle
 	if validateBundle == nil {
 		validateBundle = ValidateOracleBundle
