@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"sort"
 	"strings"
 	"testing"
@@ -174,6 +175,138 @@ func TestBuildTransferAndRecordOrchestratorProductionBatch(t *testing.T) {
 	writeFile(t, filepath.Join(output, "inputs", "RUNTIME_BATCH_MANIFEST.json"), "legacy\n")
 	if _, err := validateOrchestratorBatch(output, fixture.plan, fixture.lease, false); err == nil || !strings.Contains(err.Error(), "mixed") {
 		t.Fatalf("mixed v3 and legacy markers were accepted: %v", err)
+	}
+}
+
+func TestStackedSyntheticReceiptStoreEntriesRemainUniqueAcrossReplay(t *testing.T) {
+	root := t.TempDir()
+	scopePath := filepath.Join(root, "scope.json")
+	scope := SurfaceOracleScope{
+		SchemaVersion: 1, Kind: "oracle-plan", OraclePlanSHA256: strings.Repeat("e", 64),
+		SourceProfileSHA256: strings.Repeat("b", 64), LedgerSHA256: strings.Repeat("c", 64), PolicySHA256: strings.Repeat("d", 64), Total: 3,
+		ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 2, compileShapeRequired: 1},
+		Rows: []SurfaceOracleScopeRow{
+			{SurfaceID: "apex:ControlPlane.compile", Disposition: compileShapeRequired, Action: oracleCompile},
+			{SurfaceID: "apex:Runtime.match", Disposition: localRuntimeRequired, Action: oracleRuntime},
+			{SurfaceID: "apex:Runtime.pass", Disposition: localRuntimeRequired, Action: oracleRuntime},
+		},
+	}
+	writeJSONValue(t, scopePath, scope)
+	definition := testOrchestratorDefinition(t, scopePath, [][]string{{"apex:Runtime.pass"}, {"apex:Runtime.match"}, {"apex:ControlPlane.compile"}})
+	plan, err := PlanOrchestratorCampaign(definition)
+	if err != nil {
+		t.Fatal(err)
+	}
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Enqueue(plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 8, 24, 12, 0, 0, 0, time.UTC)
+	type jobCase struct {
+		name, state                string
+		wantAccepted, wantRejected int
+	}
+	cases := []jobCase{{"accepted runtime receipt-store entry", "accepted", 1, 0}, {"confirmed mismatch receipt-store entry", "rejected", 0, 1}, {"inconclusive compile control-plane receipt-store entry", "inconclusive", 0, 0}}
+	wantSurfaceIDs := []string{"apex:Runtime.pass", "apex:Runtime.match", "apex:ControlPlane.compile"}
+	for index, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			lease, err := orchestrator.Lease(plan.CampaignID, fmt.Sprintf("worker-%d", index), now, time.Minute)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(lease.SurfaceIDs) != 1 || lease.SurfaceIDs[0] != wantSurfaceIDs[index] {
+				t.Fatalf("leased SurfaceID = %v, want [%q]", lease.SurfaceIDs, wantSurfaceIDs[index])
+			}
+			if err := orchestrator.SetHubCapacity(fmt.Sprintf("hub-%d", index), 1); err != nil {
+				t.Fatal(err)
+			}
+			observeReadyHub(t, orchestrator, fmt.Sprintf("hub-%d", index), now)
+			allocation := fmt.Sprintf("scratch-%d", index)
+			if err := orchestrator.Reserve(lease, fmt.Sprintf("hub-%d", index), allocation, now); err != nil {
+				t.Fatal(err)
+			}
+			claim, err := orchestrator.ClaimCleanup(plan.CampaignID, lease.Worker, now, time.Minute)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := orchestrator.CloseCleanup(claim, now.Add(time.Second)); err != nil {
+				t.Fatal(err)
+			}
+			batchRoot := filepath.Join(root, fmt.Sprintf("receipt-store-%d", index))
+			manifestSHA := writeSyntheticReceiptStoreBatch(t, batchRoot, plan)
+			carrier := validatedOrchestratorBatch{
+				BatchRoot: batchRoot, SchemaVersion: orchestratorProductionBatchSchema, ManifestSHA256: manifestSHA, AuthoritySHA256: manifestSHA,
+				Candidate: plan.Definition.Candidate, Tools: plan.Definition.Tools, ProofStates: map[string]string{lease.SurfaceIDs[0]: testCase.state},
+				ProductionFiles: []ProductionRuntimeBatchFile{},
+			}
+			request := OrchestratorReceiptRequest{Lease: lease, BatchRoot: batchRoot}
+			receipt, err := orchestrator.recordValidatedReceipt(request, now.Add(2*time.Second), carrier)
+			if testCase.state == "inconclusive" {
+				if err == nil || !strings.Contains(err.Error(), "inconclusive") {
+					t.Fatalf("inconclusive receipt-store evidence error = %v", err)
+				}
+				assertSyntheticReceiptCounts(t, orchestrator, plan.CampaignID, lease.JobID, 0, 0)
+				return
+			}
+			if err != nil || receipt.AcceptedCredit != testCase.wantAccepted || receipt.RejectedCredit != testCase.wantRejected || receipt.ManifestSHA256 != manifestSHA || receipt.BindingSHA256 != manifestSHA {
+				t.Fatalf("receipt = %#v, err=%v", receipt, err)
+			}
+			wantID := "receipt-" + replayBytesSHA256([]byte("orchestrator-production-receipt/v3\x00" + lease.CampaignID + "\x00" + lease.JobID + "\x00" + fmt.Sprint(lease.Generation) + "\x00" + manifestSHA + "\x00" + manifestSHA))[:16]
+			if receipt.ID != wantID {
+				t.Fatalf("receipt ID = %q, want %q", receipt.ID, wantID)
+			}
+			replay, replayErr := orchestrator.recordValidatedReceipt(request, now.Add(3*time.Second), carrier)
+			if replayErr != nil || replay != receipt {
+				t.Fatalf("exact receipt replay = %#v, %v", replay, replayErr)
+			}
+			assertSyntheticReceiptCounts(t, orchestrator, plan.CampaignID, lease.JobID, 1, 1)
+		})
+	}
+	status, err := orchestrator.Status(plan.CampaignID)
+	if err != nil || status.Accepted != 1 || status.Rejected != 1 || status.Unseen != 1 {
+		t.Fatalf("stacked receipt-store status = %#v, %v", status, err)
+	}
+}
+
+func writeSyntheticReceiptStoreBatch(t *testing.T, root string, plan OrchestratorCampaignPlan) string {
+	t.Helper()
+	production := filepath.Join(root, "production")
+	if err := os.MkdirAll(production, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	manifest := ProductionRuntimeBatch{
+		SchemaVersion: orchestratorProductionBatchSchema,
+		Candidate:     RuntimeArtifact{Commit: plan.Definition.Candidate.Commit, SHA256: plan.Definition.Candidate.SHA256, OS: runtime.GOOS, Arch: runtime.GOARCH},
+		NativeTools:   RuntimeArtifact{Commit: plan.Definition.Tools.Commit, SHA256: plan.Definition.Tools.SHA256, OS: runtime.GOOS, Arch: runtime.GOARCH},
+		ExecutedTools: RuntimeArtifact{Commit: plan.Definition.Tools.Commit, SHA256: plan.Definition.Tools.SHA256, OS: runtime.GOOS, Arch: runtime.GOARCH},
+		Files:         []ProductionRuntimeBatchFile{},
+	}
+	path := filepath.Join(production, "PRODUCTION_RUNTIME_BATCH.json")
+	writeJSONValue(t, path, manifest)
+	if err := os.Chmod(path, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return replayBytesSHA256(data)
+}
+
+func assertSyntheticReceiptCounts(t *testing.T, orchestrator *Orchestrator, campaignID, jobID string, wantReceipts, wantCredits int) {
+	t.Helper()
+	var receipts, credits int
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM receipts WHERE campaign_id = ? AND job_id = ?`, campaignID, jobID).Scan(&receipts); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM proof_credits WHERE campaign_id = ? AND receipt_id IN (SELECT id FROM receipts WHERE campaign_id = ? AND job_id = ?)`, campaignID, campaignID, jobID).Scan(&credits); err != nil {
+		t.Fatal(err)
+	}
+	if receipts != wantReceipts || credits != wantCredits {
+		t.Fatalf("receipt counts = %d/%d, want %d/%d", receipts, credits, wantReceipts, wantCredits)
 	}
 }
 
