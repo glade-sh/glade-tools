@@ -2,7 +2,9 @@ package corpuscheck
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -102,6 +104,7 @@ printf '{"diagnostics":[]}'
 	}
 	var receipt struct {
 		TargetSourceAPIVersion             string `json:"targetSourceApiVersion"`
+		CandidateSHA256                    string `json:"candidateSha256"`
 		OriginalVersionCorrectnessMeasured bool   `json:"originalVersionCorrectnessMeasured"`
 		RuntimeProof                       bool   `json:"runtimeProof"`
 		Changes                            []struct {
@@ -116,13 +119,110 @@ printf '{"diagnostics":[]}'
 	if err := json.Unmarshal(receiptData, &receipt); err != nil {
 		t.Fatal(err)
 	}
-	if receipt.TargetSourceAPIVersion != "65.0" || receipt.OriginalVersionCorrectnessMeasured || receipt.RuntimeProof || len(receipt.Changes) != 4 {
+	if receipt.TargetSourceAPIVersion != "65.0" || receipt.CandidateSHA256 != fmt.Sprintf("%x", sha256.Sum256([]byte(script))) || receipt.OriginalVersionCorrectnessMeasured || receipt.RuntimeProof || len(receipt.Changes) != 4 {
 		t.Fatalf("receipt = %#v", receipt)
 	}
 	for _, change := range receipt.Changes {
 		if change.Project == "" || change.Path == "" || change.Family == "" || change.OriginalVersion == "" || change.SimulatedVersion != "65.0" || len(change.OriginalSHA256) != 64 {
 			t.Fatalf("incomplete change provenance: %#v", change)
 		}
+	}
+}
+
+func TestCheckSimulationUsesDistinctRelativeProjectIDs(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, filepath.Join(root, "team-a"), "alpha")
+	writeProject(t, filepath.Join(root, "team-b"), "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	report, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out"), SimulateSourceAPIVersion: "65.0"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	projects := map[string]bool{}
+	for _, change := range report.UpgradeSimulation.Changes {
+		projects[change.Project] = true
+	}
+	if !reflect.DeepEqual(projects, map[string]bool{"team-a/alpha": true, "team-b/alpha": true}) {
+		t.Fatalf("project IDs = %#v", projects)
+	}
+}
+
+func TestCheckSimulatesSourceAPIUpgradeWhenRootIsDot(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	project := filepath.Join(root, "alpha")
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	previous, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(project); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Chdir(previous) })
+
+	if _, err := Check(context.Background(), Options{Root: ".", Glade: glade, OutDir: filepath.Join(root, "out"), SimulateSourceAPIVersion: "65.0"}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestCheckSimulationPreservesSiblingManagedPackageDependencies(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "consumer")
+	dependency := filepath.Join(root, "dependency")
+	if err := os.Mkdir(dependency, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dependency, "marker"), []byte("present"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\ntest -f \"$3/../dependency/marker\" || exit 9\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := Check(context.Background(), Options{Root: filepath.Join(root, "consumer"), Glade: glade, OutDir: filepath.Join(root, "out"), SimulateSourceAPIVersion: "65.0"}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestCheckSimulationPreservesAncestorRelativeDependencies(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	projectRoot := filepath.Join(root, "team")
+	writeProject(t, projectRoot, "consumer")
+	dependency := filepath.Join(root, "dependency")
+	if err := os.Mkdir(dependency, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dependency, "marker"), []byte("present"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\ntest -f \"$3/../../dependency/marker\" || exit 9\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := Check(context.Background(), Options{Root: filepath.Join(projectRoot, "consumer"), Glade: glade, OutDir: filepath.Join(root, "out"), SimulateSourceAPIVersion: "65.0"}); err != nil {
+		t.Fatal(err)
 	}
 }
 
