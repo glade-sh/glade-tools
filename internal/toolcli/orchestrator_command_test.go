@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -63,6 +64,48 @@ func TestCorpusAssuranceOrchestratorPlansInitializesAndRejectsArbitraryCommands(
 	stderr.Reset()
 	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "status", "--db", database, "--campaign", plan.CampaignID, "trailing"}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "unexpected argument") {
 		t.Fatalf("trailing argument accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorHubObserveRequiresModeProtectedSanitizedJSON(t *testing.T) {
+	root := t.TempDir()
+	database := filepath.Join(root, "orchestrator.db")
+	observation := filepath.Join(root, "hub-observation.json")
+	writeOrchestratorCLIJSON(t, observation, map[string]any{
+		"hubAlias": "hub-a", "observedAt": "2026-08-22T12:00:00Z", "healthy": true, "quarantined": false,
+		"dailyScratchOrgsRemaining": 1, "activeScratchOrgsRemaining": 1,
+	})
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "hub-observe", "--db", database, "--observation", observation}, &stdout, &stderr); code != 0 {
+		t.Fatalf("hub-observe code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	if strings.Contains(stdout.String(), "hub-a") || strings.Contains(stdout.String(), "detail") {
+		t.Fatalf("hub-observe leaked observation data: %q", stdout.String())
+	}
+	orchestrator, err := corpusassurance.OpenOrchestrator(database)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = orchestrator.Close() })
+	var healthy, daily, active int
+	db, err := sql.Open("sqlite", database)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = db.Close() })
+	if err := db.QueryRow(`SELECT healthy, daily_scratch_orgs_remaining, active_scratch_orgs_remaining FROM hub_observations WHERE hub_alias = 'hub-a'`).Scan(&healthy, &daily, &active); err != nil {
+		t.Fatal(err)
+	}
+	if healthy != 1 || daily != 1 || active != 1 {
+		t.Fatalf("recorded observation = healthy=%d daily=%d active=%d", healthy, daily, active)
+	}
+	if err := os.Chmod(observation, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	stdout.Reset()
+	stderr.Reset()
+	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "hub-observe", "--db", database, "--observation", observation}, &stdout, &stderr); code == 0 {
+		t.Fatal("world-readable observation accepted")
 	}
 }
 

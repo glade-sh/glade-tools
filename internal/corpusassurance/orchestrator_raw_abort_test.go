@@ -32,6 +32,7 @@ func TestOrchestratorRawPrecreationAbortObserveAndAccept(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	allocation := "abort-campaign-0"
 	if err := orchestrator.Reserve(lease, "hub-a", allocation, now); err != nil {
 		t.Fatal(err)
