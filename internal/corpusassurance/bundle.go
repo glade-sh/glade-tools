@@ -358,7 +358,7 @@ func buildAMD64Tools(root, output, commit string) (RuntimeArtifact, error) {
 }
 
 func toolsAMD64BuildArgs(output string) []string {
-	return []string{"build", "-a", "-o", output, "./cmd/glade-tools"}
+	return []string{"build", "-a", "-trimpath", "-o", output, "./cmd/glade-tools"}
 }
 
 func toolsAMD64BuildEnvironment() []string {
