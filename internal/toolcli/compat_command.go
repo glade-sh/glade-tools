@@ -170,7 +170,7 @@ func compatUsage() string {
 		"local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>]",
 		"local-tests compare --base-bin <path> --candidate-bin <path> --project <root> --out <new-dir> --workers <n> --runs 5 --manifest <path> [--json]",
 		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight|delta-verify> [flags]",
-		"corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]",
+		"corpus check --root <corpus-root> --glade <binary> --out <dir> [--simulate-source-api-version <MAJOR.0>] [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]",
 		"visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]",
 		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
 		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]",
@@ -209,11 +209,11 @@ func compatUsage() string {
 
 func runCompatCorpus(ctx context.Context, args []string, w io.Writer) error {
 	if len(args) == 0 || isHelpArg(args[0]) {
-		fmt.Fprintln(w, "usage: glade-tools corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]")
+		fmt.Fprintln(w, "usage: glade-tools corpus check --root <corpus-root> --glade <binary> --out <dir> [--simulate-source-api-version <MAJOR.0>] [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]")
 		return nil
 	}
 	if args[0] != "check" {
-		return errors.New("usage: glade-tools corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]")
+		return errors.New("usage: glade-tools corpus check --root <corpus-root> --glade <binary> --out <dir> [--simulate-source-api-version <MAJOR.0>] [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]")
 	}
 	options := corpuscheck.Options{}
 	for i := 1; i < len(args); i++ {
@@ -239,6 +239,13 @@ func runCompatCorpus(ctx context.Context, args []string, w io.Writer) error {
 				return err
 			}
 			options.OutDir = value
+		case "--simulate-source-api-version":
+			i++
+			value, err := argValue(args, i, "--simulate-source-api-version")
+			if err != nil {
+				return err
+			}
+			options.SimulateSourceAPIVersion = value
 		case "--fail-on-unclassified":
 			options.FailOnUnclassified = true
 		case "--fail-on-check-closure":
@@ -266,7 +273,11 @@ func runCompatCorpus(ctx context.Context, args []string, w io.Writer) error {
 }
 
 func printCorpusCheckSummary(w io.Writer, report corpuscheck.Report, outDir string) {
-	fmt.Fprintf(w, "corpus check: projects=%d diagnostics=%d unclassified=%d closure_blocking=%d out=%s\n", report.Summary.ProjectCount, report.Summary.DiagnosticCount, report.Summary.UnclassifiedCount, report.Summary.ClosureBlockingCount, outDir)
+	fmt.Fprintf(w, "corpus check: projects=%d diagnostics=%d unclassified=%d closure_blocking=%d", report.Summary.ProjectCount, report.Summary.DiagnosticCount, report.Summary.UnclassifiedCount, report.Summary.ClosureBlockingCount)
+	if report.UpgradeSimulation != nil {
+		fmt.Fprintf(w, " source_api_upgrade_target=%s", report.UpgradeSimulation.TargetSourceAPIVersion)
+	}
+	fmt.Fprintf(w, " out=%s\n", outDir)
 }
 
 func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {

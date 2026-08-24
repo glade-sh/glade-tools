@@ -814,6 +814,36 @@ printf '{"diagnostics":[{"code":"GLADEPERF001","message":"slow check","file":"A.
 	}
 }
 
+func TestCorpusCheckCommandSimulatesSourceAPIUpgrade(t *testing.T) {
+	root := t.TempDir()
+	project := filepath.Join(root, "alpha")
+	if err := os.MkdirAll(project, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(project, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}],"sourceApiVersion":"64.0"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+grep -q '"sourceApiVersion": "65.0"' "$3/sfdx-project.json" || exit 9
+printf '{"diagnostics":[]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "out")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"corpus", "check", "--root", root, "--glade", glade, "--out", out, "--simulate-source-api-version", "65.0"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "source_api_upgrade_target=65.0") {
+		t.Fatalf("stdout omitted upgrade target: %q", stdout.String())
+	}
+	if _, err := os.Stat(filepath.Join(out, "upgrade-simulation.json")); err != nil {
+		t.Fatalf("upgrade-simulation.json missing: %v", err)
+	}
+}
+
 func TestCorpusCheckCommandPrintsCountsBeforeClosureFailure(t *testing.T) {
 	root := t.TempDir()
 	project := filepath.Join(root, "alpha")

@@ -2,6 +2,7 @@ package corpuscheck
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -10,6 +11,161 @@ import (
 	"testing"
 	"time"
 )
+
+func TestCheckSimulatesSourceAPIUpgradeInTemporaryMirror(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	sfdx := filepath.Join(root, "sfdx-project")
+	metadata := filepath.Join(root, "metadata-package")
+	files := map[string]string{
+		filepath.Join(sfdx, "sfdx-project.json"):                                       `{"packageDirectories":[{"path":"force-app","default":true}],"sourceApiVersion":"64.0"}`,
+		filepath.Join(sfdx, "force-app/main/default/classes/Legacy.cls"):               "public class Legacy {}",
+		filepath.Join(sfdx, "force-app/main/default/classes/Legacy.cls-meta.xml"):      `<ApexClass><apiVersion>61.0</apiVersion></ApexClass>`,
+		filepath.Join(sfdx, "force-app/main/default/classes/Current.cls"):              "public class Current {}",
+		filepath.Join(sfdx, "force-app/main/default/classes/Current.cls-meta.xml"):     `<ApexClass><apiVersion>66.0</apiVersion></ApexClass>`,
+		filepath.Join(sfdx, "force-app/main/default/triggers/Legacy.trigger"):          "trigger Legacy on Account (before insert) {}",
+		filepath.Join(sfdx, "force-app/main/default/triggers/Legacy.trigger-meta.xml"): `<ApexTrigger><apiVersion>52.0</apiVersion></ApexTrigger>`,
+		filepath.Join(metadata, "package.xml"):                                         `<Package/>`,
+		filepath.Join(metadata, "classes/MetadataLegacy.cls"):                          "public class MetadataLegacy {}",
+		filepath.Join(metadata, "classes/MetadataLegacy.cls-meta.xml"):                 `<ApexClass><apiVersion>45.0</apiVersion></ApexClass>`,
+		filepath.Join(metadata, "lwc/example/example.js-meta.xml"):                     `<LightningComponentBundle><apiVersion>48.0</apiVersion></LightningComponentBundle>`,
+	}
+	for path, content := range files {
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	capture := filepath.Join(root, "capture.tsv")
+	glade := filepath.Join(root, "fake-glade.sh")
+	script := `#!/bin/sh
+printf 'project\t%s\n' "$3" >> '` + capture + `'
+find "$3" -type f \( -name 'sfdx-project.json' -o -name '*-meta.xml' \) | sort | while IFS= read -r file; do
+  relative=${file#"$3"/}
+  printf '%s\t' "$relative" >> '` + capture + `'
+  tr -d '\n' < "$file" >> '` + capture + `'
+  printf '\n' >> '` + capture + `'
+done
+printf '{"diagnostics":[]}'
+`
+	if err := os.WriteFile(glade, []byte(script), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "out")
+
+	_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out, SimulateSourceAPIVersion: "65.0"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for path, want := range files {
+		got, err := os.ReadFile(path)
+		if err != nil || string(got) != want {
+			t.Fatalf("source changed at %s: %q, %v", path, got, err)
+		}
+	}
+	captured, err := os.ReadFile(capture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(captured)
+	for _, want := range []string{
+		`"sourceApiVersion": "65.0"`,
+		"classes/Legacy.cls-meta.xml\t<ApexClass><apiVersion>65.0</apiVersion></ApexClass>",
+		"classes/Current.cls-meta.xml\t<ApexClass><apiVersion>66.0</apiVersion></ApexClass>",
+		"triggers/Legacy.trigger-meta.xml\t<ApexTrigger><apiVersion>65.0</apiVersion></ApexTrigger>",
+		"classes/MetadataLegacy.cls-meta.xml\t<ApexClass><apiVersion>65.0</apiVersion></ApexClass>",
+		"lwc/example/example.js-meta.xml\t<LightningComponentBundle><apiVersion>48.0</apiVersion></LightningComponentBundle>",
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("capture missing %q:\n%s", want, text)
+		}
+	}
+	for _, line := range strings.Split(strings.TrimSpace(text), "\n") {
+		if !strings.HasPrefix(line, "project\t") {
+			continue
+		}
+		temporaryProject := strings.TrimPrefix(line, "project\t")
+		if strings.HasPrefix(temporaryProject, root+string(os.PathSeparator)) {
+			t.Fatalf("candidate ran against source tree: %s", temporaryProject)
+		}
+		if _, err := os.Stat(temporaryProject); !os.IsNotExist(err) {
+			t.Fatalf("temporary project was not removed: %s, %v", temporaryProject, err)
+		}
+	}
+	receiptData, err := os.ReadFile(filepath.Join(out, "upgrade-simulation.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var receipt struct {
+		TargetSourceAPIVersion             string `json:"targetSourceApiVersion"`
+		OriginalVersionCorrectnessMeasured bool   `json:"originalVersionCorrectnessMeasured"`
+		RuntimeProof                       bool   `json:"runtimeProof"`
+		Changes                            []struct {
+			Project          string `json:"project"`
+			Path             string `json:"path"`
+			Family           string `json:"family"`
+			OriginalVersion  string `json:"originalVersion"`
+			SimulatedVersion string `json:"simulatedVersion"`
+			OriginalSHA256   string `json:"originalSha256"`
+		} `json:"changes"`
+	}
+	if err := json.Unmarshal(receiptData, &receipt); err != nil {
+		t.Fatal(err)
+	}
+	if receipt.TargetSourceAPIVersion != "65.0" || receipt.OriginalVersionCorrectnessMeasured || receipt.RuntimeProof || len(receipt.Changes) != 4 {
+		t.Fatalf("receipt = %#v", receipt)
+	}
+	for _, change := range receipt.Changes {
+		if change.Project == "" || change.Path == "" || change.Family == "" || change.OriginalVersion == "" || change.SimulatedVersion != "65.0" || len(change.OriginalSHA256) != 64 {
+			t.Fatalf("incomplete change provenance: %#v", change)
+		}
+	}
+}
+
+func TestCheckRejectsSignedSourceAPISimulationVersion(t *testing.T) {
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nexit 99\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out"), SimulateSourceAPIVersion: "+65.0"})
+	if err == nil || !strings.Contains(err.Error(), `API version "+65.0" must use MAJOR.0`) {
+		t.Fatalf("expected strict target rejection, got %v", err)
+	}
+}
+
+func TestCheckLabelsRejectedUpgradeTargetAndCleansTemporaryMirror(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	logPath := filepath.Join(root, "project.log")
+	glade := filepath.Join(root, "fake-glade.sh")
+	script := "#!/bin/sh\nprintf '%s\\n' \"$3\" > '" + logPath + "'\nprintf 'unsupported source API version 64.0' >&2\nexit 7\n"
+	if err := os.WriteFile(glade, []byte(script), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out"), SimulateSourceAPIVersion: "64.0"})
+	if err == nil || !strings.Contains(err.Error(), "source API upgrade simulation to 64.0 failed") || !strings.Contains(err.Error(), "unsupported source API version 64.0") {
+		t.Fatalf("expected explicit rejected-target error, got %v", err)
+	}
+	data, readErr := os.ReadFile(logPath)
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	temporaryProject := strings.TrimSpace(string(data))
+	if _, statErr := os.Stat(temporaryProject); !os.IsNotExist(statErr) {
+		t.Fatalf("temporary project was not removed after failure: %s, %v", temporaryProject, statErr)
+	}
+}
 
 func TestCheckWritesClassifiedTSVs(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -131,6 +287,32 @@ func TestCheckAllowsRerunWithOwnedCorpusReportsInOutDir(t *testing.T) {
 	}
 	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out}); err != nil {
 		t.Fatalf("second corpus check should overwrite owned report files: %v", err)
+	}
+}
+
+func TestCheckRemovesOwnedUpgradeReceiptWhenSimulationIsDisabled(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "out")
+
+	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out, SimulateSourceAPIVersion: "65.0"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(out, "upgrade-simulation.json")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(out, "upgrade-simulation.json")); !os.IsNotExist(err) {
+		t.Fatalf("stale upgrade receipt survived ordinary corpus check: %v", err)
 	}
 }
 
