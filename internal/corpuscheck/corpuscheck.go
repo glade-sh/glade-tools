@@ -3,30 +3,55 @@ package corpuscheck
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 type Options struct {
-	Root               string
-	Glade              string
-	OutDir             string
-	FailOnUnclassified bool
-	FailOnCheckClosure bool
-	MaxUnclassified    int
+	Root                     string
+	Glade                    string
+	OutDir                   string
+	FailOnUnclassified       bool
+	FailOnCheckClosure       bool
+	MaxUnclassified          int
+	SimulateSourceAPIVersion string
 }
 
 type Report struct {
-	Summary     ReportSummary
-	Projects    []ProjectResult
-	Diagnostics []ClassifiedDiagnostic
-	Counts      map[string]int
+	Summary           ReportSummary
+	Projects          []ProjectResult
+	Diagnostics       []ClassifiedDiagnostic
+	Counts            map[string]int
+	UpgradeSimulation *UpgradeSimulationReceipt
+}
+
+type UpgradeSimulationReceipt struct {
+	SchemaVersion                      int                       `json:"schemaVersion"`
+	Kind                               string                    `json:"kind"`
+	TargetSourceAPIVersion             string                    `json:"targetSourceApiVersion"`
+	CandidateSHA256                    string                    `json:"candidateSha256"`
+	OriginalVersionCorrectnessMeasured bool                      `json:"originalVersionCorrectnessMeasured"`
+	RuntimeProof                       bool                      `json:"runtimeProof"`
+	Changes                            []UpgradeSimulationChange `json:"changes"`
+}
+
+type UpgradeSimulationChange struct {
+	Project          string `json:"project"`
+	Path             string `json:"path"`
+	Family           string `json:"family"`
+	OriginalVersion  string `json:"originalVersion"`
+	SimulatedVersion string `json:"simulatedVersion"`
+	OriginalSHA256   string `json:"originalSha256"`
 }
 
 type ReportSummary struct {
@@ -67,7 +92,16 @@ func Check(ctx context.Context, options Options) (Report, error) {
 	if strings.TrimSpace(options.OutDir) == "" {
 		return Report{}, errors.New("--out requires a value")
 	}
+	targetVersion := strings.TrimSpace(options.SimulateSourceAPIVersion)
+	if targetVersion != "" {
+		if _, err := sourceAPIVersionMajor(targetVersion); err != nil {
+			return Report{}, fmt.Errorf("--simulate-source-api-version: %w", err)
+		}
+	}
 	if err := rejectStaleGeneratedReports(options.OutDir); err != nil {
+		return Report{}, err
+	}
+	if err := os.Remove(filepath.Join(options.OutDir, "upgrade-simulation.json")); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return Report{}, err
 	}
 	projects, err := discoverProjects(options.Root)
@@ -78,14 +112,43 @@ func Check(ctx context.Context, options Options) (Report, error) {
 		return Report{}, fmt.Errorf("no SFDX projects discovered in %s", options.Root)
 	}
 	report := Report{Counts: map[string]int{}}
+	if targetVersion != "" {
+		candidateSHA256, err := executableSHA256(options.Glade)
+		if err != nil {
+			return Report{}, fmt.Errorf("hash --glade candidate: %w", err)
+		}
+		report.UpgradeSimulation = &UpgradeSimulationReceipt{
+			SchemaVersion:          1,
+			Kind:                   "source-api-upgrade-simulation",
+			TargetSourceAPIVersion: targetVersion,
+			CandidateSHA256:        candidateSHA256,
+		}
+	}
 	for _, project := range projects {
 		if err := ctx.Err(); err != nil {
 			return Report{}, err
 		}
-		result, diagnostics := runProject(ctx, options.Glade, project)
+		projectID := filepath.Base(project)
+		if targetVersion != "" {
+			projectID, err = upgradeSimulationProjectID(options.Root, project)
+			if err != nil {
+				return report, err
+			}
+		}
+		result, diagnostics, changes, err := runProjectWithUpgradeSimulation(ctx, options.Glade, project, projectID, targetVersion)
+		if err != nil {
+			return report, err
+		}
+		if report.UpgradeSimulation != nil {
+			report.UpgradeSimulation.Changes = append(report.UpgradeSimulation.Changes, changes...)
+		}
 		report.Projects = append(report.Projects, result)
 		if result.Error != "" && result.Diagnostics == 0 {
-			return report, fmt.Errorf("project %s: %s", result.Name, result.Error)
+			projectErr := fmt.Errorf("project %s: %s", result.Name, result.Error)
+			if targetVersion != "" {
+				return report, fmt.Errorf("source API upgrade simulation to %s failed: %w", targetVersion, projectErr)
+			}
+			return report, projectErr
 		}
 		for _, diagnostic := range diagnostics {
 			report.Counts[diagnostic.Class]++
@@ -109,6 +172,292 @@ func Check(ctx context.Context, options Options) (Report, error) {
 		}
 	}
 	return report, nil
+}
+
+func runProjectWithUpgradeSimulation(ctx context.Context, glade, project, projectID, targetVersion string) (result ProjectResult, diagnostics []ClassifiedDiagnostic, changes []UpgradeSimulationChange, retErr error) {
+	if targetVersion == "" {
+		result, diagnostics = runProject(ctx, glade, project)
+		return result, diagnostics, nil, nil
+	}
+	temporaryRoot, err := os.MkdirTemp("", "glade-corpus-upgrade-*")
+	if err != nil {
+		return ProjectResult{}, nil, nil, err
+	}
+	defer func() {
+		if err := os.RemoveAll(temporaryRoot); err != nil && retErr == nil {
+			retErr = fmt.Errorf("remove source API upgrade simulation: %w", err)
+		}
+	}()
+	absoluteProject, err := filepath.Abs(project)
+	if err != nil {
+		return ProjectResult{}, nil, nil, err
+	}
+	temporaryProject, err := mirrorUpgradeSimulationTopology(absoluteProject, temporaryRoot)
+	if err != nil {
+		return ProjectResult{}, nil, nil, err
+	}
+	if err := copyProjectForUpgradeSimulation(absoluteProject, temporaryProject); err != nil {
+		return ProjectResult{}, nil, nil, err
+	}
+	changes, err = applySourceAPIUpgradeSimulation(temporaryProject, projectID, targetVersion)
+	if err != nil {
+		return ProjectResult{}, nil, nil, err
+	}
+	result, diagnostics = runProject(ctx, glade, temporaryProject)
+	result.Path = project
+	return result, diagnostics, changes, nil
+}
+
+func executableSHA256(path string) (string, error) {
+	resolved, err := exec.LookPath(path)
+	if err != nil {
+		return "", err
+	}
+	file, err := os.Open(resolved) // #nosec G304 -- path is the explicit --glade executable.
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
+}
+
+func upgradeSimulationProjectID(root, project string) (string, error) {
+	absoluteRoot, err := filepath.Abs(root)
+	if err != nil {
+		return "", err
+	}
+	absoluteProject, err := filepath.Abs(project)
+	if err != nil {
+		return "", err
+	}
+	relative, err := filepath.Rel(absoluteRoot, absoluteProject)
+	if err != nil {
+		return "", err
+	}
+	if relative == "." {
+		return filepath.Base(absoluteProject), nil
+	}
+	if relative == ".." || strings.HasPrefix(relative, ".."+string(os.PathSeparator)) {
+		return "", fmt.Errorf("discovered project is outside corpus root")
+	}
+	return filepath.ToSlash(relative), nil
+}
+
+func mirrorUpgradeSimulationTopology(project, temporaryRoot string) (string, error) {
+	root := filepath.VolumeName(project) + string(os.PathSeparator)
+	relative, err := filepath.Rel(root, project)
+	if err != nil || relative == "." || strings.HasPrefix(relative, ".."+string(os.PathSeparator)) {
+		return "", fmt.Errorf("source API upgrade simulation requires an absolute project path")
+	}
+	source, destination := root, filepath.Join(temporaryRoot, "mirror")
+	for _, component := range strings.Split(relative, string(os.PathSeparator)) {
+		if err := os.Mkdir(destination, 0o700); err != nil {
+			return "", err
+		}
+		entries, err := os.ReadDir(source)
+		if err != nil {
+			return "", err
+		}
+		for _, entry := range entries {
+			if entry.Name() == component {
+				continue
+			}
+			if err := os.Symlink(filepath.Join(source, entry.Name()), filepath.Join(destination, entry.Name())); err != nil {
+				return "", err
+			}
+		}
+		source, destination = filepath.Join(source, component), filepath.Join(destination, component)
+	}
+	return destination, nil
+}
+
+func copyProjectForUpgradeSimulation(source, destination string) error {
+	if err := os.Mkdir(destination, 0o700); err != nil {
+		return err
+	}
+	return filepath.WalkDir(source, func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil || path == source {
+			return walkErr
+		}
+		if entry.IsDir() && (strings.HasPrefix(entry.Name(), ".") || entry.Name() == "node_modules") {
+			return filepath.SkipDir
+		}
+		relative, err := filepath.Rel(source, path)
+		if err != nil {
+			return err
+		}
+		target := filepath.Join(destination, relative)
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			return os.Mkdir(target, info.Mode()&os.ModePerm)
+		}
+		if !info.Mode().IsRegular() {
+			return fmt.Errorf("source API upgrade simulation does not support %q", relative)
+		}
+		input, err := os.Open(path) // #nosec G304 -- path is constrained by WalkDir to the selected project.
+		if err != nil {
+			return err
+		}
+		output, err := os.OpenFile(target, os.O_CREATE|os.O_EXCL|os.O_WRONLY, info.Mode()&os.ModePerm)
+		if err != nil {
+			input.Close()
+			return err
+		}
+		_, copyErr := io.Copy(output, input)
+		inputErr := input.Close()
+		outputErr := output.Close()
+		if copyErr != nil {
+			return copyErr
+		}
+		if inputErr != nil {
+			return inputErr
+		}
+		return outputErr
+	})
+}
+
+var apexMetadataAPIVersionPattern = regexp.MustCompile(`(?is)<apiVersion>\s*([0-9]+(?:\.[0-9]+)?)\s*</apiVersion>`)
+
+func applySourceAPIUpgradeSimulation(projectRoot, projectName, targetVersion string) ([]UpgradeSimulationChange, error) {
+	targetMajor, err := sourceAPIVersionMajor(targetVersion)
+	if err != nil {
+		return nil, err
+	}
+	var changes []UpgradeSimulationChange
+	err = filepath.WalkDir(projectRoot, func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil || entry.IsDir() {
+			return walkErr
+		}
+		relative, err := filepath.Rel(projectRoot, path)
+		if err != nil {
+			return err
+		}
+		relative = filepath.ToSlash(relative)
+		switch {
+		case entry.Name() == "sfdx-project.json":
+			change, changed, err := upgradeSFDXProjectVersion(path, projectName, relative, targetVersion, targetMajor)
+			if err != nil {
+				return err
+			}
+			if changed {
+				changes = append(changes, change)
+			}
+		case strings.HasSuffix(entry.Name(), ".cls-meta.xml"), strings.HasSuffix(entry.Name(), ".trigger-meta.xml"):
+			family := "apex-class"
+			if strings.HasSuffix(entry.Name(), ".trigger-meta.xml") {
+				family = "apex-trigger"
+			}
+			change, changed, err := upgradeApexMetadataVersion(path, projectName, relative, family, targetVersion, targetMajor)
+			if err != nil {
+				return err
+			}
+			if changed {
+				changes = append(changes, change)
+			}
+		}
+		return nil
+	})
+	return changes, err
+}
+
+func upgradeSFDXProjectVersion(path, projectName, relative, targetVersion string, targetMajor int) (UpgradeSimulationChange, bool, error) {
+	data, err := os.ReadFile(path) // #nosec G304 -- path is constrained to the temporary project mirror.
+	if err != nil {
+		return UpgradeSimulationChange{}, false, err
+	}
+	var manifest map[string]any
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return UpgradeSimulationChange{}, false, fmt.Errorf("parse %s: %w", relative, err)
+	}
+	original, _ := manifest["sourceApiVersion"].(string)
+	if original != "" {
+		major, err := sourceAPIVersionMajor(original)
+		if err != nil {
+			return UpgradeSimulationChange{}, false, fmt.Errorf("parse %s sourceApiVersion: %w", relative, err)
+		}
+		if major >= targetMajor {
+			return UpgradeSimulationChange{}, false, nil
+		}
+	} else {
+		original = "default"
+	}
+	manifest["sourceApiVersion"] = targetVersion
+	rewritten, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil {
+		return UpgradeSimulationChange{}, false, err
+	}
+	rewritten = append(rewritten, '\n')
+	if err := os.WriteFile(path, rewritten, 0o644); err != nil {
+		return UpgradeSimulationChange{}, false, err
+	}
+	return newUpgradeSimulationChange(projectName, relative, "project", original, targetVersion, data), true, nil
+}
+
+func upgradeApexMetadataVersion(path, projectName, relative, family, targetVersion string, targetMajor int) (UpgradeSimulationChange, bool, error) {
+	data, err := os.ReadFile(path) // #nosec G304 -- path is constrained to the temporary project mirror.
+	if err != nil {
+		return UpgradeSimulationChange{}, false, err
+	}
+	match := apexMetadataAPIVersionPattern.FindSubmatchIndex(data)
+	if match == nil {
+		return UpgradeSimulationChange{}, false, nil
+	}
+	original := string(data[match[2]:match[3]])
+	major, err := sourceAPIVersionMajor(original)
+	if err != nil {
+		return UpgradeSimulationChange{}, false, fmt.Errorf("parse %s apiVersion: %w", relative, err)
+	}
+	if major >= targetMajor {
+		return UpgradeSimulationChange{}, false, nil
+	}
+	rewritten := make([]byte, 0, len(data)-len(original)+len(targetVersion))
+	rewritten = append(rewritten, data[:match[2]]...)
+	rewritten = append(rewritten, targetVersion...)
+	rewritten = append(rewritten, data[match[3]:]...)
+	info, err := os.Stat(path)
+	if err != nil {
+		return UpgradeSimulationChange{}, false, err
+	}
+	if err := os.WriteFile(path, rewritten, info.Mode()&os.ModePerm); err != nil {
+		return UpgradeSimulationChange{}, false, err
+	}
+	return newUpgradeSimulationChange(projectName, relative, family, original, targetVersion, data), true, nil
+}
+
+func newUpgradeSimulationChange(project, path, family, original, simulated string, data []byte) UpgradeSimulationChange {
+	digest := sha256.Sum256(data)
+	return UpgradeSimulationChange{
+		Project:          project,
+		Path:             path,
+		Family:           family,
+		OriginalVersion:  original,
+		SimulatedVersion: simulated,
+		OriginalSHA256:   fmt.Sprintf("%x", digest),
+	}
+}
+
+func sourceAPIVersionMajor(version string) (int, error) {
+	parts := strings.Split(strings.TrimSpace(version), ".")
+	if len(parts) != 2 || parts[0] == "" || parts[1] != "0" {
+		return 0, fmt.Errorf("API version %q must use MAJOR.0", version)
+	}
+	for _, digit := range parts[0] {
+		if digit < '0' || digit > '9' {
+			return 0, fmt.Errorf("API version %q must use MAJOR.0", version)
+		}
+	}
+	major, err := strconv.Atoi(parts[0])
+	if err != nil || major < 1 {
+		return 0, fmt.Errorf("API version %q must use MAJOR.0", version)
+	}
+	return major, nil
 }
 
 func discoverProjects(root string) ([]string, error) {
@@ -700,6 +1049,16 @@ func writeReport(outDir string, report Report) error {
 	}
 	for name, text := range files {
 		if err := os.WriteFile(filepath.Join(outDir, name), []byte(text), 0o644); err != nil {
+			return err
+		}
+	}
+	if report.UpgradeSimulation != nil {
+		data, err := json.MarshalIndent(report.UpgradeSimulation, "", "  ")
+		if err != nil {
+			return err
+		}
+		data = append(data, '\n')
+		if err := os.WriteFile(filepath.Join(outDir, "upgrade-simulation.json"), data, 0o644); err != nil {
 			return err
 		}
 	}
