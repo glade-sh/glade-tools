@@ -234,10 +234,26 @@ func loadSalesforceReconciliation(oraclePlanPath, receiptPath, packetPath string
 }
 
 func VerifyOrchestratorSalesforceReconciliation(plan OrchestratorCampaignPlan, lease OrchestratorLease, receiptPath, packetPath string) error {
+	_, err := loadOrchestratorSalesforceReconciliation(plan, lease, receiptPath, packetPath)
+	return err
+}
+
+type loadedSalesforceReconciliation struct {
+	Receipt         SalesforceReconciliation
+	ReceiptBytes    []byte
+	OraclePlan      OraclePlan
+	OraclePlanBytes []byte
+	Bundle          OracleBundle
+	BundleBytes     []byte
+	Snapshots       []salesforceShardEvidenceSnapshot
+}
+
+func loadOrchestratorSalesforceReconciliation(plan OrchestratorCampaignPlan, lease OrchestratorLease, receiptPath, packetPath string, loadedOut ...*loadedSalesforceReconciliation) ([]salesforceShardEvidenceSnapshot, error) {
 	if err := validateOrchestratorWorkerPlanLease(plan, lease); err != nil {
-		return err
+		return nil, err
 	}
-	_, err := loadSalesforceReconciliationVersion("", receiptPath, packetPath, 2, func(oraclePlan OraclePlan) ([]string, error) {
+	var loaded loadedSalesforceReconciliation
+	snapshots, err := loadSalesforceReconciliationVersion("", receiptPath, packetPath, 2, func(oraclePlan OraclePlan) ([]string, error) {
 		return orchestratorSalesforceExpectedSurfaceIDs(oraclePlan, plan, lease)
 	}, len(plan.Jobs), func(receipt SalesforceReconciliation, files map[string]reportInputSnapshot, oraclePlan OraclePlan, oraclePlanBytes []byte) error {
 		planBytes, marshalErr := json.Marshal(plan)
@@ -257,13 +273,16 @@ func VerifyOrchestratorSalesforceReconciliation(plan OrchestratorCampaignPlan, l
 			return fmt.Errorf("controlled oracle plan binding drift")
 		}
 		return validateOrchestratorReconciliationPacket(packetPath, files, receipt)
-	})
-	return err
+	}, &loaded)
+	if err == nil && len(loadedOut) > 0 && loadedOut[0] != nil {
+		*loadedOut[0] = loaded
+	}
+	return snapshots, err
 }
 
 type reconciliationPacketValidator func(SalesforceReconciliation, map[string]reportInputSnapshot, OraclePlan, []byte) error
 
-func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath string, schemaVersion int, expectedSurfaceIDs func(OraclePlan) ([]string, error), logicalShardCount int, validatePacket reconciliationPacketValidator) ([]salesforceShardEvidenceSnapshot, error) {
+func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath string, schemaVersion int, expectedSurfaceIDs func(OraclePlan) ([]string, error), logicalShardCount int, validatePacket reconciliationPacketValidator, loadedOut ...*loadedSalesforceReconciliation) ([]salesforceShardEvidenceSnapshot, error) {
 	paths := []string{receiptPath, packetPath}
 	if oraclePlanPath != "" {
 		paths = append(paths, oraclePlanPath)
@@ -314,7 +333,7 @@ func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath
 	if err != nil || replayBytesSHA256(planBytes) != receipt.OraclePlanSHA256 || plan.Candidate != receipt.Candidate || plan.Tools != receipt.Tools {
 		return nil, fmt.Errorf("Salesforce reconciliation receipt does not bind the oracle plan")
 	}
-	bundle, _, err := decodeReconciliationJSON[OracleBundle](files["bundle.json"].Data)
+	bundle, bundleBytes, err := decodeReconciliationJSON[OracleBundle](files["bundle.json"].Data)
 	if err != nil || bundle.Candidate != receipt.Candidate || bundle.Tools != receipt.Tools {
 		return nil, fmt.Errorf("retained Oracle bundle does not bind the receipt")
 	}
@@ -350,6 +369,13 @@ func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath
 		}
 		inputNames := map[string]string{"dispatch": "SALESFORCE_DISPATCH.json", "preflight": "ORG_PREFLIGHT.json", "creation": "ORG_CREATION.json", "cleanup": "ORG_CLEANUP.json"}
 		inputs := map[string]string{"shard": replayBytesSHA256(shardBytes)}
+		dispatch, _, dispatchErr := decodeReconciliationJSON[SalesforceDispatch](files[prefix+"/SALESFORCE_DISPATCH.json"].Data)
+		preflight, _, preflightErr := decodeReconciliationJSON[SalesforceOrgPreflight](files[prefix+"/ORG_PREFLIGHT.json"].Data)
+		creation, _, creationErr := decodeReconciliationJSON[SalesforceOrgCreation](files[prefix+"/ORG_CREATION.json"].Data)
+		cleanup, _, cleanupErr := decodeReconciliationJSON[SalesforceOrgCleanup](files[prefix+"/ORG_CLEANUP.json"].Data)
+		if dispatchErr != nil || preflightErr != nil || creationErr != nil || cleanupErr != nil || !reflect.DeepEqual(preflight, shard.Preflight) {
+			return nil, fmt.Errorf("retained Salesforce lifecycle input is not typed")
+		}
 		for key, name := range inputNames {
 			data := files[prefix+"/"+name].Data
 			if data == nil || replayBytesSHA256(data) != retained.InputSHA256[key] {
@@ -385,7 +411,11 @@ func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath
 		for _, result := range shard.Results {
 			rows = append(rows, SalesforceReconciliationRow{SurfaceID: result.SurfaceID, Action: result.Kind, Passed: result.Passed})
 		}
-		snapshots = append(snapshots, salesforceShardEvidenceSnapshot{Shard: shard, Inputs: inputs, Executor: executor})
+		_, _, postflightErr := decodeReconciliationJSON[SalesforceOrgPreflight](executorFiles["postflight.json"])
+		if postflightErr != nil {
+			return nil, fmt.Errorf("retained Salesforce postflight is not typed")
+		}
+		snapshots = append(snapshots, salesforceShardEvidenceSnapshot{Shard: shard, Dispatch: dispatch, Creation: creation, Cleanup: cleanup, Inputs: inputs, Executor: executor})
 	}
 	sort.Slice(rows, func(left, right int) bool {
 		if rows[left].SurfaceID != rows[right].SurfaceID {
@@ -407,6 +437,13 @@ func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath
 			if result.Kind != expectedKinds[result.SurfaceID] {
 				return nil, fmt.Errorf("retained Salesforce result %q has wrong oracle action", result.SurfaceID)
 			}
+		}
+	}
+	if len(loadedOut) > 0 && loadedOut[0] != nil {
+		*loadedOut[0] = loadedSalesforceReconciliation{
+			Receipt: receipt, ReceiptBytes: append([]byte(nil), receiptBytes...),
+			OraclePlan: plan, OraclePlanBytes: append([]byte(nil), planBytes...),
+			Bundle: bundle, BundleBytes: append([]byte(nil), bundleBytes...), Snapshots: snapshots,
 		}
 	}
 	return snapshots, nil

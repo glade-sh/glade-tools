@@ -354,6 +354,382 @@ func TestVerifyOrchestratorSalesforceReconciliationRejectsResealedWrongAction(t 
 	}
 }
 
+func TestValidateSalesforceShardSemanticsRejectsLifecycleSemanticDrift(t *testing.T) {
+	fixture := newOrchestratorSalesforceReconciliationFixture(t)
+	oraclePlan, _, err := readExactJSONBytes[OraclePlan](fixture.oraclePlanPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundlePath := filepath.Join(fixture.oracleBundleRoot, "bundle", "bundle.json")
+	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard, _, err := readExactJSONBytes[SalesforceShard](fixture.files.ShardPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dispatch, _, err := readExactJSONBytes[SalesforceDispatch](fixture.files.DispatchPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	creation, _, err := readExactJSONBytes[SalesforceOrgCreation](fixture.files.CreationPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](fixture.files.CleanupPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	preflight, _, err := readExactJSONBytes[SalesforceOrgPreflight](fixture.files.PreflightPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot, err := readSealedSalesforceExecutor(shard.ExecutorRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	postflight, _, err := decodeReconciliationJSON[SalesforceOrgPreflight](snapshot.Files["postflight.json"])
+	if err != nil {
+		t.Fatal(err)
+	}
+	inputs := map[string]string{}
+	for name, path := range map[string]string{"dispatch": fixture.files.DispatchPath, "preflight": fixture.files.PreflightPath, "creation": fixture.files.CreationPath, "cleanup": fixture.files.CleanupPath} {
+		inputs[name] = localProofFileSHA256(t, path)
+	}
+	validate := func(t *testing.T, mutate func(*SalesforceShard, *SalesforceDispatch, *SalesforceOrgCreation, *SalesforceOrgCleanup)) {
+		t.Helper()
+		changedShard, changedDispatch, changedCreation, changedCleanup := shard, dispatch, creation, cleanup
+		mutate(&changedShard, &changedDispatch, &changedCreation, &changedCleanup)
+		if err := validateSalesforceShardSemanticsAt(oraclePlan, bundle, filepath.Dir(bundlePath), localProofFileSHA256(t, bundlePath), bundle.SalesforceExecution, creation.Command.WorkingDirectory, filepath.Join(creation.Command.WorkingDirectory, "bundle.json"), changedShard, changedDispatch, changedCreation, changedCleanup, preflight, postflight, snapshot, inputs); err == nil {
+			t.Fatal("accepted lifecycle semantic drift")
+		}
+	}
+	t.Run("creation command", func(t *testing.T) {
+		validate(t, func(_ *SalesforceShard, _ *SalesforceDispatch, creation *SalesforceOrgCreation, _ *SalesforceOrgCleanup) {
+			creation.Command.Command = append(creation.Command.Command, "--tampered")
+		})
+	})
+	t.Run("recovered cleanup", func(t *testing.T) {
+		validate(t, func(_ *SalesforceShard, _ *SalesforceDispatch, _ *SalesforceOrgCreation, cleanup *SalesforceOrgCleanup) {
+			cleanup.RecoveredAbsent = true
+		})
+	})
+	t.Run("dispatch identity", func(t *testing.T) {
+		validate(t, func(_ *SalesforceShard, dispatch *SalesforceDispatch, _ *SalesforceOrgCreation, _ *SalesforceOrgCleanup) {
+			dispatch.OrgAlias = "tampered-alias"
+		})
+	})
+	t.Run("mutually consistent wrong layout", func(t *testing.T) {
+		validate(t, func(shard *SalesforceShard, dispatch *SalesforceDispatch, _ *SalesforceOrgCreation, _ *SalesforceOrgCleanup) {
+			wrongRoot := filepath.Join(filepath.Dir(shard.ExecutorRoot), "shard-wrong")
+			wrongRunID := "assurance-wrong-layout"
+			shard.ExecutorRoot, shard.RunID = wrongRoot, wrongRunID
+			dispatch.ExecutorRoot, dispatch.RunID = wrongRoot, wrongRunID
+		})
+	})
+}
+
+func TestValidateSalesforceShardFilesRejectsEmptyPreflightWithoutPanic(t *testing.T) {
+	fixture := newOrchestratorSalesforceReconciliationFixture(t)
+	preflight, _, err := readExactJSONBytes[SalesforceOrgPreflight](fixture.files.PreflightPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	preflight.Commands = nil
+	overwriteReconciliationJSON(t, fixture.files.PreflightPath, preflight)
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			t.Fatalf("empty preflight panicked: %v", recovered)
+		}
+	}()
+	if err := validateSalesforceShardFiles(fixture.oraclePlanPath, []SalesforceShardFiles{fixture.files}, nil); err == nil {
+		t.Fatal("accepted empty Salesforce preflight")
+	}
+}
+
+func TestValidateSalesforceShardFilesRejectsResealedWrongWorkingDirectory(t *testing.T) {
+	fixture := newOrchestratorSalesforceReconciliationFixture(t)
+	shard, _, err := readExactJSONBytes[SalesforceShard](fixture.files.ShardPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dispatch, _, err := readExactJSONBytes[SalesforceDispatch](fixture.files.DispatchPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	preflight, _, err := readExactJSONBytes[SalesforceOrgPreflight](fixture.files.PreflightPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	creation, _, err := readExactJSONBytes[SalesforceOrgCreation](fixture.files.CreationPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](fixture.files.CleanupPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wrongWorkingDirectory := filepath.Join(filepath.Dir(creation.Command.WorkingDirectory), "resealed-wrong-bundle")
+	wrongExecutorRoot := filepath.Join(filepath.Dir(shard.ExecutorRoot), "resealed-wrong-shard")
+	wrongRunID := "assurance-resealed-wrong-layout"
+	rebind := func(command *CommandResult) {
+		command.WorkingDirectory = wrongWorkingDirectory
+		command.CommandSpecSHA256 = salesforceCommandSpecSHA256(command.Command[0], command.Command[1:], wrongWorkingDirectory, command.Environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
+	}
+	for index := range preflight.Commands {
+		rebind(&preflight.Commands[index])
+	}
+	for index := range creation.Command.Command {
+		if creation.Command.Command[index] == filepath.Join(filepath.Dir(creation.Command.WorkingDirectory), "corpus-assurance-scratch-def.json") {
+			creation.Command.Command[index] = filepath.Join(wrongWorkingDirectory, "corpus-assurance-scratch-def.json")
+		}
+	}
+	rebind(&creation.Command)
+	rebind(&creation.DevHubCommand)
+	for index := range cleanup.Commands {
+		rebind(&cleanup.Commands[index])
+	}
+	rebind(&cleanup.DevHubCommand)
+	for index := range shard.Commands {
+		rebind(&shard.Commands[index])
+	}
+	for index := range shard.Preflight.Commands {
+		rebind(&shard.Preflight.Commands[index])
+	}
+	for index := range shard.Postflight.Commands {
+		rebind(&shard.Postflight.Commands[index])
+	}
+	shard.ExecutorRoot, shard.RunID = wrongExecutorRoot, wrongRunID
+	dispatch.ExecutorRoot, dispatch.RunID = wrongExecutorRoot, wrongRunID
+	bundle, _, err := readExactJSONBytes[OracleBundle](filepath.Join(fixture.oracleBundleRoot, "bundle", "bundle.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	filterSource, err := os.ReadFile(filepath.Join(fixture.oracleBundleRoot, "transport", "salesforce-first-filter.py"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	filterArgs, err := salesforceFilterArgs(sealedSalesforceFilterScriptPath(wrongExecutorRoot), wrongWorkingDirectory, wrongExecutorRoot, wrongRunID, shard.OrgAlias, bundle, shard.Bindings.BundleSHA256, shard.ShardIndex, shard.ShardCount)
+	if err != nil {
+		t.Fatal(err)
+	}
+	filterArgs, err = sealedSalesforceFilterInvocationArgs(sealedSalesforceFilterScriptPath(wrongExecutorRoot), filterSource, filterArgs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard.Commands[0].Command = append([]string{"/usr/bin/python3"}, filterArgs...)
+	shard.Commands[0].WorkingDirectory = wrongWorkingDirectory
+	shard.Commands[0].CommandSpecSHA256 = salesforceFilterCommandSpecSHA256("/usr/bin/python3", filterArgs, wrongWorkingDirectory, shard.Commands[0].Environment, shard.Commands[0].ExecutableSHA256, shard.Commands[0].ExecutableAfterSHA256)
+	shard.Bindings.FilterCommandSpecSHA256 = shard.Commands[0].CommandSpecSHA256
+	dispatch.FilterCommandSpecSHA256 = shard.Commands[0].CommandSpecSHA256
+	shard.Preflight = preflight
+	overwriteReconciliationJSON(t, fixture.files.PreflightPath, preflight)
+	overwriteReconciliationJSON(t, fixture.files.CreationPath, creation)
+	overwriteReconciliationJSON(t, fixture.files.CleanupPath, cleanup)
+	overwriteReconciliationJSON(t, fixture.files.DispatchPath, dispatch)
+	shard.PreflightSHA256 = localProofFileSHA256(t, fixture.files.PreflightPath)
+	shard.DispatchSHA256 = localProofFileSHA256(t, fixture.files.DispatchPath)
+	overwriteReconciliationJSON(t, fixture.files.ShardPath, shard)
+	err = validateSalesforceShardFiles(fixture.oraclePlanPath, []SalesforceShardFiles{fixture.files}, nil)
+	if err == nil || !strings.Contains(err.Error(), "working directory does not match staged bundle") {
+		t.Fatalf("accepted resealed wrong working directory: %v", err)
+	}
+}
+
+func TestValidateOrchestratorSalesforceReconciliationSemanticsRejectsResealedLifecycleDrift(t *testing.T) {
+	fixture := newOrchestratorSalesforceReconciliationFixture(t)
+	bundlePath := filepath.Join(fixture.oracleBundleRoot, "bundle", "bundle.json")
+	tests := map[string]struct {
+		packetName string
+		mutate     func(t *testing.T, path string)
+	}{
+		"creation command": {
+			packetName: "shards/00/ORG_CREATION.json",
+			mutate: func(t *testing.T, path string) {
+				value, _, err := readExactJSONBytes[SalesforceOrgCreation](path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				value.Command.Command = append(value.Command.Command, "--tampered")
+				overwriteReconciliationJSON(t, path, value)
+			},
+		},
+		"recovered cleanup": {
+			packetName: "shards/00/ORG_CLEANUP.json",
+			mutate: func(t *testing.T, path string) {
+				value, _, err := readExactJSONBytes[SalesforceOrgCleanup](path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				value.RecoveredAbsent = true
+				overwriteReconciliationJSON(t, path, value)
+			},
+		},
+		"dispatch command semantics": {
+			packetName: "shards/00/SALESFORCE_DISPATCH.json",
+			mutate: func(t *testing.T, path string) {
+				value, _, err := readExactJSONBytes[SalesforceDispatch](path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				value.PythonSHA256 = strings.Repeat("9", 64)
+				overwriteReconciliationJSON(t, path, value)
+			},
+		},
+	}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			root := t.TempDir()
+			receiptPath, packetPath := filepath.Join(root, "receipt.json"), filepath.Join(root, "packet")
+			if _, err := CreateOrchestratorSalesforceReconciliation(OrchestratorSalesforceReconciliationRequest{Plan: fixture.plan, Lease: fixture.lease, OraclePlanPath: fixture.oraclePlanPath, BindingPath: fixture.bindingPath, ShardFiles: fixture.files, PacketOutput: packetPath, OutputPath: receiptPath}); err != nil {
+				t.Fatal(err)
+			}
+			test.mutate(t, filepath.Join(packetPath, filepath.FromSlash(test.packetName)))
+			manifestPath := filepath.Join(packetPath, reconciliationPacketManifestName)
+			manifest, _, err := readExactJSONBytes[reportPacketManifest](manifestPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for index := range manifest.Files {
+				if manifest.Files[index].Name == test.packetName {
+					manifest.Files[index].SHA256 = localProofFileSHA256(t, filepath.Join(packetPath, filepath.FromSlash(test.packetName)))
+				}
+			}
+			overwriteReconciliationJSON(t, manifestPath, manifest)
+			receipt, _, err := readExactJSONBytes[SalesforceReconciliation](receiptPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			key := map[string]string{"ORG_CREATION.json": "creation", "ORG_CLEANUP.json": "cleanup", "SALESFORCE_DISPATCH.json": "dispatch"}[filepath.Base(test.packetName)]
+			receipt.Shards[0].InputSHA256[key] = localProofFileSHA256(t, filepath.Join(packetPath, filepath.FromSlash(test.packetName)))
+			receipt.PacketManifestSHA256 = localProofFileSHA256(t, manifestPath)
+			overwriteReconciliationJSON(t, receiptPath, receipt)
+			if _, _, err := validateOrchestratorSalesforceReconciliationSemantics(fixture.plan, fixture.lease, receiptPath, packetPath, bundlePath); err == nil {
+				t.Fatal("accepted fully resealed lifecycle semantic drift")
+			}
+		})
+	}
+}
+
+func TestValidateOrchestratorSalesforceReconciliationSemanticsRejectsResealedWrongBundleHash(t *testing.T) {
+	fixture := newOrchestratorSalesforceReconciliationFixture(t)
+	bundlePath := filepath.Join(fixture.oracleBundleRoot, "bundle", "bundle.json")
+	root := t.TempDir()
+	receiptPath, packetPath := filepath.Join(root, "receipt.json"), filepath.Join(root, "packet")
+	if _, err := CreateOrchestratorSalesforceReconciliation(OrchestratorSalesforceReconciliationRequest{Plan: fixture.plan, Lease: fixture.lease, OraclePlanPath: fixture.oraclePlanPath, BindingPath: fixture.bindingPath, ShardFiles: fixture.files, PacketOutput: packetPath, OutputPath: receiptPath}); err != nil {
+		t.Fatal(err)
+	}
+	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wrongBundleSHA := strings.Repeat("e", 64)
+	shardPath := filepath.Join(packetPath, "shards/00/SALESFORCE_SHARD.json")
+	dispatchPath := filepath.Join(packetPath, "shards/00/SALESFORCE_DISPATCH.json")
+	preflightPath := filepath.Join(packetPath, "shards/00/ORG_PREFLIGHT.json")
+	creationPath := filepath.Join(packetPath, "shards/00/ORG_CREATION.json")
+	cleanupPath := filepath.Join(packetPath, "shards/00/ORG_CLEANUP.json")
+	postflightPath := filepath.Join(packetPath, "shards/00/executor/postflight.json")
+	manifestPath := filepath.Join(packetPath, "shards/00/EXECUTOR_MANIFEST.json")
+	shard, _, err := readExactJSONBytes[SalesforceShard](shardPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dispatch, _, err := readExactJSONBytes[SalesforceDispatch](dispatchPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	preflight, _, err := readExactJSONBytes[SalesforceOrgPreflight](preflightPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	creation, _, err := readExactJSONBytes[SalesforceOrgCreation](creationPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](cleanupPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	postflight, _, err := readExactJSONBytes[SalesforceOrgPreflight](postflightPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard.Bindings.BundleSHA256, dispatch.BundleSHA256, preflight.BundleSHA256, creation.BundleSHA256, cleanup.BundleSHA256, postflight.BundleSHA256 = wrongBundleSHA, wrongBundleSHA, wrongBundleSHA, wrongBundleSHA, wrongBundleSHA, wrongBundleSHA
+	shard.Preflight, shard.Postflight = preflight, postflight
+	filterPath := sealedSalesforceFilterScriptPath(shard.ExecutorRoot)
+	filterArgs, err := salesforceFilterArgs(filterPath, creation.Command.WorkingDirectory, shard.ExecutorRoot, shard.RunID, shard.OrgAlias, bundle, wrongBundleSHA, shard.ShardIndex, shard.ShardCount)
+	if err != nil {
+		t.Fatal(err)
+	}
+	filterSource, err := os.ReadFile(filepath.Join(fixture.oracleBundleRoot, "transport", "salesforce-first-filter.py"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	filterArgs, err = sealedSalesforceFilterInvocationArgs(filterPath, filterSource, filterArgs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard.Commands[0].Command = append([]string{"/usr/bin/python3"}, filterArgs...)
+	shard.Commands[0].CommandSpecSHA256 = salesforceFilterCommandSpecSHA256("/usr/bin/python3", filterArgs, creation.Command.WorkingDirectory, shard.Commands[0].Environment, shard.Commands[0].ExecutableSHA256, shard.Commands[0].ExecutableAfterSHA256)
+	shard.Bindings.FilterCommandSpecSHA256 = shard.Commands[0].CommandSpecSHA256
+	dispatch.FilterCommandSpecSHA256 = shard.Commands[0].CommandSpecSHA256
+	overwriteReconciliationJSON(t, preflightPath, preflight)
+	overwriteReconciliationJSON(t, creationPath, creation)
+	overwriteReconciliationJSON(t, cleanupPath, cleanup)
+	overwriteReconciliationJSON(t, postflightPath, postflight)
+	shard.PreflightSHA256 = localProofFileSHA256(t, preflightPath)
+	shard.PostflightSHA256 = localProofFileSHA256(t, postflightPath)
+	overwriteReconciliationJSON(t, dispatchPath, dispatch)
+	overwriteReconciliationJSON(t, shardPath, shard)
+	manifest, _, err := readExactJSONBytes[salesforceExecutorManifest](manifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index := range manifest.Files {
+		if manifest.Files[index].Path == "postflight.json" {
+			manifest.Files[index].SHA256 = localProofFileSHA256(t, postflightPath)
+		}
+	}
+	overwriteReconciliationJSON(t, manifestPath, manifest)
+	shard, _, err = readExactJSONBytes[SalesforceShard](shardPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard.ExecutorManifestSHA256 = localProofFileSHA256(t, manifestPath)
+	overwriteReconciliationJSON(t, shardPath, shard)
+	receipt, _, err := readExactJSONBytes[SalesforceReconciliation](receiptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"SALESFORCE_SHARD.json", "SALESFORCE_DISPATCH.json", "ORG_PREFLIGHT.json", "ORG_CREATION.json", "ORG_CLEANUP.json"} {
+		path := filepath.Join(packetPath, "shards/00", name)
+		for index := range receipt.Shards[0].InputSHA256 {
+			key := map[string]string{"SALESFORCE_SHARD.json": "shard", "SALESFORCE_DISPATCH.json": "dispatch", "ORG_PREFLIGHT.json": "preflight", "ORG_CREATION.json": "creation", "ORG_CLEANUP.json": "cleanup"}[name]
+			if index == key {
+				receipt.Shards[0].InputSHA256[index] = localProofFileSHA256(t, path)
+			}
+		}
+	}
+	receipt.Shards[0].ExecutorManifestSHA256 = shard.ExecutorManifestSHA256
+	manifestPath = filepath.Join(packetPath, reconciliationPacketManifestName)
+	packetManifest, _, err := readExactJSONBytes[reportPacketManifest](manifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index := range packetManifest.Files {
+		path := filepath.Join(packetPath, filepath.FromSlash(packetManifest.Files[index].Name))
+		packetManifest.Files[index].SHA256 = localProofFileSHA256(t, path)
+	}
+	overwriteReconciliationJSON(t, manifestPath, packetManifest)
+	receipt.PacketManifestSHA256 = localProofFileSHA256(t, manifestPath)
+	overwriteReconciliationJSON(t, receiptPath, receipt)
+	if _, _, err := validateOrchestratorSalesforceReconciliationSemantics(fixture.plan, fixture.lease, receiptPath, packetPath, bundlePath); err == nil {
+		t.Fatal("accepted fully resealed wrong Salesforce bundle hash")
+	}
+}
+
 func leaseForOrchestratorPlan(plan OrchestratorCampaignPlan, shardIndex int) OrchestratorLease {
 	job := plan.Jobs[shardIndex]
 	return OrchestratorLease{CampaignID: plan.CampaignID, JobID: job.ID, Kind: job.Kind, ShardIndex: job.ShardIndex, SurfaceIDs: append([]string(nil), job.SurfaceIDs...), Generation: 1, Worker: "worker-a", LeaseUntil: time.Now().UTC().Add(time.Minute), DurationMS: 60_000}
