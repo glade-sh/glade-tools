@@ -455,6 +455,80 @@ func TestOrchestratorWorkerBuildsProductionBatchEndToEnd(t *testing.T) {
 	}
 }
 
+func TestOrchestratorProductionCleanupTakeoverClosesAbandonedCleanupWithoutCredit(t *testing.T) {
+	inputs := newProductionWorkerInputsForTest(t)
+	if _, err := BuildOrchestratorProductionBatch(inputs.build); err != nil {
+		t.Fatal(err)
+	}
+	transfer, err := TransferOrchestratorWorkerBatch(OrchestratorWorkerTransferRequest{
+		Plan: inputs.fixture.plan, Lease: inputs.fixture.lease, SourceBatchRoot: inputs.build.OutputPath,
+		EvidenceRoot: inputs.worker.EvidenceRoot, OraclePlanPath: inputs.fixture.oraclePlanPath,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	allocation, hub := "assurance-sf0", "sealed-dev-hub"
+	if err := inputs.orchestrator.SetHubCapacity(hub, 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, inputs.orchestrator, hub, inputs.now)
+	if err := inputs.orchestrator.Reserve(inputs.fixture.lease, hub, allocation, inputs.now); err != nil {
+		t.Fatal(err)
+	}
+	var cleanupState, allocationState string
+	if err := inputs.orchestrator.db.QueryRow(`SELECT c.state, a.state FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ?`, allocation).Scan(&cleanupState, &allocationState); err != nil {
+		t.Fatal(err)
+	}
+	if cleanupState != "pending" || allocationState != "reserved" {
+		t.Fatalf("abandoned cleanup = %q/%q, want pending/reserved", cleanupState, allocationState)
+	}
+
+	takeoverNow := time.Now().UTC()
+	if _, err := inputs.orchestrator.db.Exec(`UPDATE jobs SET lease_until = ?, heartbeat_at = ? WHERE campaign_id = ? AND id = ? AND generation = ?`, takeoverNow.Add(-time.Second).UnixMilli(), takeoverNow.Add(-time.Second).UnixMilli(), inputs.fixture.lease.CampaignID, inputs.fixture.lease.JobID, inputs.fixture.lease.Generation); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := inputs.orchestrator.db.Exec(`UPDATE attempts SET lease_until = ?, heartbeat_at = ? WHERE campaign_id = ? AND job_id = ? AND generation = ?`, takeoverNow.Add(-time.Second).UnixMilli(), takeoverNow.Add(-time.Second).UnixMilli(), inputs.fixture.lease.CampaignID, inputs.fixture.lease.JobID, inputs.fixture.lease.Generation); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := inputs.orchestrator.ClaimCleanup(inputs.fixture.plan.CampaignID, "worker-production-cleanup", takeoverNow, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := OrchestratorCleanupTakeoverRequest{
+		Claim: claim, BundlePath: filepath.Join(inputs.fixture.oracleBundleRoot, "bundle", "bundle.json"),
+		CreationPath: inputs.fixture.files.CreationPath, PreflightPath: inputs.fixture.files.PreflightPath,
+		TargetOrg: allocation, SFBin: salesforceCLIPath, OutputPath: inputs.fixture.files.CleanupPath,
+	}
+	if err := RunOrchestratorCleanupTakeover(inputs.orchestrator, request); err != nil {
+		t.Fatal(err)
+	}
+	cleanupReceipts, err := filepath.Glob(filepath.Join(filepath.Dir(request.OutputPath), "ORG_CLEANUP.json"))
+	if err != nil || len(cleanupReceipts) != 1 {
+		t.Fatalf("cleanup receipts = %v, %v", cleanupReceipts, err)
+	}
+	if err := inputs.orchestrator.db.QueryRow(`SELECT c.state, a.state FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ?`, allocation).Scan(&cleanupState, &allocationState); err != nil {
+		t.Fatal(err)
+	}
+	if cleanupState != "closed" || allocationState != "closed" {
+		t.Fatalf("takeover cleanup = %q/%q, want closed/closed", cleanupState, allocationState)
+	}
+	receipt, err := inputs.orchestrator.RecordReceipt(OrchestratorReceiptRequest{Lease: inputs.fixture.lease, BatchRoot: transfer.BatchRoot}, time.Now().UTC())
+	if err == nil || !strings.Contains(err.Error(), "current running campaign attempt") || receipt.ID != "" {
+		t.Fatalf("expired generation receipt = %#v, %v", receipt, err)
+	}
+	var receipts, credits int
+	if err := inputs.orchestrator.db.QueryRow(`SELECT count(*) FROM receipts WHERE campaign_id = ?`, inputs.fixture.plan.CampaignID).Scan(&receipts); err != nil {
+		t.Fatal(err)
+	}
+	if err := inputs.orchestrator.db.QueryRow(`SELECT count(*) FROM proof_credits WHERE campaign_id = ?`, inputs.fixture.plan.CampaignID).Scan(&credits); err != nil {
+		t.Fatal(err)
+	}
+	if receipts != 0 || credits != 0 {
+		t.Fatalf("after expired RecordReceipt = receipts %d, credits %d", receipts, credits)
+	}
+}
+
 func TestCorpusAssuranceOrchestratorProductionBuildCLI(t *testing.T) {
 	inputs := newProductionWorkerInputsForTest(t)
 	requestPath := filepath.Join(filepath.Dir(inputs.build.OutputPath), "PRODUCTION_BUILD_REQUEST.json")
