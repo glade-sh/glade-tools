@@ -239,13 +239,13 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 	if err := validateRawSalesforceScope(filepath.Dir(request.BundlePath), request.Plan, request.Lease); err != nil {
 		return result, err
 	}
-	executorRoot, runID, err := sealedSalesforceDispatchLayout(request.BundlePath, bundle.AttemptSHA256, request.Lease.ShardIndex)
-	if err != nil {
-		return result, err
-	}
 	shardCount := len(request.Plan.Jobs)
 	if shardCount < 1 {
 		return result, fmt.Errorf("raw Salesforce shard count must be positive")
+	}
+	executorRoot, runID, err := sealedSalesforceDispatchLayout(request.BundlePath, bundle.AttemptSHA256, request.Lease.ShardIndex, shardCount)
+	if err != nil {
+		return result, err
 	}
 	if err := os.Mkdir(request.OutputRoot, 0o700); err != nil {
 		return result, err
