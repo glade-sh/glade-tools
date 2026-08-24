@@ -31,6 +31,10 @@ func TestSealedSalesforceDispatchLayoutBindsLogicalShardCount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	logicalRoot, logicalRun, err := salesforceDispatchLayoutAt(canonicalBundle, attempt, 0, 2)
+	if err != nil || logicalRoot != legacyRoot || logicalRun != legacyRun {
+		t.Fatalf("pure dispatch layout = %q, %q, %v; wrapper = %q, %q", logicalRoot, logicalRun, err, legacyRoot, legacyRun)
+	}
 	if want := filepath.Join(attemptRoot, "executor", "shard-0"); legacyRoot != want || legacyRun != "assurance-"+attempt[:16]+"-shard-0" {
 		t.Fatalf("N=2 identity = %q, %q; want %q and legacy run ID", legacyRoot, legacyRun, want)
 	}

@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -229,6 +230,47 @@ type validatedProductionBatch struct {
 	manifestSHA256 string
 	proofStates    map[string]string
 	paths          []string
+	OrgAlias       string
+	DevHub         string
+}
+
+func validateOrchestratorSalesforceReconciliationSemantics(plan OrchestratorCampaignPlan, lease OrchestratorLease, receiptPath, packetPath, retainedBundlePath string) (SalesforceReconciliation, []salesforceShardEvidenceSnapshot, error) {
+	retainedBundle, retainedBundleBytes, err := readExactJSONBytes[OracleBundle](retainedBundlePath)
+	if err != nil {
+		return SalesforceReconciliation{}, nil, fmt.Errorf("read retained Salesforce bundle: %w", err)
+	}
+	var loaded loadedSalesforceReconciliation
+	if _, err := loadOrchestratorSalesforceReconciliation(plan, lease, receiptPath, packetPath, &loaded); err != nil {
+		return SalesforceReconciliation{}, nil, fmt.Errorf("verify retained Salesforce reconciliation: %w", err)
+	}
+	return validateOrchestratorSalesforceReconciliationSemanticsLoaded(plan, lease, loaded, retainedBundle, retainedBundleBytes, filepath.Dir(retainedBundlePath))
+}
+
+func validateOrchestratorSalesforceReconciliationSemanticsLoaded(plan OrchestratorCampaignPlan, lease OrchestratorLease, loaded loadedSalesforceReconciliation, retainedBundle OracleBundle, retainedBundleBytes []byte, retainedBundleRoot string) (SalesforceReconciliation, []salesforceShardEvidenceSnapshot, error) {
+	snapshots := loaded.Snapshots
+	if !bytes.Equal(loaded.BundleBytes, retainedBundleBytes) || replayBytesSHA256(loaded.BundleBytes) != replayBytesSHA256(retainedBundleBytes) {
+		return SalesforceReconciliation{}, nil, fmt.Errorf("retained Salesforce packet bundle bytes drift")
+	}
+	if loaded.Receipt.BundleSHA256 != replayBytesSHA256(retainedBundleBytes) {
+		return SalesforceReconciliation{}, nil, fmt.Errorf("retained Salesforce reconciliation bundle drift")
+	}
+	replayPlan := loaded.OraclePlan
+	if replayBytesSHA256(loaded.OraclePlanBytes) != loaded.Receipt.OraclePlanSHA256 {
+		return SalesforceReconciliation{}, nil, fmt.Errorf("retained Salesforce Oracle plan drift")
+	}
+	if len(snapshots) != 1 {
+		return SalesforceReconciliation{}, nil, fmt.Errorf("production batch must retain one Salesforce shard")
+	}
+	for _, replay := range snapshots {
+		postflight, _, postflightErr := decodeReconciliationJSON[SalesforceOrgPreflight](replay.Executor.Files["postflight.json"])
+		if postflightErr != nil {
+			return SalesforceReconciliation{}, nil, fmt.Errorf("retained Salesforce postflight is not typed")
+		}
+		if err := validateSalesforceShardSemanticsAt(replayPlan, retainedBundle, retainedBundleRoot, loaded.Receipt.BundleSHA256, retainedBundle.SalesforceExecution, replay.Creation.Command.WorkingDirectory, filepath.Join(replay.Creation.Command.WorkingDirectory, "bundle.json"), replay.Shard, replay.Dispatch, replay.Creation, replay.Cleanup, replay.Shard.Preflight, postflight, replay.Executor, replay.Inputs); err != nil {
+			return SalesforceReconciliation{}, nil, fmt.Errorf("validate retained Salesforce lifecycle semantics: %w", err)
+		}
+	}
+	return loaded.Receipt, snapshots, nil
 }
 
 func validateOrchestratorProductionBatch(root string, plan OrchestratorCampaignPlan, lease OrchestratorLease) (validatedProductionBatch, error) {
@@ -266,7 +308,7 @@ func validateOrchestratorProductionBatch(root string, plan OrchestratorCampaignP
 	if err := ValidateOracleBundle(bundlePath); err != nil {
 		return validatedProductionBatch{}, fmt.Errorf("validate retained oracle bundle: %w", err)
 	}
-	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
+	bundle, bundleBytes, err := readExactJSONBytes[OracleBundle](bundlePath)
 	if err != nil {
 		return validatedProductionBatch{}, fmt.Errorf("read retained oracle bundle: %w", err)
 	}
@@ -277,11 +319,12 @@ func validateOrchestratorProductionBatch(root string, plan OrchestratorCampaignP
 		return validatedProductionBatch{}, fmt.Errorf("production runtime artifacts drift")
 	}
 	receiptPath, packetPath := filepath.Join(production, "salesforce", "SALESFORCE_RECONCILIATION.json"), filepath.Join(production, "salesforce", "packet")
-	if err := VerifyOrchestratorSalesforceReconciliation(retainedPlan, retainedLease, receiptPath, packetPath); err != nil {
-		return validatedProductionBatch{}, fmt.Errorf("verify retained Salesforce reconciliation: %w", err)
+	var loadedReconciliation loadedSalesforceReconciliation
+	if _, err := loadOrchestratorSalesforceReconciliation(retainedPlan, retainedLease, receiptPath, packetPath, &loadedReconciliation); err != nil {
+		return validatedProductionBatch{}, err
 	}
-	reconciliation, reconciliationBytes, err := readMode0600JSON[SalesforceReconciliation](receiptPath)
-	if err != nil {
+	reconciliation, reconciliationBytes := loadedReconciliation.Receipt, loadedReconciliation.ReceiptBytes
+	if _, _, err := validateOrchestratorSalesforceReconciliationSemanticsLoaded(retainedPlan, retainedLease, loadedReconciliation, bundle, bundleBytes, filepath.Dir(bundlePath)); err != nil {
 		return validatedProductionBatch{}, err
 	}
 	review, _, err := readMode0600JSON[ProductionRuntimeReview](filepath.Join(production, "PRODUCTION_REVIEW.json"))
@@ -324,7 +367,7 @@ func validateOrchestratorProductionBatch(root string, plan OrchestratorCampaignP
 	}
 	paths = append(paths, "production/PRODUCTION_RUNTIME_BATCH.json")
 	sort.Strings(paths)
-	return validatedProductionBatch{manifest: manifest, manifestSHA256: replayBytesSHA256(manifestBytes), proofStates: states, paths: paths}, nil
+	return validatedProductionBatch{manifest: manifest, manifestSHA256: replayBytesSHA256(manifestBytes), proofStates: states, paths: paths, OrgAlias: reconciliation.Shards[0].OrgAlias, DevHub: bundle.DevHub}, nil
 }
 
 func validateProductionSources(request BuildOrchestratorProductionBatchRequest, plan OrchestratorCampaignPlan, lease OrchestratorLease, ssh bool) (RuntimeArtifact, error) {

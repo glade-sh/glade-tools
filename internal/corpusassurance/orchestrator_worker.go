@@ -58,14 +58,15 @@ type OrchestratorWorkerTransfer struct {
 // and the existing typed Salesforce cleanup inputs. It intentionally has no
 // proof-credit fields: takeover can close cleanup only.
 type OrchestratorCleanupTakeoverRequest struct {
-	Claim         OrchestratorCleanupClaim       `json:"claim"`
-	BundlePath    string                         `json:"bundlePath"`
-	CreationPath  string                         `json:"creationPath"`
-	PreflightPath string                         `json:"preflightPath"`
-	TargetOrg     string                         `json:"targetOrg"`
-	SFBin         string                         `json:"sfBin"`
-	OutputPath    string                         `json:"outputPath"`
-	SSH           *OrchestratorSSHCleanupBinding `json:"ssh,omitempty"`
+	Claim               OrchestratorCleanupClaim       `json:"claim"`
+	ProductionBatchRoot string                         `json:"productionBatchRoot,omitempty"`
+	BundlePath          string                         `json:"bundlePath"`
+	CreationPath        string                         `json:"creationPath"`
+	PreflightPath       string                         `json:"preflightPath"`
+	TargetOrg           string                         `json:"targetOrg"`
+	SFBin               string                         `json:"sfBin"`
+	OutputPath          string                         `json:"outputPath"`
+	SSH                 *OrchestratorSSHCleanupBinding `json:"ssh,omitempty"`
 }
 
 type salesforceOrgCleanupRunner func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error)
@@ -82,6 +83,12 @@ func runOrchestratorCleanupTakeover(orchestrator *Orchestrator, request Orchestr
 }
 
 func runOrchestratorCleanupTakeoverAt(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest, clock func() time.Time, cleanup salesforceOrgCleanupRunner) error {
+	if request.ProductionBatchRoot != "" {
+		if request.BundlePath != "" || request.CreationPath != "" || request.PreflightPath != "" || request.TargetOrg != "" || request.SFBin != "" || request.OutputPath != "" || request.SSH != nil {
+			return fmt.Errorf("production batch and local or SSH cleanup modes are mutually exclusive")
+		}
+		return runOrchestratorProductionCleanupTakeover(orchestrator, request, clock)
+	}
 	if request.SSH != nil {
 		if request.BundlePath != "" || request.CreationPath != "" || request.PreflightPath != "" || request.TargetOrg != "" || request.SFBin != "" {
 			return fmt.Errorf("local and SSH cleanup modes are mutually exclusive")
@@ -127,6 +134,49 @@ func runOrchestratorCleanupTakeoverAt(orchestrator *Orchestrator, request Orches
 		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
 	}
 	if err := orchestrator.closeCleanup(request.Claim, clock().UTC(), !cleanupReceipt.RecoveredAbsent); err != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	return nil
+}
+
+func runOrchestratorProductionCleanupTakeover(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest, clock func() time.Time) error {
+	if orchestrator == nil || clock == nil || !filepath.IsAbs(request.ProductionBatchRoot) || filepath.Clean(request.ProductionBatchRoot) != request.ProductionBatchRoot || request.ProductionBatchRoot == string(filepath.Separator) {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	production := filepath.Join(request.ProductionBatchRoot, "production")
+	retainedPlan, _, planErr := readMode0600JSON[OrchestratorCampaignPlan](filepath.Join(production, "ORCHESTRATOR_PLAN.json"))
+	retainedLease, _, leaseErr := readMode0600JSON[OrchestratorLease](filepath.Join(production, "ORCHESTRATOR_LEASE.json"))
+	if planErr != nil || leaseErr != nil || validateOrchestratorWorkerPlanLease(retainedPlan, retainedLease) != nil || validateStoredCleanupPlanLease(orchestrator, retainedPlan, retainedLease) != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	if request.Claim.CampaignID != retainedLease.CampaignID || request.Claim.JobID != retainedLease.JobID || request.Claim.Generation != retainedLease.Generation || request.Claim.AllocationAlias == "" || request.Claim.HubAlias == "" || request.Claim.Worker == "" || request.Claim.ClaimUntil.IsZero() {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	validated, err := validateOrchestratorProductionBatch(request.ProductionBatchRoot, retainedPlan, retainedLease)
+	if err != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	for _, required := range []string{"production/ssh/SSH_DISPATCH.json", "production/ssh/SSH_FETCH.json", "production/ssh/TREE_MANIFEST.json"} {
+		index := sort.SearchStrings(validated.paths, required)
+		if index >= len(validated.paths) || validated.paths[index] != required {
+			return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+		}
+	}
+	if validated.OrgAlias != request.Claim.AllocationAlias || validated.DevHub != request.Claim.HubAlias {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	closed, blocked, err := orchestratorSSHCleanupClosureState(orchestrator, request.Claim)
+	if err != nil || blocked {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	if closed {
+		return nil
+	}
+	now := clock().UTC()
+	if validateOrchestratorCleanupClaim(orchestrator, request.Claim, now) != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	if err := orchestrator.closeCleanup(request.Claim, now, true); err != nil {
 		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
 	}
 	return nil

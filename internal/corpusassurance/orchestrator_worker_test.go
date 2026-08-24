@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -478,6 +479,246 @@ func TestOrchestratorCleanupTakeoverRunsTypedSalesforceCleanupBeforeClosingJourn
 	}
 	if state != "closed" {
 		t.Fatalf("cleanup state=%q, want closed", state)
+	}
+}
+
+func TestOrchestratorProductionCleanupTakeoverRejectsBatchWithoutSSHSubtree(t *testing.T) {
+	inputs := newProductionWorkerInputsForTest(t)
+	if _, err := BuildOrchestratorProductionBatch(inputs.build); err != nil {
+		t.Fatal(err)
+	}
+	if err := inputs.orchestrator.SetHubCapacity(inputs.worker.HubAlias, 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, inputs.orchestrator, inputs.worker.HubAlias, inputs.now)
+	if err := inputs.orchestrator.Reserve(inputs.fixture.lease, inputs.worker.HubAlias, inputs.worker.AllocationAlias, inputs.now); err != nil {
+		t.Fatal(err)
+	}
+	claimNow := inputs.now.Add(2 * time.Minute)
+	if _, err := inputs.orchestrator.db.Exec(`UPDATE jobs SET lease_until = ?, heartbeat_at = ? WHERE campaign_id = ? AND id = ? AND generation = ?`, claimNow.Add(-time.Second).UnixMilli(), claimNow.Add(-time.Second).UnixMilli(), inputs.fixture.lease.CampaignID, inputs.fixture.lease.JobID, inputs.fixture.lease.Generation); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := inputs.orchestrator.db.Exec(`UPDATE attempts SET lease_until = ?, heartbeat_at = ? WHERE campaign_id = ? AND job_id = ? AND generation = ?`, claimNow.Add(-time.Second).UnixMilli(), claimNow.Add(-time.Second).UnixMilli(), inputs.fixture.lease.CampaignID, inputs.fixture.lease.JobID, inputs.fixture.lease.Generation); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := inputs.orchestrator.ClaimCleanup(inputs.fixture.plan.CampaignID, "worker-takeover", claimNow, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, ProductionBatchRoot: inputs.build.OutputPath}
+	if err := runOrchestratorCleanupTakeover(inputs.orchestrator, request, claimNow, func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) { return SalesforceOrgCleanup{}, nil }); err == nil {
+		t.Fatal("production cleanup without SSH subtree succeeded")
+	}
+	var state string
+	if err := inputs.orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state != "running" {
+		t.Fatalf("cleanup state=%q, want running", state)
+	}
+	var blocks int
+	if err := inputs.orchestrator.db.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&blocks); err != nil || blocks != 0 {
+		t.Fatalf("cleanup credit blocks=%d, err=%v", blocks, err)
+	}
+}
+
+func TestOrchestratorProductionCleanupTakeoverRejectsMixedModes(t *testing.T) {
+	err := runOrchestratorCleanupTakeoverAt(nil, OrchestratorCleanupTakeoverRequest{ProductionBatchRoot: filepath.Join(string(filepath.Separator), "production"), BundlePath: filepath.Join(string(filepath.Separator), "bundle.json")}, time.Now, nil)
+	if err == nil || !strings.Contains(err.Error(), "mutually exclusive") {
+		t.Fatalf("mixed cleanup modes error = %v", err)
+	}
+}
+
+func TestOrchestratorProductionCleanupTakeoverReplaysBoundBatch(t *testing.T) {
+	fixture := withOraclePlanCampaignScope(t, newOrchestratorSalesforceReconciliationFixture(t))
+	root := t.TempDir()
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(fixture.plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Now().UTC()
+	lease, err := orchestrator.Lease(fixture.plan.CampaignID, "worker-production-ssh", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture.lease = lease
+	reconciliationPath, packetPath := filepath.Join(root, "SALESFORCE_RECONCILIATION.json"), filepath.Join(root, "salesforce-packet")
+	if _, err := CreateOrchestratorSalesforceReconciliation(OrchestratorSalesforceReconciliationRequest{Plan: fixture.plan, Lease: lease, OraclePlanPath: fixture.oraclePlanPath, BindingPath: fixture.bindingPath, ShardFiles: fixture.files, PacketOutput: packetPath, OutputPath: reconciliationPath}); err != nil {
+		t.Fatal(err)
+	}
+	rawRoot := productionRawRootForTest(t, root, fixture, reconciliationPath)
+	planPath, leasePath := filepath.Join(root, "ORCHESTRATOR_PLAN.json"), filepath.Join(root, "ORCHESTRATOR_LEASE.json")
+	writeJSONValue(t, planPath, fixture.plan)
+	writeJSONValue(t, leasePath, lease)
+	planSHA, leaseSHA := surfaceOracleFileSHA256(t, planPath), surfaceOracleFileSHA256(t, leasePath)
+	proof := mustProductionLocalProof(t, fixture.localProofPath)
+	dispatchPath, fetchPath, treePath := productionSSHReceiptsForTest(t, root, rawRoot, fixture.plan, lease, planSHA, leaseSHA, proof.Tools)
+	reviewPath := filepath.Join(root, "PRODUCTION_REVIEW.json")
+	writeJSONValue(t, reviewPath, ProductionRuntimeReview{SchemaVersion: 1, PlanSHA256: planSHA, LeaseSHA256: leaseSHA, LocalProofSHA256: surfaceOracleFileSHA256(t, fixture.localProofPath), ReconciliationSHA256: surfaceOracleFileSHA256(t, reconciliationPath), Rows: []ProductionRuntimeReviewRow{{SurfaceID: "apex:Runtime.run", Action: oracleRuntime, Classification: "match", ReviewDisposition: "confirmed-match"}}})
+	output := filepath.Join(root, "production-ssh-batch")
+	build := BuildOrchestratorProductionBatchRequest{PlanPath: planPath, LeasePath: leasePath, LocalProofPath: fixture.localProofPath, ReviewPath: reviewPath, OracleBundleRoot: fixture.oracleBundleRoot, RawRoot: rawRoot, SalesforceReconciliationPath: reconciliationPath, SalesforcePacketPath: packetPath, SSHDispatchPath: dispatchPath, SSHFetchPath: fetchPath, SSHTreeManifestPath: treePath, OutputPath: output}
+	if _, err := BuildOrchestratorProductionBatch(build); err != nil {
+		t.Fatal(err)
+	}
+	hub, allocation := "sealed-dev-hub", "assurance-sf0"
+	if err := orchestrator.SetHubCapacity(hub, 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, orchestrator, hub, now)
+	if err := orchestrator.Reserve(lease, hub, allocation, now); err != nil {
+		t.Fatal(err)
+	}
+	transfer, err := TransferOrchestratorWorkerBatch(OrchestratorWorkerTransferRequest{Plan: fixture.plan, Lease: lease, SourceBatchRoot: output, EvidenceRoot: filepath.Join(root, "evidence"), OraclePlanPath: fixture.oraclePlanPath})
+	if err != nil {
+		t.Fatal(err)
+	}
+	claimNow := now
+	claim, err := orchestrator.ClaimCleanup(fixture.plan.CampaignID, lease.Worker, claimNow, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cleanupPath := filepath.Join(output, "production", "salesforce", "packet", "shards", fmt.Sprintf("%02d", lease.ShardIndex), "ORG_CLEANUP.json")
+	cleanupSHA := surfaceOracleFileSHA256(t, cleanupPath)
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, ProductionBatchRoot: output}
+	retainedPlan, _, planErr := readMode0600JSON[OrchestratorCampaignPlan](filepath.Join(output, "production", "ORCHESTRATOR_PLAN.json"))
+	retainedLease, _, leaseErr := readMode0600JSON[OrchestratorLease](filepath.Join(output, "production", "ORCHESTRATOR_LEASE.json"))
+	if planErr != nil || leaseErr != nil {
+		t.Fatalf("retained plan lease: %v %v", planErr, leaseErr)
+	}
+	if err := validateStoredCleanupPlanLease(orchestrator, retainedPlan, retainedLease); err != nil {
+		t.Fatalf("stored plan lease: %v", err)
+	}
+	if _, err := validateOrchestratorProductionBatch(output, retainedPlan, retainedLease); err != nil {
+		t.Fatalf("production batch: %v", err)
+	}
+	if err := validateOrchestratorCleanupClaim(orchestrator, claim, claimNow); err != nil {
+		t.Fatalf("cleanup claim: %v", err)
+	}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, claimNow, nil); err != nil {
+		t.Fatal(err)
+	}
+	receipt, err := orchestrator.RecordReceipt(OrchestratorReceiptRequest{Lease: lease, BatchRoot: transfer.BatchRoot}, claimNow.Add(time.Second))
+	if err != nil || receipt.AcceptedCredit != 1 || receipt.RejectedCredit != 0 {
+		t.Fatalf("production receipt = %#v, %v", receipt, err)
+	}
+	if got := surfaceOracleFileSHA256(t, cleanupPath); got != cleanupSHA {
+		t.Fatalf("cleanup receipt changed: %s != %s", got, cleanupSHA)
+	}
+	var state, allocationState string
+	if err := orchestrator.db.QueryRow(`SELECT c.state, a.state FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ?`, allocation).Scan(&state, &allocationState); err != nil {
+		t.Fatal(err)
+	}
+	if state != "closed" || allocationState != "closed" {
+		t.Fatalf("cleanup states = %s/%s", state, allocationState)
+	}
+	var blocks int
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks WHERE allocation_alias = ?`, allocation).Scan(&blocks); err != nil || blocks != 0 {
+		t.Fatalf("cleanup credit blocks = %d, err=%v", blocks, err)
+	}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, claimNow, nil); err != nil {
+		t.Fatalf("exact closed replay: %v", err)
+	}
+}
+
+func TestOrchestratorProductionCleanupTakeoverRejectsAllocationAliasMismatch(t *testing.T) {
+	inputs := newProductionCleanupTakeoverInputs(t)
+	claim := inputs.claim
+	claim.AllocationAlias = "wrong-production-alias"
+	if err := runOrchestratorCleanupTakeover(inputs.orchestrator, OrchestratorCleanupTakeoverRequest{Claim: claim, ProductionBatchRoot: inputs.output}, inputs.now, nil); err == nil {
+		t.Fatal("allocation alias mismatch succeeded")
+	}
+	assertProductionCleanupTakeoverOpen(t, inputs)
+}
+
+func TestOrchestratorProductionCleanupTakeoverRejectsPostPublicationMutation(t *testing.T) {
+	inputs := newProductionCleanupTakeoverInputs(t)
+	cleanup, _, err := readMode0600JSON[SalesforceOrgCleanup](inputs.cleanupPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cleanup.OrgAlias = "tampered-production-alias"
+	if err := os.Remove(inputs.cleanupPath); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(inputs.cleanupPath, cleanup); err != nil {
+		t.Fatal(err)
+	}
+	if err := runOrchestratorCleanupTakeover(inputs.orchestrator, OrchestratorCleanupTakeoverRequest{Claim: inputs.claim, ProductionBatchRoot: inputs.output}, inputs.now, nil); err == nil {
+		t.Fatal("post-publication mutation succeeded")
+	}
+	assertProductionCleanupTakeoverOpen(t, inputs)
+}
+
+type productionCleanupTakeoverInputs struct {
+	orchestrator *Orchestrator
+	output       string
+	cleanupPath  string
+	claim        OrchestratorCleanupClaim
+	now          time.Time
+}
+
+func newProductionCleanupTakeoverInputs(t *testing.T) productionCleanupTakeoverInputs {
+	t.Helper()
+	fixture := withOraclePlanCampaignScope(t, newOrchestratorSalesforceReconciliationFixture(t))
+	root := t.TempDir()
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(fixture.plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Now().UTC()
+	lease, err := orchestrator.Lease(fixture.plan.CampaignID, "worker-production-ssh", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture.lease = lease
+	reconciliationPath, packetPath := filepath.Join(root, "SALESFORCE_RECONCILIATION.json"), filepath.Join(root, "salesforce-packet")
+	if _, err := CreateOrchestratorSalesforceReconciliation(OrchestratorSalesforceReconciliationRequest{Plan: fixture.plan, Lease: lease, OraclePlanPath: fixture.oraclePlanPath, BindingPath: fixture.bindingPath, ShardFiles: fixture.files, PacketOutput: packetPath, OutputPath: reconciliationPath}); err != nil {
+		t.Fatal(err)
+	}
+	rawRoot := productionRawRootForTest(t, root, fixture, reconciliationPath)
+	planPath, leasePath := filepath.Join(root, "ORCHESTRATOR_PLAN.json"), filepath.Join(root, "ORCHESTRATOR_LEASE.json")
+	writeJSONValue(t, planPath, fixture.plan)
+	writeJSONValue(t, leasePath, lease)
+	planSHA, leaseSHA := surfaceOracleFileSHA256(t, planPath), surfaceOracleFileSHA256(t, leasePath)
+	proof := mustProductionLocalProof(t, fixture.localProofPath)
+	dispatchPath, fetchPath, treePath := productionSSHReceiptsForTest(t, root, rawRoot, fixture.plan, lease, planSHA, leaseSHA, proof.Tools)
+	reviewPath := filepath.Join(root, "PRODUCTION_REVIEW.json")
+	writeJSONValue(t, reviewPath, ProductionRuntimeReview{SchemaVersion: 1, PlanSHA256: planSHA, LeaseSHA256: leaseSHA, LocalProofSHA256: surfaceOracleFileSHA256(t, fixture.localProofPath), ReconciliationSHA256: surfaceOracleFileSHA256(t, reconciliationPath), Rows: []ProductionRuntimeReviewRow{{SurfaceID: "apex:Runtime.run", Action: oracleRuntime, Classification: "match", ReviewDisposition: "confirmed-match"}}})
+	output := filepath.Join(root, "production-ssh-batch")
+	build := BuildOrchestratorProductionBatchRequest{PlanPath: planPath, LeasePath: leasePath, LocalProofPath: fixture.localProofPath, ReviewPath: reviewPath, OracleBundleRoot: fixture.oracleBundleRoot, RawRoot: rawRoot, SalesforceReconciliationPath: reconciliationPath, SalesforcePacketPath: packetPath, SSHDispatchPath: dispatchPath, SSHFetchPath: fetchPath, SSHTreeManifestPath: treePath, OutputPath: output}
+	if _, err := BuildOrchestratorProductionBatch(build); err != nil {
+		t.Fatal(err)
+	}
+	hub, allocation := "sealed-dev-hub", "assurance-sf0"
+	if err := orchestrator.SetHubCapacity(hub, 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, orchestrator, hub, now)
+	if err := orchestrator.Reserve(lease, hub, allocation, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(fixture.plan.CampaignID, lease.Worker, now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return productionCleanupTakeoverInputs{orchestrator: orchestrator, output: output, cleanupPath: filepath.Join(output, "production", "salesforce", "packet", "shards", fmt.Sprintf("%02d", lease.ShardIndex), "ORG_CLEANUP.json"), claim: claim, now: now}
+}
+
+func assertProductionCleanupTakeoverOpen(t *testing.T, inputs productionCleanupTakeoverInputs) {
+	t.Helper()
+	var cleanupState, allocationState string
+	if err := inputs.orchestrator.db.QueryRow(`SELECT c.state, a.state FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ?`, inputs.claim.AllocationAlias).Scan(&cleanupState, &allocationState); err != nil {
+		t.Fatal(err)
+	}
+	if cleanupState != "running" || allocationState != "reserved" {
+		t.Fatalf("cleanup states = %s/%s", cleanupState, allocationState)
+	}
+	var blocks, credits int
+	if err := inputs.orchestrator.db.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks WHERE allocation_alias = ?`, inputs.claim.AllocationAlias).Scan(&blocks); err != nil || blocks != 0 {
+		t.Fatalf("cleanup credit blocks = %d, err=%v", blocks, err)
+	}
+	if err := inputs.orchestrator.db.QueryRow(`SELECT count(*) FROM proof_credits WHERE campaign_id = ?`, inputs.claim.CampaignID).Scan(&credits); err != nil || credits != 0 {
+		t.Fatalf("proof credits = %d, err=%v", credits, err)
 	}
 }
 
