@@ -15,7 +15,7 @@ func TestOrchestratorRawPrecreationAbortObserveAndAccept(t *testing.T) {
 		t.Fatal(err)
 	}
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
 	plan, err := PlanOrchestratorCampaign(definition)
 	if err != nil {
 		t.Fatal(err)

@@ -96,6 +96,21 @@ func TestAcceptOrchestratorRawCanaryClosesCleanupWithoutProofCredit(t *testing.T
 	if err != nil || replayed != got {
 		t.Fatalf("exact replay = %#v, err=%v", replayed, err)
 	}
+	if _, err := orchestrator.db.Exec(`UPDATE jobs SET status = 'running' WHERE campaign_id = ? AND id = ?`, lease.CampaignID, lease.JobID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := orchestrator.db.Exec(`UPDATE attempts SET status = 'running' WHERE campaign_id = ? AND job_id = ? AND generation = ?`, lease.CampaignID, lease.JobID, lease.Generation); err != nil {
+		t.Fatal(err)
+	}
+	if replayed, err := AcceptOrchestratorRawCanary(acceptRequest); err != nil || replayed != got {
+		t.Fatalf("cleanup-closed/job-running replay = %#v, err=%v", replayed, err)
+	}
+	if err := os.Remove(outputPath); err != nil {
+		t.Fatal(err)
+	}
+	if replayed, err := AcceptOrchestratorRawCanary(acceptRequest); err != nil || replayed != got {
+		t.Fatalf("job-closed/output-missing replay = %#v, err=%v", replayed, err)
+	}
 	outputBytes, err := os.ReadFile(outputPath)
 	if err != nil || bytes.Contains(outputBytes, []byte(retained)) || bytes.Contains(outputBytes, []byte("scratch-canary")) {
 		t.Fatalf("canary receipt leaked private data: %s", outputBytes)
@@ -109,7 +124,7 @@ func TestAcceptOrchestratorRawCanaryClosesCleanupWithoutProofCredit(t *testing.T
 	if err := orchestrator.db.QueryRow(`SELECT c.state, j.status, a.status FROM cleanup_journal c JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id AND j.generation = c.generation JOIN attempts a ON a.campaign_id = c.campaign_id AND a.job_id = c.job_id AND a.generation = c.generation WHERE c.allocation_alias = ?`, "scratch-canary").Scan(&cleanupState, &jobState, &attemptState); err != nil {
 		t.Fatal(err)
 	}
-	if cleanupState != "closed" || jobState != "running" || attemptState != "running" {
+	if cleanupState != "closed" || jobState != "closed" || attemptState != "closed" {
 		t.Fatalf("states = %q/%q/%q", cleanupState, jobState, attemptState)
 	}
 	var reserved int

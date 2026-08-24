@@ -65,7 +65,7 @@ func TestBuildSurfaceOracleCampaignScopePartitionsExactOraclePlan(t *testing.T) 
 		Tools:     OrchestratorArtifact{Commit: artifact.Commit, SHA256: artifact.SHA256},
 		ScopePath: outputPath, ScopeSHA256: sha256FileForTest(t, outputPath),
 		ControlledInputSHA256: map[string]string{"oracle-plan": sha256FileForTest(t, planPath)},
-		Shards:                [2][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}},
+		Shards:                [][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}},
 	}
 	forged := definition
 	forged.ControlledInputSHA256 = map[string]string{"oracle-plan": strings.Repeat("f", 64)}
@@ -101,7 +101,7 @@ func TestBuildSurfaceOracleCampaignScopePartitionsExactOraclePlan(t *testing.T) 
 		t.Fatalf("orchestrator Salesforce union = %#v, want exact Oracle plan %#v", got, want)
 	}
 
-	planCampaign := func(name string, rows []SurfaceOracleScopeRow, shards [2][]string) (OrchestratorCampaignPlan, error) {
+	planCampaign := func(name string, rows []SurfaceOracleScopeRow, shards [][]string) (OrchestratorCampaignPlan, error) {
 		t.Helper()
 		path := filepath.Join(root, name+".json")
 		value := SurfaceOracleScope{
@@ -121,11 +121,11 @@ func TestBuildSurfaceOracleCampaignScopePartitionsExactOraclePlan(t *testing.T) 
 	}
 	for name, test := range map[string]struct {
 		rows   []SurfaceOracleScopeRow
-		shards [2][]string
+		shards [][]string
 	}{
 		"missing projection row": {
 			rows:   []SurfaceOracleScopeRow{{SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime}, {SurfaceID: "apex:System.Long", Disposition: deterministicMockRequired, Action: oracleCompile}},
-			shards: [2][]string{{"apex:System.Boolean"}, {"apex:System.Long"}},
+			shards: [][]string{{"apex:System.Boolean"}, {"apex:System.Long"}},
 		},
 		"extra excluded row": {
 			rows: []SurfaceOracleScopeRow{
@@ -133,11 +133,11 @@ func TestBuildSurfaceOracleCampaignScopePartitionsExactOraclePlan(t *testing.T) 
 				{SurfaceID: "apex:System.Integer", Disposition: localRuntimeRequired, Action: oracleRuntime},
 				{SurfaceID: "apex:System.Long", Disposition: deterministicMockRequired, Action: oracleCompile},
 			},
-			shards: [2][]string{{"apex:System.Boolean", "apex:System.Integer"}, {"apex:System.Long"}},
+			shards: [][]string{{"apex:System.Boolean", "apex:System.Integer"}, {"apex:System.Long"}},
 		},
 		"action mismatch": {
 			rows:   []SurfaceOracleScopeRow{{SurfaceID: "apex:System.Boolean", Disposition: deterministicMockRequired, Action: oracleCompile}, {SurfaceID: "apex:System.Integer", Disposition: localRuntimeRequired, Action: oracleRuntime}},
-			shards: [2][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}},
+			shards: [][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}},
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -157,7 +157,7 @@ func TestBuildSurfaceOracleCampaignScopePartitionsExactOraclePlan(t *testing.T) 
 		"unsorted":  {{SurfaceID: "apex:System.System", Disposition: compileShapeRequired, Action: oracleCompile}, {SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime}},
 	} {
 		t.Run(name, func(t *testing.T) {
-			if _, err := planCampaign(name, rows, [2][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}}); err == nil {
+			if _, err := planCampaign(name, rows, [][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}}); err == nil {
 				t.Fatal("invalid campaign scope was accepted")
 			}
 		})
