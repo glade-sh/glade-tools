@@ -468,9 +468,12 @@ func coordinatorCleanupTestRequest(t *testing.T) (OrchestratorSSHCleanupTakeover
 	planSHA, _ := sha256File(planPath)
 	leaseSHA, _ := sha256File(leasePath)
 	request := OrchestratorSSHCleanupTakeoverRequest{
-		Coordinator: orchestrator, Claim: claim, PlanPath: planPath, LeasePath: leasePath, FailedDispatchPath: failedPath,
-		Host: "operator@worker.example.internal", WorkerBin: "/remote/bin/glade-tools", RemotePlanPath: "/remote/authority/plan.json", RemoteLeasePath: "/remote/authority/lease.json",
-		RemoteBundlePath: "/remote/authority/bundle.json", RemoteSFBin: "/remote/bin/sf", RemoteRoot: "/remote/lifecycle", FetchedReceiptPath: filepath.Join(root, "fetched.json"), OutputPath: filepath.Join(root, "coordinator.json"),
+		Coordinator: orchestrator, Claim: claim, OutputPath: filepath.Join(root, "coordinator.json"),
+		OrchestratorSSHCleanupBinding: OrchestratorSSHCleanupBinding{
+			PlanPath: planPath, LeasePath: leasePath, FailedDispatchPath: failedPath,
+			Host: "operator@worker.example.internal", WorkerBin: "/remote/bin/glade-tools", RemotePlanPath: "/remote/authority/plan.json", RemoteLeasePath: "/remote/authority/lease.json",
+			RemoteBundlePath: "/remote/authority/bundle.json", RemoteSFBin: "/remote/bin/sf", RemoteRoot: "/remote/lifecycle", FetchedReceiptPath: filepath.Join(root, "fetched.json"),
+		},
 	}
 	original := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: request.RemotePlanPath, LeasePath: request.RemoteLeasePath, BundlePath: request.RemoteBundlePath, TargetOrg: claim.AllocationAlias, SFBin: request.RemoteSFBin, OutputRoot: request.RemoteRoot}
 	originalCommand := orchestratorSSHWorkerOnceCommand(original, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, claim.HubAlias)

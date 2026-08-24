@@ -60,18 +60,6 @@ type OrchestratorWorkerCleanupRequest struct {
 // RunOrchestratorWorkerCleanup validates the worker-local lifecycle authority,
 // runs the existing no-preflight cleanup, and seals a zero-credit receipt.
 func RunOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (OrchestratorWorkerCleanupReceipt, error) {
-	if !filepath.IsAbs(request.OutputRoot) || filepath.Clean(request.OutputRoot) != request.OutputRoot {
-		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("absolute clean worker cleanup paths are required")
-	}
-	release, err := acquireWorkerLifecycleLock(request.OutputRoot)
-	if err != nil {
-		return OrchestratorWorkerCleanupReceipt{}, err
-	}
-	defer release()
-	return runOrchestratorWorkerCleanup(request)
-}
-
-func runOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (OrchestratorWorkerCleanupReceipt, error) {
 	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.FailedSSHReceiptSHA256) || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) || request.ExecutedTools == (RuntimeArtifact{}) || !validOrchestratorExecutedTools(request.ExecutedTools, request.Plan) {
 		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("invalid worker cleanup binding")
 	}
@@ -80,6 +68,11 @@ func runOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (Orc
 			return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("absolute clean worker cleanup paths are required")
 		}
 	}
+	release, err := acquireWorkerLifecycleLock(request.OutputRoot)
+	if err != nil {
+		return OrchestratorWorkerCleanupReceipt{}, err
+	}
+	defer release()
 	stage, authoritySHA, bindingSHA, err := validateWorkerCleanupLifecycle(request)
 	if err != nil {
 		return OrchestratorWorkerCleanupReceipt{}, err
@@ -147,18 +140,12 @@ func existingWorkerSalesforceCleanup(request OrchestratorWorkerCleanupRequest, p
 		index++
 		return salesforceCommandOutput{Stdout: record.Output.Stdout, Stderr: record.Output.Stderr, ExitCode: record.ExitCode}, nil
 	}
-	temporary, err := os.CreateTemp(filepath.Dir(path), ".validate-cleanup-")
+	temporary, err := os.MkdirTemp(filepath.Dir(path), ".validate-cleanup-")
 	if err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
-	temporaryPath := temporary.Name()
-	defer os.Remove(temporaryPath)
-	if err := temporary.Close(); err != nil {
-		return SalesforceOrgCleanup{}, err
-	}
-	if err := os.Remove(temporaryPath); err != nil {
-		return SalesforceOrgCleanup{}, err
-	}
+	defer os.RemoveAll(temporary)
+	temporaryPath := filepath.Join(temporary, "ORG_CLEANUP.json")
 	replayed, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: request.BundlePath, CreationPath: filepath.Join(request.OutputRoot, "ORG_CREATION.json"), TargetOrg: request.TargetOrg, DevHub: request.DevHub, SFBin: request.SFBin, OutputPath: temporaryPath, runner: runner})
 	if err != nil || index != len(records) {
 		return SalesforceOrgCleanup{}, fmt.Errorf("existing worker Salesforce cleanup is invalid")
@@ -186,15 +173,12 @@ func validateWorkerCleanupLifecycle(request OrchestratorWorkerCleanupRequest) (s
 	if info, err := os.Lstat(bindingPath); err != nil || !info.Mode().IsRegular() || info.Mode().Perm() != 0o400 {
 		return "", "", "", fmt.Errorf("worker cleanup binding mode is invalid")
 	}
-	binding, _, err := readExactJSONBytes[OrchestratorBatchBinding](bindingPath)
+	binding, bindingBytes, err := readExactJSONBytes[OrchestratorBatchBinding](bindingPath)
 	wantBinding, wantErr := expectedOrchestratorBatchBinding(request.Plan, request.Lease)
 	if err != nil || wantErr != nil || !reflect.DeepEqual(binding, wantBinding) {
 		return "", "", "", fmt.Errorf("worker cleanup binding drift")
 	}
-	bindingSHA, err := sha256File(bindingPath)
-	if err != nil {
-		return "", "", "", err
-	}
+	bindingSHA := replayBytesSHA256(bindingBytes)
 	bundleSHA, err := sha256File(request.BundlePath)
 	if err != nil {
 		return "", "", "", err
@@ -254,23 +238,10 @@ func validateWorkerCleanupLifecycle(request OrchestratorWorkerCleanupRequest) (s
 }
 
 type OrchestratorSSHCleanupTakeoverRequest struct {
-	Coordinator        *Orchestrator
-	Claim              OrchestratorCleanupClaim
-	PlanPath           string
-	LeasePath          string
-	FailedDispatchPath string
-	Host               string
-	WorkerBin          string
-	RemotePlanPath     string
-	RemoteLeasePath    string
-	RemoteBundlePath   string
-	RemoteSFBin        string
-	RemoteRoot         string
-	FetchedReceiptPath string
-	OutputPath         string
-
-	sshRunner  orchestratorSSHRunner
-	copyRunner remoteFailureCopyRunner
+	Coordinator *Orchestrator
+	Claim       OrchestratorCleanupClaim
+	OrchestratorSSHCleanupBinding
+	OutputPath string
 }
 
 // OrchestratorSSHCleanupBinding is the strict remote branch of the existing
@@ -293,15 +264,6 @@ type OrchestratorSSHCleanupBinding struct {
 	copyRunner remoteFailureCopyRunner
 }
 
-func (binding OrchestratorSSHCleanupBinding) coordinatorRequest(orchestrator *Orchestrator, claim OrchestratorCleanupClaim, output string) OrchestratorSSHCleanupTakeoverRequest {
-	return OrchestratorSSHCleanupTakeoverRequest{
-		Coordinator: orchestrator, Claim: claim, PlanPath: binding.PlanPath, LeasePath: binding.LeasePath, FailedDispatchPath: binding.FailedDispatchPath,
-		Host: binding.Host, WorkerBin: binding.WorkerBin, RemotePlanPath: binding.RemotePlanPath, RemoteLeasePath: binding.RemoteLeasePath,
-		RemoteBundlePath: binding.RemoteBundlePath, RemoteSFBin: binding.RemoteSFBin, RemoteRoot: binding.RemoteRoot,
-		FetchedReceiptPath: binding.FetchedReceiptPath, OutputPath: output, sshRunner: binding.sshRunner, copyRunner: binding.copyRunner,
-	}
-}
-
 type OrchestratorSSHCleanupTakeoverReceipt struct {
 	SchemaVersion             int    `json:"schemaVersion"`
 	Status                    string `json:"status"`
@@ -321,10 +283,6 @@ type OrchestratorSSHCleanupTakeoverReceipt struct {
 	ResidueAbsent             bool   `json:"residueAbsent"`
 	ProofCredit               int    `json:"proofCredit"`
 	CleanupPermanentlyBlocked bool   `json:"cleanupPermanentlyBlocked"`
-}
-
-func RunOrchestratorSSHCleanupTakeover(request OrchestratorSSHCleanupTakeoverRequest) (OrchestratorSSHCleanupTakeoverReceipt, error) {
-	return runOrchestratorSSHCleanupTakeover(request, orchestratorSSHCleanupTimeout)
 }
 
 func runOrchestratorSSHCleanupTakeover(request OrchestratorSSHCleanupTakeoverRequest, timeout time.Duration) (OrchestratorSSHCleanupTakeoverReceipt, error) {

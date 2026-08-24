@@ -86,7 +86,7 @@ func runOrchestratorCleanupTakeoverAt(orchestrator *Orchestrator, request Orches
 		if request.BundlePath != "" || request.CreationPath != "" || request.PreflightPath != "" || request.TargetOrg != "" || request.SFBin != "" {
 			return fmt.Errorf("local and SSH cleanup modes are mutually exclusive")
 		}
-		_, err := runOrchestratorSSHCleanupTakeover(request.SSH.coordinatorRequest(orchestrator, request.Claim, request.OutputPath), orchestratorSSHCleanupTimeout)
+		_, err := runOrchestratorSSHCleanupTakeover(OrchestratorSSHCleanupTakeoverRequest{Coordinator: orchestrator, Claim: request.Claim, OrchestratorSSHCleanupBinding: *request.SSH, OutputPath: request.OutputPath}, orchestratorSSHCleanupTimeout)
 		return err
 	}
 	if orchestrator == nil || cleanup == nil || request.Claim.CampaignID == "" || request.Claim.JobID == "" || request.Claim.Generation < 1 || request.Claim.AllocationAlias == "" || request.Claim.Worker == "" {
