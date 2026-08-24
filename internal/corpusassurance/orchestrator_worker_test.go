@@ -978,7 +978,7 @@ func readyOrchestratorWorker(t *testing.T) (*Orchestrator, OrchestratorCampaignP
 	oraclePlan := filepath.Join(root, "ORACLE_PLAN.json")
 	writeJSONValue(t, oraclePlan, map[string]any{"schemaVersion": 1})
 	writeSyntheticOrchestratorReconciliation(t, batch)
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	definition.ControlledInputSHA256["oracle-plan"] = surfaceOracleFileSHA256(t, oraclePlan)

@@ -158,6 +158,9 @@ func AcceptOrchestratorRawCanary(request OrchestratorRawCanaryRequest) (result O
 		return OrchestratorRawCanaryReceipt{}, fmt.Errorf("read raw canary cleanup: %w", err)
 	}
 	if cleanupState == "closed" && allocationState == "closed" {
+		if err := request.Coordinator.closeRawAcceptanceJob(request.Lease); err != nil {
+			return OrchestratorRawCanaryReceipt{}, fmt.Errorf("close raw canary job: %w", err)
+		}
 		if !outputExists {
 			if err := WriteNewJSON(request.OutputPath, result); err != nil {
 				return OrchestratorRawCanaryReceipt{}, err
@@ -172,12 +175,40 @@ func AcceptOrchestratorRawCanary(request OrchestratorRawCanaryRequest) (result O
 	if err := request.Coordinator.closeRawAcceptanceCleanup(request.Lease, request.AllocationAlias, now, !cleanup.RecoveredAbsent); err != nil {
 		return result, fmt.Errorf("close raw canary cleanup: %w", err)
 	}
+	if err := request.Coordinator.closeRawAcceptanceJob(request.Lease); err != nil {
+		return result, fmt.Errorf("close raw canary job: %w", err)
+	}
 	if !outputExists {
 		if err := WriteNewJSON(request.OutputPath, result); err != nil {
 			return OrchestratorRawCanaryReceipt{}, err
 		}
 	}
 	return result, nil
+}
+
+func (o *Orchestrator) closeRawAcceptanceJob(lease OrchestratorLease) error {
+	tx, err := o.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if _, err := tx.Exec(`UPDATE jobs SET status = 'closed' WHERE campaign_id = ? AND id = ? AND generation = ? AND leased_by = ? AND status = 'running'`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`UPDATE attempts SET status = 'closed' WHERE campaign_id = ? AND job_id = ? AND generation = ? AND worker = ? AND status = 'running'`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker); err != nil {
+		return err
+	}
+	var jobStatus, attemptStatus string
+	if err := tx.QueryRow(`SELECT status FROM jobs WHERE campaign_id = ? AND id = ? AND generation = ? AND leased_by = ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker).Scan(&jobStatus); err != nil {
+		return fmt.Errorf("read closed raw canary job: %w", err)
+	}
+	if err := tx.QueryRow(`SELECT status FROM attempts WHERE campaign_id = ? AND job_id = ? AND generation = ? AND worker = ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker).Scan(&attemptStatus); err != nil {
+		return fmt.Errorf("read closed raw canary attempt: %w", err)
+	}
+	if jobStatus != "closed" || attemptStatus != "closed" {
+		return fmt.Errorf("raw canary job closure is not terminal")
+	}
+	return tx.Commit()
 }
 
 func RunRawSalesforceShard(request RawSalesforceShardRequest) (result RawSalesforceShardResult, err error) {
@@ -213,8 +244,8 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 		return result, err
 	}
 	shardCount := len(request.Plan.Jobs)
-	if shardCount != 2 {
-		return result, fmt.Errorf("raw Salesforce shard count must be two")
+	if shardCount < 1 {
+		return result, fmt.Errorf("raw Salesforce shard count must be positive")
 	}
 	if err := os.Mkdir(request.OutputRoot, 0o700); err != nil {
 		return result, err

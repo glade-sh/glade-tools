@@ -516,7 +516,7 @@ type SalesforceShardRequest struct {
 // CreateSalesforceDispatch seals the only permitted filter invocation before
 // a shard can execute it.
 func CreateSalesforceDispatch(request SalesforceDispatchRequest) (SalesforceDispatch, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.ExecutorRoot) || !filepath.IsAbs(request.OutputPath) || request.OrgAlias == "" || request.RunID == "" || request.ShardCount != 2 || request.ShardIndex < 0 || request.ShardIndex >= request.ShardCount {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.ExecutorRoot) || !filepath.IsAbs(request.OutputPath) || request.OrgAlias == "" || request.RunID == "" || request.ShardCount < 1 || request.ShardIndex < 0 || request.ShardIndex >= request.ShardCount {
 		return SalesforceDispatch{}, fmt.Errorf("invalid Salesforce dispatch request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
@@ -2107,7 +2107,7 @@ func salesforceCommandSpecSHA256(binary string, args []string, workingDirectory 
 }
 
 func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias string, bundle OracleBundle, bundleSHA string, shardIndex, shardCount int) ([]string, error) {
-	if !filepath.IsAbs(filterPath) || !filepath.IsAbs(bundleRoot) || !filepath.IsAbs(executorRoot) || !strings.Contains(filepath.ToSlash(executorRoot), "/executor/") || runID == "" || orgAlias == "" || !sha256Pattern.MatchString(bundleSHA) || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || !sha256Pattern.MatchString(bundle.OraclePlanSHA256) || !sha256Pattern.MatchString(bundle.TransportManifestSHA256) || !sha256Pattern.MatchString(bundle.LocalProofSummarySHA256) || !validSalesforceExecutionAuthority(bundle.SalesforceExecution) || len(bundle.Fixtures) == 0 || shardCount != 2 || shardIndex < 0 || shardIndex >= shardCount {
+	if !filepath.IsAbs(filterPath) || !filepath.IsAbs(bundleRoot) || !filepath.IsAbs(executorRoot) || !strings.Contains(filepath.ToSlash(executorRoot), "/executor/") || runID == "" || orgAlias == "" || !sha256Pattern.MatchString(bundleSHA) || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || !sha256Pattern.MatchString(bundle.OraclePlanSHA256) || !sha256Pattern.MatchString(bundle.TransportManifestSHA256) || !sha256Pattern.MatchString(bundle.LocalProofSummarySHA256) || !validSalesforceExecutionAuthority(bundle.SalesforceExecution) || len(bundle.Fixtures) == 0 || shardCount < 1 || shardIndex < 0 || shardIndex >= shardCount {
 		return nil, fmt.Errorf("invalid sealed Salesforce filter inputs")
 	}
 	return []string{filterPath,

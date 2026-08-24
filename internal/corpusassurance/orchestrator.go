@@ -33,7 +33,7 @@ type OrchestratorCampaignDefinition struct {
 	ScopePath             string               `json:"scopePath"`
 	ScopeSHA256           string               `json:"scopeSha256"`
 	ControlledInputSHA256 map[string]string    `json:"controlledInputSha256"`
-	Shards                [2][]string          `json:"shards"`
+	Shards                [][]string           `json:"shards"`
 }
 
 type OrchestratorJobKind string
@@ -173,6 +173,10 @@ func OpenOrchestrator(path string) (*Orchestrator, error) {
 			return nil, fmt.Errorf("initialize orchestrator: %w", err)
 		}
 	}
+	if err := migrateOrchestratorJobs(db); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("migrate orchestrator schema: %w", err)
+	}
 	return orchestrator, nil
 }
 
@@ -183,6 +187,7 @@ func PlanOrchestratorCampaign(definition OrchestratorCampaignDefinition) (Orches
 		return OrchestratorCampaignPlan{}, err
 	}
 	definition.ControlledInputSHA256 = maps.Clone(definition.ControlledInputSHA256)
+	definition.Shards = append([][]string(nil), definition.Shards...)
 	for i := range definition.Shards {
 		definition.Shards[i] = append([]string(nil), definition.Shards[i]...)
 		sort.Strings(definition.Shards[i])
@@ -190,7 +195,7 @@ func PlanOrchestratorCampaign(definition OrchestratorCampaignDefinition) (Orches
 	data, _ := json.Marshal(definition)
 	specSHA := replayBytesSHA256(data)
 	campaignID := "campaign-" + specSHA[:16]
-	jobs := make([]OrchestratorJob, 2)
+	jobs := make([]OrchestratorJob, len(definition.Shards))
 	for i := range jobs {
 		jobs[i] = OrchestratorJob{ID: fmt.Sprintf("%s:%s:%d", campaignID, OrchestratorJobSurfaceRuntimeShard, i), Kind: OrchestratorJobSurfaceRuntimeShard, ShardIndex: i, SurfaceIDs: append([]string(nil), definition.Shards[i]...)}
 	}
@@ -777,6 +782,9 @@ func validateOrchestratorDefinition(definition OrchestratorCampaignDefinition) e
 	if len(definition.ControlledInputSHA256) == 0 {
 		return fmt.Errorf("controlled input hashes are required")
 	}
+	if len(definition.Shards) == 0 {
+		return fmt.Errorf("at least one non-empty shard is required")
+	}
 	for name, hash := range definition.ControlledInputSHA256 {
 		if strings.TrimSpace(name) == "" || !sha256Pattern.MatchString(hash) {
 			return fmt.Errorf("invalid controlled input hash")
@@ -792,7 +800,7 @@ func validateOrchestratorDefinition(definition OrchestratorCampaignDefinition) e
 	seen := map[string]bool{}
 	for _, shard := range definition.Shards {
 		if len(shard) == 0 {
-			return fmt.Errorf("exactly two non-empty shards are required")
+			return fmt.Errorf("non-empty shards are required")
 		}
 		for _, id := range shard {
 			if seen[id] {
@@ -805,7 +813,7 @@ func validateOrchestratorDefinition(definition OrchestratorCampaignDefinition) e
 		}
 	}
 	if len(seen) != len(scopeIDs) {
-		return fmt.Errorf("two shards must partition the exact scope")
+		return fmt.Errorf("shards must partition the exact scope")
 	}
 	return nil
 }
@@ -824,6 +832,58 @@ func validateOrchestratorPlan(plan OrchestratorCampaignPlan) error {
 		return fmt.Errorf("orchestrator plan drift")
 	}
 	return nil
+}
+
+func migrateOrchestratorJobs(db *sql.DB) error {
+	var createSQL string
+	if err := db.QueryRow(`SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'jobs'`).Scan(&createSQL); err != nil {
+		return err
+	}
+	if !strings.Contains(createSQL, "shard_index IN (0, 1)") {
+		return nil
+	}
+	if _, err := db.Exec(`PRAGMA foreign_keys = OFF`); err != nil {
+		return err
+	}
+	if _, err := db.Exec(`PRAGMA legacy_alter_table = ON`); err != nil {
+		return err
+	}
+	defer db.Exec(`PRAGMA legacy_alter_table = OFF`)
+	defer db.Exec(`PRAGMA foreign_keys = ON`)
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if _, err := tx.Exec(`CREATE TABLE jobs_new (
+  campaign_id TEXT NOT NULL REFERENCES campaigns(id),
+  id TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind = 'surface-runtime-shard'),
+  shard_index INTEGER NOT NULL CHECK (shard_index >= 0),
+  surface_ids_json TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('queued', 'running', 'retryable', 'failed', 'closed')),
+  generation INTEGER NOT NULL,
+  leased_by TEXT,
+  lease_until INTEGER,
+  heartbeat_at INTEGER,
+  PRIMARY KEY (campaign_id, id),
+  UNIQUE (campaign_id, shard_index)
+)`); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`INSERT INTO jobs_new SELECT campaign_id, id, kind, shard_index, surface_ids_json, status, generation, leased_by, lease_until, heartbeat_at FROM jobs`); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`ALTER TABLE jobs RENAME TO jobs_legacy`); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`ALTER TABLE jobs_new RENAME TO jobs`); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`DROP TABLE jobs_legacy`); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 func safeOrchestratorToken(value string) bool {
@@ -847,7 +907,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   campaign_id TEXT NOT NULL REFERENCES campaigns(id),
   id TEXT NOT NULL,
   kind TEXT NOT NULL CHECK (kind = 'surface-runtime-shard'),
-  shard_index INTEGER NOT NULL CHECK (shard_index IN (0, 1)),
+  shard_index INTEGER NOT NULL CHECK (shard_index >= 0),
   surface_ids_json TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('queued', 'running', 'retryable', 'failed', 'closed')),
   generation INTEGER NOT NULL,

@@ -346,13 +346,16 @@ func TestCreateSalesforceReconciliationAndVerifyAfterRemoteCleanup(t *testing.T)
 		t.Fatal(err)
 	}
 	executorRoot, runID, alias := filepath.Join(attemptRoot, "executor", "shard-0"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-0", "assurance-sf0"
-	args, err := salesforceFilterArgs(sealedSalesforceFilterScriptPath(executorRoot), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 0, 1)
+	args, err := salesforceFilterArgs(sealedSalesforceFilterScriptPath(executorRoot), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 0, 0)
 	if err == nil {
 		t.Fatal("salesforceFilterArgs accepted an invalid shard count")
 	}
 	args, err = salesforceFilterArgs(sealedSalesforceFilterScriptPath(executorRoot), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 0, 2)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if argsN, err := salesforceFilterArgs(sealedSalesforceFilterScriptPath(executorRoot), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 1, 3); err != nil || !strings.Contains(strings.Join(argsN, " "), "--manifest-index-modulus 3") {
+		t.Fatalf("three-shard filter args = %#v, err = %v", argsN, err)
 	}
 	filterSource, err := os.ReadFile(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"))
 	if err != nil {

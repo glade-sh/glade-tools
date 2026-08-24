@@ -119,7 +119,7 @@ func TestCreateOrchestratorSalesforceReconciliationRejectsDrift(t *testing.T) {
 	})
 	t.Run("empty oracle intersection", func(t *testing.T) {
 		definition := fixture.plan.Definition
-		definition.Shards = [2][]string{{"apex:Local.only"}, {"apex:Mock.run", "apex:Other.only", "apex:Runtime.run", "apex:Shape.run"}}
+		definition.Shards = [][]string{{"apex:Local.only"}, {"apex:Mock.run", "apex:Other.only", "apex:Runtime.run", "apex:Shape.run"}}
 		plan, err := PlanOrchestratorCampaign(definition)
 		if err != nil {
 			t.Fatal(err)
@@ -507,7 +507,7 @@ func newOrchestratorSalesforceReconciliationFixture(t *testing.T) orchestratorSa
 		Tools:     OrchestratorArtifact{Commit: bundle.Tools.Commit, SHA256: bundle.Tools.SHA256},
 		ScopePath: scopePath, ScopeSHA256: localProofFileSHA256(t, scopePath),
 		ControlledInputSHA256: map[string]string{"oracle-plan": localProofFileSHA256(t, oraclePlanPath)},
-		Shards:                [2][]string{{"apex:Local.only", "apex:Runtime.run"}, {"apex:Mock.run", "apex:Other.only", "apex:Shape.run"}},
+		Shards:                [][]string{{"apex:Local.only", "apex:Runtime.run"}, {"apex:Mock.run", "apex:Other.only", "apex:Shape.run"}},
 	}
 	plan, err := PlanOrchestratorCampaign(definition)
 	if err != nil {
@@ -541,7 +541,7 @@ func withOraclePlanCampaignScope(t *testing.T, fixture orchestratorSalesforceRec
 	}
 	definition := fixture.plan.Definition
 	definition.ScopePath, definition.ScopeSHA256 = scopePath, localProofFileSHA256(t, scopePath)
-	definition.Shards = [2][]string{{"apex:Runtime.run"}, {"apex:Shape.run"}}
+	definition.Shards = [][]string{{"apex:Runtime.run"}, {"apex:Shape.run"}}
 	plan, err := PlanOrchestratorCampaign(definition)
 	if err != nil {
 		t.Fatal(err)

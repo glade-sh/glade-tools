@@ -100,6 +100,45 @@ func TestRunRawSalesforceShardRunsSealedLifecycleInOrder(t *testing.T) {
 	}
 }
 
+func TestRunRawSalesforceShardPassesThreeShardPlanToLifecycle(t *testing.T) {
+	request, _, _ := rawSalesforceShardTestRequest(t)
+	definition := request.Plan.Definition
+	definition.Shards = [][]string{{"apex:System.One"}, {"apex:System.Three"}, {"apex:System.Two"}}
+	plan, err := PlanOrchestratorCampaign(definition)
+	if err != nil {
+		t.Fatal(err)
+	}
+	job := plan.Jobs[0]
+	request.Plan = plan
+	request.Lease.CampaignID, request.Lease.JobID, request.Lease.Kind = plan.CampaignID, job.ID, job.Kind
+	request.Lease.ShardIndex, request.Lease.SurfaceIDs = job.ShardIndex, job.SurfaceIDs
+	request.orgCreate = func(value SalesforceOrgCreateRequest) (SalesforceOrgCreation, error) {
+		if err := WriteNewJSON(value.OutputPath, SalesforceOrgCreation{}); err != nil {
+			t.Fatal(err)
+		}
+		return SalesforceOrgCreation{}, nil
+	}
+	request.orgPreflight = func(SalesforceOrgPreflightRequest) (SalesforceOrgPreflight, error) {
+		return SalesforceOrgPreflight{}, nil
+	}
+	request.dispatch = func(value SalesforceDispatchRequest) (SalesforceDispatch, error) {
+		if value.ShardCount != 3 || value.ShardIndex != 0 {
+			t.Fatalf("dispatch shard partition = %d/%d", value.ShardIndex, value.ShardCount)
+		}
+		return SalesforceDispatch{}, nil
+	}
+	request.shard = func(value SalesforceShardRequest) (SalesforceShard, error) {
+		if value.ShardCount != 3 || value.ShardIndex != 0 {
+			t.Fatalf("worker shard partition = %d/%d", value.ShardIndex, value.ShardCount)
+		}
+		return SalesforceShard{}, nil
+	}
+	request.orgCleanup = func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) { return SalesforceOrgCleanup{}, nil }
+	if _, err := RunRawSalesforceShard(request); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestRunRawSalesforceShardRejectsSealedOraclePlanDriftBeforeOutput(t *testing.T) {
 	request, outputRoot, _ := rawSalesforceShardTestRequest(t)
 	data, err := json.Marshal(OraclePlan{})
@@ -272,7 +311,7 @@ func readyRawOrchestratorWorker(t *testing.T) (*Orchestrator, OrchestratorCampai
 	scope, batch := writeSurfaceOracleIndexInputs(t, root)
 	oraclePlanPath := filepath.Join(root, "ORACLE_PLAN.json")
 	writeSyntheticOrchestratorReconciliation(t, batch)
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	writeJSONValue(t, oraclePlanPath, OraclePlan{

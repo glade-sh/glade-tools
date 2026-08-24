@@ -1,7 +1,9 @@
 package corpusassurance
 
 import (
+	"database/sql"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -27,10 +29,58 @@ func TestOrchestratorOpensLocalWALDatabase(t *testing.T) {
 	}
 }
 
+func TestOrchestratorMigratesLegacyTwoShardSchema(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "orchestrator.db")
+	legacy, err := sql.Open("sqlite", path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := legacy.Exec(`CREATE TABLE campaigns (id TEXT PRIMARY KEY, spec_sha256 TEXT NOT NULL, candidate_commit TEXT NOT NULL, candidate_sha256 TEXT NOT NULL, tools_commit TEXT NOT NULL, tools_sha256 TEXT NOT NULL, scope_path TEXT NOT NULL, scope_sha256 TEXT NOT NULL, controlled_inputs_json TEXT NOT NULL, created_at INTEGER NOT NULL)`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := legacy.Exec(`CREATE TABLE jobs (campaign_id TEXT NOT NULL, id TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind = 'surface-runtime-shard'), shard_index INTEGER NOT NULL CHECK (shard_index IN (0, 1)), surface_ids_json TEXT NOT NULL, status TEXT NOT NULL, generation INTEGER NOT NULL, leased_by TEXT, lease_until INTEGER, heartbeat_at INTEGER, PRIMARY KEY (campaign_id, id), UNIQUE (campaign_id, shard_index))`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := legacy.Exec(`CREATE TABLE attempts (campaign_id TEXT NOT NULL, job_id TEXT NOT NULL, generation INTEGER NOT NULL, worker TEXT NOT NULL, status TEXT NOT NULL, leased_at INTEGER NOT NULL, lease_until INTEGER NOT NULL, heartbeat_at INTEGER NOT NULL, PRIMARY KEY (campaign_id, job_id, generation), FOREIGN KEY (campaign_id, job_id) REFERENCES jobs(campaign_id, id))`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := legacy.Exec(`INSERT INTO campaigns VALUES ('campaign', 'spec', 'candidate', 'candidate-sha', 'tools', 'tools-sha', '/scope', 'scope-sha', '{}', 1)`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := legacy.Exec(`INSERT INTO jobs VALUES ('campaign', 'job-0', 'surface-runtime-shard', 0, '[]', 'queued', 0, NULL, NULL, NULL)`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := legacy.Exec(`INSERT INTO attempts VALUES ('campaign', 'job-0', 0, 'worker', 'closed', 1, 2, 1)`); err != nil {
+		t.Fatal(err)
+	}
+	if err := legacy.Close(); err != nil {
+		t.Fatal(err)
+	}
+	orchestrator, err := OpenOrchestrator(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer orchestrator.Close()
+	var schema string
+	if err := orchestrator.db.QueryRow(`SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'jobs'`).Scan(&schema); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(schema, "shard_index IN (0, 1)") {
+		t.Fatalf("legacy shard constraint remained: %s", schema)
+	}
+	var foreignKeyErrors int
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM pragma_foreign_key_check`).Scan(&foreignKeyErrors); err != nil || foreignKeyErrors != 0 {
+		t.Fatalf("foreign keys after migration = %d, err = %v", foreignKeyErrors, err)
+	}
+	if _, err := orchestrator.db.Exec(`INSERT INTO jobs (campaign_id, id, kind, shard_index, surface_ids_json, status, generation) VALUES ('campaign', 'job-2', 'surface-runtime-shard', 2, '[]', 'queued', 0)`); err != nil {
+		t.Fatalf("shard index 2 rejected after migration: %v", err)
+	}
+}
+
 func TestOrchestratorPlansExactlyTwoBoundShardJobs(t *testing.T) {
 	root := t.TempDir()
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
 	plan, err := PlanOrchestratorCampaign(definition)
 	if err != nil {
 		t.Fatal(err)
@@ -101,11 +151,78 @@ func TestOrchestratorPlansExactlyTwoBoundShardJobs(t *testing.T) {
 	if err := orchestrator.Enqueue(drifted); err == nil || !strings.Contains(err.Error(), "drift") {
 		t.Fatalf("drift error = %v", err)
 	}
-	if _, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One"}, {"apex:System.One"}})); err == nil || !strings.Contains(err.Error(), "disjoint") {
+	if _, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.One"}})); err == nil || !strings.Contains(err.Error(), "disjoint") {
 		t.Fatalf("overlapping shards error = %v", err)
 	}
-	if _, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One"}, {"apex:System.Three"}})); err == nil || !strings.Contains(err.Error(), "partition") {
+	if _, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.Three"}})); err == nil || !strings.Contains(err.Error(), "partition") {
 		t.Fatalf("incomplete scope partition error = %v", err)
+	}
+}
+
+func TestOrchestratorPlansFiveDeterministicShardJobs(t *testing.T) {
+	root := t.TempDir()
+	ids := []string{"apex:System.Five", "apex:System.Four", "apex:System.One", "apex:System.Three", "apex:System.Two"}
+	rows := make([]SurfaceOracleScopeRow, len(ids))
+	for index, id := range ids {
+		rows[index] = SurfaceOracleScopeRow{SurfaceID: id, Disposition: localRuntimeRequired}
+	}
+	scope := filepath.Join(root, "scope.json")
+	writeJSONValue(t, scope, SurfaceOracleScope{SchemaVersion: 1, Kind: "all-runtime", SourceProfileSHA256: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64), PolicySHA256: strings.Repeat("c", 64), Total: len(rows), ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: len(rows)}, Rows: rows})
+	definition := testOrchestratorDefinition(t, scope, [][]string{
+		{"apex:System.Five"},
+		{"apex:System.Four"},
+		{"apex:System.One"},
+		{"apex:System.Three"},
+		{"apex:System.Two"},
+	})
+	plan, err := PlanOrchestratorCampaign(definition)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(plan.Jobs) != 5 {
+		t.Fatalf("job count = %d, want 5", len(plan.Jobs))
+	}
+	for index, job := range plan.Jobs {
+		if job.ShardIndex != index || job.SurfaceIDs[0] != definition.Shards[index][0] {
+			t.Fatalf("job %d = %#v", index, job)
+		}
+	}
+	if plan.Jobs[2].ShardIndex != 2 {
+		t.Fatalf("third job shard index = %d, want 2", plan.Jobs[2].ShardIndex)
+	}
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	var stored int
+	if err := orchestrator.db.QueryRow(`SELECT shard_index FROM jobs WHERE campaign_id = ? AND id = ?`, plan.CampaignID, plan.Jobs[2].ID).Scan(&stored); err != nil || stored != 2 {
+		t.Fatalf("stored shard index = %d, err = %v", stored, err)
+	}
+}
+
+func TestOrchestratorRejectsZeroShardsForEmptyScope(t *testing.T) {
+	root := t.TempDir()
+	scope := filepath.Join(root, "scope.json")
+	writeJSONValue(t, scope, SurfaceOracleScope{
+		SchemaVersion: 1, Kind: "all-runtime",
+		SourceProfileSHA256: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64), PolicySHA256: strings.Repeat("c", 64),
+		ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 0},
+	})
+	if _, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, nil)); err == nil || !strings.Contains(err.Error(), "shard") {
+		t.Fatalf("zero-shard campaign error = %v", err)
+	}
+}
+
+func TestOrchestratorPlanningDoesNotMutateCallerShards(t *testing.T) {
+	root := t.TempDir()
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.Two", "apex:System.One"}, {"apex:System.Three"}})
+	want := [][]string{{"apex:System.Two", "apex:System.One"}, {"apex:System.Three"}}
+	if _, err := PlanOrchestratorCampaign(definition); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(definition.Shards, want) {
+		t.Fatalf("caller shards mutated = %#v, want %#v", definition.Shards, want)
 	}
 }
 
@@ -222,7 +339,7 @@ func TestOrchestratorCleanupCloseRejectsReclaimedStaleToken(t *testing.T) {
 func TestOrchestratorRecordsOnlyValidatedCleanupClosedCredit(t *testing.T) {
 	root := t.TempDir()
 	scope, batch := writeSurfaceOracleIndexInputs(t, root)
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	plan, err := PlanOrchestratorCampaign(definition)
@@ -310,7 +427,7 @@ func TestOrchestratorRejectsPartialShardCredit(t *testing.T) {
 	root := t.TempDir()
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
 	batch := writeSurfaceOracleBatch(t, root, "partial", []string{"apex:System.One"})
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	plan, err := PlanOrchestratorCampaign(definition)
@@ -353,7 +470,7 @@ func TestOrchestratorRecordsConfirmedMismatchAsRejected(t *testing.T) {
 	batch := writeSurfaceOracleBatch(t, root, "mismatch", []string{"apex:System.One"})
 	setSurfaceOracleBatchAdjudication(t, batch, "apex:System.One", "mismatch")
 	setSurfaceOracleBatchFixtureKind(t, batch, "test")
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	orchestrator, plan, lease, now := readyOrchestratorReceipt(t, definition, batch)
@@ -374,7 +491,7 @@ func TestOrchestratorRecoveredCleanupCannotRecordReceipt(t *testing.T) {
 	root := t.TempDir()
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
 	batch := writeSurfaceOracleBatch(t, root, "recovered", []string{"apex:System.One"})
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	orchestrator, plan, lease, now := readyOrchestratorReceiptWithoutCleanup(t, definition, batch)
@@ -423,7 +540,7 @@ func TestOrchestratorLeavesInconclusiveBatchUnseen(t *testing.T) {
 	batch := writeSurfaceOracleBatch(t, root, "inconclusive", []string{"apex:System.One", "apex:System.Two"})
 	setSurfaceOracleBatchAdjudication(t, batch, "apex:System.Two", "environment")
 	setSurfaceOracleBatchAdjudication(t, batch, "apex:System.One", "environment")
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	orchestrator, plan, lease, now := readyOrchestratorReceipt(t, definition, batch)
@@ -448,7 +565,7 @@ func TestOrchestratorRefusesOperationalFailureAsRejected(t *testing.T) {
 		result["componentFailures"] = []any{map[string]any{"problem": "transport failed"}}
 	})
 	resealSurfaceOracleBatch(t, batch)
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	orchestrator, plan, lease, now := readyOrchestratorReceipt(t, definition, batch)
@@ -466,7 +583,7 @@ func TestOrchestratorRefusesOracleOnlyKindFlip(t *testing.T) {
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
 	batch := writeSurfaceOracleBatch(t, root, "kind-flip", []string{"apex:System.One"})
 	setSurfaceOracleBatchAdjudication(t, batch, "apex:System.One", "mismatch")
-	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
+	definition := testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
 	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
 	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
 	orchestrator, plan, lease, now := readyOrchestratorReceipt(t, definition, batch)
@@ -552,7 +669,7 @@ func initializedTestOrchestrator(t *testing.T) (*Orchestrator, OrchestratorCampa
 	t.Helper()
 	root := t.TempDir()
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
-	plan, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}}))
+	plan, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two"}, {"apex:System.Three"}}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -566,7 +683,7 @@ func initializedTestOrchestrator(t *testing.T) (*Orchestrator, OrchestratorCampa
 	return orchestrator, plan
 }
 
-func testOrchestratorDefinition(t *testing.T, scope string, shards [2][]string) OrchestratorCampaignDefinition {
+func testOrchestratorDefinition(t *testing.T, scope string, shards [][]string) OrchestratorCampaignDefinition {
 	t.Helper()
 	return OrchestratorCampaignDefinition{
 		Candidate: OrchestratorArtifact{Commit: strings.Repeat("a", 40), SHA256: strings.Repeat("b", 64)},

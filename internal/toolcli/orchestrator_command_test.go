@@ -30,7 +30,7 @@ func TestCorpusAssuranceOrchestratorPlansInitializesAndRejectsArbitraryCommands(
 		Tools:     corpusassurance.OrchestratorArtifact{Commit: strings.Repeat("c", 40), SHA256: strings.Repeat("d", 64)},
 		ScopePath: scopePath, ScopeSHA256: orchestratorCLIFileSHA256(t, scopePath),
 		ControlledInputSHA256: map[string]string{"oracle-plan": strings.Repeat("e", 64)},
-		Shards:                [2][]string{{"apex:System.One"}, {"apex:System.Two"}},
+		Shards:                [][]string{{"apex:System.One"}, {"apex:System.Two"}},
 	})
 	planPath := filepath.Join(root, "plan.json")
 	var stdout, stderr bytes.Buffer
