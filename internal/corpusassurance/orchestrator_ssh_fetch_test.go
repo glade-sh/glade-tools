@@ -43,7 +43,7 @@ func TestFetchOrchestratorSSHRawPublishesBoundIdempotentTree(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if calls != 2 || receipt.Status != "fetched" || !receipt.Passed || receipt.CampaignID != plan.CampaignID || receipt.JobID != lease.JobID || receipt.PlanSHA256 != planSHA || receipt.LeaseSHA256 != leaseSHA || receipt.TreeManifestSHA256 == "" {
+	if calls != 2 || receipt.Status != "fetched" || !receipt.Passed || receipt.CampaignID != plan.CampaignID || receipt.JobID != lease.JobID || receipt.PlanSHA256 != planSHA || receipt.LeaseSHA256 != leaseSHA || receipt.TreeManifestSHA256 == "" || receipt.ExecutedTools != request.Dispatch.ExecutedTools {
 		t.Fatalf("receipt=%#v calls=%d", receipt, calls)
 	}
 	for _, name := range append(orchestratorSSHRawFileNames(), "TREE_MANIFEST.json", "SSH_FETCH.json") {
@@ -133,6 +133,7 @@ func orchestratorSSHFetchDispatchReceipt(t *testing.T, request OrchestratorSSHDi
 		OrchestratorBindingSHA256: sha256FileForTest(t, filepath.Join(remoteRoot, "ORCHESTRATOR_BINDING.json")),
 		SalesforceShardSHA256:     sha256FileForTest(t, filepath.Join(remoteRoot, "SALESFORCE_SHARD.json")),
 		OrgCleanupSHA256:          sha256FileForTest(t, filepath.Join(remoteRoot, "ORG_CLEANUP.json")),
+		ExecutedTools:             RuntimeArtifact{Commit: plan.Definition.Tools.Commit, OS: "darwin", Arch: "arm64", SHA256: plan.Definition.Tools.SHA256},
 	}
 }
 

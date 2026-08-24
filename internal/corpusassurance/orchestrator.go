@@ -668,6 +668,14 @@ func (o *Orchestrator) closeCleanup(claim OrchestratorCleanupClaim, now time.Tim
 }
 
 func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now time.Time) (OrchestratorReceipt, error) {
+	return o.recordReceipt(request, now, nil)
+}
+
+func (o *Orchestrator) recordValidatedReceipt(request OrchestratorReceiptRequest, now time.Time, batch validatedOrchestratorBatch) (OrchestratorReceipt, error) {
+	return o.recordReceipt(request, now, &batch)
+}
+
+func (o *Orchestrator) recordReceipt(request OrchestratorReceiptRequest, now time.Time, carrier *validatedOrchestratorBatch) (OrchestratorReceipt, error) {
 	if !filepath.IsAbs(request.BatchRoot) {
 		return OrchestratorReceipt{}, fmt.Errorf("absolute coordinator-local batch root is required")
 	}
@@ -691,13 +699,8 @@ func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now tim
 	if err != nil || replayBytesSHA256(scopeBytes) != scopeSHA || validateSurfaceOracleScope(scope) != nil {
 		return OrchestratorReceipt{}, fmt.Errorf("campaign scope binding drift")
 	}
-	batch, adjudications, err := validateSurfaceRuntimeAdjudications(request.BatchRoot, scope)
-	if err != nil {
-		return OrchestratorReceipt{}, fmt.Errorf("validate final batch: %w", err)
-	}
-	if batch.candidateCommit != candidateCommit || batch.candidateSHA256 != candidateSHA || batch.toolsCommit != toolsCommit || batch.toolsSHA256 != toolsSHA {
-		return OrchestratorReceipt{}, fmt.Errorf("final batch campaign binding drift")
-	}
+	// Rehydrate the immutable plan from stored inputs and shard rows before the
+	// shared validator runs; callers never supply a second production authority.
 	var jobSurfaces []string
 	var controlledInputs map[string]string
 	if err := json.Unmarshal([]byte(surfacesJSON), &jobSurfaces); err != nil {
@@ -706,44 +709,85 @@ func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now tim
 	if err := json.Unmarshal([]byte(inputsJSON), &controlledInputs); err != nil {
 		return OrchestratorReceipt{}, err
 	}
-	expectedBinding := OrchestratorBatchBinding{
-		SchemaVersion: 1, CampaignID: lease.CampaignID, SpecSHA256: specSHA,
-		Candidate: OrchestratorArtifact{Commit: candidateCommit, SHA256: candidateSHA}, Tools: OrchestratorArtifact{Commit: toolsCommit, SHA256: toolsSHA},
-		ScopeSHA256: scopeSHA, ControlledInputSHA256: controlledInputs,
-		JobID: lease.JobID, JobKind: OrchestratorJobKind(jobKind), Generation: lease.Generation, ShardIndex: shardIndex, SurfaceIDs: jobSurfaces,
+	storedPlan := OrchestratorCampaignPlan{
+		CampaignID: lease.CampaignID, SpecSHA256: specSHA,
+		Definition: OrchestratorCampaignDefinition{
+			Candidate: OrchestratorArtifact{Commit: candidateCommit, SHA256: candidateSHA}, Tools: OrchestratorArtifact{Commit: toolsCommit, SHA256: toolsSHA},
+			ScopePath: scopePath, ScopeSHA256: scopeSHA, ControlledInputSHA256: controlledInputs,
+		},
+		Jobs: []OrchestratorJob{{ID: lease.JobID, Kind: OrchestratorJobKind(jobKind), ShardIndex: shardIndex, SurfaceIDs: jobSurfaces}},
 	}
-	bindingSnapshot, err := readSurfaceBatchFile(request.BatchRoot, filepath.Join("evidence", "ORCHESTRATOR_BINDING.json"))
-	if err != nil || bindingSnapshot.Mode.Perm() != 0o400 {
-		return OrchestratorReceipt{}, fmt.Errorf("sealed orchestrator batch binding is required")
+	// Plan validation needs every immutable job, not only the current row.
+	rows, queryErr := o.db.Query(`SELECT id, kind, shard_index, surface_ids_json FROM jobs WHERE campaign_id = ? ORDER BY shard_index`, lease.CampaignID)
+	if queryErr != nil {
+		return OrchestratorReceipt{}, queryErr
 	}
-	var binding OrchestratorBatchBinding
-	if err := decodeExactJSON(bindingSnapshot.Data, &binding); err != nil || !reflect.DeepEqual(binding, expectedBinding) {
-		return OrchestratorReceipt{}, fmt.Errorf("orchestrator batch binding drift")
+	storedPlan.Jobs = nil
+	for rows.Next() {
+		var job OrchestratorJob
+		var surfaces string
+		if err := rows.Scan(&job.ID, &job.Kind, &job.ShardIndex, &surfaces); err != nil || json.Unmarshal([]byte(surfaces), &job.SurfaceIDs) != nil {
+			rows.Close()
+			return OrchestratorReceipt{}, fmt.Errorf("invalid stored shard")
+		}
+		storedPlan.Jobs = append(storedPlan.Jobs, job)
 	}
-	if len(adjudications) != len(jobSurfaces) {
+	if err := rows.Err(); err != nil {
+		rows.Close()
+		return OrchestratorReceipt{}, err
+	}
+	if err := rows.Close(); err != nil {
+		return OrchestratorReceipt{}, err
+	}
+	storedPlan.Definition.Shards = make([][]string, len(storedPlan.Jobs))
+	for index := range storedPlan.Jobs {
+		storedPlan.Definition.Shards[index] = append([]string(nil), storedPlan.Jobs[index].SurfaceIDs...)
+	}
+	var batch validatedOrchestratorBatch
+	if carrier == nil {
+		batch, err = validateOrchestratorBatch(request.BatchRoot, storedPlan, lease, false)
+		if err != nil {
+			return OrchestratorReceipt{}, fmt.Errorf("validate final batch: %w", err)
+		}
+		batch.BatchRoot = request.BatchRoot
+	} else {
+		batch = *carrier
+		if batch.BatchRoot != request.BatchRoot {
+			return OrchestratorReceipt{}, fmt.Errorf("validated batch root drift")
+		}
+	}
+	if batch.Candidate.Commit != candidateCommit || batch.Candidate.SHA256 != candidateSHA || batch.Tools.Commit != toolsCommit || batch.Tools.SHA256 != toolsSHA {
+		return OrchestratorReceipt{}, fmt.Errorf("final batch campaign binding drift")
+	}
+	if len(batch.ProofStates) != len(jobSurfaces) {
 		return OrchestratorReceipt{}, fmt.Errorf("validated batch must adjudicate the exact shard in v1")
 	}
-	proofStates := make(map[string]string, len(jobSurfaces))
 	for _, id := range jobSurfaces {
-		switch adjudications[id] {
-		case "matched":
-			proofStates[id] = "accepted"
-		case "product-mismatch":
-			proofStates[id] = "rejected"
-		case "inconclusive":
+		if batch.ProofStates[id] == "inconclusive" {
 			return OrchestratorReceipt{}, fmt.Errorf("validated batch contains inconclusive evidence")
-		default:
+		}
+		if batch.ProofStates[id] != "accepted" && batch.ProofStates[id] != "rejected" {
 			return OrchestratorReceipt{}, fmt.Errorf("validated batch must adjudicate the exact shard in v1")
 		}
 	}
-	bindingSHA := replayBytesSHA256(bindingSnapshot.Data)
-	receiptID := "receipt-" + replayBytesSHA256([]byte(lease.CampaignID + "\x00" + lease.JobID + "\x00" + fmt.Sprint(lease.Generation) + "\x00" + batch.ManifestSHA256 + "\x00" + bindingSHA))[:16]
+	proofStates := batch.ProofStates
+	bindingSHA := batch.AuthoritySHA256
+	receiptIdentity := lease.CampaignID + "\x00" + lease.JobID + "\x00" + fmt.Sprint(lease.Generation) + "\x00" + batch.ManifestSHA256 + "\x00" + bindingSHA
+	if batch.SchemaVersion == orchestratorProductionBatchSchema {
+		receiptIdentity = "orchestrator-production-receipt/v3\x00" + receiptIdentity
+	}
+	receiptID := "receipt-" + replayBytesSHA256([]byte(receiptIdentity))[:16]
 	receipt := OrchestratorReceipt{ID: receiptID, CampaignID: lease.CampaignID, JobID: lease.JobID, Generation: lease.Generation, BatchRoot: request.BatchRoot, ManifestSHA256: batch.ManifestSHA256, BindingSHA256: bindingSHA}
 	for _, state := range proofStates {
 		if state == "accepted" {
 			receipt.AcceptedCredit++
 		} else {
 			receipt.RejectedCredit++
+		}
+	}
+	if batch.SchemaVersion == orchestratorProductionBatchSchema {
+		if err := verifyProductionBatchIdentity(batch.BatchRoot, batch.AuthoritySHA256, batch.ProductionFiles); err != nil {
+			return OrchestratorReceipt{}, fmt.Errorf("verify production batch identity: %w", err)
 		}
 	}
 	existing, existingStates, found, err := loadOrchestratorReceipt(o.db, lease.CampaignID, lease.JobID, lease.Generation)
@@ -764,6 +808,11 @@ func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now tim
 		return OrchestratorReceipt{}, err
 	}
 	defer tx.Rollback()
+	if batch.SchemaVersion == orchestratorProductionBatchSchema {
+		if err := verifyProductionBatchIdentity(batch.BatchRoot, batch.AuthoritySHA256, batch.ProductionFiles); err != nil {
+			return OrchestratorReceipt{}, fmt.Errorf("verify production batch identity at receipt transaction: %w", err)
+		}
+	}
 	result, err := tx.Exec(`INSERT INTO receipts (id, campaign_id, job_id, generation, batch_root, manifest_sha256, binding_sha256, validated, recorded_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?) ON CONFLICT(campaign_id, job_id, generation) DO NOTHING`, receipt.ID, receipt.CampaignID, receipt.JobID, receipt.Generation, receipt.BatchRoot, receipt.ManifestSHA256, receipt.BindingSHA256, now.UTC().UnixMilli())
 	if err != nil {
 		return OrchestratorReceipt{}, fmt.Errorf("record validated receipt: %w", err)

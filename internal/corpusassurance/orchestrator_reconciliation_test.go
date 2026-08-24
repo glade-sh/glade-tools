@@ -295,12 +295,14 @@ func TestVerifyOrchestratorSalesforceReconciliationRejectsTamper(t *testing.T) {
 }
 
 type orchestratorSalesforceReconciliationFixture struct {
-	plan           OrchestratorCampaignPlan
-	lease          OrchestratorLease
-	oraclePlanPath string
-	bindingPath    string
-	files          SalesforceShardFiles
-	workerRoot     string
+	plan             OrchestratorCampaignPlan
+	lease            OrchestratorLease
+	oraclePlanPath   string
+	bindingPath      string
+	files            SalesforceShardFiles
+	workerRoot       string
+	oracleBundleRoot string
+	localProofPath   string
 }
 
 func (fixture orchestratorSalesforceReconciliationFixture) request(outputRoot string) OrchestratorSalesforceReconciliationRequest {
@@ -521,7 +523,7 @@ func newOrchestratorSalesforceReconciliationFixture(t *testing.T) orchestratorSa
 	if _, err := WriteOrchestratorBatchBinding(bindingPath, plan, lease); err != nil {
 		t.Fatal(err)
 	}
-	return orchestratorSalesforceReconciliationFixture{plan: plan, lease: lease, oraclePlanPath: oraclePlanPath, bindingPath: bindingPath, files: files, workerRoot: workerRoot}
+	return orchestratorSalesforceReconciliationFixture{plan: plan, lease: lease, oraclePlanPath: oraclePlanPath, bindingPath: bindingPath, files: files, workerRoot: workerRoot, oracleBundleRoot: outputRoot, localProofPath: inputs.localProofPath}
 }
 
 func withOraclePlanCampaignScope(t *testing.T, fixture orchestratorSalesforceReconciliationFixture) orchestratorSalesforceReconciliationFixture {

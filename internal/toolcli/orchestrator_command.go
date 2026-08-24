@@ -22,7 +22,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|hub-observe|reserve|receipt|worker-once|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|worker-transfer|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|hub-observe|reserve|receipt|worker-once|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|production-build|worker-transfer|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
@@ -80,6 +80,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err != nil {
 			return err
 		}
+		completion.ExecutedTools = corpusassurance.RuntimeArtifact{Commit: plan.Definition.Tools.Commit, OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: executingSHA}
 		return writeOrchestratorOutput(w, completion)
 	case "raw-ingest":
 		flags := orchestratorFlags("raw-ingest")
@@ -340,6 +341,34 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			return err
 		}
 		return writeOrchestratorOutput(w, transfer)
+	case "production-build":
+		flags := orchestratorFlags("production-build")
+		requestPath := flags.String("request", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*requestPath); err != nil {
+			return err
+		}
+		if !filepath.IsAbs(*requestPath) || filepath.Clean(*requestPath) != *requestPath {
+			return errors.New("absolute clean production build request path is required")
+		}
+		info, err := os.Lstat(*requestPath)
+		if err != nil || !info.Mode().IsRegular() || info.Mode().Perm() != 0o600 {
+			return errors.New("production build requires a mode-0600 regular request")
+		}
+		var request corpusassurance.BuildOrchestratorProductionBatchRequest
+		if err := readOrchestratorJSON(*requestPath, &request); err != nil {
+			return err
+		}
+		manifest, err := corpusassurance.BuildOrchestratorProductionBatch(request)
+		if err != nil {
+			return err
+		}
+		return writeOrchestratorOutput(w, manifest)
 	case "cleanup-takeover":
 		flags := orchestratorFlags("cleanup-takeover")
 		database, requestPath := flags.String("db", "", ""), flags.String("request", "", "")
