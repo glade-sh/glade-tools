@@ -22,7 +22,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-once|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|worker-transfer|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|hub-observe|reserve|receipt|worker-once|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|worker-transfer|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
@@ -498,6 +498,25 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 				return err
 			}
 			return writeOrchestratorOutput(w, map[string]string{"allocation": *allocation, "status": "reserved"})
+		})
+	case "hub-observe":
+		flags := orchestratorFlags("hub-observe")
+		database, observationPath := flags.String("db", "", ""), flags.String("observation", "", "")
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*database, *observationPath); err != nil {
+			return err
+		}
+		observation, err := corpusassurance.ReadOrchestratorHubObservation(*observationPath)
+		if err != nil {
+			return err
+		}
+		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
+			if err := orchestrator.ObserveHub(observation); err != nil {
+				return err
+			}
+			return writeOrchestratorOutput(w, map[string]string{"status": "hub-observed"})
 		})
 	case "receipt":
 		flags := orchestratorFlags("receipt")

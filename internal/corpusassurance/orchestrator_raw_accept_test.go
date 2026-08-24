@@ -32,6 +32,7 @@ func TestAcceptOrchestratorRawCanaryClosesCleanupWithoutProofCredit(t *testing.T
 	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-dev-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-canary", now); err != nil {
 		t.Fatal(err)
 	}

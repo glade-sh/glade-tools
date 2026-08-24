@@ -20,6 +20,20 @@ type Orchestrator struct {
 	db *sql.DB
 }
 
+// OrchestratorHubObservation is the sanitized coordinator-local health
+// snapshot used before allocating a scratch org. Quota pointers distinguish a
+// reported zero from an unavailable limit.
+type OrchestratorHubObservation struct {
+	HubAlias                   string    `json:"hubAlias"`
+	ObservedAt                 time.Time `json:"observedAt"`
+	Healthy                    bool      `json:"healthy"`
+	Quarantined                bool      `json:"quarantined"`
+	DailyScratchOrgsRemaining  *int      `json:"dailyScratchOrgsRemaining"`
+	ActiveScratchOrgsRemaining *int      `json:"activeScratchOrgsRemaining"`
+}
+
+const orchestratorHubObservationMaxAge = 2 * time.Minute
+
 type OrchestratorArtifact struct {
 	Commit string `json:"commit"`
 	SHA256 string `json:"sha256"`
@@ -176,6 +190,10 @@ func OpenOrchestrator(path string) (*Orchestrator, error) {
 	if err := migrateOrchestratorJobs(db); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("migrate orchestrator schema: %w", err)
+	}
+	if err := ensureHubObservationColumns(db); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("initialize hub observations: %w", err)
 	}
 	return orchestrator, nil
 }
@@ -371,6 +389,92 @@ func (o *Orchestrator) SetHubCapacity(hubAlias string, capacity int) error {
 	return nil
 }
 
+func (o *Orchestrator) ObserveHub(observation OrchestratorHubObservation) error {
+	if err := validateHubObservation(observation); err != nil {
+		return err
+	}
+	_, err := o.db.Exec(`INSERT INTO hub_observations (hub_alias, observed_at, healthy, quarantined, daily_scratch_orgs_remaining, active_scratch_orgs_remaining) VALUES (?, ?, ?, ?, ?, ?)`, observation.HubAlias, observation.ObservedAt.UTC().UnixMilli(), boolInt(observation.Healthy), boolInt(observation.Quarantined), nullableInt(observation.DailyScratchOrgsRemaining), nullableInt(observation.ActiveScratchOrgsRemaining))
+	return err
+}
+
+func ReadOrchestratorHubObservation(path string) (OrchestratorHubObservation, error) {
+	var observation OrchestratorHubObservation
+	if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+		return observation, fmt.Errorf("absolute clean hub observation path is required")
+	}
+	snapshot, err := readRegularFileSnapshot(path)
+	if err != nil || snapshot.Mode.Perm() != 0o600 {
+		return observation, fmt.Errorf("hub observation must be a mode 0600 regular file")
+	}
+	if err := decodeExactJSON(snapshot.Data, &observation); err != nil {
+		return observation, fmt.Errorf("decode hub observation: %w", err)
+	}
+	if err := validateHubObservation(observation); err != nil {
+		return observation, err
+	}
+	return observation, nil
+}
+
+func validateHubObservation(observation OrchestratorHubObservation) error {
+	if !safeOrchestratorToken(observation.HubAlias) || observation.ObservedAt.IsZero() {
+		return fmt.Errorf("safe hub alias and observation time are required")
+	}
+	for name, remaining := range map[string]*int{
+		"DailyScratchOrgs":  observation.DailyScratchOrgsRemaining,
+		"ActiveScratchOrgs": observation.ActiveScratchOrgsRemaining,
+	} {
+		if remaining != nil && *remaining < 0 {
+			return fmt.Errorf("%s remaining cannot be negative", name)
+		}
+	}
+	return nil
+}
+
+func (o *Orchestrator) requireReadyHub(tx *sql.Tx, hubAlias string, now time.Time) (int64, int64, error) {
+	var observationID int64
+	var observedAt int64
+	var healthy, quarantined, consumed int
+	var daily, active sql.NullInt64
+	err := tx.QueryRow(`SELECT id, observed_at, healthy, quarantined, consumed, daily_scratch_orgs_remaining, active_scratch_orgs_remaining FROM hub_observations WHERE hub_alias = ? ORDER BY id DESC LIMIT 1`, hubAlias).Scan(&observationID, &observedAt, &healthy, &quarantined, &consumed, &daily, &active)
+	if errors.Is(err, sql.ErrNoRows) {
+		return 0, 0, fmt.Errorf("hub readiness observation is missing")
+	}
+	if err != nil {
+		return 0, 0, err
+	}
+	age := now.UTC().UnixMilli() - observedAt
+	if age < 0 || age > orchestratorHubObservationMaxAge.Milliseconds() {
+		return 0, 0, fmt.Errorf("hub readiness observation is stale")
+	}
+	if healthy != 1 {
+		return 0, 0, fmt.Errorf("hub is unhealthy")
+	}
+	if quarantined != 0 {
+		return 0, 0, fmt.Errorf("hub is quarantined")
+	}
+	if consumed != 0 {
+		return 0, 0, fmt.Errorf("hub readiness observation is already consumed")
+	}
+	if !daily.Valid || !active.Valid {
+		return 0, 0, fmt.Errorf("hub scratch-org quotas are unavailable")
+	}
+	var reserved int64
+	if err := tx.QueryRow(`SELECT reserved FROM hub_capacity WHERE hub_alias = ?`, hubAlias).Scan(&reserved); err != nil {
+		return 0, 0, fmt.Errorf("hub capacity is unavailable")
+	}
+	if daily.Int64 <= reserved || active.Int64 <= reserved {
+		return 0, 0, fmt.Errorf("hub capacity or scratch-org quota is exhausted")
+	}
+	result, err := tx.Exec(`UPDATE hub_observations SET consumed = 1 WHERE id = ? AND consumed = 0`, observationID)
+	if err != nil {
+		return 0, 0, err
+	}
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return 0, 0, fmt.Errorf("hub readiness observation changed concurrently")
+	}
+	return daily.Int64, active.Int64, nil
+}
+
 func (o *Orchestrator) Reserve(lease OrchestratorLease, hubAlias, allocationAlias string, now time.Time) error {
 	if !safeOrchestratorToken(hubAlias) || !safeOrchestratorToken(allocationAlias) {
 		return fmt.Errorf("safe hub and allocation aliases are required")
@@ -384,12 +488,16 @@ func (o *Orchestrator) Reserve(lease OrchestratorLease, hubAlias, allocationAlia
 	if err := tx.QueryRow(`SELECT count(*) FROM jobs WHERE campaign_id = ? AND id = ? AND generation = ? AND leased_by = ? AND status = 'running' AND lease_until > ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker, now.UTC().UnixMilli()).Scan(&current); err != nil || current != 1 {
 		return fmt.Errorf("reservation requires current campaign lease")
 	}
-	result, err := tx.Exec(`UPDATE hub_capacity SET reserved = reserved + 1 WHERE hub_alias = ? AND reserved < capacity`, hubAlias)
+	dailyRemaining, activeRemaining, err := o.requireReadyHub(tx, hubAlias, now)
+	if err != nil {
+		return err
+	}
+	result, err := tx.Exec(`UPDATE hub_capacity SET reserved = reserved + 1 WHERE hub_alias = ? AND reserved < capacity AND reserved < ? AND reserved < ?`, hubAlias, dailyRemaining, activeRemaining)
 	if err != nil {
 		return err
 	}
 	if rows, _ := result.RowsAffected(); rows != 1 {
-		return fmt.Errorf("hub capacity is exhausted")
+		return fmt.Errorf("hub capacity or observed scratch-org quota is exhausted")
 	}
 	if _, err := tx.Exec(`INSERT INTO scratch_allocations (allocation_alias, hub_alias, campaign_id, job_id, generation, state, reserved_at) VALUES (?, ?, ?, ?, ?, 'reserved', ?)`, allocationAlias, hubAlias, lease.CampaignID, lease.JobID, lease.Generation, now.UTC().UnixMilli()); err != nil {
 		return fmt.Errorf("reserve global allocation alias: %w", err)
@@ -890,6 +998,56 @@ func safeOrchestratorToken(value string) bool {
 	return value != "" && safeAttemptRunID(value)
 }
 
+func boolInt(value bool) int {
+	if value {
+		return 1
+	}
+	return 0
+}
+
+func nullableInt(value *int) any {
+	if value == nil {
+		return nil
+	}
+	return *value
+}
+
+func ensureHubObservationColumns(db *sql.DB) error {
+	rows, err := db.Query(`PRAGMA table_info(hub_observations)`)
+	if err != nil {
+		return err
+	}
+	columns := map[string]bool{}
+	for rows.Next() {
+		var cid, notNull, primaryKey int
+		var name, columnType string
+		var defaultValue sql.NullString
+		if err := rows.Scan(&cid, &name, &columnType, &notNull, &defaultValue, &primaryKey); err != nil {
+			return err
+		}
+		columns[name] = true
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	if err := rows.Close(); err != nil {
+		return err
+	}
+	for name, definition := range map[string]string{
+		"quarantined":                   "INTEGER NOT NULL DEFAULT 0",
+		"consumed":                      "INTEGER NOT NULL DEFAULT 0",
+		"daily_scratch_orgs_remaining":  "INTEGER",
+		"active_scratch_orgs_remaining": "INTEGER",
+	} {
+		if !columns[name] {
+			if _, err := db.Exec(`ALTER TABLE hub_observations ADD COLUMN ` + name + ` ` + definition); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 const orchestratorSchema = `
 CREATE TABLE IF NOT EXISTS campaigns (
   id TEXT PRIMARY KEY,
@@ -942,6 +1100,10 @@ CREATE TABLE IF NOT EXISTS hub_observations (
   hub_alias TEXT NOT NULL,
   observed_at INTEGER NOT NULL,
   healthy INTEGER NOT NULL,
+  quarantined INTEGER NOT NULL DEFAULT 0,
+  consumed INTEGER NOT NULL DEFAULT 0,
+  daily_scratch_orgs_remaining INTEGER,
+  active_scratch_orgs_remaining INTEGER,
   detail TEXT NOT NULL DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS receipts (

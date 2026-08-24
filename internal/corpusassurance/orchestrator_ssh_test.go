@@ -123,6 +123,7 @@ func TestRunOrchestratorSSHDispatchRequiresCurrentReservedAllocation(t *testing.
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-a", now); err != nil {
 		t.Fatal(err)
 	}
@@ -269,6 +270,7 @@ func readyOrchestratorSSHTestRequest(t *testing.T, root string) (OrchestratorCam
 	if err := orchestrator.SetHubCapacity("sealed-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-hub", "scratch-a", now); err != nil {
 		t.Fatal(err)
 	}

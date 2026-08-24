@@ -256,6 +256,7 @@ func TestOrchestratorWorkerRunsCoordinatorReconciliationValidationBeforeCredit(t
 
 func TestOrchestratorWorkerRenewsLeaseDuringLongRunner(t *testing.T) {
 	orchestrator, plan, lease, _, batch, oraclePlan := readyOrchestratorWorker(t)
+	observeReadyHub(t, orchestrator, "hub-a", time.Now().UTC())
 	start := time.Now().UTC()
 	originalUntil := start.Add(90 * time.Millisecond)
 	lease.LeaseUntil = originalUntil
@@ -312,10 +313,15 @@ func TestOrchestratorWorkerRetryClaimsOnlyItsCleanupJournal(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 2); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(first, "hub-a", "scratch-first", now); err != nil {
 		t.Fatal(err)
 	}
 	if err := orchestrator.recordWorkerFailure(first, orchestratorWorkerWrapperFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	two := 2
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now.Add(2 * time.Minute), Healthy: true, DailyScratchOrgsRemaining: &two, ActiveScratchOrgsRemaining: &two}); err != nil {
 		t.Fatal(err)
 	}
 	second, err := orchestrator.Lease(plan.CampaignID, "worker-a", now.Add(2*time.Minute), time.Minute)
@@ -383,6 +389,7 @@ func TestOrchestratorWorkerSuccessfulRetryClosesResolvedPriorGenerationAction(t 
 	if second.JobID != first.JobID || second.Generation != first.Generation+1 {
 		t.Fatalf("retry lease = %#v, want retry of %#v", second, first)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", secondNow)
 	bindingPath := filepath.Join(batch, "evidence", "ORCHESTRATOR_BINDING.json")
 	if err := os.Remove(bindingPath); err != nil {
 		t.Fatal(err)
@@ -409,6 +416,7 @@ func TestOrchestratorCleanupTakeoverClosesExactAction(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-takeover", now); err != nil {
 		t.Fatal(err)
 	}
@@ -434,6 +442,7 @@ func TestOrchestratorCleanupTakeoverRunsTypedSalesforceCleanupBeforeClosingJourn
 	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-dev-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-takeover-typed", now); err != nil {
 		t.Fatal(err)
 	}
@@ -477,6 +486,7 @@ func TestOrchestratorCleanupTakeoverKeepsJournalOpenWhenResidueRemains(t *testin
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-takeover-failed", now); err != nil {
 		t.Fatal(err)
 	}
@@ -517,6 +527,7 @@ func TestOrchestratorCleanupTakeoverRequiresWrittenReceiptAfterCallback(t *testi
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-receipt-required", now); err != nil {
 		t.Fatal(err)
 	}
@@ -548,6 +559,7 @@ func TestOrchestratorCleanupTakeoverRejectsTargetAliasMismatch(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-claim-a", now); err != nil {
 		t.Fatal(err)
 	}
@@ -586,6 +598,7 @@ func TestOrchestratorCleanupTakeoverRejectsExpiredOrForgedClaimsBeforeCleanup(t 
 			if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 				t.Fatal(err)
 			}
+			observeReadyHub(t, orchestrator, "hub-a", now)
 			if err := orchestrator.Reserve(lease, "hub-a", "scratch-claim-check", now); err != nil {
 				t.Fatal(err)
 			}
@@ -630,6 +643,7 @@ func TestOrchestratorCleanupTakeoverRequiresPreflightReceipt(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-preflight-required", now); err != nil {
 		t.Fatal(err)
 	}
@@ -659,6 +673,7 @@ func TestOrchestratorCleanupTakeoverValidReceiptSkipsCleanupAndCloses(t *testing
 	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-dev-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-existing-receipt", now); err != nil {
 		t.Fatal(err)
 	}
@@ -699,6 +714,7 @@ func TestOrchestratorCleanupTakeoverReplaysRecoveredExitZeroTimeoutReceipt(t *te
 	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-dev-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-recovered-replay", now); err != nil {
 		t.Fatal(err)
 	}
@@ -747,6 +763,7 @@ func TestOrchestratorCleanupTakeoverReclaimsExpiredClaimWithExistingReceipt(t *t
 	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-dev-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-replay-after-expiry", now); err != nil {
 		t.Fatal(err)
 	}
@@ -814,6 +831,7 @@ func TestOrchestratorCleanupTakeoverRejectsSymlinkedExistingReceipt(t *testing.T
 	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-dev-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-symlinked-receipt", now); err != nil {
 		t.Fatal(err)
 	}
@@ -858,6 +876,7 @@ func TestOrchestratorCleanupTakeoverRejectsWorldReadableExistingReceipt(t *testi
 	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "sealed-dev-hub", now)
 	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-world-readable-receipt", now); err != nil {
 		t.Fatal(err)
 	}
@@ -891,6 +910,7 @@ func TestOrchestratorCleanupTakeoverRejectsInvalidExistingReceipt(t *testing.T) 
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-invalid-receipt", now); err != nil {
 		t.Fatal(err)
 	}
@@ -998,6 +1018,7 @@ func readyOrchestratorWorker(t *testing.T) (*Orchestrator, OrchestratorCampaignP
 	if _, err := WriteOrchestratorBatchBinding(filepath.Join(batch, "evidence", "ORCHESTRATOR_BINDING.json"), plan, lease); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	return orchestrator, plan, lease, now, batch, oraclePlan
 }
 

@@ -77,6 +77,45 @@ func TestOrchestratorMigratesLegacyTwoShardSchema(t *testing.T) {
 	}
 }
 
+func TestOrchestratorMigratesHubObservationQuotaColumns(t *testing.T) {
+	databasePath := filepath.Join(t.TempDir(), "orchestrator.db")
+	db, err := sql.Open("sqlite", databasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.Exec(`CREATE TABLE hub_observations (id INTEGER PRIMARY KEY, hub_alias TEXT NOT NULL, observed_at INTEGER NOT NULL, healthy INTEGER NOT NULL, detail TEXT NOT NULL DEFAULT '')`); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Close(); err != nil {
+		t.Fatal(err)
+	}
+	orchestrator, err := OpenOrchestrator(databasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = orchestrator.Close() })
+	rows, err := orchestrator.db.Query(`PRAGMA table_info(hub_observations)`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	columns := map[string]bool{}
+	for rows.Next() {
+		var cid, notNull, primaryKey int
+		var name, columnType string
+		var defaultValue sql.NullString
+		if err := rows.Scan(&cid, &name, &columnType, &notNull, &defaultValue, &primaryKey); err != nil {
+			t.Fatal(err)
+		}
+		columns[name] = true
+	}
+	for _, column := range []string{"quarantined", "consumed", "daily_scratch_orgs_remaining", "active_scratch_orgs_remaining"} {
+		if !columns[column] {
+			t.Fatalf("migrated hub observation column %q is missing", column)
+		}
+	}
+}
+
 func TestOrchestratorPlansExactlyTwoBoundShardJobs(t *testing.T) {
 	root := t.TempDir()
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
@@ -275,6 +314,7 @@ func TestOrchestratorReservesGlobalHubSlotAndClosesClaimedCleanup(t *testing.T) 
 	if err := orchestrator.SetHubCapacity("hub-a", 2); err == nil {
 		t.Fatal("caller reset existing hub capacity")
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(first, "hub-a", "scratch-global-1", now); err != nil {
 		t.Fatal(err)
 	}
@@ -285,6 +325,7 @@ func TestOrchestratorReservesGlobalHubSlotAndClosesClaimedCleanup(t *testing.T) 
 	if err := orchestrator.Reserve(second, "hub-a", "scratch-global-1", now); err == nil {
 		t.Fatal("duplicate global allocation alias accepted")
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(second, "hub-a", "scratch-global-2", now); err == nil || !strings.Contains(err.Error(), "capacity") {
 		t.Fatalf("capacity error = %v", err)
 	}
@@ -302,8 +343,240 @@ func TestOrchestratorReservesGlobalHubSlotAndClosesClaimedCleanup(t *testing.T) 
 	if err := orchestrator.CloseCleanup(claim, now.Add(time.Second)); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now.Add(2*time.Second))
 	if err := orchestrator.Reserve(second, "hub-a", "scratch-global-2", now.Add(2*time.Second)); err != nil {
 		t.Fatalf("released capacity was not reusable: %v", err)
+	}
+}
+
+func TestOrchestratorReserveRequiresRecentHealthyHubQuotaObservation(t *testing.T) {
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	one := 1
+	tests := []struct {
+		name        string
+		observation *OrchestratorHubObservation
+		want        string
+	}{
+		{name: "missing"},
+		{name: "stale", observation: &OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now.Add(-2*time.Minute - time.Second), Healthy: true, ActiveScratchOrgsRemaining: &one, DailyScratchOrgsRemaining: &one}},
+		{name: "unhealthy", observation: &OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: false}},
+		{name: "quarantined", observation: &OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, Quarantined: true, ActiveScratchOrgsRemaining: &one, DailyScratchOrgsRemaining: &one}},
+		{name: "missing quotas", observation: &OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true}},
+		{name: "daily exhausted", observation: &OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, ActiveScratchOrgsRemaining: &one, DailyScratchOrgsRemaining: new(int)}},
+		{name: "active exhausted", observation: &OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, ActiveScratchOrgsRemaining: new(int), DailyScratchOrgsRemaining: &one}},
+		{name: "healthy", observation: &OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, ActiveScratchOrgsRemaining: &one, DailyScratchOrgsRemaining: &one}, want: "pass"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			orchestrator, plan := initializedTestOrchestrator(t)
+			lease, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+				t.Fatal(err)
+			}
+			if test.observation != nil {
+				if err := orchestrator.ObserveHub(*test.observation); err != nil {
+					t.Fatal(err)
+				}
+			}
+			err = orchestrator.Reserve(lease, "hub-a", "scratch-gate", now)
+			if test.want == "pass" {
+				if err != nil {
+					t.Fatalf("healthy reservation rejected: %v", err)
+				}
+				return
+			}
+			if err == nil {
+				t.Fatal("reservation accepted without a current healthy quota observation")
+			}
+			var reserved, allocations int
+			if err := orchestrator.db.QueryRow(`SELECT reserved FROM hub_capacity WHERE hub_alias = 'hub-a'`).Scan(&reserved); err != nil {
+				t.Fatal(err)
+			}
+			if err := orchestrator.db.QueryRow(`SELECT count(*) FROM scratch_allocations`).Scan(&allocations); err != nil {
+				t.Fatal(err)
+			}
+			if reserved != 0 || allocations != 0 {
+				t.Fatalf("rejected reservation allocated state: reserved=%d allocations=%d", reserved, allocations)
+			}
+		})
+	}
+}
+
+func TestOrchestratorReserveDoesNotOversubscribeObservedHubQuota(t *testing.T) {
+	root := t.TempDir()
+	databasePath := filepath.Join(root, "orchestrator.db")
+	orchestrator, err := OpenOrchestrator(databasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = orchestrator.Close() })
+	peer, err := OpenOrchestrator(databasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = peer.Close() })
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	plan, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	first, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := orchestrator.Lease(plan.CampaignID, "worker-b", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 2); err != nil {
+		t.Fatal(err)
+	}
+	one := 1
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, DailyScratchOrgsRemaining: &one, ActiveScratchOrgsRemaining: &one}); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(first, "hub-a", "scratch-one", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := peer.Reserve(second, "hub-a", "scratch-two", now); err == nil {
+		t.Fatal("second reservation oversubscribed the observed quota")
+	}
+}
+
+func TestOrchestratorObservationPermitIsNotRestoredAfterCleanup(t *testing.T) {
+	orchestrator, plan := initializedTestOrchestrator(t)
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	first, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := orchestrator.Lease(plan.CampaignID, "worker-b", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 2); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
+	if err := orchestrator.Reserve(first, "hub-a", "scratch-one", now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.CloseCleanup(claim, now.Add(time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(second, "hub-a", "scratch-two", now); err == nil {
+		t.Fatal("cleanup restored the consumed observation permit")
+	}
+}
+
+func TestOrchestratorReserveIgnoresFutureObservationForCurrentCorrection(t *testing.T) {
+	orchestrator, plan := initializedTestOrchestrator(t)
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	lease, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	one := 1
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now.Add(-time.Second), Healthy: true, DailyScratchOrgsRemaining: &one, ActiveScratchOrgsRemaining: &one}); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now.Add(time.Minute), Healthy: false}); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, DailyScratchOrgsRemaining: &one, ActiveScratchOrgsRemaining: &one}); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-current", now); err != nil {
+		t.Fatalf("corrected current observation was not selected: %v", err)
+	}
+}
+
+func TestOrchestratorReserveRejectsNewestFutureObservation(t *testing.T) {
+	orchestrator, plan := initializedTestOrchestrator(t)
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	lease, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	one := 1
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now.Add(-time.Second), Healthy: true, DailyScratchOrgsRemaining: &one, ActiveScratchOrgsRemaining: &one}); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now.Add(time.Second), Healthy: false}); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-future", now); err == nil || !strings.Contains(err.Error(), "stale") {
+		t.Fatalf("future newest observation error = %v", err)
+	}
+}
+
+func TestOrchestratorSimultaneousReservationsClaimOneObservationPermit(t *testing.T) {
+	databasePath := filepath.Join(t.TempDir(), "orchestrator.db")
+	orchestrator, err := OpenOrchestrator(databasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = orchestrator.Close() })
+	peer, err := OpenOrchestrator(databasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = peer.Close() })
+	root := t.TempDir()
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	plan, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	first, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := orchestrator.Lease(plan.CampaignID, "worker-b", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 2); err != nil {
+		t.Fatal(err)
+	}
+	two := 2
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: "hub-a", ObservedAt: now, Healthy: true, DailyScratchOrgsRemaining: &two, ActiveScratchOrgsRemaining: &two}); err != nil {
+		t.Fatal(err)
+	}
+	barrier := make(chan struct{})
+	results := make(chan error, 2)
+	go func() { <-barrier; results <- orchestrator.Reserve(first, "hub-a", "scratch-barrier-one", now) }()
+	go func() { <-barrier; results <- peer.Reserve(second, "hub-a", "scratch-barrier-two", now) }()
+	close(barrier)
+	successes := 0
+	for range 2 {
+		if <-results == nil {
+			successes++
+		}
+	}
+	if successes != 1 {
+		t.Fatalf("simultaneous reservations succeeded=%d, want 1", successes)
 	}
 }
 
@@ -317,6 +590,7 @@ func TestOrchestratorCleanupCloseRejectsReclaimedStaleToken(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-reclaimed", now); err != nil {
 		t.Fatal(err)
 	}
@@ -366,6 +640,7 @@ func TestOrchestratorRecordsOnlyValidatedCleanupClosedCredit(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-credit", now); err != nil {
 		t.Fatal(err)
 	}
@@ -446,6 +721,7 @@ func TestOrchestratorRejectsPartialShardCredit(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-partial", now); err != nil {
 		t.Fatal(err)
 	}
@@ -525,6 +801,7 @@ func readyOrchestratorReceiptWithoutCleanup(t *testing.T, definition Orchestrato
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-"+filepath.Base(batch), now); err != nil {
 		t.Fatal(err)
 	}
@@ -650,6 +927,7 @@ func TestOrchestratorRejectsReservationAfterLeaseExpiry(t *testing.T) {
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-expired", now.Add(time.Minute)); err == nil || !strings.Contains(err.Error(), "current") {
 		t.Fatalf("expired lease reservation error = %v", err)
 	}
@@ -663,6 +941,14 @@ func openTestOrchestrator(t *testing.T) *Orchestrator {
 	}
 	t.Cleanup(func() { _ = orchestrator.Close() })
 	return orchestrator
+}
+
+func observeReadyHub(t *testing.T, orchestrator *Orchestrator, hubAlias string, now time.Time) {
+	t.Helper()
+	one := 1
+	if err := orchestrator.ObserveHub(OrchestratorHubObservation{HubAlias: hubAlias, ObservedAt: now, Healthy: true, DailyScratchOrgsRemaining: &one, ActiveScratchOrgsRemaining: &one}); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func initializedTestOrchestrator(t *testing.T) (*Orchestrator, OrchestratorCampaignPlan) {
@@ -712,6 +998,7 @@ func readyOrchestratorReceipt(t *testing.T, definition OrchestratorCampaignDefin
 	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
 		t.Fatal(err)
 	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
 	if err := orchestrator.Reserve(lease, "hub-a", "scratch-"+filepath.Base(batch), now); err != nil {
 		t.Fatal(err)
 	}
