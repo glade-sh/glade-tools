@@ -178,6 +178,72 @@ func TestBuildTransferAndRecordOrchestratorProductionBatch(t *testing.T) {
 	}
 }
 
+func TestRecordProductionReceiptRehydratesPersistedAttemptCap(t *testing.T) {
+	inputs := newProductionWorkerInputsForTest(t)
+	if _, err := BuildOrchestratorProductionBatch(inputs.build); err != nil {
+		t.Fatal(err)
+	}
+	transfer, err := TransferOrchestratorWorkerBatch(OrchestratorWorkerTransferRequest{
+		Plan: inputs.fixture.plan, Lease: inputs.fixture.lease, SourceBatchRoot: inputs.build.OutputPath,
+		EvidenceRoot: inputs.worker.EvidenceRoot, OraclePlanPath: inputs.fixture.oraclePlanPath,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := inputs.orchestrator.Reserve(inputs.fixture.lease, inputs.worker.HubAlias, inputs.worker.AllocationAlias, inputs.now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := inputs.orchestrator.ClaimCleanup(inputs.fixture.plan.CampaignID, inputs.fixture.lease.Worker, inputs.now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := inputs.orchestrator.CloseCleanup(claim, inputs.now.Add(time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	receipt, err := inputs.orchestrator.RecordReceipt(OrchestratorReceiptRequest{Lease: inputs.fixture.lease, BatchRoot: transfer.BatchRoot}, inputs.now.Add(2*time.Second))
+	if err != nil || receipt.AcceptedCredit != 1 || receipt.RejectedCredit != 0 {
+		t.Fatalf("production receipt = %#v, err=%v", receipt, err)
+	}
+}
+
+func TestValidateProductionBatchAcceptsLegacyPlanAttemptCap(t *testing.T) {
+	output, fixture, manifest := buildStandaloneProductionBatchForTest(t)
+	legacyPlanPath := filepath.Join(output, "production", "ORCHESTRATOR_PLAN.json")
+	legacyPlan := fixture.plan
+	legacyPlan.MaxAttemptsPerJob = 0
+	writeJSONValue(t, legacyPlanPath, legacyPlan)
+	legacyPlanSHA := surfaceOracleFileSHA256(t, legacyPlanPath)
+	receiptPath := filepath.Join(output, "production", "salesforce", "SALESFORCE_RECONCILIATION.json")
+	receipt, _, err := readMode0600JSON[SalesforceReconciliation](receiptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	receipt.OrchestratorPlanSHA256 = legacyPlanSHA
+	writeJSONValue(t, receiptPath, receipt)
+	receiptSHA := surfaceOracleFileSHA256(t, receiptPath)
+	reviewPath := filepath.Join(output, "production", "PRODUCTION_REVIEW.json")
+	review, _, err := readMode0600JSON[ProductionRuntimeReview](reviewPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	review.PlanSHA256, review.ReconciliationSHA256 = legacyPlanSHA, receiptSHA
+	writeJSONValue(t, reviewPath, review)
+	for index := range manifest.Files {
+		switch manifest.Files[index].Path {
+		case "ORCHESTRATOR_PLAN.json":
+			manifest.Files[index].SHA256 = legacyPlanSHA
+		case "salesforce/SALESFORCE_RECONCILIATION.json":
+			manifest.Files[index].SHA256 = receiptSHA
+		case "PRODUCTION_REVIEW.json":
+			manifest.Files[index].SHA256 = surfaceOracleFileSHA256(t, reviewPath)
+		}
+	}
+	writeJSONValue(t, filepath.Join(output, "production", "PRODUCTION_RUNTIME_BATCH.json"), manifest)
+	if _, err := validateOrchestratorProductionBatch(output, fixture.plan, fixture.lease); err != nil {
+		t.Fatalf("legacy retained production plan rejected: %v", err)
+	}
+}
+
 func TestStackedSyntheticReceiptStoreEntriesRemainUniqueAcrossReplay(t *testing.T) {
 	root := t.TempDir()
 	scopePath := filepath.Join(root, "scope.json")

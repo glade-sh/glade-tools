@@ -243,11 +243,15 @@ func validateOrchestratorProductionBatch(root string, plan OrchestratorCampaignP
 	}
 	planPath, leasePath := filepath.Join(production, "ORCHESTRATOR_PLAN.json"), filepath.Join(production, "ORCHESTRATOR_LEASE.json")
 	retainedPlan, planBytes, err := readMode0600JSON[OrchestratorCampaignPlan](planPath)
-	if err != nil || !reflect.DeepEqual(retainedPlan, plan) {
+	retainedPlanForCompare, planForCompare := retainedPlan, plan
+	retainedMaxAttempts, retainedMaxErr := normalizedOrchestratorMaxAttemptsPerJob(retainedPlan.MaxAttemptsPerJob)
+	planMaxAttempts, planMaxErr := normalizedOrchestratorMaxAttemptsPerJob(plan.MaxAttemptsPerJob)
+	retainedPlanForCompare.MaxAttemptsPerJob, planForCompare.MaxAttemptsPerJob = retainedMaxAttempts, planMaxAttempts
+	if err != nil || retainedMaxErr != nil || planMaxErr != nil || !reflect.DeepEqual(retainedPlanForCompare, planForCompare) {
 		return validatedProductionBatch{}, fmt.Errorf("production orchestrator plan drift")
 	}
 	retainedLease, leaseBytes, err := readMode0600JSON[OrchestratorLease](leasePath)
-	if err != nil || !reflect.DeepEqual(retainedLease, lease) || validateOrchestratorWorkerPlanLease(retainedPlan, retainedLease) != nil {
+	if err != nil || !reflect.DeepEqual(retainedLease, lease) || validateOrchestratorWorkerPlanLease(retainedPlanForCompare, retainedLease) != nil {
 		return validatedProductionBatch{}, fmt.Errorf("production orchestrator lease drift")
 	}
 	proofPath := filepath.Join(production, "LOCAL_PROOF.json")

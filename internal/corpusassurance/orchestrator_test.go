@@ -68,6 +68,10 @@ func TestOrchestratorMigratesLegacyTwoShardSchema(t *testing.T) {
 	if strings.Contains(schema, "shard_index IN (0, 1)") {
 		t.Fatalf("legacy shard constraint remained: %s", schema)
 	}
+	var maxAttempts int
+	if err := orchestrator.db.QueryRow(`SELECT max_attempts_per_job FROM campaigns WHERE id = 'campaign'`).Scan(&maxAttempts); err != nil || maxAttempts != DefaultOrchestratorMaxAttemptsPerJob {
+		t.Fatalf("legacy campaign attempt cap = %d, err = %v", maxAttempts, err)
+	}
 	var foreignKeyErrors int
 	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM pragma_foreign_key_check`).Scan(&foreignKeyErrors); err != nil || foreignKeyErrors != 0 {
 		t.Fatalf("foreign keys after migration = %d, err = %v", foreignKeyErrors, err)
@@ -295,6 +299,160 @@ func TestOrchestratorLeasesAtLeastOnceAndHeartbeatsTransactionally(t *testing.T)
 	status, err := orchestrator.Status(plan.CampaignID)
 	if err != nil || status.Retryable != 1 || status.Failed != 0 || status.Unseen != 3 {
 		t.Fatalf("retry status = %#v, %v", status, err)
+	}
+}
+
+func TestOrchestratorLeaseStopsAfterDefaultAttemptCap(t *testing.T) {
+	root := t.TempDir()
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	plan, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two", "apex:System.Three"}}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	for generation := 1; generation <= 3; generation++ {
+		lease, err := orchestrator.Lease(plan.CampaignID, "worker-"+string(rune('a'+generation-1)), now, time.Minute)
+		if err != nil || lease.Generation != generation {
+			t.Fatalf("lease generation %d = %#v, %v", generation, lease, err)
+		}
+		now = now.Add(2 * time.Minute)
+	}
+	if _, err := orchestrator.Lease(plan.CampaignID, "worker-d", now, time.Minute); err == nil {
+		t.Fatal("expired job was leased after the default attempt cap")
+	}
+	var jobStatus string
+	if err := orchestrator.db.QueryRow(`SELECT status FROM jobs WHERE campaign_id = ? AND id = ?`, plan.CampaignID, plan.Jobs[0].ID).Scan(&jobStatus); err != nil {
+		t.Fatal(err)
+	}
+	if jobStatus != "failed" {
+		t.Fatalf("capped job status = %q, want failed", jobStatus)
+	}
+	var attempts, allocations, cleanup, credits int
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM attempts WHERE campaign_id = ? AND job_id = ?`, plan.CampaignID, plan.Jobs[0].ID).Scan(&attempts); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM scratch_allocations WHERE campaign_id = ? AND job_id = ?`, plan.CampaignID, plan.Jobs[0].ID).Scan(&allocations); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM cleanup_journal WHERE campaign_id = ? AND job_id = ?`, plan.CampaignID, plan.Jobs[0].ID).Scan(&cleanup); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM proof_credits WHERE campaign_id = ?`, plan.CampaignID).Scan(&credits); err != nil {
+		t.Fatal(err)
+	}
+	if attempts != 3 || allocations != 0 || cleanup != 0 || credits != 0 {
+		t.Fatalf("cap exhaustion leaked state: attempts=%d allocations=%d cleanup=%d credits=%d", attempts, allocations, cleanup, credits)
+	}
+}
+
+func TestOrchestratorPersistsConfiguredAttemptCap(t *testing.T) {
+	root := t.TempDir()
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	plan, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two", "apex:System.Three"}}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	plan.MaxAttemptsPerJob = 1
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	var maxAttempts int
+	if err := orchestrator.db.QueryRow(`SELECT max_attempts_per_job FROM campaigns WHERE id = ?`, plan.CampaignID).Scan(&maxAttempts); err != nil || maxAttempts != 1 {
+		t.Fatalf("stored attempt cap = %d, err = %v", maxAttempts, err)
+	}
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	if _, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := orchestrator.Lease(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute); err == nil {
+		t.Fatal("configured attempt cap was not enforced")
+	}
+}
+
+func TestOrchestratorCapExhaustionLeavesFinalGenerationCleanupClaimable(t *testing.T) {
+	root := t.TempDir()
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	plan, err := PlanOrchestratorCampaign(testOrchestratorDefinition(t, scope, [][]string{{"apex:System.One", "apex:System.Two", "apex:System.Three"}}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	var final OrchestratorLease
+	for generation := 1; generation <= 3; generation++ {
+		lease, err := orchestrator.Lease(plan.CampaignID, "worker-"+string(rune('a'+generation-1)), now, time.Minute)
+		if err != nil || lease.Generation != generation {
+			t.Fatalf("lease generation %d = %#v, %v", generation, lease, err)
+		}
+		final = lease
+		now = now.Add(2 * time.Minute)
+	}
+	reserveNow := now.Add(-2 * time.Minute)
+	if err := orchestrator.SetHubCapacity("hub-final", 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, orchestrator, "hub-final", reserveNow)
+	if err := orchestrator.Reserve(final, "hub-final", "scratch-final", reserveNow); err != nil {
+		t.Fatal(err)
+	}
+	capTime := now
+	if _, err := orchestrator.Lease(plan.CampaignID, "worker-d", capTime, time.Minute); err == nil {
+		t.Fatal("generation 4 was leased after cap exhaustion")
+	}
+	var jobStatus, attemptStatus, allocationState, cleanupState string
+	if err := orchestrator.db.QueryRow(`SELECT j.status, a.status FROM jobs j JOIN attempts a ON a.campaign_id = j.campaign_id AND a.job_id = j.id AND a.generation = j.generation WHERE j.campaign_id = ? AND j.id = ?`, plan.CampaignID, final.JobID).Scan(&jobStatus, &attemptStatus); err != nil {
+		t.Fatal(err)
+	}
+	if jobStatus != "failed" || attemptStatus != "failed" {
+		t.Fatalf("capped generation statuses = %q/%q, want failed/failed", jobStatus, attemptStatus)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "cleanup-takeover", capTime, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.CloseCleanup(claim, capTime.Add(time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT a.state, c.state FROM scratch_allocations a JOIN cleanup_journal c ON c.allocation_alias = a.allocation_alias WHERE a.allocation_alias = 'scratch-final'`).Scan(&allocationState, &cleanupState); err != nil {
+		t.Fatal(err)
+	}
+	if allocationState != "closed" || cleanupState != "closed" {
+		t.Fatalf("capped generation cleanup = %q/%q, want closed/closed", allocationState, cleanupState)
+	}
+	var reserved, receipts, credits, attempts int
+	if err := orchestrator.db.QueryRow(`SELECT reserved FROM hub_capacity WHERE hub_alias = 'hub-final'`).Scan(&reserved); err != nil {
+		t.Fatal(err)
+	}
+	carrier := validatedOrchestratorBatch{
+		BatchRoot: filepath.Join(t.TempDir(), "production-batch"), SchemaVersion: 1,
+		ManifestSHA256: strings.Repeat("a", 64), AuthoritySHA256: strings.Repeat("a", 64), Candidate: plan.Definition.Candidate, Tools: plan.Definition.Tools,
+		ProofStates: map[string]string{}, ProductionFiles: []ProductionRuntimeBatchFile{},
+	}
+	for _, surfaceID := range final.SurfaceIDs {
+		carrier.ProofStates[surfaceID] = "accepted"
+	}
+	if _, err := orchestrator.recordValidatedReceipt(OrchestratorReceiptRequest{Lease: final, BatchRoot: carrier.BatchRoot}, capTime.Add(2*time.Second), carrier); err == nil || !strings.Contains(err.Error(), "new receipt requires current running campaign attempt") {
+		t.Fatalf("failed capped generation receipt error = %v", err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM attempts WHERE campaign_id = ? AND job_id = ?`, plan.CampaignID, final.JobID).Scan(&attempts); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM receipts WHERE campaign_id = ?`, plan.CampaignID).Scan(&receipts); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM proof_credits WHERE campaign_id = ?`, plan.CampaignID).Scan(&credits); err != nil {
+		t.Fatal(err)
+	}
+	if reserved != 0 || attempts != 3 || receipts != 0 || credits != 0 {
+		t.Fatalf("capped generation state reserved=%d attempts=%d receipts=%d credits=%d", reserved, attempts, receipts, credits)
 	}
 }
 
