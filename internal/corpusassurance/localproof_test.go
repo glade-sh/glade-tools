@@ -315,6 +315,18 @@ func TestLocalProofPlannerAcceptsExecutableDeterministicEvidence(t *testing.T) {
 	}
 }
 
+func TestSelectLocalProofFixturesAssignsEachSurfaceOnce(t *testing.T) {
+	candidates := []localProofFixtureCandidate{
+		{entry: LocalProofFixture{ID: "first", OwnedSurfaceIDs: []string{"apex:One", "apex:Shared"}}, owned: map[string]bool{"apex:One": true, "apex:Shared": true}},
+		{entry: LocalProofFixture{ID: "second", OwnedSurfaceIDs: []string{"apex:Shared", "apex:Two"}}, owned: map[string]bool{"apex:Shared": true, "apex:Two": true}},
+	}
+
+	manifest := selectLocalProofFixtures(candidates)
+	if len(manifest.Fixtures) != 2 || !equalStrings(manifest.Fixtures[0].OwnedSurfaceIDs, []string{"apex:One", "apex:Shared"}) || !equalStrings(manifest.Fixtures[1].OwnedSurfaceIDs, []string{"apex:Two"}) {
+		t.Fatalf("fixtures = %#v", manifest.Fixtures)
+	}
+}
+
 func TestLocalProofRejectsDeclarationOnlyRuntimeExecution(t *testing.T) {
 	entry := LocalProofFixture{
 		ID: "declaration-only", Name: "declaration-only", Path: filepath.Join(t.TempDir(), "fixture.json"),
