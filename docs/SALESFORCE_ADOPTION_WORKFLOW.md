@@ -413,6 +413,7 @@ After a successful dispatch, return the exact raw tree before reconciliation:
 ```bash
 glade-tools corpus assurance orchestrator ssh-fetch \
   --plan /absolute/coordinator/PLAN.json \
+  --remote-plan /absolute/worker/PLAN.json \
   --lease /absolute/coordinator/LEASE.json \
   --ssh-receipt /absolute/coordinator/SSH_DISPATCH.json \
   --host operator@worker.example.internal \

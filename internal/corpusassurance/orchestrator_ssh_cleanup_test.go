@@ -475,7 +475,7 @@ func coordinatorCleanupTestRequest(t *testing.T) (OrchestratorSSHCleanupTakeover
 			RemoteBundlePath: "/remote/authority/bundle.json", RemoteSFBin: "/remote/bin/sf", RemoteRoot: "/remote/lifecycle", FetchedReceiptPath: filepath.Join(root, "fetched.json"),
 		},
 	}
-	original := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: request.RemotePlanPath, LeasePath: request.RemoteLeasePath, BundlePath: request.RemoteBundlePath, TargetOrg: claim.AllocationAlias, SFBin: request.RemoteSFBin, OutputRoot: request.RemoteRoot}
+	original := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: planPath, RemotePlanPath: request.RemotePlanPath, LeasePath: request.RemoteLeasePath, BundlePath: request.RemoteBundlePath, TargetOrg: claim.AllocationAlias, SFBin: request.RemoteSFBin, OutputRoot: request.RemoteRoot}
 	originalCommand := orchestratorSSHWorkerOnceCommand(original, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, claim.HubAlias)
 	failed := OrchestratorSSHDispatchReceipt{
 		SchemaVersion: 1, CampaignID: lease.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "failed", FailureCode: orchestratorSSHDispatchFailed,

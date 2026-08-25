@@ -17,20 +17,21 @@ const orchestratorSSHFetchTimeout = 2 * time.Minute
 var safeOrchestratorSSHRemotePath = regexp.MustCompile(`^/[A-Za-z0-9._/-]+$`)
 
 type OrchestratorSSHRawFetchRequest struct {
-	Plan         OrchestratorCampaignPlan
-	Lease        OrchestratorLease
-	Dispatch     OrchestratorSSHDispatchReceipt
-	Host         string
-	WorkerBin    string
-	PlanPath     string
-	LeasePath    string
-	DispatchPath string
-	BundlePath   string
-	DevHub       string
-	TargetOrg    string
-	SFBin        string
-	RemoteRoot   string
-	LocalRoot    string
+	Plan           OrchestratorCampaignPlan
+	Lease          OrchestratorLease
+	Dispatch       OrchestratorSSHDispatchReceipt
+	Host           string
+	WorkerBin      string
+	PlanPath       string
+	RemotePlanPath string
+	LeasePath      string
+	DispatchPath   string
+	BundlePath     string
+	DevHub         string
+	TargetOrg      string
+	SFBin          string
+	RemoteRoot     string
+	LocalRoot      string
 
 	runner remoteFailureCopyRunner
 }
@@ -125,7 +126,7 @@ func validateOrchestratorSSHRawFetchRequest(request OrchestratorSSHRawFetchReque
 	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil || !safeRemoteSSHHost.MatchString(request.Host) || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) {
 		return "", "", "", fmt.Errorf("invalid orchestrator SSH raw fetch binding")
 	}
-	for _, path := range []string{request.WorkerBin, request.PlanPath, request.LeasePath, request.DispatchPath, request.BundlePath, request.SFBin, request.RemoteRoot, request.LocalRoot} {
+	for _, path := range []string{request.WorkerBin, request.PlanPath, request.RemotePlanPath, request.LeasePath, request.DispatchPath, request.BundlePath, request.SFBin, request.RemoteRoot, request.LocalRoot} {
 		if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 			return "", "", "", fmt.Errorf("absolute clean orchestrator SSH raw fetch paths are required")
 		}
@@ -150,7 +151,7 @@ func validateOrchestratorSSHRawFetchRequest(request OrchestratorSSHRawFetchReque
 	if dispatch.SchemaVersion != 1 || !dispatch.Passed || dispatch.Status != "worker-complete" || dispatch.ExitCode != 0 || dispatch.TimedOut || dispatch.FailureCode != "" || dispatch.ActionRequired || dispatch.ActionCode != "" || dispatch.CampaignID != request.Lease.CampaignID || dispatch.JobID != request.Lease.JobID || dispatch.ShardIndex != request.Lease.ShardIndex || dispatch.Generation != request.Lease.Generation || dispatch.SpecSHA256 != request.Plan.SpecSHA256 || dispatch.PlanSHA256 != planSHA || dispatch.LeaseSHA256 != leaseSHA || dispatch.TimeoutMS != orchestratorSSHTimeout.Milliseconds() || !sha256Pattern.MatchString(dispatch.StdoutSHA256) || !sha256Pattern.MatchString(dispatch.StderrSHA256) || !sha256Pattern.MatchString(dispatch.OrchestratorBindingSHA256) || !sha256Pattern.MatchString(dispatch.SalesforceShardSHA256) || !sha256Pattern.MatchString(dispatch.OrgCleanupSHA256) || !validOrchestratorExecutedTools(dispatch.ExecutedTools, request.Plan) {
 		return "", "", "", fmt.Errorf("invalid completed SSH dispatch receipt")
 	}
-	commandRequest := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: request.PlanPath, LeasePath: request.LeasePath, BundlePath: request.BundlePath, TargetOrg: request.TargetOrg, SFBin: request.SFBin, OutputRoot: request.RemoteRoot}
+	commandRequest := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: request.PlanPath, RemotePlanPath: request.RemotePlanPath, LeasePath: request.LeasePath, BundlePath: request.BundlePath, TargetOrg: request.TargetOrg, SFBin: request.SFBin, OutputRoot: request.RemoteRoot}
 	command := orchestratorSSHWorkerOnceCommand(commandRequest, request.Plan.Definition.Tools.SHA256, request.Plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, request.DevHub)
 	args := []string{"-o", "BatchMode=yes", "--", request.Host, command}
 	if dispatch.CommandSHA256 != commandSpecSHA256(ReplayCommand{Path: orchestratorSSHBinary, Args: args, Timeout: orchestratorSSHTimeout}) {
