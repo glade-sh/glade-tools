@@ -24,7 +24,7 @@ func TestFetchOrchestratorSSHRawPublishesBoundIdempotentTree(t *testing.T) {
 	calls := 0
 	request := OrchestratorSSHRawFetchRequest{
 		Plan: plan, Lease: lease, Dispatch: sshReceipt, Host: dispatch.Host, WorkerBin: dispatch.WorkerBin,
-		PlanPath: dispatch.PlanPath, LeasePath: dispatch.LeasePath, DispatchPath: sshReceiptPath, BundlePath: dispatch.BundlePath,
+		PlanPath: dispatch.PlanPath, RemotePlanPath: dispatch.RemotePlanPath, LeasePath: dispatch.LeasePath, DispatchPath: sshReceiptPath, BundlePath: dispatch.BundlePath,
 		DevHub: "sealed-hub", TargetOrg: dispatch.TargetOrg, SFBin: dispatch.SFBin,
 		RemoteRoot: remoteRoot, LocalRoot: localRoot,
 		runner: func(_ context.Context, source, destination, _ string, checksum bool) (salesforceCommandOutput, error) {
@@ -73,6 +73,8 @@ func TestFetchOrchestratorSSHRawRejectsDispatchAndFetchedHashDrift(t *testing.T)
 		mutateCopy func(string)
 	}{
 		{name: "dispatch", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.Host = "operator@other.example.internal" }},
+		{name: "missing remote plan", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.RemotePlanPath = "" }},
+		{name: "unclean remote plan", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.RemotePlanPath += "/../PLAN.json" }},
 		{name: "fetched hash", mutateCopy: func(destination string) {
 			_ = os.WriteFile(filepath.Join(destination, "SALESFORCE_SHARD.json"), []byte("changed\n"), 0o600)
 		}},
@@ -86,7 +88,7 @@ func TestFetchOrchestratorSSHRawRejectsDispatchAndFetchedHashDrift(t *testing.T)
 			planSHA, leaseSHA := orchestratorSSHTestInputHashes(t, dispatch)
 			request := OrchestratorSSHRawFetchRequest{
 				Plan: plan, Lease: lease, Dispatch: orchestratorSSHFetchDispatchReceipt(t, dispatch, plan, lease, planSHA, leaseSHA, remoteRoot),
-				Host: dispatch.Host, WorkerBin: dispatch.WorkerBin, PlanPath: dispatch.PlanPath, LeasePath: dispatch.LeasePath,
+				Host: dispatch.Host, WorkerBin: dispatch.WorkerBin, PlanPath: dispatch.PlanPath, RemotePlanPath: dispatch.RemotePlanPath, LeasePath: dispatch.LeasePath,
 				BundlePath: dispatch.BundlePath, DevHub: "sealed-hub", TargetOrg: dispatch.TargetOrg, SFBin: dispatch.SFBin,
 				RemoteRoot: remoteRoot, LocalRoot: filepath.Join(root, "private", "raw"),
 			}

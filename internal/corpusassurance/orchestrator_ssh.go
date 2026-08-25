@@ -21,19 +21,20 @@ const (
 )
 
 // OrchestratorSSHDispatchRequest contains only the fixed worker-once inputs.
-// Plan and lease are coordinator-readable bindings addressed at the worker;
-// bundle, Salesforce binary, and output root are worker-side paths.
+// Plan is the coordinator-readable binding; remote plan, lease, bundle,
+// Salesforce binary, and output root are worker-side paths.
 type OrchestratorSSHDispatchRequest struct {
-	Coordinator *Orchestrator
-	Host        string
-	WorkerBin   string
-	PlanPath    string
-	LeasePath   string
-	BundlePath  string
-	TargetOrg   string
-	SFBin       string
-	OutputRoot  string
-	OutputPath  string
+	Coordinator    *Orchestrator
+	Host           string
+	WorkerBin      string
+	PlanPath       string
+	RemotePlanPath string
+	LeasePath      string
+	BundlePath     string
+	TargetOrg      string
+	SFBin          string
+	OutputRoot     string
+	OutputPath     string
 }
 
 // OrchestratorSSHDispatchReceipt is safe to publish. It deliberately contains
@@ -223,7 +224,7 @@ func validateOrchestratorSSHDispatchRequest(request OrchestratorSSHDispatchReque
 	if !safeRemoteSSHHost.MatchString(request.Host) || !safeOrchestratorToken(request.TargetOrg) {
 		return fmt.Errorf("invalid orchestrator SSH dispatch target")
 	}
-	for _, path := range []string{request.WorkerBin, request.PlanPath, request.LeasePath, request.BundlePath, request.SFBin, request.OutputRoot, request.OutputPath} {
+	for _, path := range []string{request.WorkerBin, request.PlanPath, request.RemotePlanPath, request.LeasePath, request.BundlePath, request.SFBin, request.OutputRoot, request.OutputPath} {
 		if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 			return fmt.Errorf("absolute clean orchestrator SSH paths are required")
 		}
@@ -233,7 +234,7 @@ func validateOrchestratorSSHDispatchRequest(request OrchestratorSSHDispatchReque
 
 func orchestratorSSHWorkerOnceCommand(request OrchestratorSSHDispatchRequest, toolsSHA256, alternateToolsSHA256, planSHA256, leaseSHA256, devHub string) string {
 	command := strings.Join([]string{
-		shellQuote(request.WorkerBin), "corpus assurance orchestrator worker-once --plan", shellQuote(request.PlanPath),
+		shellQuote(request.WorkerBin), "corpus assurance orchestrator worker-once --plan", shellQuote(request.RemotePlanPath),
 		"--plan-sha256", shellQuote(planSHA256), "--lease", shellQuote(request.LeasePath), "--lease-sha256", shellQuote(leaseSHA256), "--bundle", shellQuote(request.BundlePath),
 		"--dev-hub", shellQuote(devHub),
 		"--target-org", shellQuote(request.TargetOrg), "--sf-bin", shellQuote(request.SFBin),
@@ -246,7 +247,7 @@ func orchestratorSSHWorkerOnceCommand(request OrchestratorSSHDispatchRequest, to
 	}
 	checks := []string{
 		workerCheck,
-		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.PlanPath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(planSHA256),
+		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.RemotePlanPath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(planSHA256),
 		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.LeasePath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(leaseSHA256),
 	}
 	return strings.Join(checks, " && ") + " || { echo 'worker input integrity check failed' >&2; exit 126; }; export SF_USE_GENERIC_UNIX_KEYCHAIN=true; exec " + command

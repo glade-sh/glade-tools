@@ -15,6 +15,9 @@ func TestRunOrchestratorSSHDispatchUsesFixedWorkerCommandAndSanitizedReceipt(t *
 	root := t.TempDir()
 	plan, lease, request := readyOrchestratorSSHTestRequest(t, root)
 	request.Host = "-F@host"
+	if request.RemotePlanPath == request.PlanPath {
+		t.Fatal("test requires distinct coordinator and worker plan paths")
+	}
 	planSHA, leaseSHA := orchestratorSSHTestInputHashes(t, request)
 	var gotBinary string
 	var gotArgs []string
@@ -35,7 +38,7 @@ func TestRunOrchestratorSSHDispatchUsesFixedWorkerCommandAndSanitizedReceipt(t *
 		t.Fatalf("ssh invocation = %q %#v", gotBinary, gotArgs)
 	}
 	want := orchestratorSSHWorkerOnceCommand(request, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, "sealed-hub")
-	if gotArgs[4] != want || !strings.Contains(want, "/usr/bin/shasum -a 256 --") || !strings.Contains(want, "export SF_USE_GENERIC_UNIX_KEYCHAIN=true; exec") || !strings.Contains(want, " corpus assurance orchestrator worker-once") || !strings.Contains(want, "--dev-hub 'sealed-hub'") {
+	if gotArgs[4] != want || !strings.Contains(want, "/usr/bin/shasum -a 256 --") || !strings.Contains(want, "export SF_USE_GENERIC_UNIX_KEYCHAIN=true; exec") || !strings.Contains(want, " corpus assurance orchestrator worker-once") || !strings.Contains(want, "--plan '"+request.RemotePlanPath+"'") || strings.Contains(want, request.PlanPath) || !strings.Contains(want, "--dev-hub 'sealed-hub'") {
 		t.Fatalf("worker command = %q, want %q", gotArgs[4], want)
 	}
 	if receipt.Status != "worker-complete" || !receipt.Passed || receipt.TimeoutMS != orchestratorSSHTimeout.Milliseconds() || receipt.StdoutSHA256 == "" || receipt.StderrSHA256 == "" || receipt.SpecSHA256 != plan.SpecSHA256 || receipt.PlanSHA256 != planSHA || receipt.LeaseSHA256 != leaseSHA || receipt.OrchestratorBindingSHA256 != strings.Repeat("a", 64) || receipt.SalesforceShardSHA256 != strings.Repeat("b", 64) || receipt.OrgCleanupSHA256 != strings.Repeat("c", 64) || receipt.ExecutedTools != executedTools || receipt.ActionRequired || receipt.ActionCode != "" {
@@ -72,7 +75,7 @@ func TestOrchestratorExecutedToolsPreservesHistoricalZeroValueJSON(t *testing.T)
 func TestOrchestratorSSHWorkerOnceCommandAllowsPlanBoundPlatformWorker(t *testing.T) {
 	root := t.TempDir()
 	request := OrchestratorSSHDispatchRequest{
-		WorkerBin: filepath.Join(root, "glade-tools"), PlanPath: filepath.Join(root, "plan"),
+		WorkerBin: filepath.Join(root, "glade-tools"), PlanPath: filepath.Join(root, "local-plan"), RemotePlanPath: filepath.Join(root, "remote-plan"),
 		LeasePath: filepath.Join(root, "lease"), BundlePath: filepath.Join(root, "bundle"),
 		TargetOrg: "scratch-a", SFBin: filepath.Join(root, "sf"), OutputRoot: filepath.Join(root, "output"),
 	}
@@ -91,10 +94,13 @@ func TestRunOrchestratorSSHDispatchRejectsUnsafeInputsAndExistingOutput(t *testi
 	root := t.TempDir()
 	_, _, valid := readyOrchestratorSSHTestRequest(t, root)
 	for name, mutate := range map[string]func(*OrchestratorSSHDispatchRequest){
-		"unsafe host":       func(r *OrchestratorSSHDispatchRequest) { r.Host = "operator@worker;rm -rf /" },
-		"relative path":     func(r *OrchestratorSSHDispatchRequest) { r.PlanPath = "plan.json" },
-		"unclean path":      func(r *OrchestratorSSHDispatchRequest) { r.PlanPath = root + "/dir/../plan" },
-		"unsafe target org": func(r *OrchestratorSSHDispatchRequest) { r.TargetOrg = "scratch;rm" },
+		"unsafe host":          func(r *OrchestratorSSHDispatchRequest) { r.Host = "operator@worker;rm -rf /" },
+		"relative path":        func(r *OrchestratorSSHDispatchRequest) { r.PlanPath = "plan.json" },
+		"unclean path":         func(r *OrchestratorSSHDispatchRequest) { r.PlanPath = root + "/dir/../plan" },
+		"missing remote plan":  func(r *OrchestratorSSHDispatchRequest) { r.RemotePlanPath = "" },
+		"relative remote plan": func(r *OrchestratorSSHDispatchRequest) { r.RemotePlanPath = "plan.json" },
+		"unclean remote plan":  func(r *OrchestratorSSHDispatchRequest) { r.RemotePlanPath = root + "/dir/../remote-plan" },
+		"unsafe target org":    func(r *OrchestratorSSHDispatchRequest) { r.TargetOrg = "scratch;rm" },
 	} {
 		t.Run(name, func(t *testing.T) {
 			request := valid
@@ -143,7 +149,7 @@ func TestRunOrchestratorSSHDispatchRequiresCurrentReservedAllocation(t *testing.
 	}
 	request := OrchestratorSSHDispatchRequest{
 		Coordinator: orchestrator, Host: "operator@worker-a.example.internal", WorkerBin: filepath.Join(root, "glade-tools"),
-		PlanPath: filepath.Join(root, "plan"), LeasePath: filepath.Join(root, "lease"), BundlePath: filepath.Join(root, "bundle"),
+		PlanPath: filepath.Join(root, "local-plan"), RemotePlanPath: filepath.Join(root, "remote-plan"), LeasePath: filepath.Join(root, "lease"), BundlePath: filepath.Join(root, "bundle"),
 		TargetOrg: "scratch-a", SFBin: filepath.Join(root, "sf"), OutputRoot: filepath.Join(root, "output-root"), OutputPath: filepath.Join(root, "output"),
 	}
 	writeJSONForOrchestratorSSHTest(t, request.PlanPath, plan)
@@ -288,7 +294,7 @@ func readyOrchestratorSSHTestRequest(t *testing.T, root string) (OrchestratorCam
 	if err := orchestrator.Reserve(lease, "sealed-hub", "scratch-a", now); err != nil {
 		t.Fatal(err)
 	}
-	request := OrchestratorSSHDispatchRequest{Coordinator: orchestrator, Host: "operator@worker-a.example.internal", WorkerBin: filepath.Join(root, "glade-tools"), PlanPath: filepath.Join(root, "plan"), LeasePath: filepath.Join(root, "lease"), BundlePath: filepath.Join(root, "bundle"), TargetOrg: "scratch-a", SFBin: filepath.Join(root, "sf"), OutputRoot: filepath.Join(root, "output-root"), OutputPath: filepath.Join(root, "output")}
+	request := OrchestratorSSHDispatchRequest{Coordinator: orchestrator, Host: "operator@worker-a.example.internal", WorkerBin: filepath.Join(root, "glade-tools"), PlanPath: filepath.Join(root, "local-plan"), RemotePlanPath: filepath.Join(root, "remote-plan"), LeasePath: filepath.Join(root, "lease"), BundlePath: filepath.Join(root, "bundle"), TargetOrg: "scratch-a", SFBin: filepath.Join(root, "sf"), OutputRoot: filepath.Join(root, "output-root"), OutputPath: filepath.Join(root, "output")}
 	writeJSONForOrchestratorSSHTest(t, request.PlanPath, plan)
 	writeJSONForOrchestratorSSHTest(t, request.LeasePath, lease)
 	return plan, lease, request
