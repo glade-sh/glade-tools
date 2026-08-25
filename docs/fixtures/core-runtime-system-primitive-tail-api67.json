@@ -42,8 +42,8 @@
     {"surfaceId":"apex:System.URL.getCurrentRequestUrl","symbol":"URL.getCurrentRequestUrl","kind":"exec"},
     {"surfaceId":"apex:System.URL.getSalesforceBaseUrl","symbol":"URL.getSalesforceBaseUrl","kind":"exec"},
     {"surfaceId":"apex:System.URL.getSalesforceBaseUrl()","symbol":"URL.getSalesforceBaseUrl()","kind":"exec"},
-    {"surfaceId":"apex:System.Url.Url(String,String,Integer,String)","symbol":"Url.Url(String,String,Integer,String)","kind":"exec"},
-    {"surfaceId":"apex:System.Url.Url(String,String,String)","symbol":"Url.Url(String,String,String)","kind":"exec"},
+    {"surfaceId":"apex:System.URL.Url(String,String,Integer,String)","symbol":"URL.Url(String,String,Integer,String)","kind":"exec"},
+    {"surfaceId":"apex:System.URL.Url(String,String,String)","symbol":"URL.Url(String,String,String)","kind":"exec"},
     {"surfaceId":"apex:System.Url.clone()","symbol":"Url.clone","kind":"exec"},
     {"surfaceId":"apex:System.Url.toString()","symbol":"Url.toString","kind":"exec"}
   ],

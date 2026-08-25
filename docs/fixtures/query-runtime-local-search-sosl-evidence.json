@@ -50,6 +50,12 @@
       "notes": "Search.query accepts an Object-cast AccessLevel and routes through the same local SOSL model.",
       "surfaceId": "apex:System.Search.query(String,Object)",
       "symbol": "Search.query with Object AccessLevel"
+    },
+    {
+      "kind": "test",
+      "notes": "Test.setFixedSearchResults accepts exact Id values and deterministically controls the local SOSL result set.",
+      "surfaceId": "apex:System.Test.setFixedSearchResults(List<Id>)",
+      "symbol": "Test.setFixedSearchResults"
     }
   ],
   "expected": {

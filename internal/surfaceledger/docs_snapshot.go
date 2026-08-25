@@ -781,8 +781,11 @@ func areaForProduct(product string) string {
 func parametersFromSignature(signature string) []string {
 	open := strings.Index(signature, "(")
 	close := strings.LastIndex(signature, ")")
-	if open < 0 || close < open {
+	if open < 0 {
 		return nil
+	}
+	if close < open {
+		close = len(signature)
 	}
 	inside := strings.TrimSpace(signature[open+1 : close])
 	if inside == "" {

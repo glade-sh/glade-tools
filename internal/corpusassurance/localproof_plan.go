@@ -364,6 +364,7 @@ func localRuntimeDatabaseTestSurface(surfaceID string) bool {
 	switch surfaceID {
 	case "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback)",
 		"apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback,AccessLevel)",
+		"apex:System.Database.deleteAsync(Object,DataSource.AsyncDeleteCallback)",
 		"apex:System.Database.deleteAsync(Object,DataSource.AsyncDeleteCallback,AccessLevel)",
 		"apex:System.Database.deleteImmediate(List<Object>,Object)",
 		"apex:System.Database.deleteImmediate(Object,Object)",
@@ -371,11 +372,13 @@ func localRuntimeDatabaseTestSurface(surfaceID string) bool {
 		"apex:System.Database.getPaginationCursorWithBinds(String,Map,Object)",
 		"apex:System.Database.insertAsync(List<Object>,DataSource.AsyncSaveCallback)",
 		"apex:System.Database.insertAsync(List<Object>,DataSource.AsyncSaveCallback,AccessLevel)",
+		"apex:System.Database.insertAsync(Object,DataSource.AsyncSaveCallback)",
 		"apex:System.Database.insertAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)",
 		"apex:System.Database.insertImmediate(List<Object>,Object)",
 		"apex:System.Database.insertImmediate(Object,Object)",
 		"apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback)",
 		"apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback,AccessLevel)",
+		"apex:System.Database.updateAsync(Object,DataSource.AsyncSaveCallback)",
 		"apex:System.Database.updateAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)",
 		"apex:System.Database.updateImmediate(List<Object>,Object)",
 		"apex:System.Database.updateImmediate(Object,Object)":

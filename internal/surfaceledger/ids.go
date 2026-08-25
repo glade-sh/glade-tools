@@ -110,11 +110,18 @@ func canonicalParameterType(value string) string {
 		return "Map"
 	case strings.EqualFold(value, "SET<T>"):
 		return "Set"
+	case strings.EqualFold(value, "DATABASE.DMLOPTIONS"):
+		return "Database.DMLOptions"
+	case strings.EqualFold(value, "SCHEMA.SOBJECTFIELD"):
+		return "Schema.SObjectField"
 	case strings.EqualFold(value, "SYSTEM.TYPE"):
 		return "Type"
 	case strings.EqualFold(value, "BATCHABLE"), strings.EqualFold(value, "DATABASE.BATCHABLE"), strings.EqualFold(value, "SYSTEM.DATABASE.BATCHABLE"):
 		return "Object"
 	default:
+		if len(value) > len("List<>") && strings.EqualFold(value[:5], "List<") && strings.HasSuffix(value, ">") {
+			return "List<" + canonicalParameterType(value[5:len(value)-1]) + ">"
+		}
 		value = stripSystemTypeQualifier(value)
 		value = strings.ReplaceAll(value, "<ANY>", "<Object>")
 		value = strings.ReplaceAll(value, "<APEX_OBJECT>", "<Object>")
@@ -157,6 +164,9 @@ func canonicalApexMemberParameters(namespace, typeName, memberName string, param
 	out := cleanList(parameters)
 	if namespace == "System" && typeName == "EventBus" && canonicalApexMemberName(memberName) == "publishWithAccessLevel" {
 		return canonicalEventBusAccessLevelParameters(parameters)
+	}
+	if namespace == "System" && typeName == "SObject" && (memberName == "getSObjects" || memberName == "putSObject") && len(out) > 0 && out[0] == "Schema.SObjectType" {
+		out[0] = "Schema.SObjectField"
 	}
 	if namespace == "" && typeName == "BusinessHours" {
 		switch memberName {
@@ -315,6 +325,12 @@ func canonicalApexIDConstructorName(rest string) string {
 
 func canonicalApexMemberNameForType(typeName, memberName string) string {
 	memberName = canonicalApexMemberName(memberName)
+	if typeName == "RestResponse" && strings.EqualFold(memberName, "statusCode") {
+		return "statusCode"
+	}
+	if typeName == "DescribeSObjectResult" && strings.EqualFold(memberName, "fieldSets") {
+		return "fieldSets"
+	}
 	if strings.HasPrefix(memberName, typeName+"<") {
 		return typeName
 	}

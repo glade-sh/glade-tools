@@ -30,7 +30,7 @@
     {
       "kind": "test",
       "notes": "SObject.setOptions stores a cloned Database.DMLOptions value on the local record.",
-      "surfaceId": "apex:System.SObject.setOptions(database.DMLOptions)",
+      "surfaceId": "apex:System.SObject.setOptions(Database.DMLOptions)",
       "symbol": "SObject.setOptions"
     },
     {

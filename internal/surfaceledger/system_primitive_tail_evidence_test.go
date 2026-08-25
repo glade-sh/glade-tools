@@ -42,8 +42,8 @@ var systemPrimitiveTailIDs = []string{
 	"apex:System.URL.getCurrentRequestUrl",
 	"apex:System.URL.getSalesforceBaseUrl",
 	"apex:System.URL.getSalesforceBaseUrl()",
-	"apex:System.Url.Url(String,String,Integer,String)",
-	"apex:System.Url.Url(String,String,String)",
+	"apex:System.URL.Url(String,String,Integer,String)",
+	"apex:System.URL.Url(String,String,String)",
 	"apex:System.Url.clone()",
 	"apex:System.Url.toString()",
 }
