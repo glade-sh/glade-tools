@@ -269,20 +269,19 @@ func selectLocalProofFixtures(candidates []localProofFixtureCandidate) LocalProo
 	covered := make(map[string]bool)
 	manifest := LocalProofFixtureManifest{}
 	for _, candidate := range candidates {
-		selected := false
+		owned := make(map[string]bool)
 		for surfaceID := range candidate.owned {
 			if !covered[surfaceID] {
-				selected = true
-				break
+				owned[surfaceID] = true
+				covered[surfaceID] = true
 			}
 		}
-		if !selected {
+		if len(owned) == 0 {
 			continue
 		}
-		manifest.Fixtures = append(manifest.Fixtures, candidate.entry)
-		for surfaceID := range candidate.owned {
-			covered[surfaceID] = true
-		}
+		entry := candidate.entry
+		entry.OwnedSurfaceIDs = sortedSet(owned)
+		manifest.Fixtures = append(manifest.Fixtures, entry)
 	}
 	sort.Slice(manifest.Fixtures, func(i, j int) bool { return manifest.Fixtures[i].ID < manifest.Fixtures[j].ID })
 	return manifest
