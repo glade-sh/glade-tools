@@ -48,6 +48,26 @@ func TestCreateAndVerifyOrchestratorSalesforceReconciliationAfterWorkerDeletion(
 	}
 }
 
+func TestCreateOrchestratorSalesforceReconciliationUsesWorkerScope(t *testing.T) {
+	fixture := newOrchestratorSalesforceReconciliationFixture(t)
+	remoteScope := filepath.Join(t.TempDir(), "SALESFORCE_SURFACE_SCOPE.json")
+	data, err := os.ReadFile(fixture.plan.Definition.ScopePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(remoteScope, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(fixture.plan.Definition.ScopePath); err != nil {
+		t.Fatal(err)
+	}
+	request := fixture.request(t.TempDir())
+	request.ScopePath = remoteScope
+	if _, err := CreateOrchestratorSalesforceReconciliation(request); err != nil {
+		t.Fatalf("worker scope reconciliation failed: %v", err)
+	}
+}
+
 func TestCreateOrchestratorSalesforceReconciliationRejectsDrift(t *testing.T) {
 	fixture := newOrchestratorSalesforceReconciliationFixture(t)
 	shard, _, err := readExactJSONBytes[SalesforceShard](fixture.files.ShardPath)

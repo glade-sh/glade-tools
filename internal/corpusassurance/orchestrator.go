@@ -218,7 +218,11 @@ func OpenOrchestrator(path string) (*Orchestrator, error) {
 func (o *Orchestrator) Close() error { return o.db.Close() }
 
 func PlanOrchestratorCampaign(definition OrchestratorCampaignDefinition) (OrchestratorCampaignPlan, error) {
-	if err := validateOrchestratorDefinition(definition); err != nil {
+	return planOrchestratorCampaignAtScope(definition, definition.ScopePath)
+}
+
+func planOrchestratorCampaignAtScope(definition OrchestratorCampaignDefinition, scopePath string) (OrchestratorCampaignPlan, error) {
+	if err := validateOrchestratorDefinitionAtScope(definition, scopePath); err != nil {
 		return OrchestratorCampaignPlan{}, err
 	}
 	definition.ControlledInputSHA256 = maps.Clone(definition.ControlledInputSHA256)
@@ -238,10 +242,14 @@ func PlanOrchestratorCampaign(definition OrchestratorCampaignDefinition) (Orches
 }
 
 func WriteOrchestratorBatchBinding(path string, plan OrchestratorCampaignPlan, lease OrchestratorLease) (OrchestratorBatchBinding, error) {
+	return writeOrchestratorBatchBindingAtScope(path, plan, lease, plan.Definition.ScopePath)
+}
+
+func writeOrchestratorBatchBindingAtScope(path string, plan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) (OrchestratorBatchBinding, error) {
 	if !filepath.IsAbs(path) {
 		return OrchestratorBatchBinding{}, fmt.Errorf("absolute orchestrator batch binding path is required")
 	}
-	if err := validateOrchestratorPlan(plan); err != nil {
+	if err := validateOrchestratorPlanAtScope(plan, scopePath); err != nil {
 		return OrchestratorBatchBinding{}, err
 	}
 	var job *OrchestratorJob
@@ -974,13 +982,17 @@ func (o *Orchestrator) Status(campaignID string) (OrchestratorCampaignStatus, er
 }
 
 func validateOrchestratorDefinition(definition OrchestratorCampaignDefinition) error {
+	return validateOrchestratorDefinitionAtScope(definition, definition.ScopePath)
+}
+
+func validateOrchestratorDefinitionAtScope(definition OrchestratorCampaignDefinition, scopePath string) error {
 	if !commitPattern.MatchString(definition.Candidate.Commit) || !sha256Pattern.MatchString(definition.Candidate.SHA256) || !commitPattern.MatchString(definition.Tools.Commit) || !sha256Pattern.MatchString(definition.Tools.SHA256) {
 		return fmt.Errorf("invalid candidate or Tools bindings")
 	}
-	if !filepath.IsAbs(definition.ScopePath) || !sha256Pattern.MatchString(definition.ScopeSHA256) {
+	if !filepath.IsAbs(definition.ScopePath) || !filepath.IsAbs(scopePath) || filepath.Clean(scopePath) != scopePath || !sha256Pattern.MatchString(definition.ScopeSHA256) {
 		return fmt.Errorf("absolute exact scope binding is required")
 	}
-	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](definition.ScopePath)
+	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](scopePath)
 	if err != nil || validateSurfaceOracleScope(scope) != nil || replayBytesSHA256(scopeBytes) != definition.ScopeSHA256 {
 		return fmt.Errorf("exact scope binding does not validate")
 	}
@@ -1024,7 +1036,11 @@ func validateOrchestratorDefinition(definition OrchestratorCampaignDefinition) e
 }
 
 func validateOrchestratorPlan(plan OrchestratorCampaignPlan) error {
-	want, err := PlanOrchestratorCampaign(plan.Definition)
+	return validateOrchestratorPlanAtScope(plan, plan.Definition.ScopePath)
+}
+
+func validateOrchestratorPlanAtScope(plan OrchestratorCampaignPlan, scopePath string) error {
+	want, err := planOrchestratorCampaignAtScope(plan.Definition, scopePath)
 	if err != nil {
 		return err
 	}

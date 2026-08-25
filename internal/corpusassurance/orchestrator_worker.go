@@ -612,7 +612,11 @@ func validateOrchestratorWorkerRequest(request OrchestratorWorkerRequest) error 
 }
 
 func validateOrchestratorWorkerPlanLease(plan OrchestratorCampaignPlan, lease OrchestratorLease) error {
-	if err := validateOrchestratorPlan(plan); err != nil {
+	return validateOrchestratorWorkerPlanLeaseAtScope(plan, lease, plan.Definition.ScopePath)
+}
+
+func validateOrchestratorWorkerPlanLeaseAtScope(plan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) error {
+	if err := validateOrchestratorPlanAtScope(plan, scopePath); err != nil {
 		return err
 	}
 	if lease.CampaignID != plan.CampaignID || lease.Generation < 1 || lease.DurationMS < 1 || lease.Kind != OrchestratorJobSurfaceRuntimeShard {

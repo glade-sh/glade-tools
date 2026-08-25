@@ -396,7 +396,7 @@ entrypoint is DB-free, verifies its executable against the sealed Tools hash,
 requires the coordinator-reserved Dev Hub to match the sealed bundle, and runs
 one typed raw Salesforce shard. `ssh-dispatch` requires its job and attempt
 leases to exactly match the coordinator and cover the full 45-minute bound.
-The remote worker must read the exact plan and lease bytes hashed by the
+The remote worker must read the exact plan, scope, and lease bytes hashed by the
 coordinator before it invokes only that fixed command over outbound BatchMode
 SSH. Its sanitized
 coordinator receipt contains no remote output or private identity. Any
@@ -414,6 +414,7 @@ After a successful dispatch, return the exact raw tree before reconciliation:
 glade-tools corpus assurance orchestrator ssh-fetch \
   --plan /absolute/coordinator/PLAN.json \
   --remote-plan /absolute/worker/PLAN.json \
+  --remote-scope /absolute/worker/SALESFORCE_SURFACE_SCOPE.json \
   --lease /absolute/coordinator/LEASE.json \
   --ssh-receipt /absolute/coordinator/SSH_DISPATCH.json \
   --host operator@worker.example.internal \

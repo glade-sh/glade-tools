@@ -28,7 +28,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 	switch args[0] {
 	case "worker-once":
 		flags := orchestratorFlags("worker-once")
-		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		planPath, scopePath, leasePath := flags.String("plan", "", ""), flags.String("scope", "", ""), flags.String("lease", "", "")
 		planSHA, leaseSHA := flags.String("plan-sha256", "", ""), flags.String("lease-sha256", "", "")
 		bundlePath, devHub, targetOrg := flags.String("bundle", "", ""), flags.String("dev-hub", "", ""), flags.String("target-org", "", "")
 		sfBin, outputRoot := flags.String("sf-bin", "", ""), flags.String("output-root", "", "")
@@ -38,10 +38,10 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*planPath, *planSHA, *leasePath, *leaseSHA, *bundlePath, *devHub, *targetOrg, *sfBin, *outputRoot); err != nil {
+		if err := requiredAssuranceFlags(*planPath, *planSHA, *scopePath, *leasePath, *leaseSHA, *bundlePath, *devHub, *targetOrg, *sfBin, *outputRoot); err != nil {
 			return err
 		}
-		for _, path := range []string{*planPath, *leasePath, *bundlePath, *sfBin, *outputRoot} {
+		for _, path := range []string{*planPath, *scopePath, *leasePath, *bundlePath, *sfBin, *outputRoot} {
 			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 				return errors.New("absolute clean worker-once paths are required")
 			}
@@ -72,7 +72,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if actualLeaseSHA != *leaseSHA {
 			return errors.New("worker lease does not match dispatched hash")
 		}
-		result, err := corpusassurance.RunRawSalesforceShard(corpusassurance.RawSalesforceShardRequest{Plan: plan, Lease: lease, BundlePath: *bundlePath, DevHub: *devHub, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot})
+		result, err := corpusassurance.RunRawSalesforceShard(corpusassurance.RawSalesforceShardRequest{Plan: plan, Lease: lease, ScopePath: *scopePath, BundlePath: *bundlePath, DevHub: *devHub, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot})
 		if err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return writeOrchestratorOutput(w, completion)
 	case "worker-cleanup":
 		flags := orchestratorFlags("worker-cleanup")
-		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		planPath, scopePath, leasePath := flags.String("plan", "", ""), flags.String("scope", "", ""), flags.String("lease", "", "")
 		planSHA, leaseSHA, failedSSHSHA := flags.String("plan-sha256", "", ""), flags.String("lease-sha256", "", ""), flags.String("failed-ssh-sha256", "", "")
 		bundlePath, devHub, targetOrg := flags.String("bundle", "", ""), flags.String("dev-hub", "", ""), flags.String("target-org", "", "")
 		sfBin, outputRoot := flags.String("sf-bin", "", ""), flags.String("output-root", "", "")
@@ -94,10 +94,10 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*planPath, *planSHA, *leasePath, *leaseSHA, *failedSSHSHA, *bundlePath, *devHub, *targetOrg, *sfBin, *outputRoot); err != nil {
+		if err := requiredAssuranceFlags(*planPath, *planSHA, *scopePath, *leasePath, *leaseSHA, *failedSSHSHA, *bundlePath, *devHub, *targetOrg, *sfBin, *outputRoot); err != nil {
 			return err
 		}
-		for _, path := range []string{*planPath, *leasePath, *bundlePath, *sfBin, *outputRoot} {
+		for _, path := range []string{*planPath, *scopePath, *leasePath, *bundlePath, *sfBin, *outputRoot} {
 			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 				return errors.New("absolute clean worker-cleanup paths are required")
 			}
@@ -121,7 +121,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			return errors.New("executing cleanup worker does not match sealed tools")
 		}
 		receipt, err := corpusassurance.RunOrchestratorWorkerCleanup(corpusassurance.OrchestratorWorkerCleanupRequest{
-			Plan: plan, Lease: lease, PlanSHA256: *planSHA, LeaseSHA256: *leaseSHA, FailedSSHReceiptSHA256: *failedSSHSHA,
+			Plan: plan, Lease: lease, ScopePath: *scopePath, PlanSHA256: *planSHA, LeaseSHA256: *leaseSHA, FailedSSHReceiptSHA256: *failedSSHSHA,
 			BundlePath: *bundlePath, DevHub: *devHub, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot,
 			ExecutedTools: corpusassurance.RuntimeArtifact{Commit: plan.Definition.Tools.Commit, OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: executingSHA},
 		})
@@ -131,7 +131,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return writeOrchestratorOutput(w, receipt)
 	case "raw-ingest":
 		flags := orchestratorFlags("raw-ingest")
-		planPath, leasePath, oraclePlanPath := flags.String("plan", "", ""), flags.String("lease", "", ""), flags.String("oracle-plan", "", "")
+		planPath, scopePath, leasePath, oraclePlanPath := flags.String("plan", "", ""), flags.String("scope", "", ""), flags.String("lease", "", ""), flags.String("oracle-plan", "", "")
 		rawRoot, packetOutput, output := flags.String("raw-root", "", ""), flags.String("packet-output", "", ""), flags.String("output", "", "")
 		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
 			return err
@@ -139,10 +139,10 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*planPath, *leasePath, *oraclePlanPath, *rawRoot, *packetOutput, *output); err != nil {
+		if err := requiredAssuranceFlags(*planPath, *scopePath, *leasePath, *oraclePlanPath, *rawRoot, *packetOutput, *output); err != nil {
 			return err
 		}
-		for _, path := range []string{*planPath, *leasePath, *oraclePlanPath, *rawRoot, *packetOutput, *output} {
+		for _, path := range []string{*planPath, *scopePath, *leasePath, *oraclePlanPath, *rawRoot, *packetOutput, *output} {
 			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 				return errors.New("absolute clean raw-ingest paths are required")
 			}
@@ -163,7 +163,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			CreationPath: filepath.Join(*rawRoot, "ORG_CREATION.json"), CleanupPath: filepath.Join(*rawRoot, "ORG_CLEANUP.json"), PreflightPath: filepath.Join(*rawRoot, "ORG_PREFLIGHT.json"),
 		}
 		receipt, err := corpusassurance.CreateOrchestratorSalesforceReconciliation(corpusassurance.OrchestratorSalesforceReconciliationRequest{
-			Plan: plan, Lease: lease, OraclePlanPath: *oraclePlanPath, BindingPath: filepath.Join(*rawRoot, "ORCHESTRATOR_BINDING.json"), ShardFiles: files, PacketOutput: *packetOutput, OutputPath: *output,
+			Plan: plan, Lease: lease, ScopePath: *scopePath, OraclePlanPath: *oraclePlanPath, BindingPath: filepath.Join(*rawRoot, "ORCHESTRATOR_BINDING.json"), ShardFiles: files, PacketOutput: *packetOutput, OutputPath: *output,
 		})
 		if err != nil {
 			return err
@@ -298,7 +298,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		database := flags.String("db", "", "")
 		host := flags.String("host", "", "")
 		workerBin := flags.String("worker-bin", "", "")
-		planPath, remotePlanPath, leasePath := flags.String("plan", "", ""), flags.String("remote-plan", "", ""), flags.String("lease", "", "")
+		planPath, remotePlanPath, remoteScopePath, leasePath := flags.String("plan", "", ""), flags.String("remote-plan", "", ""), flags.String("remote-scope", "", ""), flags.String("lease", "", "")
 		bundlePath, targetOrg := flags.String("bundle", "", ""), flags.String("target-org", "", "")
 		sfBin, outputRoot, output := flags.String("sf-bin", "", ""), flags.String("output-root", "", ""), flags.String("output", "", "")
 		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
@@ -307,16 +307,16 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*database, *host, *workerBin, *planPath, *remotePlanPath, *leasePath, *bundlePath, *targetOrg, *sfBin, *outputRoot, *output); err != nil {
+		if err := requiredAssuranceFlags(*database, *host, *workerBin, *planPath, *remotePlanPath, *remoteScopePath, *leasePath, *bundlePath, *targetOrg, *sfBin, *outputRoot, *output); err != nil {
 			return err
 		}
 		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
-			receipt, err := corpusassurance.RunOrchestratorSSHDispatch(corpusassurance.OrchestratorSSHDispatchRequest{Coordinator: orchestrator, Host: *host, WorkerBin: *workerBin, PlanPath: *planPath, RemotePlanPath: *remotePlanPath, LeasePath: *leasePath, BundlePath: *bundlePath, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot, OutputPath: *output})
+			receipt, err := corpusassurance.RunOrchestratorSSHDispatch(corpusassurance.OrchestratorSSHDispatchRequest{Coordinator: orchestrator, Host: *host, WorkerBin: *workerBin, PlanPath: *planPath, RemotePlanPath: *remotePlanPath, RemoteScopePath: *remoteScopePath, LeasePath: *leasePath, BundlePath: *bundlePath, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot, OutputPath: *output})
 			return writeOrchestratorSSHResult(w, receipt, err)
 		})
 	case "ssh-fetch":
 		flags := orchestratorFlags("ssh-fetch")
-		planPath, remotePlanPath, leasePath, sshPath := flags.String("plan", "", ""), flags.String("remote-plan", "", ""), flags.String("lease", "", ""), flags.String("ssh-receipt", "", "")
+		planPath, remotePlanPath, remoteScopePath, leasePath, sshPath := flags.String("plan", "", ""), flags.String("remote-plan", "", ""), flags.String("remote-scope", "", ""), flags.String("lease", "", ""), flags.String("ssh-receipt", "", "")
 		host, workerBin, bundlePath := flags.String("host", "", ""), flags.String("worker-bin", "", ""), flags.String("bundle", "", "")
 		devHub, targetOrg, sfBin := flags.String("dev-hub", "", ""), flags.String("target-org", "", ""), flags.String("sf-bin", "", "")
 		remoteRoot, rawRoot := flags.String("remote-root", "", ""), flags.String("raw-root", "", "")
@@ -326,10 +326,10 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*planPath, *remotePlanPath, *leasePath, *sshPath, *host, *workerBin, *bundlePath, *devHub, *targetOrg, *sfBin, *remoteRoot, *rawRoot); err != nil {
+		if err := requiredAssuranceFlags(*planPath, *remotePlanPath, *remoteScopePath, *leasePath, *sshPath, *host, *workerBin, *bundlePath, *devHub, *targetOrg, *sfBin, *remoteRoot, *rawRoot); err != nil {
 			return err
 		}
-		for _, path := range []string{*planPath, *remotePlanPath, *leasePath, *sshPath, *workerBin, *bundlePath, *sfBin, *remoteRoot, *rawRoot} {
+		for _, path := range []string{*planPath, *remotePlanPath, *remoteScopePath, *leasePath, *sshPath, *workerBin, *bundlePath, *sfBin, *remoteRoot, *rawRoot} {
 			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 				return errors.New("absolute clean ssh-fetch paths are required")
 			}
@@ -346,7 +346,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err := readOrchestratorJSON(*sshPath, &dispatch); err != nil {
 			return fmt.Errorf("read SSH receipt: %w", err)
 		}
-		receipt, err := corpusassurance.FetchOrchestratorSSHRaw(corpusassurance.OrchestratorSSHRawFetchRequest{Plan: plan, Lease: lease, Dispatch: dispatch, Host: *host, WorkerBin: *workerBin, PlanPath: *planPath, RemotePlanPath: *remotePlanPath, LeasePath: *leasePath, DispatchPath: *sshPath, BundlePath: *bundlePath, DevHub: *devHub, TargetOrg: *targetOrg, SFBin: *sfBin, RemoteRoot: *remoteRoot, LocalRoot: *rawRoot})
+		receipt, err := corpusassurance.FetchOrchestratorSSHRaw(corpusassurance.OrchestratorSSHRawFetchRequest{Plan: plan, Lease: lease, Dispatch: dispatch, Host: *host, WorkerBin: *workerBin, PlanPath: *planPath, RemotePlanPath: *remotePlanPath, RemoteScopePath: *remoteScopePath, LeasePath: *leasePath, DispatchPath: *sshPath, BundlePath: *bundlePath, DevHub: *devHub, TargetOrg: *targetOrg, SFBin: *sfBin, RemoteRoot: *remoteRoot, LocalRoot: *rawRoot})
 		if err != nil {
 			return err
 		}

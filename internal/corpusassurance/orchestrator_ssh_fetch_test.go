@@ -24,7 +24,7 @@ func TestFetchOrchestratorSSHRawPublishesBoundIdempotentTree(t *testing.T) {
 	calls := 0
 	request := OrchestratorSSHRawFetchRequest{
 		Plan: plan, Lease: lease, Dispatch: sshReceipt, Host: dispatch.Host, WorkerBin: dispatch.WorkerBin,
-		PlanPath: dispatch.PlanPath, RemotePlanPath: dispatch.RemotePlanPath, LeasePath: dispatch.LeasePath, DispatchPath: sshReceiptPath, BundlePath: dispatch.BundlePath,
+		PlanPath: dispatch.PlanPath, RemotePlanPath: dispatch.RemotePlanPath, RemoteScopePath: dispatch.RemoteScopePath, LeasePath: dispatch.LeasePath, DispatchPath: sshReceiptPath, BundlePath: dispatch.BundlePath,
 		DevHub: "sealed-hub", TargetOrg: dispatch.TargetOrg, SFBin: dispatch.SFBin,
 		RemoteRoot: remoteRoot, LocalRoot: localRoot,
 		runner: func(_ context.Context, source, destination, _ string, checksum bool) (salesforceCommandOutput, error) {
@@ -75,6 +75,8 @@ func TestFetchOrchestratorSSHRawRejectsDispatchAndFetchedHashDrift(t *testing.T)
 		{name: "dispatch", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.Host = "operator@other.example.internal" }},
 		{name: "missing remote plan", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.RemotePlanPath = "" }},
 		{name: "unclean remote plan", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.RemotePlanPath += "/../PLAN.json" }},
+		{name: "missing remote scope", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.RemoteScopePath = "" }},
+		{name: "unclean remote scope", mutate: func(request *OrchestratorSSHRawFetchRequest) { request.RemoteScopePath += "/../SCOPE.json" }},
 		{name: "fetched hash", mutateCopy: func(destination string) {
 			_ = os.WriteFile(filepath.Join(destination, "SALESFORCE_SHARD.json"), []byte("changed\n"), 0o600)
 		}},
@@ -88,7 +90,7 @@ func TestFetchOrchestratorSSHRawRejectsDispatchAndFetchedHashDrift(t *testing.T)
 			planSHA, leaseSHA := orchestratorSSHTestInputHashes(t, dispatch)
 			request := OrchestratorSSHRawFetchRequest{
 				Plan: plan, Lease: lease, Dispatch: orchestratorSSHFetchDispatchReceipt(t, dispatch, plan, lease, planSHA, leaseSHA, remoteRoot),
-				Host: dispatch.Host, WorkerBin: dispatch.WorkerBin, PlanPath: dispatch.PlanPath, RemotePlanPath: dispatch.RemotePlanPath, LeasePath: dispatch.LeasePath,
+				Host: dispatch.Host, WorkerBin: dispatch.WorkerBin, PlanPath: dispatch.PlanPath, RemotePlanPath: dispatch.RemotePlanPath, RemoteScopePath: dispatch.RemoteScopePath, LeasePath: dispatch.LeasePath,
 				BundlePath: dispatch.BundlePath, DevHub: "sealed-hub", TargetOrg: dispatch.TargetOrg, SFBin: dispatch.SFBin,
 				RemoteRoot: remoteRoot, LocalRoot: filepath.Join(root, "private", "raw"),
 			}
@@ -125,7 +127,7 @@ func TestFetchOrchestratorSSHRawRejectsDispatchAndFetchedHashDrift(t *testing.T)
 
 func orchestratorSSHFetchDispatchReceipt(t *testing.T, request OrchestratorSSHDispatchRequest, plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA, leaseSHA, remoteRoot string) OrchestratorSSHDispatchReceipt {
 	t.Helper()
-	command := orchestratorSSHWorkerOnceCommand(request, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, "sealed-hub")
+	command := orchestratorSSHWorkerOnceCommand(request, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, plan.Definition.ScopeSHA256, "sealed-hub")
 	args := []string{"-o", "BatchMode=yes", "--", request.Host, command}
 	return OrchestratorSSHDispatchReceipt{
 		SchemaVersion: 1, CampaignID: plan.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation,
