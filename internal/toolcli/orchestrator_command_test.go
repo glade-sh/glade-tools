@@ -276,7 +276,7 @@ func TestCorpusAssuranceOrchestratorWorkerCleanupAndExactClaimHaveFixedBindings(
 
 func TestCorpusAssuranceOrchestratorRawIngestUsesTypedFixedFlags(t *testing.T) {
 	root := t.TempDir()
-	args := []string{"corpus", "assurance", "orchestrator", "raw-ingest", "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--oracle-plan", filepath.Join(root, "ORACLE_PLAN.json"), "--raw-root", filepath.Join(root, "raw"), "--packet-output", filepath.Join(root, "packet"), "--output", filepath.Join(root, "receipt.json")}
+	args := []string{"corpus", "assurance", "orchestrator", "raw-ingest", "--plan", filepath.Join(root, "plan.json"), "--scope", filepath.Join(root, "scope.json"), "--lease", filepath.Join(root, "lease.json"), "--oracle-plan", filepath.Join(root, "ORACLE_PLAN.json"), "--raw-root", filepath.Join(root, "raw"), "--packet-output", filepath.Join(root, "packet"), "--output", filepath.Join(root, "receipt.json")}
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), args, &stdout, &stderr)
 	if code == 0 || strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") || strings.Contains(stderr.String(), "flag provided but not defined") {
@@ -299,7 +299,7 @@ func TestCorpusAssuranceOrchestratorRawIngestRejectsNonPrivateRawRoot(t *testing
 	if err := os.WriteFile(rawRoot, []byte("not a directory\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	args := []string{"corpus", "assurance", "orchestrator", "raw-ingest", "--plan", planPath, "--lease", leasePath, "--oracle-plan", oraclePath, "--raw-root", rawRoot, "--packet-output", filepath.Join(root, "packet"), "--output", filepath.Join(root, "receipt.json")}
+	args := []string{"corpus", "assurance", "orchestrator", "raw-ingest", "--plan", planPath, "--scope", filepath.Join(root, "scope.json"), "--lease", leasePath, "--oracle-plan", oraclePath, "--raw-root", rawRoot, "--packet-output", filepath.Join(root, "packet"), "--output", filepath.Join(root, "receipt.json")}
 	var stdout, stderr bytes.Buffer
 	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "raw-ingest root") {
 		t.Fatalf("non-private raw root accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
@@ -346,7 +346,7 @@ func TestCorpusAssuranceOrchestratorWorkerOnceRejectsUnsealedExecutableBeforeOrg
 	plan := filepath.Join(root, "plan.json")
 	writeOrchestratorCLIJSON(t, plan, corpusassurance.OrchestratorCampaignPlan{Definition: corpusassurance.OrchestratorCampaignDefinition{Tools: corpusassurance.OrchestratorArtifact{SHA256: strings.Repeat("f", 64)}}})
 	outputRoot := filepath.Join(root, "output")
-	args := []string{"corpus", "assurance", "orchestrator", "worker-once", "--plan", plan, "--plan-sha256", orchestratorCLIFileSHA256(t, plan), "--lease", filepath.Join(root, "lease.json"), "--lease-sha256", strings.Repeat("e", 64), "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", outputRoot}
+	args := []string{"corpus", "assurance", "orchestrator", "worker-once", "--plan", plan, "--plan-sha256", orchestratorCLIFileSHA256(t, plan), "--scope", filepath.Join(root, "scope.json"), "--lease", filepath.Join(root, "lease.json"), "--lease-sha256", strings.Repeat("e", 64), "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", outputRoot}
 	var stdout, stderr bytes.Buffer
 	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "executing worker does not match sealed tools") {
 		t.Fatalf("unsealed executable accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
@@ -416,7 +416,7 @@ func TestCorpusAssuranceOrchestratorWorkerOnceRejectsDispatchedInputHashDrift(t 
 	} {
 		t.Run(name, func(t *testing.T) {
 			outputRoot := filepath.Join(root, "output-"+name)
-			args := []string{"corpus", "assurance", "orchestrator", "worker-once", "--plan", planPath, "--plan-sha256", hashes[0], "--lease", leasePath, "--lease-sha256", hashes[1], "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", outputRoot}
+			args := []string{"corpus", "assurance", "orchestrator", "worker-once", "--plan", planPath, "--plan-sha256", hashes[0], "--scope", filepath.Join(root, "scope.json"), "--lease", leasePath, "--lease-sha256", hashes[1], "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", outputRoot}
 			var stdout, stderr bytes.Buffer
 			if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "does not match dispatched hash") {
 				t.Fatalf("%s hash drift accepted: code=%d stdout=%q stderr=%q", name, code, stdout.String(), stderr.String())
@@ -430,7 +430,7 @@ func TestCorpusAssuranceOrchestratorWorkerOnceRejectsDispatchedInputHashDrift(t 
 
 func TestCorpusAssuranceOrchestratorSSHDispatchRejectsUnsafeHostBeforeFiles(t *testing.T) {
 	root := t.TempDir()
-	args := []string{"corpus", "assurance", "orchestrator", "ssh-dispatch", "--db", filepath.Join(root, "orchestrator.db"), "--host", "worker;rm -rf /", "--worker-bin", filepath.Join(root, "glade-tools"), "--plan", filepath.Join(root, "plan"), "--remote-plan", filepath.Join(root, "remote-plan"), "--lease", filepath.Join(root, "lease"), "--bundle", filepath.Join(root, "bundle"), "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", filepath.Join(root, "output-root"), "--output", filepath.Join(root, "output")}
+	args := []string{"corpus", "assurance", "orchestrator", "ssh-dispatch", "--db", filepath.Join(root, "orchestrator.db"), "--host", "worker;rm -rf /", "--worker-bin", filepath.Join(root, "glade-tools"), "--plan", filepath.Join(root, "plan"), "--remote-plan", filepath.Join(root, "remote-plan"), "--remote-scope", filepath.Join(root, "remote-scope"), "--lease", filepath.Join(root, "lease"), "--bundle", filepath.Join(root, "bundle"), "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", filepath.Join(root, "output-root"), "--output", filepath.Join(root, "output")}
 	var stdout, stderr bytes.Buffer
 	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "invalid orchestrator SSH dispatch target") {
 		t.Fatalf("unsafe SSH host accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
@@ -439,7 +439,7 @@ func TestCorpusAssuranceOrchestratorSSHDispatchRejectsUnsafeHostBeforeFiles(t *t
 
 func TestCorpusAssuranceOrchestratorSSHFetchValidatesTypedInputs(t *testing.T) {
 	root := t.TempDir()
-	args := []string{"corpus", "assurance", "orchestrator", "ssh-fetch", "--plan", filepath.Join(root, "plan.json"), "--remote-plan", filepath.Join(root, "remote-plan.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--host", "operator@worker.example.internal", "--worker-bin", filepath.Join(root, "glade-tools"), "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--remote-root", filepath.Join(root, "remote"), "--raw-root", filepath.Join(root, "raw")}
+	args := []string{"corpus", "assurance", "orchestrator", "ssh-fetch", "--plan", filepath.Join(root, "plan.json"), "--remote-plan", filepath.Join(root, "remote-plan.json"), "--remote-scope", filepath.Join(root, "remote-scope.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--host", "operator@worker.example.internal", "--worker-bin", filepath.Join(root, "glade-tools"), "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--remote-root", filepath.Join(root, "remote"), "--raw-root", filepath.Join(root, "raw")}
 	var stdout, stderr bytes.Buffer
 	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") || strings.Contains(stderr.String(), "flag provided but not defined") || !strings.Contains(stderr.String(), "read orchestrator plan") {
 		t.Fatalf("ssh-fetch contract was not recognized: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())

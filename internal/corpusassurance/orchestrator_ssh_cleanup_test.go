@@ -174,7 +174,7 @@ func TestOrchestratorCleanupTakeoverRejectsMixedLocalAndSSHMode(t *testing.T) {
 	called := false
 	binding := OrchestratorSSHCleanupBinding{
 		PlanPath: request.PlanPath, LeasePath: request.LeasePath, FailedDispatchPath: request.FailedDispatchPath,
-		Host: request.Host, WorkerBin: request.WorkerBin, RemotePlanPath: request.RemotePlanPath, RemoteLeasePath: request.RemoteLeasePath,
+		Host: request.Host, WorkerBin: request.WorkerBin, RemotePlanPath: request.RemotePlanPath, RemoteScopePath: request.RemoteScopePath, RemoteLeasePath: request.RemoteLeasePath,
 		RemoteBundlePath: request.RemoteBundlePath, RemoteSFBin: request.RemoteSFBin, RemoteRoot: request.RemoteRoot, FetchedReceiptPath: request.FetchedReceiptPath,
 		sshRunner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
 			called = true
@@ -471,12 +471,12 @@ func coordinatorCleanupTestRequest(t *testing.T) (OrchestratorSSHCleanupTakeover
 		Coordinator: orchestrator, Claim: claim, OutputPath: filepath.Join(root, "coordinator.json"),
 		OrchestratorSSHCleanupBinding: OrchestratorSSHCleanupBinding{
 			PlanPath: planPath, LeasePath: leasePath, FailedDispatchPath: failedPath,
-			Host: "operator@worker.example.internal", WorkerBin: "/remote/bin/glade-tools", RemotePlanPath: "/remote/authority/plan.json", RemoteLeasePath: "/remote/authority/lease.json",
+			Host: "operator@worker.example.internal", WorkerBin: "/remote/bin/glade-tools", RemotePlanPath: "/remote/authority/plan.json", RemoteScopePath: "/remote/authority/scope.json", RemoteLeasePath: "/remote/authority/lease.json",
 			RemoteBundlePath: "/remote/authority/bundle.json", RemoteSFBin: "/remote/bin/sf", RemoteRoot: "/remote/lifecycle", FetchedReceiptPath: filepath.Join(root, "fetched.json"),
 		},
 	}
-	original := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: planPath, RemotePlanPath: request.RemotePlanPath, LeasePath: request.RemoteLeasePath, BundlePath: request.RemoteBundlePath, TargetOrg: claim.AllocationAlias, SFBin: request.RemoteSFBin, OutputRoot: request.RemoteRoot}
-	originalCommand := orchestratorSSHWorkerOnceCommand(original, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, claim.HubAlias)
+	original := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: planPath, RemotePlanPath: request.RemotePlanPath, RemoteScopePath: request.RemoteScopePath, LeasePath: request.RemoteLeasePath, BundlePath: request.RemoteBundlePath, TargetOrg: claim.AllocationAlias, SFBin: request.RemoteSFBin, OutputRoot: request.RemoteRoot}
+	originalCommand := orchestratorSSHWorkerOnceCommand(original, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, plan.Definition.ScopeSHA256, claim.HubAlias)
 	failed := OrchestratorSSHDispatchReceipt{
 		SchemaVersion: 1, CampaignID: lease.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "failed", FailureCode: orchestratorSSHDispatchFailed,
 		CommandSHA256: commandSpecSHA256(ReplayCommand{Path: orchestratorSSHBinary, Args: []string{"-o", "BatchMode=yes", "--", request.Host, originalCommand}, Timeout: orchestratorSSHTimeout}), StdoutSHA256: strings.Repeat("a", 64), StderrSHA256: strings.Repeat("b", 64), ExitCode: 255, DurationMS: 1,

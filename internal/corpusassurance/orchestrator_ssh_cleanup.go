@@ -44,6 +44,7 @@ type OrchestratorWorkerCleanupReceipt struct {
 type OrchestratorWorkerCleanupRequest struct {
 	Plan                   OrchestratorCampaignPlan
 	Lease                  OrchestratorLease
+	ScopePath              string
 	PlanSHA256             string
 	LeaseSHA256            string
 	FailedSSHReceiptSHA256 string
@@ -60,7 +61,11 @@ type OrchestratorWorkerCleanupRequest struct {
 // RunOrchestratorWorkerCleanup validates the worker-local lifecycle authority,
 // runs the existing no-preflight cleanup, and seals a zero-credit receipt.
 func RunOrchestratorWorkerCleanup(request OrchestratorWorkerCleanupRequest) (OrchestratorWorkerCleanupReceipt, error) {
-	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.FailedSSHReceiptSHA256) || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) || request.ExecutedTools == (RuntimeArtifact{}) || !validOrchestratorExecutedTools(request.ExecutedTools, request.Plan) {
+	scopePath := request.ScopePath
+	if scopePath == "" {
+		scopePath = request.Plan.Definition.ScopePath
+	}
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(request.Plan, request.Lease, scopePath); err != nil || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.FailedSSHReceiptSHA256) || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) || request.ExecutedTools == (RuntimeArtifact{}) || !validOrchestratorExecutedTools(request.ExecutedTools, request.Plan) {
 		return OrchestratorWorkerCleanupReceipt{}, fmt.Errorf("invalid worker cleanup binding")
 	}
 	for _, path := range []string{request.BundlePath, request.SFBin, request.OutputRoot} {
@@ -254,6 +259,7 @@ type OrchestratorSSHCleanupBinding struct {
 	Host               string `json:"host"`
 	WorkerBin          string `json:"workerBin"`
 	RemotePlanPath     string `json:"remotePlanPath"`
+	RemoteScopePath    string `json:"remoteScopePath"`
 	RemoteLeasePath    string `json:"remoteLeasePath"`
 	RemoteBundlePath   string `json:"remoteBundlePath"`
 	RemoteSFBin        string `json:"remoteSfBin"`
@@ -448,7 +454,7 @@ func validateOrchestratorSSHCleanupTakeoverRequest(request OrchestratorSSHCleanu
 	if request.Coordinator == nil || request.Coordinator.db == nil || timeout <= 0 || !safeRemoteSSHHost.MatchString(request.Host) {
 		return zeroPlan, nil, zeroLease, nil, zeroDispatch, nil, fmt.Errorf("live coordinator and safe SSH host are required")
 	}
-	for _, path := range []string{request.PlanPath, request.LeasePath, request.FailedDispatchPath, request.WorkerBin, request.RemotePlanPath, request.RemoteLeasePath, request.RemoteBundlePath, request.RemoteSFBin, request.RemoteRoot, request.FetchedReceiptPath, request.OutputPath} {
+	for _, path := range []string{request.PlanPath, request.LeasePath, request.FailedDispatchPath, request.WorkerBin, request.RemotePlanPath, request.RemoteScopePath, request.RemoteLeasePath, request.RemoteBundlePath, request.RemoteSFBin, request.RemoteRoot, request.FetchedReceiptPath, request.OutputPath} {
 		if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 			return zeroPlan, nil, zeroLease, nil, zeroDispatch, nil, fmt.Errorf("absolute clean SSH cleanup paths are required")
 		}
@@ -481,8 +487,8 @@ func validateOrchestratorSSHCleanupTakeoverRequest(request OrchestratorSSHCleanu
 	if request.Claim.CampaignID != lease.CampaignID || request.Claim.JobID != lease.JobID || request.Claim.Generation != lease.Generation || request.Claim.AllocationAlias == "" || request.Claim.HubAlias == "" || request.Claim.Worker == "" || request.Claim.ClaimUntil.IsZero() || validateStoredCleanupPlanLease(request.Coordinator, plan, lease) != nil {
 		return zeroPlan, nil, zeroLease, nil, zeroDispatch, nil, fmt.Errorf("SSH cleanup claim is not exact")
 	}
-	original := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: request.PlanPath, RemotePlanPath: request.RemotePlanPath, LeasePath: request.RemoteLeasePath, BundlePath: request.RemoteBundlePath, TargetOrg: request.Claim.AllocationAlias, SFBin: request.RemoteSFBin, OutputRoot: request.RemoteRoot}
-	command := orchestratorSSHWorkerOnceCommand(original, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, request.Claim.HubAlias)
+	original := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: request.PlanPath, RemotePlanPath: request.RemotePlanPath, RemoteScopePath: request.RemoteScopePath, LeasePath: request.RemoteLeasePath, BundlePath: request.RemoteBundlePath, TargetOrg: request.Claim.AllocationAlias, SFBin: request.RemoteSFBin, OutputRoot: request.RemoteRoot}
+	command := orchestratorSSHWorkerOnceCommand(original, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, plan.Definition.ScopeSHA256, request.Claim.HubAlias)
 	args := []string{"-o", "BatchMode=yes", "--", request.Host, command}
 	common := failed.SchemaVersion == 1 && !failed.Passed && failed.DurationMS >= 0 && failed.CampaignID == lease.CampaignID && failed.JobID == lease.JobID && failed.ShardIndex == lease.ShardIndex && failed.Generation == lease.Generation && failed.SpecSHA256 == plan.SpecSHA256 && failed.PlanSHA256 == planSHA && failed.LeaseSHA256 == leaseSHA && failed.TimeoutMS == orchestratorSSHTimeout.Milliseconds() && failed.ActionRequired && failed.ActionCode == orchestratorSSHActionCode && sha256Pattern.MatchString(failed.StdoutSHA256) && sha256Pattern.MatchString(failed.StderrSHA256) && failed.OrchestratorBindingSHA256 == "" && failed.SalesforceShardSHA256 == "" && failed.OrgCleanupSHA256 == "" && failed.ExecutedTools == (RuntimeArtifact{}) && failed.CommandSHA256 == commandSpecSHA256(ReplayCommand{Path: orchestratorSSHBinary, Args: args, Timeout: orchestratorSSHTimeout})
 	failedStatus := failed.Status == "failed" && failed.FailureCode == orchestratorSSHDispatchFailed && !failed.TimedOut && failed.ExitCode != 0
@@ -513,7 +519,7 @@ func validateStoredCleanupPlanLease(orchestrator *Orchestrator, plan Orchestrato
 func orchestratorSSHWorkerCleanupCommand(request OrchestratorSSHCleanupTakeoverRequest, plan OrchestratorCampaignPlan, planSHA, leaseSHA, failedSHA string) string {
 	command := strings.Join([]string{
 		shellQuote(request.WorkerBin), "corpus assurance orchestrator worker-cleanup --plan", shellQuote(request.RemotePlanPath), "--plan-sha256", shellQuote(planSHA),
-		"--lease", shellQuote(request.RemoteLeasePath), "--lease-sha256", shellQuote(leaseSHA), "--failed-ssh-sha256", shellQuote(failedSHA),
+		"--scope", shellQuote(request.RemoteScopePath), "--lease", shellQuote(request.RemoteLeasePath), "--lease-sha256", shellQuote(leaseSHA), "--failed-ssh-sha256", shellQuote(failedSHA),
 		"--bundle", shellQuote(request.RemoteBundlePath), "--dev-hub", shellQuote(request.Claim.HubAlias), "--target-org", shellQuote(request.Claim.AllocationAlias),
 		"--sf-bin", shellQuote(request.RemoteSFBin), "--output-root", shellQuote(request.RemoteRoot),
 	}, " ")
@@ -525,6 +531,7 @@ func orchestratorSSHWorkerCleanupCommand(request OrchestratorSSHCleanupTakeoverR
 	check += "; }"
 	checks := []string{check,
 		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.RemotePlanPath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(planSHA),
+		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.RemoteScopePath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(plan.Definition.ScopeSHA256),
 		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.RemoteLeasePath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(leaseSHA),
 	}
 	return strings.Join(checks, " && ") + " || { echo 'worker cleanup input integrity check failed' >&2; exit 126; }; export SF_USE_GENERIC_UNIX_KEYCHAIN=true; exec " + command

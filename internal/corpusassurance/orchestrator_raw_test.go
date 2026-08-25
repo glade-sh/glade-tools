@@ -139,6 +139,57 @@ func TestRunRawSalesforceShardPassesThreeShardPlanToLifecycle(t *testing.T) {
 	}
 }
 
+func TestRunRawSalesforceShardUsesWorkerScopeWithoutChangingPlan(t *testing.T) {
+	request, outputRoot, _ := rawSalesforceShardTestRequest(t)
+	remoteScope := filepath.Join(t.TempDir(), "SALESFORCE_SURFACE_SCOPE.json")
+	data, err := os.ReadFile(request.Plan.Definition.ScopePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(remoteScope, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(request.Plan.Definition.ScopePath); err != nil {
+		t.Fatal(err)
+	}
+	request.ScopePath = remoteScope
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(request.Plan, request.Lease, remoteScope); err != nil {
+		t.Fatalf("remote scope validation failed: %v", err)
+	}
+	request.orgCreate = func(SalesforceOrgCreateRequest) (SalesforceOrgCreation, error) {
+		return SalesforceOrgCreation{}, errors.New("scope override passed validation")
+	}
+	_, err = RunRawSalesforceShard(request)
+	if err == nil || !strings.Contains(err.Error(), "scope override passed validation") {
+		t.Fatalf("worker scope override error = %v", err)
+	}
+	if request.Plan.Definition.ScopePath == remoteScope {
+		t.Fatal("worker scope override changed the sealed plan")
+	}
+	if _, err := os.Stat(outputRoot); err != nil {
+		t.Fatalf("worker lifecycle did not reach output creation: %v", err)
+	}
+}
+
+func TestRunRawSalesforceShardRejectsWorkerScopeDriftBeforeSideEffects(t *testing.T) {
+	request, outputRoot, _ := rawSalesforceShardTestRequest(t)
+	request.ScopePath = filepath.Join(t.TempDir(), "SALESFORCE_SURFACE_SCOPE.json")
+	if err := os.WriteFile(request.ScopePath, []byte("{}\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	request.orgCreate = func(SalesforceOrgCreateRequest) (SalesforceOrgCreation, error) {
+		called = true
+		return SalesforceOrgCreation{}, nil
+	}
+	if _, err := RunRawSalesforceShard(request); err == nil || called {
+		t.Fatalf("drifted worker scope accepted: err=%v called=%t", err, called)
+	}
+	if _, err := os.Lstat(outputRoot); !os.IsNotExist(err) {
+		t.Fatalf("output root exists after scope drift: %v", err)
+	}
+}
+
 func TestRunRawSalesforceShardRejectsSealedOraclePlanDriftBeforeOutput(t *testing.T) {
 	request, outputRoot, _ := rawSalesforceShardTestRequest(t)
 	data, err := json.Marshal(OraclePlan{})

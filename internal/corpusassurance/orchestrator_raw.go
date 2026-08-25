@@ -23,6 +23,7 @@ const orchestratorWorkerOnceTimeout = 45 * time.Minute
 type RawSalesforceShardRequest struct {
 	Plan       OrchestratorCampaignPlan
 	Lease      OrchestratorLease
+	ScopePath  string
 	BundlePath string
 	DevHub     string
 	TargetOrg  string
@@ -38,6 +39,7 @@ type RawSalesforceShardRequest struct {
 }
 
 type RawSalesforceShardResult struct {
+	ScopePath            string `json:"-"`
 	BindingPath          string
 	SalesforceShardFiles SalesforceShardFiles
 	Binding              OrchestratorBatchBinding
@@ -222,6 +224,7 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 	if err := validateRawSalesforceShardRequestAt(request, clock().UTC()); err != nil {
 		return result, err
 	}
+	result.ScopePath = rawSalesforceScopePath(request)
 	release, err := acquireWorkerLifecycleLock(request.OutputRoot)
 	if err != nil {
 		return result, err
@@ -241,7 +244,7 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 	if bundle.DevHub != request.DevHub {
 		return result, fmt.Errorf("reserved Dev Hub does not match sealed bundle")
 	}
-	if err := validateRawSalesforceScope(filepath.Dir(request.BundlePath), request.Plan, request.Lease); err != nil {
+	if err := validateRawSalesforceScope(filepath.Dir(request.BundlePath), request.Plan, request.Lease, result.ScopePath); err != nil {
 		return result, err
 	}
 	shardCount := len(request.Plan.Jobs)
@@ -261,7 +264,7 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 	paths := rawSalesforceShardPaths(request.OutputRoot)
 	result.BindingPath = paths.binding
 	result.SalesforceShardFiles = SalesforceShardFiles{ShardPath: paths.shard, DispatchPath: paths.dispatch, CreationPath: paths.creation, CleanupPath: paths.cleanup, PreflightPath: paths.preflight}
-	result.Binding, err = WriteOrchestratorBatchBinding(paths.binding, request.Plan, request.Lease)
+	result.Binding, err = writeOrchestratorBatchBindingAtScope(paths.binding, request.Plan, request.Lease, result.ScopePath)
 	if err != nil {
 		return result, err
 	}
@@ -353,10 +356,11 @@ func validateRawSalesforceShardRequest(request RawSalesforceShardRequest) error 
 }
 
 func validateRawSalesforceShardRequestAt(request RawSalesforceShardRequest, now time.Time) error {
-	if !filepath.IsAbs(request.BundlePath) || filepath.Clean(request.BundlePath) != request.BundlePath || !filepath.IsAbs(request.SFBin) || filepath.Clean(request.SFBin) != request.SFBin || !filepath.IsAbs(request.OutputRoot) || filepath.Clean(request.OutputRoot) != request.OutputRoot || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) {
+	scopePath := rawSalesforceScopePath(request)
+	if !filepath.IsAbs(scopePath) || filepath.Clean(scopePath) != scopePath || !filepath.IsAbs(request.BundlePath) || filepath.Clean(request.BundlePath) != request.BundlePath || !filepath.IsAbs(request.SFBin) || filepath.Clean(request.SFBin) != request.SFBin || !filepath.IsAbs(request.OutputRoot) || filepath.Clean(request.OutputRoot) != request.OutputRoot || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) {
 		return fmt.Errorf("invalid raw Salesforce shard request")
 	}
-	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil {
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(request.Plan, request.Lease, scopePath); err != nil {
 		return err
 	}
 	if err := validateOrchestratorLiveWorkerLease(request.Lease, now); err != nil {
@@ -366,6 +370,13 @@ func validateRawSalesforceShardRequestAt(request RawSalesforceShardRequest, now 
 		return fmt.Errorf("raw Salesforce shard lease does not cover bounded lifecycle")
 	}
 	return nil
+}
+
+func rawSalesforceScopePath(request RawSalesforceShardRequest) string {
+	if request.ScopePath != "" {
+		return request.ScopePath
+	}
+	return request.Plan.Definition.ScopePath
 }
 
 func validateOrchestratorLiveWorkerLease(lease OrchestratorLease, now time.Time) error {
@@ -378,7 +389,11 @@ func validateOrchestratorLiveWorkerLease(lease OrchestratorLease, now time.Time)
 // OrchestratorWorkerOnceCompletionFromRaw seals only safe lifecycle hashes
 // after the raw worker has returned. It never includes paths or private data.
 func OrchestratorWorkerOnceCompletionFromRaw(plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA256, leaseSHA256 string, result RawSalesforceShardResult) (OrchestratorWorkerOnceCompletion, error) {
-	if err := validateOrchestratorWorkerPlanLease(plan, lease); err != nil || !safeOrchestratorToken(lease.Worker) || !sha256Pattern.MatchString(planSHA256) || !sha256Pattern.MatchString(leaseSHA256) {
+	scopePath := result.ScopePath
+	if scopePath == "" {
+		scopePath = plan.Definition.ScopePath
+	}
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(plan, lease, scopePath); err != nil || !safeOrchestratorToken(lease.Worker) || !sha256Pattern.MatchString(planSHA256) || !sha256Pattern.MatchString(leaseSHA256) {
 		return OrchestratorWorkerOnceCompletion{}, fmt.Errorf("invalid worker completion binding")
 	}
 	bindingSHA, bindingErr := sha256File(result.BindingPath)
@@ -390,7 +405,7 @@ func OrchestratorWorkerOnceCompletionFromRaw(plan OrchestratorCampaignPlan, leas
 	return OrchestratorWorkerOnceCompletion{CampaignID: plan.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "worker-complete", SpecSHA256: plan.SpecSHA256, PlanSHA256: planSHA256, LeaseSHA256: leaseSHA256, OrchestratorBindingSHA256: bindingSHA, SalesforceShardSHA256: shardSHA, OrgCleanupSHA256: cleanupSHA}, nil
 }
 
-func validateRawSalesforceScope(bundleRoot string, plan OrchestratorCampaignPlan, lease OrchestratorLease) error {
+func validateRawSalesforceScope(bundleRoot string, plan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) error {
 	oraclePlan, data, err := readExactJSONBytes[OraclePlan](filepath.Join(bundleRoot, "ORACLE_PLAN.json"))
 	if err != nil || replayBytesSHA256(data) != plan.Definition.ControlledInputSHA256["oracle-plan"] {
 		return fmt.Errorf("sealed oracle plan binding drift")
@@ -398,7 +413,7 @@ func validateRawSalesforceScope(bundleRoot string, plan OrchestratorCampaignPlan
 	if oraclePlan.Candidate.Commit != plan.Definition.Candidate.Commit || oraclePlan.Candidate.SHA256 != plan.Definition.Candidate.SHA256 || oraclePlan.Tools.Commit != plan.Definition.Tools.Commit || oraclePlan.Tools.SHA256 != plan.Definition.Tools.SHA256 {
 		return fmt.Errorf("sealed oracle plan candidate binding drift")
 	}
-	expected, err := orchestratorSalesforceExpectedSurfaceIDs(oraclePlan, plan, lease)
+	expected, err := orchestratorSalesforceExpectedSurfaceIDsAtScope(oraclePlan, plan, lease, scopePath)
 	if err != nil {
 		return err
 	}

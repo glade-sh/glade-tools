@@ -20,6 +20,7 @@ type SalesforceReconciliationRequest struct {
 type OrchestratorSalesforceReconciliationRequest struct {
 	Plan           OrchestratorCampaignPlan
 	Lease          OrchestratorLease
+	ScopePath      string
 	OraclePlanPath string
 	BindingPath    string
 	ShardFiles     SalesforceShardFiles
@@ -66,7 +67,11 @@ type reconciliationPacketFile struct {
 const reconciliationPacketManifestName = "MANIFEST.json"
 
 func CreateOrchestratorSalesforceReconciliation(request OrchestratorSalesforceReconciliationRequest) (SalesforceReconciliation, error) {
-	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil {
+	scopePath := request.ScopePath
+	if scopePath == "" {
+		scopePath = request.Plan.Definition.ScopePath
+	}
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(request.Plan, request.Lease, scopePath); err != nil {
 		return SalesforceReconciliation{}, err
 	}
 	if !filepath.IsAbs(request.BindingPath) {
@@ -79,7 +84,7 @@ func CreateOrchestratorSalesforceReconciliation(request OrchestratorSalesforceRe
 	if request.Plan.Definition.Candidate.Commit != plan.Candidate.Commit || request.Plan.Definition.Candidate.SHA256 != plan.Candidate.SHA256 || request.Plan.Definition.Tools.Commit != plan.Tools.Commit || request.Plan.Definition.Tools.SHA256 != plan.Tools.SHA256 {
 		return SalesforceReconciliation{}, fmt.Errorf("orchestrator plan does not bind oracle artifacts")
 	}
-	expected, err := orchestratorSalesforceExpectedSurfaceIDs(plan, request.Plan, request.Lease)
+	expected, err := orchestratorSalesforceExpectedSurfaceIDsAtScope(plan, request.Plan, request.Lease, scopePath)
 	if err != nil {
 		return SalesforceReconciliation{}, err
 	}
@@ -91,7 +96,7 @@ func CreateOrchestratorSalesforceReconciliation(request OrchestratorSalesforceRe
 	if err := decodeExactJSON(bindingSnapshot.Data, &binding); err != nil {
 		return SalesforceReconciliation{}, fmt.Errorf("invalid orchestrator binding: %w", err)
 	}
-	wantBinding, err := expectedOrchestratorBatchBinding(request.Plan, request.Lease)
+	wantBinding, err := expectedOrchestratorBatchBindingAtScope(request.Plan, request.Lease, scopePath)
 	if err != nil || !reflect.DeepEqual(binding, wantBinding) {
 		return SalesforceReconciliation{}, fmt.Errorf("orchestrator binding drift")
 	}
@@ -450,14 +455,18 @@ func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath
 }
 
 func orchestratorSalesforceExpectedSurfaceIDs(oraclePlan OraclePlan, campaignPlan OrchestratorCampaignPlan, lease OrchestratorLease) ([]string, error) {
-	if err := validateOrchestratorWorkerPlanLease(campaignPlan, lease); err != nil {
+	return orchestratorSalesforceExpectedSurfaceIDsAtScope(oraclePlan, campaignPlan, lease, campaignPlan.Definition.ScopePath)
+}
+
+func orchestratorSalesforceExpectedSurfaceIDsAtScope(oraclePlan OraclePlan, campaignPlan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) ([]string, error) {
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(campaignPlan, lease, scopePath); err != nil {
 		return nil, err
 	}
 	kinds, err := oracleSalesforceResultKinds(oraclePlan)
 	if err != nil {
 		return nil, err
 	}
-	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](campaignPlan.Definition.ScopePath)
+	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](scopePath)
 	if err != nil || replayBytesSHA256(scopeBytes) != campaignPlan.Definition.ScopeSHA256 {
 		return nil, fmt.Errorf("orchestrator campaign scope binding drift")
 	}
@@ -508,7 +517,11 @@ func orchestratorSalesforceExpectedSurfaceIDs(oraclePlan OraclePlan, campaignPla
 }
 
 func expectedOrchestratorBatchBinding(plan OrchestratorCampaignPlan, lease OrchestratorLease) (OrchestratorBatchBinding, error) {
-	if err := validateOrchestratorWorkerPlanLease(plan, lease); err != nil {
+	return expectedOrchestratorBatchBindingAtScope(plan, lease, plan.Definition.ScopePath)
+}
+
+func expectedOrchestratorBatchBindingAtScope(plan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) (OrchestratorBatchBinding, error) {
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(plan, lease, scopePath); err != nil {
 		return OrchestratorBatchBinding{}, err
 	}
 	return OrchestratorBatchBinding{
