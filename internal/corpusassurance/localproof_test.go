@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -1373,6 +1374,10 @@ func localProofRequest(t *testing.T) (LocalProofRequest, *[]localProofCommand) {
 }
 
 func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, disposition string) LocalProofFixture {
+	return localProofFixtureWithEligibility(t, root, name, surfaceIDs, disposition, true)
+}
+
+func localProofFixtureWithEligibility(t *testing.T, root, name string, surfaceIDs []string, disposition string, eligible bool) LocalProofFixture {
 	t.Helper()
 	path := filepath.Join(root, name+".json")
 	command := `{"kind":"check"}`
@@ -1406,12 +1411,20 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 	if err != nil {
 		t.Fatal(err)
 	}
-	data := `{"name":"` + name + `","evidence":` + string(evidenceJSON) + `,"source":[{"path":"force-app/main/default/classes/` + strings.Title(name) + `.cls","content":` + mustJSON(t, source) + `}],"command":` + command + `,"salesforceEligible":true}`
+	exclusion := ""
+	if !eligible {
+		exclusion = `,"salesforceExclusionClass":"policy-local-only","salesforceExclusionReason":"local-only test fixture"`
+	}
+	data := `{"name":"` + name + `","evidence":` + string(evidenceJSON) + `,"source":[{"path":"force-app/main/default/classes/` + strings.Title(name) + `.cls","content":` + mustJSON(t, source) + `}],"command":` + command + `,"salesforceEligible":` + fmt.Sprint(eligible) + exclusion + `}`
 	if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	eligible := true
-	return LocalProofFixture{ID: name, Name: name, Path: path, SHA256: localProofFileSHA256(t, path), OwnedSurfaceIDs: surfaceIDs, Disposition: disposition, Operation: operation, SalesforceEligible: &eligible}
+	fixture := LocalProofFixture{ID: name, Name: name, Path: path, SHA256: localProofFileSHA256(t, path), OwnedSurfaceIDs: surfaceIDs, Disposition: disposition, Operation: operation, SalesforceEligible: &eligible}
+	if !eligible {
+		fixture.SalesforceExclusionClass = "policy-local-only"
+		fixture.SalesforceExclusionReason = "local-only test fixture"
+	}
+	return fixture
 }
 
 func mustJSON(t *testing.T, value string) string {

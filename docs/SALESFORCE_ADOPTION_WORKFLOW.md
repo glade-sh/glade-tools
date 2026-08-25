@@ -159,6 +159,7 @@ surface-scope
 surface-local-proof-plan
 local-proof-plan
 local-proof
+surface-wave-plan
 release-validate
 oracle-profile
 oracle-directives-draft
@@ -226,6 +227,13 @@ rows remain outside the campaign and receive no Salesforce credit.
 fixture planner. Its coverage output retains the exact missing SurfaceIDs when
 the plan is incomplete; authoritative local-proof inputs are written only at
 100% candidate-runnable coverage.
+
+`surface-wave-plan` selects the next whole Salesforce-eligible fixtures from
+the exact all-runtime scope, local-proof profile, coverage, manifest, and proof
+written by `surface-local-proof-plan` and `local-proof`. Supply the terminal
+authority when coverage contains terminal rows. It accepts a fixture cap,
+never caller-selected SurfaceIDs, emits exactly two deterministic shards, and
+uses an optional cumulative index to exclude already adjudicated rows.
 
 `candidate-build` starts the product and tools builds concurrently. Its exact
 commit binding selects reusable commit-scoped Go build and module caches, so a
