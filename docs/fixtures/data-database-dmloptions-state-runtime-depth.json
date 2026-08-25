@@ -11,7 +11,7 @@
     {"surfaceId":"apex:Database.DMLOptions.allowFieldTruncation","symbol":"Database.DMLOptions.allowFieldTruncation","kind":"exec"},
     {"surfaceId":"apex:Database.DMLOptions.optAllOrNone","symbol":"Database.DMLOptions.optAllOrNone","kind":"exec"},
     {"surfaceId":"apex:Database.DMLOptions.clone()","symbol":"Database.DMLOptions.clone","kind":"exec"},
-    {"surfaceId":"apex:System.SObject.setOptions(database.DMLOptions)","symbol":"SObject.setOptions","kind":"exec"},
+    {"surfaceId":"apex:System.SObject.setOptions(Database.DMLOptions)","symbol":"SObject.setOptions","kind":"exec"},
     {"surfaceId":"apex:System.SObject.getOptions()","symbol":"SObject.getOptions","kind":"exec"}
   ],
   "schema": [

@@ -138,6 +138,48 @@ func TestCanonicalSurfaceIDsCleanApexNames(t *testing.T) {
 		t.Fatalf("cleaned ID array id = %q, want %q", got, want)
 	}
 
+	got = ApexMemberID("System", "Database", "delete", []string{"List<ID>", "Boolean"})
+	want = ApexMemberID("System", "Database", "delete", []string{"List<Id>", "Boolean"})
+	if got != want {
+		t.Fatalf("cleaned generic ID id = %q, want %q", got, want)
+	}
+
+	got = ApexMemberID("System", "Database", "update", []string{"Object", "Database.DmlOptions"})
+	want = ApexMemberID("System", "Database", "update", []string{"Object", "Database.DMLOptions"})
+	if got != want {
+		t.Fatalf("cleaned DmlOptions id = %q, want %q", got, want)
+	}
+
+	got = ApexMemberID("System", "RestResponse", "statuscode", nil)
+	want = ApexMemberID("System", "RestResponse", "statusCode", nil)
+	if got != want {
+		t.Fatalf("cleaned RestResponse status id = %q, want %q", got, want)
+	}
+
+	got = ApexMemberID("Schema", "DescribeSObjectResult", "fieldsets", nil)
+	want = ApexMemberID("Schema", "DescribeSObjectResult", "fieldSets", nil)
+	if got != want {
+		t.Fatalf("cleaned DescribeSObjectResult field sets id = %q, want %q", got, want)
+	}
+
+	got = ApexMemberID("System", "SObject", "get", []string{"Schema.sObjectField"})
+	want = ApexMemberID("System", "SObject", "get", []string{"Schema.SObjectField"})
+	if got != want {
+		t.Fatalf("cleaned SObjectField parameter id = %q, want %q", got, want)
+	}
+
+	got = ApexMemberID("System", "SObject", "getSObjects", []string{"Schema.SObjectType"})
+	want = ApexMemberID("System", "SObject", "getSObjects", []string{"Schema.SObjectField"})
+	if got != want {
+		t.Fatalf("cleaned documented getSObjects token id = %q, want %q", got, want)
+	}
+
+	got = ApexMemberID("System", "SObject", "putSObject", []string{"Schema.SObjectType", "SObject"})
+	want = ApexMemberID("System", "SObject", "putSObject", []string{"Schema.SObjectField", "Object"})
+	if got != want {
+		t.Fatalf("cleaned documented putSObject token id = %q, want %q", got, want)
+	}
+
 	got = ApexMemberID("System", "EventBus", "publishWithAcessLevel", []string{"SObject", "Object", "AccessLevel"})
 	want = ApexMemberID("System", "EventBus", "publishWithAccessLevel", []string{"SObject", "Object", "AccessLevel"})
 	if got != want {

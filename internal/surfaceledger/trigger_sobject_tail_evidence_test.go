@@ -35,6 +35,7 @@ var triggerTailIDs = []string{
 var sObjectTailIDs = []string{
 	"apex:System.SObject",
 	"apex:System.SObject.addError(Exception)",
+	"apex:System.SObject.addError(Exception,Boolean)",
 	"apex:System.SObject.getSObject(Schema.SObjectField)",
 	"apex:System.SObject.getSObjects(Schema.SObjectField)",
 	"apex:System.SObject.hashCode()",
@@ -98,7 +99,7 @@ func TestSystemTriggerSObjectTailHasExactExecutableLocalEvidence(t *testing.T) {
 	}
 	for _, witness := range []string{
 		"Trigger.new", "Trigger.newMap", "Trigger.old", "Trigger.oldMap", "Trigger.isAfter", "Trigger.isBefore", "Trigger.isDelete", "Trigger.isExecuting", "Trigger.isInsert", "Trigger.isUndelete", "Trigger.isUpdate", "Trigger.operationType", "Trigger.size",
-		"SObject row = new Account", "class TailException extends Exception", "row.addError(new SObjectTailSupport.TailException", "child.getSObject(accountField)", "row.hashCode()", "row.toString()", "row.recalculateFormulas()",
+		"SObject row = new Account", "class TailException extends Exception", "row.addError(new SObjectTailSupport.TailException", "row.addError(new SObjectTailSupport.TailException(), false)", "child.getSObject(accountField)", "row.hashCode()", "row.toString()", "row.recalculateFormulas()",
 	} {
 		if !strings.Contains(source.String(), witness) {
 			t.Fatalf("source missing direct assertion %q", witness)

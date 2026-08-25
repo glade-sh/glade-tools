@@ -10,6 +10,14 @@ import (
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
 )
 
+func TestParametersFromSignatureAcceptsMissingClosingParen(t *testing.T) {
+	got := parametersFromSignature("addError(Schema.SObjectField field, String message")
+	want := []string{"Schema.SObjectField", "String"}
+	if !slices.Equal(got, want) {
+		t.Fatalf("parameters = %#v, want %#v", got, want)
+	}
+}
+
 func TestBuildDocsSnapshotKeepsProductPathInIdentity(t *testing.T) {
 	root := t.TempDir()
 	writeDoc(t, root, "apex/apex_methods_system_object.md", "# Object Class\n\n## length()\n")

@@ -31,10 +31,13 @@ func TestDatabaseTailHasExactExecutableLocalOwners(t *testing.T) {
 		"apex:System.Database.updateAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)",
 		"apex:System.Database.updateImmediate(List<Object>,Object)",
 		"apex:System.Database.updateImmediate(Object,Object)",
+		"apex:System.Database.deleteAsync(Object,DataSource.AsyncDeleteCallback)",
+		"apex:System.Database.insertAsync(Object,DataSource.AsyncSaveCallback)",
+		"apex:System.Database.updateAsync(Object,DataSource.AsyncSaveCallback)",
 	}
 	wantOwners := map[string][]string{
 		"async-database-list-dml-contracts":          {want[0], want[1], want[7], want[8], want[12], want[13]},
-		"async-datasource-callback-contracts":        {want[2], want[9], want[14]},
+		"async-datasource-callback-contracts":        {want[2], want[9], want[14], want[17], want[18], want[19]},
 		"data-platform-database-async-immediate-dml": {want[3], want[4], want[10], want[11], want[15], want[16]},
 		"data-platform-database-cursor-sync":         {want[5], want[6]},
 	}

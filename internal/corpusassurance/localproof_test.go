@@ -15,6 +15,41 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
+func TestFixedSearchResultsHasExactLocalEvidence(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "query-runtime-local-search-sosl-evidence.json")
+	fixture, err := compat.LoadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "apex:System.Test.setFixedSearchResults(List<Id>)"
+	for _, row := range fixture.Evidence {
+		if row.SurfaceID == want && row.Kind == "test" {
+			return
+		}
+	}
+	t.Fatalf("missing exact test evidence %s", want)
+}
+
+func TestCanonicalRuntimeGapFixturesHaveExactLocalEvidence(t *testing.T) {
+	want := map[string]string{
+		"core-runtime-messaging-template-capacity-evidence.json": "apex:System.Messaging.sendEmailMessage(List<Id>,Boolean)",
+		"core-runtime-messaging-page-search-options.json":        "apex:System.SObject.setOptions(Database.DMLOptions)",
+	}
+	for name, surfaceID := range want {
+		fixture, err := compat.LoadFile(filepath.Join("..", "..", "docs", "fixtures", name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		found := false
+		for _, row := range fixture.Evidence {
+			found = found || row.SurfaceID == surfaceID
+		}
+		if !found {
+			t.Errorf("%s missing exact evidence %s", name, surfaceID)
+		}
+	}
+}
+
 func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSurface(t *testing.T) {
 	request, calls := localProofRequest(t)
 	proof, err := RunLocalProof(request)
@@ -512,7 +547,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-http-request-runtime-depth.json", 21},
 		{"core-http-response-runtime-depth.json", 17},
 		{"data-schema-child-relationship-aliases-runtime.json", 11},
-		{"data-database-convert-lead-runtime.json", 9},
+		{"data-database-convert-lead-runtime.json", 11},
 		{"data-database-savepoint-lifecycle-runtime.json", 4},
 		{"core-pattern-matcher-stdlib.json", 25},
 		{"integration-rest-context-stdlib.json", 23},
@@ -628,7 +663,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-utility-xmlwriter-api67.json", 2},
 		{"core-runtime-userinfo-request-tail-api67.json", 43},
 		{"core-runtime-trigger-sobject-tail-api67.json", 14},
-		{"core-runtime-sobject-tail-api67.json", 7},
+		{"core-runtime-sobject-tail-api67.json", 8},
 		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
 		{"current-base-userprovisioning-deterministic-mock-003-api67.json", 6},
 		{"current-base-userprovisioning-deterministic-mock-004-api67.json", 3},
