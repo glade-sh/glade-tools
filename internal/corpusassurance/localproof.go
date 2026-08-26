@@ -360,6 +360,13 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		}
 		execution := executor(command)
 		cleanup()
+		if !execution.Receipt.Passed {
+			detail := strings.TrimSpace(execution.Stderr)
+			if detail != "" {
+				return LocalProof{}, fmt.Errorf("fixture %q %s failed: exitCode=%d: %s", fixture.ID, command.Args[0], execution.Receipt.ExitCode, detail)
+			}
+			return LocalProof{}, fmt.Errorf("fixture %q %s failed: exitCode=%d", fixture.ID, command.Args[0], execution.Receipt.ExitCode)
+		}
 		normalized, normalizeErr := normalizeLocalProofStdout([]byte(execution.Stdout))
 		if normalizeErr != nil {
 			return LocalProof{}, fmt.Errorf("normalize fixture %q output: %w", fixture.ID, normalizeErr)
