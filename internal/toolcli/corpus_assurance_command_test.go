@@ -130,6 +130,18 @@ func TestCorpusAssuranceSurfaceWavePlanRejectsPositionalSurfaceIDs(t *testing.T)
 	}
 }
 
+func TestCorpusAssuranceSurfaceWavePlanRejectsMoreThanNineShards(t *testing.T) {
+	args := []string{
+		"corpus", "assurance", "surface-wave-plan",
+		"--scope", "/scope.json", "--profile", "/profile.json", "--local-proof", "/proof.json",
+		"--fixture-manifest", "/fixtures.json", "--coverage", "/coverage.json", "--shards", "10", "--output", "/wave.json",
+	}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "shard count") {
+		t.Fatalf("invalid shard count accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
 func removeCorpusAssuranceFlag(args []string, name string) []string {
 	result := make([]string, 0, len(args)-2)
 	for index := 0; index < len(args); index++ {

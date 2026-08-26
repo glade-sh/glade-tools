@@ -302,7 +302,8 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		localProof, manifest := flags.String("local-proof", "", ""), flags.String("fixture-manifest", "", "")
 		coverage, terminalAuthority := flags.String("coverage", "", ""), flags.String("terminal-authority", "", "")
 		predecessor := flags.String("predecessor-index", "", "")
-		maxFixtures, output := flags.Int("max-fixtures", 32, ""), flags.String("output", "", "")
+		maxFixtures, shards := flags.Int("max-fixtures", 32, ""), flags.Int("shards", 2, "")
+		output := flags.String("output", "", "")
 		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
 			return err
 		}
@@ -317,7 +318,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		}
 		plan, err := corpusassurance.BuildSurfaceWavePlan(corpusassurance.SurfaceWavePlanRequest{
 			ScopePath: *scope, ProfilePath: *profile, LocalProofPath: *localProof, FixtureManifestPath: *manifest,
-			CoveragePath: *coverage, TerminalAuthorityPath: *terminalAuthority, PredecessorIndexPath: *predecessor, MaxFixtures: *maxFixtures, OutputPath: *output,
+			CoveragePath: *coverage, TerminalAuthorityPath: *terminalAuthority, PredecessorIndexPath: *predecessor, MaxFixtures: *maxFixtures, ShardCount: *shards, OutputPath: *output,
 		})
 		if err != nil {
 			return err
@@ -870,7 +871,7 @@ Usage:
   glade-tools corpus assurance surface-scope --oracle-plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --output <SURFACE_ORACLE_SCOPE.json>
   glade-tools corpus assurance surface-terminal-authority --surface-scope <SURFACE_ORACLE_SCOPE.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --classifications <EXCLUSION_POLICY.json> --output <SURFACE_TERMINAL_AUTHORITY.json>
   glade-tools corpus assurance surface-local-proof-plan --surface-scope <SURFACE_ORACLE_SCOPE.json> --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json> --coverage-output <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>]
-  glade-tools corpus assurance surface-wave-plan --scope <SURFACE_ORACLE_SCOPE.json> --profile <local-profile.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>] [--predecessor-index <SURFACE_ORACLE_INDEX.json>] [--max-fixtures 32] --output <SURFACE_WAVE_PLAN.json>
+  glade-tools corpus assurance surface-wave-plan --scope <SURFACE_ORACLE_SCOPE.json> --profile <local-profile.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>] [--predecessor-index <SURFACE_ORACLE_INDEX.json>] [--max-fixtures 32] [--shards 2] --output <SURFACE_WAVE_PLAN.json>
   glade-tools corpus assurance surface-oracle-index --scope <SURFACE_ORACLE_SCOPE.json> --reviewed-runtime-batch <root> [--reviewed-runtime-batch <root> ...] --output <SURFACE_ORACLE_INDEX.json>
   glade-tools corpus assurance local-proof-plan --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <USAGE_DECISIONS.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
