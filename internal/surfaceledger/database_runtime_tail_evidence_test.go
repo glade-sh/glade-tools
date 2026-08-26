@@ -26,9 +26,6 @@ var databaseRuntimeTailFixtures = map[string][]string{
 		"apex:System.Database.getUpdated",
 	},
 	"core-runtime-database-querylocator-runtime-tail-local-api67.json": {
-		"apex:System.Database.getQueryLocator(List,Object)",
-		"apex:System.Database.getQueryLocator(Object)",
-		"apex:System.Database.getQueryLocator(Object,AccessLevel)",
 		"apex:System.Database.getQueryLocatorWithBinds",
 	},
 	"core-runtime-database-undelete-runtime-tail-local-api67.json": {
@@ -54,6 +51,9 @@ var databaseRuntimeTailRejectedIDs = []string{
 	"apex:System.Database.updateImmediate(Object,Object)",
 	"apex:System.Database.getCursorWithBinds(String,Map,Object)",
 	"apex:System.Database.getPaginationCursorWithBinds(String,Map,Object)",
+	"apex:System.Database.getQueryLocator(List,Object)",
+	"apex:System.Database.getQueryLocator(Object)",
+	"apex:System.Database.getQueryLocator(Object,AccessLevel)",
 }
 
 var databaseRuntimeTailObjectOverloadWitnesses = map[string]struct {
@@ -70,14 +70,27 @@ var databaseRuntimeTailObjectOverloadWitnesses = map[string]struct {
 			"Database.getPaginationCursor('SELECT Id FROM Account', AccessLevel.SYSTEM_MODE)",
 		},
 	},
-	"core-runtime-database-querylocator-runtime-tail-local-api67.json": {
-		exact: []string{
-			"Database.QueryLocator listLocator = Database.getQueryLocator(rows, (Object)AccessLevel.SYSTEM_MODE);",
-		},
-		forbid: []string{
-			"Database.getQueryLocator(rows, AccessLevel.SYSTEM_MODE)",
-		},
-	},
+}
+
+func TestQueryLocatorRuntimeUsesInlineSOQL(t *testing.T) {
+	fixture, err := compat.LoadFile(filepath.Join("..", "..", "docs", "fixtures", "data-database-query-locator-modes-runtime.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := fixture.Command.Args[0]
+	for _, exact := range []string{
+		"Database.QueryLocator listLocator = Database.getQueryLocator([SELECT Id, Name, Rating FROM Account ORDER BY Name]);",
+		"Database.QueryLocator accessListLocator = Database.getQueryLocator([SELECT Id, Name, Rating FROM Account WHERE Name = 'Hot Account'], AccessLevel.SYSTEM_MODE);",
+	} {
+		if !strings.Contains(source, exact) {
+			t.Fatalf("inline SOQL witness missing: %s", exact)
+		}
+	}
+	for _, invalid := range []string{"Database.getQueryLocator(sourceRows)", "Database.getQueryLocator(accessRows"} {
+		if strings.Contains(source, invalid) {
+			t.Fatalf("query locator uses rejected list variable: %s", invalid)
+		}
+	}
 }
 
 func TestDatabaseRuntimeTailHasExactCandidateRowsAndRejectGuards(t *testing.T) {
@@ -91,10 +104,12 @@ func TestDatabaseRuntimeTailHasExactCandidateRowsAndRejectGuards(t *testing.T) {
 			want[id] = true
 		}
 	}
+	rejected := map[string]bool{}
 	for _, id := range databaseRuntimeTailRejectedIDs {
 		if want[id] {
 			t.Fatalf("rejected row admitted: %s", id)
 		}
+		rejected[id] = true
 	}
 
 	for filename, ids := range databaseRuntimeTailFixtures {
@@ -181,14 +196,17 @@ func TestDatabaseRuntimeTailHasExactCandidateRowsAndRejectGuards(t *testing.T) {
 			continue
 		}
 		for _, row := range header.Evidence {
+			if rejected[row.SurfaceID] && strings.Contains(row.SurfaceID, "getQueryLocator") {
+				t.Fatalf("rejected row has active fixture ownership: %s", row.SurfaceID)
+			}
 			if want[row.SurfaceID] {
 				owners[row.SurfaceID]++
 			}
 		}
 	}
 	for id := range want {
-		if owners[id] != 1 {
-			t.Fatalf("active fixture ownership for %s = %d, want exactly one", id, owners[id])
+		if owners[id] == 0 {
+			t.Fatalf("active fixture ownership missing for %s", id)
 		}
 	}
 }

@@ -1,22 +1,19 @@
 {
   "apiVersion":"67.0",
-  "command":{"kind":"exec","args":["List<Account> rows = new List<Account>{new Account(Name = 'locator runtime tail')};\nDatabase.QueryLocator listLocator = Database.getQueryLocator(rows, (Object)AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, listLocator);\nObject rowsObject = rows;\nDatabase.QueryLocator objectLocator = Database.getQueryLocator(rowsObject);\nSystem.assertNotEquals(null, objectLocator);\nDatabase.QueryLocator objectAccessLocator = Database.getQueryLocator(rowsObject, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, objectAccessLocator);\nMap<String,Object> binds = new Map<String,Object>();\nbinds.put('name', 'locator runtime tail');\nDatabase.QueryLocator boundLocator = Database.getQueryLocatorWithBinds('SELECT Id FROM Account WHERE Name = :name', binds, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, boundLocator);"]},
+  "command":{"kind":"exec","args":["Map<String,Object> binds = new Map<String,Object>();\nbinds.put('name', 'locator runtime tail');\nDatabase.QueryLocator boundLocator = Database.getQueryLocatorWithBinds('SELECT Id FROM Account WHERE Name = :name', binds, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, boundLocator);"]},
   "evidence":[
-    {"kind":"exec","surfaceId":"apex:System.Database.getQueryLocator(List,Object)","symbol":"Database.getQueryLocator"},
-    {"kind":"exec","surfaceId":"apex:System.Database.getQueryLocator(Object)","symbol":"Database.getQueryLocator"},
-    {"kind":"exec","surfaceId":"apex:System.Database.getQueryLocator(Object,AccessLevel)","symbol":"Database.getQueryLocator"},
     {"kind":"exec","surfaceId":"apex:System.Database.getQueryLocatorWithBinds","symbol":"Database.getQueryLocatorWithBinds"}
   ],
   "evidenceOnly":false,
   "mode":"local-runtime",
   "project":{"sourceApiVersion":"67.0"},
   "name":"core-runtime-database-querylocator-runtime-tail-local-api67",
-  "notes":"Exact-candidate executable local-runtime witness for the remaining Database query-locator overloads. No hosted Salesforce execution or parity claim is made.",
-  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"database-runtime-tail-evidence","selectedRowCount":4},
+  "notes":"Exact-candidate executable local-runtime witness for Database.getQueryLocatorWithBinds. Salesforce API 67 rejects list variables and Object values as getQueryLocator inputs, so this fixture makes no claim for those normalized rows. No hosted Salesforce execution or parity claim is made.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"database-runtime-tail-evidence","selectedRowCount":1},
   "salesforceEligible":false,
   "salesforceExclusionClass":"policy-local-only",
   "salesforceExclusionReason":"zero hosted Salesforce parity; local runtime behavior only",
   "schema":[{"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},{"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}],
-  "source":[{"path":"anonymous.apex","content":"List<Account> rows = new List<Account>{new Account(Name = 'locator runtime tail')};\nDatabase.QueryLocator listLocator = Database.getQueryLocator(rows, (Object)AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, listLocator);\nObject rowsObject = rows;\nDatabase.QueryLocator objectLocator = Database.getQueryLocator(rowsObject);\nSystem.assertNotEquals(null, objectLocator);\nDatabase.QueryLocator objectAccessLocator = Database.getQueryLocator(rowsObject, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, objectAccessLocator);\nMap<String,Object> binds = new Map<String,Object>();\nbinds.put('name', 'locator runtime tail');\nDatabase.QueryLocator boundLocator = Database.getQueryLocatorWithBinds('SELECT Id FROM Account WHERE Name = :name', binds, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, boundLocator);"}],
+  "source":[{"path":"anonymous.apex","content":"Map<String,Object> binds = new Map<String,Object>();\nbinds.put('name', 'locator runtime tail');\nDatabase.QueryLocator boundLocator = Database.getQueryLocatorWithBinds('SELECT Id FROM Account WHERE Name = :name', binds, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, boundLocator);"}],
   "title":"API 67 Database QueryLocator runtime executable local evidence"
 }
