@@ -212,7 +212,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		})
 	case "raw-abort-observe":
 		flags := orchestratorFlags("raw-abort-observe")
-		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		planPath, scopePath, leasePath := flags.String("plan", "", ""), flags.String("scope", "", ""), flags.String("lease", "", "")
 		sshPath, bundlePath := flags.String("ssh-receipt", "", ""), flags.String("bundle", "", "")
 		allocation, sfBin := flags.String("allocation", "", ""), flags.String("sf-bin", "", "")
 		rawRoot, outputPath := flags.String("raw-root", "", ""), flags.String("output", "", "")
@@ -222,7 +222,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*planPath, *leasePath, *sshPath, *bundlePath, *allocation, *sfBin, *rawRoot, *outputPath); err != nil {
+		if err := requiredAssuranceFlags(*planPath, *scopePath, *leasePath, *sshPath, *bundlePath, *allocation, *sfBin, *rawRoot, *outputPath); err != nil {
 			return err
 		}
 		var plan corpusassurance.OrchestratorCampaignPlan
@@ -242,7 +242,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		}
 		observed, err := corpusassurance.ObserveOrchestratorRawPrecreationAbort(corpusassurance.OrchestratorRawPrecreationAbortObservationRequest{
 			Plan: plan, Lease: lease, PlanSHA256: fmt.Sprintf("%x", sha256.Sum256(planBytes)), LeaseSHA256: fmt.Sprintf("%x", sha256.Sum256(leaseBytes)),
-			FailedSSHReceipt: sshReceipt, FailedSSHReceiptSHA256: fmt.Sprintf("%x", sha256.Sum256(sshBytes)), BundlePath: *bundlePath,
+			FailedSSHReceipt: sshReceipt, FailedSSHReceiptSHA256: fmt.Sprintf("%x", sha256.Sum256(sshBytes)), BundlePath: *bundlePath, ScopePath: *scopePath,
 			RawRoot: *rawRoot, AllocationAlias: *allocation, TargetOrg: *allocation, SFBin: *sfBin, OutputPath: *outputPath,
 		})
 		if err != nil {

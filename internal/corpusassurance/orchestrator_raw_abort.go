@@ -20,6 +20,7 @@ type OrchestratorRawPrecreationAbortObservationRequest struct {
 	FailedSSHReceipt       OrchestratorSSHDispatchReceipt
 	FailedSSHReceiptSHA256 string
 	BundlePath             string
+	ScopePath              string
 	RawRoot                string
 	AllocationAlias        string
 	TargetOrg              string
@@ -81,7 +82,8 @@ func ObserveOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAb
 	if err := validateRawPrecreationAbortRequest(request); err != nil {
 		return OrchestratorRawPrecreationAbortObservation{}, err
 	}
-	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil {
+	scopePath := rawAbortScopePath(request)
+	if err := validateOrchestratorWorkerPlanLeaseAtScope(request.Plan, request.Lease, scopePath); err != nil {
 		return OrchestratorRawPrecreationAbortObservation{}, err
 	}
 	planSHA, leaseSHA, err := canonicalPlanLeaseHashes(request.Plan, request.Lease)
@@ -92,7 +94,7 @@ func ObserveOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAb
 	if err != nil || sshSHA != request.FailedSSHReceiptSHA256 || !validFailedRawAbortSSHReceipt(request.FailedSSHReceipt, request.Plan, request.Lease) {
 		return OrchestratorRawPrecreationAbortObservation{}, fmt.Errorf("failed SSH receipt is not a valid sanitized abort receipt")
 	}
-	if err := validateRawAbortRoot(request.RawRoot, request.Plan, request.Lease); err != nil {
+	if err := ensureRawAbortRoot(request.RawRoot, request.Plan, request.Lease, scopePath); err != nil {
 		return OrchestratorRawPrecreationAbortObservation{}, err
 	}
 	bundleValidator := request.validateBundle
@@ -136,7 +138,7 @@ func ObserveOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAb
 	if err != nil || !validSalesforceReservedAliasAbsence(missingAlias, request.BundlePath, request.TargetOrg) {
 		return OrchestratorRawPrecreationAbortObservation{}, fmt.Errorf("current Salesforce alias absence is not validated")
 	}
-	if err := validateRawAbortRoot(request.RawRoot, request.Plan, request.Lease); err != nil {
+	if err := validateRawAbortRootAtScope(request.RawRoot, request.Plan, request.Lease, scopePath); err != nil {
 		return OrchestratorRawPrecreationAbortObservation{}, err
 	}
 	missingAlias.DurationMS = 0
@@ -246,13 +248,40 @@ func AcceptOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAbo
 }
 
 func validateRawPrecreationAbortRequest(request OrchestratorRawPrecreationAbortObservationRequest) error {
-	if !cleanAbsolutePath(request.BundlePath) || !cleanAbsolutePath(request.RawRoot) || !cleanAbsolutePath(request.SFBin) || !cleanAbsolutePath(request.OutputPath) || !safeOrchestratorToken(request.AllocationAlias) || request.TargetOrg != request.AllocationAlias || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.FailedSSHReceiptSHA256) {
+	if !cleanAbsolutePath(request.BundlePath) || !cleanAbsolutePath(rawAbortScopePath(request)) || !cleanAbsolutePath(request.RawRoot) || !cleanAbsolutePath(request.SFBin) || !cleanAbsolutePath(request.OutputPath) || !safeOrchestratorToken(request.AllocationAlias) || request.TargetOrg != request.AllocationAlias || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.FailedSSHReceiptSHA256) {
 		return fmt.Errorf("invalid raw precreation abort request")
 	}
 	return nil
 }
 
+func rawAbortScopePath(request OrchestratorRawPrecreationAbortObservationRequest) string {
+	if request.ScopePath != "" {
+		return request.ScopePath
+	}
+	return request.Plan.Definition.ScopePath
+}
+
+func ensureRawAbortRoot(root string, plan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) error {
+	if _, err := os.Lstat(root); err == nil {
+		return validateRawAbortRootAtScope(root, plan, lease, scopePath)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("inspect raw abort root: %w", err)
+	}
+	if err := os.Mkdir(root, 0o700); err != nil {
+		return fmt.Errorf("create raw abort root: %w", err)
+	}
+	if _, err := writeOrchestratorBatchBindingAtScope(filepath.Join(root, "ORCHESTRATOR_BINDING.json"), plan, lease, scopePath); err != nil {
+		_ = os.Remove(root)
+		return fmt.Errorf("seal raw abort binding: %w", err)
+	}
+	return validateRawAbortRootAtScope(root, plan, lease, scopePath)
+}
+
 func validateRawAbortRoot(root string, plan OrchestratorCampaignPlan, lease OrchestratorLease) error {
+	return validateRawAbortRootAtScope(root, plan, lease, plan.Definition.ScopePath)
+}
+
+func validateRawAbortRootAtScope(root string, plan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) error {
 	info, err := os.Lstat(root)
 	if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || info.Mode().Perm() != 0o700 {
 		return fmt.Errorf("raw abort root must be an exact mode-0700 directory")
@@ -269,7 +298,7 @@ func validateRawAbortRoot(root string, plan OrchestratorCampaignPlan, lease Orch
 	if err != nil {
 		return fmt.Errorf("read raw abort binding: %w", err)
 	}
-	want, err := orchestratorBatchBindingValue(plan, lease)
+	want, err := orchestratorBatchBindingValueAtScope(plan, lease, scopePath)
 	if err != nil || !reflect.DeepEqual(binding, want) {
 		return fmt.Errorf("raw abort binding does not match plan and lease")
 	}
@@ -277,7 +306,11 @@ func validateRawAbortRoot(root string, plan OrchestratorCampaignPlan, lease Orch
 }
 
 func orchestratorBatchBindingValue(plan OrchestratorCampaignPlan, lease OrchestratorLease) (OrchestratorBatchBinding, error) {
-	if err := validateOrchestratorPlan(plan); err != nil {
+	return orchestratorBatchBindingValueAtScope(plan, lease, plan.Definition.ScopePath)
+}
+
+func orchestratorBatchBindingValueAtScope(plan OrchestratorCampaignPlan, lease OrchestratorLease, scopePath string) (OrchestratorBatchBinding, error) {
+	if err := validateOrchestratorPlanAtScope(plan, scopePath); err != nil {
 		return OrchestratorBatchBinding{}, err
 	}
 	for _, job := range plan.Jobs {
