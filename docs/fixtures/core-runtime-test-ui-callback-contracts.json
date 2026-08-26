@@ -70,6 +70,12 @@
     },
     {
       "kind": "test",
+      "notes": "Canonical inventory identity for the same StubProvider contract.",
+      "surfaceId": "apex:System.Test.createStub(Type,StubProvider)",
+      "symbol": "Test.createStub"
+    },
+    {
+      "kind": "test",
       "notes": "Builds one local SObject row for SOQL stub providers.",
       "surfaceId": "apex:System.Test.createStubQueryRow(Schema.SObjectType,Map<String,Object>)",
       "symbol": "Test.createStubQueryRow"

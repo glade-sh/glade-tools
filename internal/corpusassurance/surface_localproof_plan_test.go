@@ -50,6 +50,71 @@ func TestBuildSurfaceLocalProofPlanRetainsExactMissingCoverage(t *testing.T) {
 	}
 }
 
+func TestBuildSurfaceLocalProofPlanDoesNotCreditUnmaterializableFixtures(t *testing.T) {
+	request := surfaceLocalProofPlanRequest(t)
+	runtime := localProofFixture(t, request.FixtureRoot, "runtime", []string{"apex:System.Runtime.run()"}, localRuntimeRequired)
+	localProofFixture(t, request.FixtureRoot, "mock", []string{"apex:System.Mock.run()"}, deterministicMockRequired)
+
+	data, err := os.ReadFile(runtime.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var fixture map[string]any
+	if err := json.Unmarshal(data, &fixture); err != nil {
+		t.Fatal(err)
+	}
+	fixture["expected"] = map[string]any{"error": map[string]any{"type": "Error", "message": "expected failure"}}
+	writeLocalProofJSON(t, runtime.Path, fixture)
+
+	_, coverage, err := BuildSurfaceLocalProofPlan(request)
+	if err == nil || !strings.Contains(err.Error(), "covered=1 missing=1") {
+		t.Fatalf("incomplete plan error = %v", err)
+	}
+	if len(coverage.Missing) != 1 || coverage.Missing[0].SurfaceID != "apex:System.Runtime.run()" {
+		t.Fatalf("coverage = %#v", coverage)
+	}
+}
+
+func TestCanonicalPositiveFixturesRemainLocalProofCandidates(t *testing.T) {
+	want := []string{
+		"apex:System.Database.executeBatch(Object,Integer)",
+		"apex:System.System.attachFinalizer(Object)",
+		"apex:System.Test.clearApexPageMessages()",
+		"apex:System.Test.createStub(Type,StubProvider)",
+		"apex:System.Test.setFixedSearchResults(List<Id>)",
+	}
+	required := map[string]string{}
+	for _, surfaceID := range want {
+		required[surfaceID] = localRuntimeRequired
+	}
+	fixtureRoot, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	candidates, err := discoverLocalProofFixtures(fixtureRoot, required)
+	if err != nil {
+		t.Fatal(err)
+	}
+	owners := map[string]string{}
+	for _, fixture := range selectLocalProofFixtures(candidates).Fixtures {
+		for _, surfaceID := range fixture.OwnedSurfaceIDs {
+			owners[surfaceID] = fixture.ID
+		}
+	}
+	for _, surfaceID := range want {
+		if owners[surfaceID] == "" {
+			t.Errorf("%s has no selected owner", surfaceID)
+		}
+	}
+	_, missing, err := analyzeLocalProofFixtures(fixtureRoot, required)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(missing) != 0 {
+		t.Fatalf("canonical positive fixtures missing after selection: %v", missing)
+	}
+}
+
 func TestBuildSurfaceLocalProofPlanRetainsUnclassifiedFixtures(t *testing.T) {
 	request := surfaceLocalProofPlanRequest(t)
 	runtimeFixture := localProofFixture(t, request.FixtureRoot, "runtime", []string{"apex:System.Runtime.run()"}, localRuntimeRequired)

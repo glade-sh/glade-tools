@@ -1,7 +1,7 @@
 {
   "command": {
     "args": [
-      "Address address = Address.newInstance().withStreet('12 Lake Road').withCity('Port Alsworth').withState('Alaska').withStateCode('AK').withPostalCode('99653').withCountry('United States').withCountryCode('US').withLatitude(60.2027).withLongitude(-154.3128).withGeocodeAccuracy('Zip');\nSystem.assertEquals('12 Lake Road', address.getStreet());\nSystem.assertEquals('Port Alsworth', address.getCity());\nSystem.assertEquals('Alaska', address.getState());\nSystem.assertEquals('AK', address.getStateCode());\nSystem.assertEquals('99653', address.getPostalCode());\nSystem.assertEquals('United States', address.getCountry());\nSystem.assertEquals('US', address.getCountryCode());\nSystem.assertEquals(60.2027, address.getLatitude());\nSystem.assertEquals(-154.3128, address.getLongitude());\nSystem.assertEquals('Zip', address.getGeocodeAccuracy());\nSystem.assert(address.getDistance(Location.newInstance(60.0, -154.0), 'mi') > 0);\n"
+      "Account account = [SELECT BillingAddress FROM Account LIMIT 1]; Address address = account.BillingAddress; System.assertEquals('12 Lake Road', address.getStreet()); System.assertEquals('Port Alsworth', address.getCity()); System.assertEquals('Alaska', address.getState()); System.assertEquals(null, address.getStateCode()); System.assertEquals('99653', address.getPostalCode()); System.assertEquals('United States', address.getCountry()); System.assertEquals(null, address.getCountryCode()); System.assertEquals(60.2027, address.getLatitude()); System.assertEquals(-154.3128, address.getLongitude()); System.assertEquals('Zip', address.getGeocodeAccuracy()); System.assert(address.getDistance(Location.newInstance(60.0, -154.0), 'mi') > 0);"
     ],
     "kind": "exec"
   },
@@ -64,18 +64,36 @@
     }
   ],
   "expected": {
-    "error": {
-      "message": "unsupported call \"Address.newInstance\"",
-      "type": "UnsupportedFeature"
+    "result": {
+      "debug": null,
+      "ok": true
     }
   },
   "name": "core-runtime-address-value-object",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "API 67 Salesforce rejects construction of Address; retained as explicit negative shape evidence.",
+  "salesforceExclusionReason": "API 67 Salesforce rejects direct Address construction; this local proof obtains the value through an Account compound-address field and makes no hosted parity claim.",
+  "seedData": [
+    {
+      "object": "Account",
+      "records": [
+        {
+          "Id": "001000000000001AAA",
+          "BillingStreet": "12 Lake Road",
+          "BillingCity": "Port Alsworth",
+          "BillingState": "Alaska",
+          "BillingPostalCode": "99653",
+          "BillingCountry": "United States",
+          "BillingLatitude": 60.2027,
+          "BillingLongitude": -154.3128,
+          "BillingGeocodeAccuracy": "Zip"
+        }
+      ]
+    }
+  ],
   "source": [
     {
-      "content": "Address address = Address.newInstance().withStreet('12 Lake Road').withCity('Port Alsworth').withState('Alaska').withStateCode('AK').withPostalCode('99653').withCountry('United States').withCountryCode('US').withLatitude(60.2027).withLongitude(-154.3128).withGeocodeAccuracy('Zip');\nSystem.assertEquals('12 Lake Road', address.getStreet());\nSystem.assertEquals('Port Alsworth', address.getCity());\nSystem.assertEquals('Alaska', address.getState());\nSystem.assertEquals('AK', address.getStateCode());\nSystem.assertEquals('99653', address.getPostalCode());\nSystem.assertEquals('United States', address.getCountry());\nSystem.assertEquals('US', address.getCountryCode());\nSystem.assertEquals(60.2027, address.getLatitude());\nSystem.assertEquals(-154.3128, address.getLongitude());\nSystem.assertEquals('Zip', address.getGeocodeAccuracy());\nSystem.assert(address.getDistance(Location.newInstance(60.0, -154.0), 'mi') > 0);\n",
+      "content": "Account account = [SELECT BillingAddress FROM Account LIMIT 1]; Address address = account.BillingAddress; System.assertEquals('12 Lake Road', address.getStreet()); System.assertEquals('Port Alsworth', address.getCity()); System.assertEquals('Alaska', address.getState()); System.assertEquals(null, address.getStateCode()); System.assertEquals('99653', address.getPostalCode()); System.assertEquals('United States', address.getCountry()); System.assertEquals(null, address.getCountryCode()); System.assertEquals(60.2027, address.getLatitude()); System.assertEquals(-154.3128, address.getLongitude()); System.assertEquals('Zip', address.getGeocodeAccuracy()); System.assert(address.getDistance(Location.newInstance(60.0, -154.0), 'mi') > 0);",
       "path": "anonymous.apex"
     }
   ]

@@ -1,7 +1,7 @@
 {
   "command": {
     "args": [
-      "SObject setting = Local_Setting__c.getInstance('Default'); System.debug('all=' + setting.getAll().size()); System.debug('value=' + setting.getValues('Default').get('Name')); SObject hierarchy = Hierarchy_Setting__c.getInstance(); System.debug('org=' + hierarchy.getOrgDefaults().get('Enabled__c')); System.debug('owner=' + hierarchy.getValues('00D000000000001').get('Enabled__c')); System.debug('orgAgain=' + hierarchy.getInstance().get('Enabled__c')); System.debug('ownerAgain=' + hierarchy.getInstance('00D000000000001').get('Enabled__c'));"
+      "SObject setting = Local_Setting__c.getInstance('Default'); System.assertEquals(1, setting.getAll().size()); System.assertEquals('Default', setting.getValues('Default').get('Name')); SObject hierarchy = Hierarchy_Setting__c.getInstance(); System.assertEquals(true, hierarchy.getOrgDefaults().get('Enabled__c')); System.assertEquals(true, hierarchy.getValues('00D000000000001').get('Enabled__c')); System.assertEquals(true, hierarchy.getInstance().get('Enabled__c')); System.assertEquals(true, hierarchy.getInstance('00D000000000001').get('Enabled__c'));"
     ],
     "kind": "exec"
   },
@@ -39,17 +39,9 @@
   ],
   "expected": {
     "result": {
-      "debug": [
-        "all=1",
-        "value=Default",
-        "org=true",
-        "owner=true",
-        "orgAgain=true",
-        "ownerAgain=true"
-      ],
+      "debug": null,
       "ok": true
-    },
-    "stdout": "all=1\nvalue=Default\norg=true\nowner=true\norgAgain=true\nownerAgain=true\n"
+    }
   },
   "name": "data-runtime-sobject-custom-setting-accessors",
   "salesforceEligible": false,

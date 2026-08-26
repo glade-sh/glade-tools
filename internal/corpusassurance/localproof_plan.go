@@ -199,6 +199,9 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 		if err := compat.Validate(fixture); err != nil {
 			continue
 		}
+		if !localProofFixtureIsMaterializable(fixture) {
+			continue
+		}
 		entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, SHA256: replayBytesSHA256(data), Operation: fixture.Command.Kind, SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
 		ownedByDisposition := make(map[string]map[string]bool)
 		for surfaceID, disposition := range required {
@@ -308,9 +311,9 @@ func fixtureEvidenceKind(fixture compat.Fixture, surfaceID string) string {
 func localProofCommandMatchesDisposition(disposition, command, surfaceID string) bool {
 	switch disposition {
 	case localRuntimeRequired:
-		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:Database.Batchable") || surfaceID == "apex:System.Database.executeBatch(Object)" || strings.HasPrefix(surfaceID, "apex:System.Test.") ||
+		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:Database.Batchable") || surfaceID == "apex:System.Database.executeBatch(Object)" || surfaceID == "apex:System.Database.executeBatch(Object,Integer)" || strings.HasPrefix(surfaceID, "apex:System.Test.") ||
 			strings.HasPrefix(surfaceID, "apex:Schema.DescribeDataCategoryGroup") ||
-			surfaceID == "apex:System.ExternalServiceTest.sendCallback(HttpRequest)" || surfaceID == "apex:System.System.attachFinalizer(finalizer)" || surfaceID == "apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)" ||
+			surfaceID == "apex:System.ExternalServiceTest.sendCallback(HttpRequest)" || surfaceID == "apex:System.System.attachFinalizer(finalizer)" || surfaceID == "apex:System.System.attachFinalizer(Object)" || surfaceID == "apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)" ||
 			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
 			localRuntimeUserClassTestSurface(surfaceID) ||
 			localRuntimeDatabaseTestSurface(surfaceID) ||
