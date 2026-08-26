@@ -272,13 +272,24 @@ func orgFromFixture(fixture Fixture) (storage.OrgState, error) {
 	if err := writeFixtureFiles(root, fixture); err != nil {
 		return storage.OrgState{}, err
 	}
-	proj, err := project.Load(root)
+	_, org, err := orgFromProject(root)
 	if err != nil {
 		return storage.OrgState{}, err
 	}
+	if err := applyFixtureState(&org, fixture); err != nil {
+		return storage.OrgState{}, err
+	}
+	return org, nil
+}
+
+func orgFromProject(root string) (project.Project, storage.OrgState, error) {
+	proj, err := project.Load(root)
+	if err != nil {
+		return project.Project{}, storage.OrgState{}, err
+	}
 	loadedSchema, err := schema.LoadProject(proj)
 	if err != nil {
-		return storage.OrgState{}, err
+		return project.Project{}, storage.OrgState{}, err
 	}
 	index := typesys.Build(proj, loadedSchema)
 	org := storage.NewOrgState()
@@ -293,32 +304,40 @@ func orgFromFixture(fixture Fixture) (storage.OrgState, error) {
 	}
 	assignFixtureObjectPrefixes(&org)
 	if err := storage.ApplyCustomMetadataRecords(&org, index.CustomMetadataRecords); err != nil {
-		return storage.OrgState{}, err
+		return project.Project{}, storage.OrgState{}, err
 	}
 	if err := resource.ApplyProject(&org, proj); err != nil {
-		return storage.OrgState{}, err
+		return project.Project{}, storage.OrgState{}, err
 	}
 	if automationIndex, err := automation.LoadProject(proj); err == nil {
 		automation.ApplyToOrg(&org, automationIndex)
 	}
 	storage.EnsureDeterministicPlatformData(&org)
 	storage.ApplyOrgShape(&org, project.OrgShapeFeatures(root))
+	return proj, org, nil
+}
+
+func applyFixtureState(org *storage.OrgState, fixture Fixture) error {
 	if !metadataRegistryEmpty(fixture.Metadata) {
 		org.Metadata = fixture.Metadata
 	}
 	if len(fixture.SeedData) > 0 {
-		if err := storage.ApplyFixture(&org, storageFixture(fixture)); err != nil {
-			return storage.OrgState{}, err
+		if err := storage.ApplyFixture(org, storageFixture(fixture)); err != nil {
+			return err
 		}
 	}
-	return org, nil
+	return nil
 }
 
 // MaterializeFixtureDB writes the fixture's exact local org state for a public
 // glade exec --db invocation.
-func MaterializeFixtureDB(fixture Fixture, path string) error {
-	org, err := orgFromFixture(fixture)
+func MaterializeFixtureDB(fixture Fixture, path, root string) error {
+	proj, projectOrg, err := orgFromProject(root)
 	if err != nil {
+		return err
+	}
+	org := projectOrg.Clone()
+	if err := applyFixtureState(&org, fixture); err != nil {
 		return err
 	}
 	store, err := storage.OpenSQLite(path)
@@ -326,7 +345,21 @@ func MaterializeFixtureDB(fixture Fixture, path string) error {
 		return err
 	}
 	defer store.Close()
-	return store.Save(org)
+	if err := store.Save(org); err != nil {
+		return err
+	}
+	fingerprint, err := storage.SchemaFingerprint(projectOrg)
+	if err != nil {
+		return err
+	}
+	projectRoot := proj.Root
+	if projectRoot == "" {
+		projectRoot = root
+	}
+	if absolute, err := filepath.Abs(projectRoot); err == nil {
+		projectRoot = absolute
+	}
+	return store.SetProjectBinding(storage.ProjectBinding{ProjectRoot: filepath.Clean(projectRoot), SchemaFingerprint: fingerprint, SourceAPIVersion: proj.SourceAPIVersion, Namespace: projectOrg.Namespace})
 }
 
 func assignFixtureObjectPrefixes(org *storage.OrgState) {

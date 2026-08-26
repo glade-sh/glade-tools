@@ -91,7 +91,14 @@ func TestMaterializeLocalProofFixtureWritesFixtureDB(t *testing.T) {
 }
 
 func TestMaterializedLocalProofFixtureDBMatchesProjectSchema(t *testing.T) {
-	path, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures", "core-runtime-address-value-object.json"))
+	for _, name := range []string{"core-runtime-address-value-object.json", "core-runtime-businesshours-license-local-evidence.json"} {
+		t.Run(name, func(t *testing.T) { assertMaterializedLocalProofFixtureDBMatchesProjectSchema(t, name) })
+	}
+}
+
+func assertMaterializedLocalProofFixtureDBMatchesProjectSchema(t *testing.T, name string) {
+	t.Helper()
+	path, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures", name))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -118,10 +125,6 @@ func TestMaterializedLocalProofFixtureDBMatchesProjectSchema(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer store.Close()
-	actual, err := store.Load()
-	if err != nil {
-		t.Fatal(err)
-	}
 	loadedProject, err := project.Load(command.Dir)
 	if err != nil {
 		t.Fatal(err)
@@ -149,16 +152,16 @@ func TestMaterializedLocalProofFixtureDBMatchesProjectSchema(t *testing.T) {
 	}
 	storage.EnsureDeterministicPlatformData(&expected)
 	storage.ApplyOrgShape(&expected, project.OrgShapeFeatures(command.Dir))
-	actualFingerprint, err := storage.SchemaFingerprint(actual)
-	if err != nil {
-		t.Fatal(err)
-	}
 	expectedFingerprint, err := storage.SchemaFingerprint(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if actualFingerprint != expectedFingerprint {
-		t.Fatalf("materialized fixture schema = %s, project schema = %s", actualFingerprint, expectedFingerprint)
+	binding, ok, err := store.ProjectBinding()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok || binding.ProjectRoot != command.Dir || binding.SchemaFingerprint != expectedFingerprint || binding.SourceAPIVersion != loadedProject.SourceAPIVersion || binding.Namespace != expected.Namespace {
+		t.Fatalf("materialized fixture binding = %#v, project root = %q schema = %q", binding, command.Dir, expectedFingerprint)
 	}
 }
 

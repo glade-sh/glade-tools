@@ -32,7 +32,7 @@ func materializeLocalProofFixture(entry LocalProofFixture, candidatePath string)
 		return localProofCommand{}, nil, err
 	}
 	if localProofFixtureNeedsDB(fixture) {
-		if err := compat.MaterializeFixtureDB(fixture, localProofDBPath(root)); err != nil {
+		if err := compat.MaterializeFixtureDB(fixture, localProofDBPath(root), root); err != nil {
 			cleanup()
 			return localProofCommand{}, nil, err
 		}
