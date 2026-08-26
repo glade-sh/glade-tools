@@ -144,11 +144,11 @@ func decodeLocalProofFixtureWithMetadata(data []byte) (compat.Fixture, localProo
 var localProofFixtureFields = map[string]bool{
 	"name": true, "evidence": true, "project": true, "source": true, "schema": true,
 	"metadata": true, "seedData": true, "serverRequests": true, "command": true,
-	"expected": true, "limits": true,
+	"expected": true, "limits": true, "apiVersion": true,
 }
 
 var localProofFixtureExtensionFields = map[string]bool{
-	"apiVersion": true, "candidate": true, "canonicalSnapshot": true, "creditScope": true, "evidenceOnly": true, "mode": true, "notes": true, "notCredited": true, "packetId": true, "profile": true, "replay": true, "retained": true, "scenario": true, "title": true,
+	"candidate": true, "canonicalSnapshot": true, "creditScope": true, "evidenceOnly": true, "mode": true, "notes": true, "notCredited": true, "packetId": true, "profile": true, "replay": true, "retained": true, "scenario": true, "title": true,
 	"salesforceEligible": true, "salesforceExclusionClass": true, "salesforceExclusionReason": true,
 }
 
@@ -377,11 +377,15 @@ func writeLocalProofProject(root string, fixture compat.Fixture) (int, error) {
 	if len(packages) == 0 {
 		packages = []compat.PackageDirectory{{Path: "force-app", Default: true}}
 	}
+	sourceAPIVersion := fixture.Project.SourceAPIVersion
+	if sourceAPIVersion == "" {
+		sourceAPIVersion = fixture.APIVersion
+	}
 	project := struct {
 		PackageDirectories []compat.PackageDirectory `json:"packageDirectories"`
 		Namespace          string                    `json:"namespace,omitempty"`
 		SourceAPIVersion   string                    `json:"sourceApiVersion,omitempty"`
-	}{packages, fixture.Project.Namespace, fixture.Project.SourceAPIVersion}
+	}{packages, fixture.Project.Namespace, sourceAPIVersion}
 	data, err := json.Marshal(project)
 	if err != nil {
 		return 0, err

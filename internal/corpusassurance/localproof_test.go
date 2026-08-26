@@ -1251,6 +1251,34 @@ func TestWriteLocalProofProjectRejectsApexOutsidePackageDirectory(t *testing.T) 
 	}
 }
 
+func TestWriteLocalProofProjectUsesFixtureAPIVersion(t *testing.T) {
+	fixtureData, err := os.ReadFile(filepath.Join("..", "..", "docs", "fixtures", "core-runtime-database-cursor-sync-tail-api67.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, err := decodeLocalProofFixture(fixtureData)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	if _, err := writeLocalProofProject(root, fixture); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(filepath.Join(root, "sfdx-project.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var project struct {
+		SourceAPIVersion string `json:"sourceApiVersion"`
+	}
+	if err := json.Unmarshal(data, &project); err != nil {
+		t.Fatal(err)
+	}
+	if project.SourceAPIVersion != "67.0" {
+		t.Fatalf("sourceApiVersion = %q, want 67.0", project.SourceAPIVersion)
+	}
+}
+
 func TestVerifyLocalProofReplayRejectsForgedRetainedOutput(t *testing.T) {
 	request, _ := localProofRequest(t)
 	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\ncase \"$1\" in\ntest) printf '{\"status\":\"passed\",\"exitCode\":0,\"summary\":{\"total\":1,\"passed\":1,\"failed\":0,\"errors\":0,\"compileErrors\":0,\"runtimeErrors\":0},\"tests\":[{}]}' ;;\ncheck) printf '{\"status\":\"passed\",\"exitCode\":0,\"summary\":{\"types\":1,\"triggers\":0}}' ;;\n*) printf '{\"status\":\"passed\",\"exitCode\":0}' ;;\nesac\n"), 0o700); err != nil {
