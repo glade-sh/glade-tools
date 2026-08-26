@@ -13,6 +13,7 @@ import (
 
 	"github.com/glade-sh/glade/internal/apexast"
 	"github.com/glade-sh/glade/internal/apextest"
+	"github.com/glade-sh/glade/internal/automation"
 	"github.com/glade-sh/glade/internal/project"
 	"github.com/glade-sh/glade/internal/resource"
 	"github.com/glade-sh/glade/internal/schema"
@@ -279,14 +280,11 @@ func orgFromFixture(fixture Fixture) (storage.OrgState, error) {
 	if err != nil {
 		return storage.OrgState{}, err
 	}
-	loadedMetadata, err := resource.LoadProject(proj)
-	if err != nil {
-		return storage.OrgState{}, err
-	}
+	index := typesys.Build(proj, loadedSchema)
 	org := storage.NewOrgState()
 	org.APIVersion = proj.SourceAPIVersion
-	org.Namespace = proj.Namespace
-	registry := sobject.BuildDescribeRegistry(loadedSchema)
+	org.Namespace = index.Project.Namespace
+	registry := sobject.BuildDescribeRegistry(schema.Schema{Objects: append([]schema.Object(nil), index.Objects...)})
 	for name, describe := range registry.Objects {
 		org.Objects[name] = storage.ObjectState{
 			Definition: sobject.ToObjectDefinition(describe),
@@ -294,8 +292,17 @@ func orgFromFixture(fixture Fixture) (storage.OrgState, error) {
 		}
 	}
 	assignFixtureObjectPrefixes(&org)
+	if err := storage.ApplyCustomMetadataRecords(&org, index.CustomMetadataRecords); err != nil {
+		return storage.OrgState{}, err
+	}
+	if err := resource.ApplyProject(&org, proj); err != nil {
+		return storage.OrgState{}, err
+	}
+	if automationIndex, err := automation.LoadProject(proj); err == nil {
+		automation.ApplyToOrg(&org, automationIndex)
+	}
 	storage.EnsureDeterministicPlatformData(&org)
-	org.Metadata = loadedMetadata
+	storage.ApplyOrgShape(&org, project.OrgShapeFeatures(root))
 	if !metadataRegistryEmpty(fixture.Metadata) {
 		org.Metadata = fixture.Metadata
 	}
