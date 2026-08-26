@@ -52,6 +52,24 @@ func TestResidualRuntimeFixtureDoesNotRetainVolatileTriggerHash(t *testing.T) {
 	}
 }
 
+func TestDatabaseResultDTOFixtureDoesNotRetainVolatileHashes(t *testing.T) {
+	fixture, err := compat.LoadFile(filepath.Join("..", "..", "docs", "fixtures", "data-platform-database-result-dto-wave18-runtime.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	program := fixture.Command.Args[0]
+	for _, name := range []string{"savedHash", "upsertedHash", "mergedHash", "deletedHash", "restoredHash", "emptiedHash"} {
+		if strings.Contains(program, "Integer "+name+" =") {
+			t.Fatalf("fixture retains process-dependent result hash %s in candidate output", name)
+		}
+	}
+	for _, value := range []string{"saved", "upserted", "merged", "deleted", "restored", "emptied"} {
+		if !strings.Contains(program, "System.assertEquals("+value+".hashCode(), "+value+".hashCode())") {
+			t.Fatalf("fixture does not exercise stable %s.hashCode() behavior", value)
+		}
+	}
+}
+
 func TestCanonicalRuntimeGapFixturesHaveExactLocalEvidence(t *testing.T) {
 	want := map[string]string{
 		"core-runtime-messaging-template-capacity-evidence.json": "apex:System.Messaging.sendEmailMessage(List<Id>,Boolean)",
