@@ -224,11 +224,39 @@ func validateWorkerCleanupLifecycle(request OrchestratorWorkerCleanupRequest) (s
 	} else if !os.IsNotExist(creationErr) || !os.IsNotExist(invalidatedErr) {
 		return "", "", "", fmt.Errorf("worker cleanup creation authority is unreadable")
 	}
+	preflightPath := filepath.Join(request.OutputRoot, "ORG_PREFLIGHT.json")
+	dispatchPath := filepath.Join(request.OutputRoot, "SALESFORCE_DISPATCH.json")
+	preflight, preflightBytes, preflightErr := readExactJSONBytes[SalesforceOrgPreflight](preflightPath)
+	dispatch, dispatchBytes, dispatchErr := readExactJSONBytes[SalesforceDispatch](dispatchPath)
+	if preflightErr == nil || dispatchErr == nil {
+		if stage != "created-before-preflight" || preflightErr != nil || dispatchErr != nil {
+			return "", "", "", fmt.Errorf("worker cleanup pre-shard lifecycle is incomplete")
+		}
+		for _, path := range []string{preflightPath, dispatchPath} {
+			if info, err := os.Lstat(path); err != nil || !info.Mode().IsRegular() || info.Mode().Perm() != 0o600 {
+				return "", "", "", fmt.Errorf("worker cleanup pre-shard lifecycle mode is invalid")
+			}
+		}
+		if !validSalesforceOrgPreflight(preflight, bundleSHA, request.BundlePath) || preflight.OrgAlias != request.TargetOrg || preflight.OrgID != creation.OrgID {
+			return "", "", "", fmt.Errorf("worker cleanup preflight is invalid")
+		}
+		if dispatch.SchemaVersion != 1 || dispatch.BundleSHA256 != bundleSHA || dispatch.OrgAlias != request.TargetOrg || dispatch.ShardIndex != request.Lease.ShardIndex || dispatch.ShardCount != len(request.Plan.Jobs) || !filepath.IsAbs(dispatch.ExecutorRoot) || filepath.Clean(dispatch.ExecutorRoot) != dispatch.ExecutorRoot || !safeOrchestratorToken(dispatch.RunID) || !sha256Pattern.MatchString(dispatch.PythonSHA256) || !sha256Pattern.MatchString(dispatch.FilterCommandSpecSHA256) {
+			return "", "", "", fmt.Errorf("worker cleanup dispatch is invalid")
+		}
+		stage = "dispatched-before-shard"
+		authoritySHA = replayBytesSHA256([]byte(authoritySHA + ":" + replayBytesSHA256(preflightBytes) + ":" + replayBytesSHA256(dispatchBytes)))
+	} else if !os.IsNotExist(preflightErr) || !os.IsNotExist(dispatchErr) {
+		return "", "", "", fmt.Errorf("worker cleanup pre-shard lifecycle is unreadable")
+	}
 	allowed := map[string]bool{"ORCHESTRATOR_BINDING.json": true, "ORG_CREATION.json.reservation": true, "ORG_CLEANUP.json": true, "WORKER_CLEANUP.json": true}
-	if stage == "created-before-preflight" {
+	if stage == "created-before-preflight" || stage == "dispatched-before-shard" {
 		allowed["ORG_CREATION.json"] = true
 	} else if stage == "invalidated-creation" {
 		allowed["ORG_CREATION.json.invalidated"] = true
+	}
+	if stage == "dispatched-before-shard" {
+		allowed["ORG_PREFLIGHT.json"] = true
+		allowed["SALESFORCE_DISPATCH.json"] = true
 	}
 	entries, err := os.ReadDir(request.OutputRoot)
 	if err != nil {

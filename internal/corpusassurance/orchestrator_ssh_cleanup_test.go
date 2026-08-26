@@ -11,7 +11,7 @@ import (
 )
 
 func TestOrchestratorWorkerCleanupClosesEveryPreflightCrashStageAndReplays(t *testing.T) {
-	for _, stage := range []string{"reservation-only", "invalidated-creation", "created-before-preflight"} {
+	for _, stage := range []string{"reservation-only", "invalidated-creation", "created-before-preflight", "dispatched-before-shard"} {
 		t.Run(stage, func(t *testing.T) {
 			plan, lease, request, _ := workerCleanupTestRequest(t, stage)
 			calls := 0
@@ -85,8 +85,28 @@ func TestOrchestratorWorkerCleanupRejectsTamperedOrProofEligibleLifecycle(t *tes
 	}
 }
 
+func TestOrchestratorWorkerCleanupRejectsTamperedDispatchedBeforeShard(t *testing.T) {
+	for _, name := range []string{"preflight", "dispatch"} {
+		t.Run(name, func(t *testing.T) {
+			_, _, request, _ := workerCleanupTestRequest(t, "dispatched-before-shard")
+			path := filepath.Join(request.OutputRoot, map[string]string{"preflight": "ORG_PREFLIGHT.json", "dispatch": "SALESFORCE_DISPATCH.json"}[name])
+			if err := os.Chmod(path, 0o400); err != nil {
+				t.Fatal(err)
+			}
+			called := false
+			request.cleanup = func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+				called = true
+				return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+			}
+			if _, err := RunOrchestratorWorkerCleanup(request); err == nil || called {
+				t.Fatalf("tamper accepted: called=%t err=%v", called, err)
+			}
+		})
+	}
+}
+
 func TestOrchestratorWorkerCleanupResumesAfterCleanupReceiptWrite(t *testing.T) {
-	for _, stage := range []string{"reservation-only", "invalidated-creation", "created-before-preflight"} {
+	for _, stage := range []string{"reservation-only", "invalidated-creation", "created-before-preflight", "dispatched-before-shard"} {
 		t.Run(stage, func(t *testing.T) {
 			_, _, request, cleanup := workerCleanupTestRequest(t, stage)
 			cleanupPath := filepath.Join(request.OutputRoot, "ORG_CLEANUP.json")
@@ -389,7 +409,7 @@ func workerCleanupTestRequest(t *testing.T, stage string) (OrchestratorCampaignP
 	t.Helper()
 	_, plan, lease, _, _, _ := readyOrchestratorWorker(t)
 	root := t.TempDir()
-	bundlePath, sourceCreation, _, sourceCleanup := writeValidCleanupTakeoverFiles(t, root, "scratch-a")
+	bundlePath, sourceCreation, sourcePreflight, sourceCleanup := writeValidCleanupTakeoverFiles(t, root, "scratch-a")
 	cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](sourceCleanup)
 	if err != nil {
 		t.Fatal(err)
@@ -419,6 +439,21 @@ func workerCleanupTestRequest(t *testing.T, stage string) (OrchestratorCampaignP
 	switch stage {
 	case "created-before-preflight":
 		if err := WriteNewJSON(filepath.Join(outputRoot, "ORG_CREATION.json"), creation); err != nil {
+			t.Fatal(err)
+		}
+	case "dispatched-before-shard":
+		if err := WriteNewJSON(filepath.Join(outputRoot, "ORG_CREATION.json"), creation); err != nil {
+			t.Fatal(err)
+		}
+		preflight, _, err := readExactJSONBytes[SalesforceOrgPreflight](sourcePreflight)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := WriteNewJSON(filepath.Join(outputRoot, "ORG_PREFLIGHT.json"), preflight); err != nil {
+			t.Fatal(err)
+		}
+		dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, OrgAlias: creation.Alias, ExecutorRoot: filepath.Join(root, "attempt", "executor", "shard-0"), RunID: "run-a", ShardIndex: lease.ShardIndex, ShardCount: len(plan.Jobs), PythonSHA256: strings.Repeat("a", 64), FilterCommandSpecSHA256: strings.Repeat("b", 64)}
+		if err := WriteNewJSON(filepath.Join(outputRoot, "SALESFORCE_DISPATCH.json"), dispatch); err != nil {
 			t.Fatal(err)
 		}
 	case "invalidated-creation":
