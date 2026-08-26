@@ -362,6 +362,13 @@ func TestCB65EventBusFixtureExercisesAndMergesAllFourOverloads(t *testing.T) {
 
 func TestCB65FixtureSourcesRemoveCompileRejectedAliases(t *testing.T) {
 	fixtureRoot := filepath.Join("..", "..", "docs", "fixtures")
+	accessLevelFixture, err := os.ReadFile(filepath.Join(fixtureRoot, "core-runtime-accesslevel-permission-set-unsupported.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(accessLevelFixture), "AccessLevel.USER_MODE.withPermissionSetId(") {
+		t.Fatal("AccessLevel fixture must call the current instance method through USER_MODE")
+	}
 	paths := []string{
 		filepath.Join(fixtureRoot, "integration-messaging-send-options-unsupported.json"),
 		filepath.Join(fixtureRoot, "core-runtime-messaging-send-capture-full-local.json"),
