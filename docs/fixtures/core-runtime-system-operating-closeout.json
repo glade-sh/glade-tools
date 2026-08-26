@@ -37,12 +37,6 @@
       "kind": "test"
     },
     {
-      "surfaceId": "apex:System.Search.suggest",
-      "symbol": "Search.suggest",
-      "kind": "test",
-      "notes": "Local Search.suggest returns a deterministic empty SuggestionResults DTO."
-    },
-    {
       "surfaceId": "apex:System.System.assert",
       "symbol": "System.assert",
       "kind": "test"

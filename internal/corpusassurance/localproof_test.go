@@ -820,7 +820,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
 		{"current-base-userprovisioning-deterministic-mock-003-api67.json", 6},
 		{"current-base-userprovisioning-deterministic-mock-004-api67.json", 3},
-		{"core-runtime-search-suggest-deterministic-mock.json", 2},
+		{"core-runtime-search-suggest-deterministic-mock.json", 3},
 		{"core-runtime-messaging-dto-mock-api67.json", 14},
 		{"data-platform-database-pagination-cursor-wave19-runtime.json", 10},
 		{"data-platform-schema-residual-wave19-runtime.json", 20},
@@ -963,9 +963,9 @@ func TestFeatureManagementPermissionAliasRunsSealedCandidateCLIJSON(t *testing.T
 	}
 }
 
-func TestSearchMockCloseoutOwnsExactlyTwoRows(t *testing.T) {
+func TestSearchMockCloseoutOwnsFamilyAndOverloads(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
-	want := map[string]string{"core-runtime-search-suggest-deterministic-mock.json": "apex:System.Search.suggest(String,String,Object)"}
+	want := map[string]string{"core-runtime-search-suggest-deterministic-mock.json": "apex:System.Search.suggest"}
 	seen := map[string]string{}
 	for file, id := range want {
 		data, err := os.ReadFile(filepath.Join(root, file))
@@ -991,17 +991,25 @@ func TestSearchMockCloseoutOwnsExactlyTwoRows(t *testing.T) {
 		if !found {
 			t.Fatalf("%s lacks direct witness for %s", file, id)
 		}
-		if file == "core-runtime-search-suggest-deterministic-mock.json" {
-			id2 := "apex:System.Search.suggest(String,String,Object,Object)"
+		for _, id := range []string{"apex:System.Search.suggest(String,String,Object)", "apex:System.Search.suggest(String,String,Object,Object)"} {
 			for _, e := range fixture.Evidence {
-				if e.SurfaceID == id2 && e.Symbol == id2 && e.Kind == "test" {
-					seen[id2] = file
+				if e.SurfaceID == id && e.Symbol == id && e.Kind == "test" {
+					seen[id] = file
 				}
 			}
 		}
 	}
-	if len(seen) != 2 {
+	if len(seen) != 3 {
 		t.Fatalf("seen = %#v", seen)
+	}
+	mixed, err := compat.LoadFile(filepath.Join(root, "core-runtime-system-operating-closeout.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, evidence := range mixed.Evidence {
+		if evidence.SurfaceID == "apex:System.Search.suggest" {
+			t.Fatal("intentional-failure fixture must not own the local-proof Search.suggest family row")
+		}
 	}
 }
 

@@ -6,6 +6,7 @@
   "salesforceExclusionReason": "This fixture proves deterministic local Search.suggest overload behavior only; it makes no hosted Salesforce parity claim.",
   "source": [{"path":"force-app/main/default/classes/SearchSuggestMockTest.cls","content":"@IsTest private class SearchSuggestMockTest { @IsTest static void suggestOverloads() { System.assertNotEquals(null, Search.suggest('Acme', 'Account', (Object)new Search.SuggestionOption())); System.assertNotEquals(null, Search.suggest('Acme', 'Account', (Object)new Search.SuggestionOption(), (Object)System.AccessLevel.USER_MODE)); } }"}],
   "evidence": [
+    {"surfaceId":"apex:System.Search.suggest","symbol":"apex:System.Search.suggest","kind":"test"},
     {"surfaceId":"apex:System.Search.suggest(String,String,Object)","symbol":"apex:System.Search.suggest(String,String,Object)","kind":"test"},
     {"surfaceId":"apex:System.Search.suggest(String,String,Object,Object)","symbol":"apex:System.Search.suggest(String,String,Object,Object)","kind":"test"}
   ],
