@@ -428,6 +428,33 @@ func TestCB65FixtureSourcesRemoveCompileRejectedAliases(t *testing.T) {
 	}
 }
 
+func TestCB65PatternFixtureUsesOnlyCurrentApexSurface(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-pattern-dialect-flags-stdlib.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var fixture struct {
+		Source []struct {
+			Content string `json:"content"`
+		} `json:"source"`
+		Command struct {
+			Args []string `json:"args"`
+		} `json:"command"`
+	}
+	if err := json.Unmarshal(data, &fixture); err != nil {
+		t.Fatal(err)
+	}
+	if len(fixture.Source) != 1 || len(fixture.Command.Args) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
+		t.Fatal("Pattern fixture source and command must contain the same single program")
+	}
+	for _, unsupported := range []string{"Pattern.CASE_INSENSITIVE", "Pattern.MULTILINE", "Pattern.LITERAL", "Pattern.DOTALL", "Pattern.UNICODE_CASE", "Pattern.UNICODE_CHARACTER_CLASS", "Pattern.compile(String,Integer)"} {
+		if strings.Contains(fixture.Source[0].Content, unsupported) {
+			t.Errorf("Pattern fixture still uses unsupported local feature %q", unsupported)
+		}
+	}
+}
+
 func TestCB65GeneratedStubSnapshotOmitsRejectedAndAcquiredAliases(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "generated", "stubs", "STUB_CONTRACTS.json")
 	data, err := os.ReadFile(path)

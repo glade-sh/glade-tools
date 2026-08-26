@@ -1,50 +1,48 @@
 {
   "name": "core-pattern-dialect-flags-stdlib",
-  "salesforceEligible": false,
-  "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "This fixture exercises local Pattern flag constants and compile(regex, flags) behavior outside the Salesforce Apex Pattern contract; it grants zero Salesforce parity credit.",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Pattern.pattern()",
       "symbol": "Pattern.pattern",
       "kind": "exec",
-      "notes": "Pattern.pattern returns the original source even when Pattern.LITERAL compiles through a quoted local regex."
+      "notes": "Pattern.pattern returns the original current regex source."
     },
     {
       "surfaceId": "apex:System.Matcher.find()",
       "symbol": "Matcher.find",
       "kind": "exec",
-      "notes": "Find honors compiled local flag state carried from Pattern.compile(regex, flags)."
+      "notes": "Find locates the next match from a current one-argument Pattern."
     },
     {
       "surfaceId": "apex:System.Matcher.matches()",
       "symbol": "Matcher.matches",
       "kind": "exec",
-      "notes": "Matches honors inline case-insensitive flags in the supported local regex subset."
+      "notes": "Matches honors a current inline case-insensitive regex."
     },
     {
       "surfaceId": "apex:System.Matcher.group()",
       "symbol": "Matcher.group",
       "kind": "exec",
-      "notes": "Group returns matches from flagged and literal Pattern sources."
+      "notes": "Group returns the current match text."
     },
     {
       "surfaceId": "apex:System.Matcher.usePattern(Pattern)",
       "symbol": "Matcher.usePattern",
       "kind": "exec",
-      "notes": "usePattern swaps to another compiled local Pattern after a flagged/literal source."
+      "notes": "usePattern swaps a Matcher to another current compiled Pattern."
     }
   ],
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "System.assertEquals(2, Pattern.CASE_INSENSITIVE);\nSystem.assertEquals(8, Pattern.MULTILINE);\nSystem.assertEquals(16, Pattern.LITERAL);\nSystem.assertEquals(32, Pattern.DOTALL);\nSystem.assertEquals(64, Pattern.UNICODE_CASE);\nSystem.assertEquals(256, Pattern.UNICODE_CHARACTER_CLASS);\nPattern inline = Pattern.compile('(?i)abc');\nSystem.assert(inline.matcher('ABC').matches());\nString dotallInput = String.fromCharArray(new List<Integer>{65,10,66});\nPattern flags = Pattern.compile('a.b', Pattern.CASE_INSENSITIVE + Pattern.DOTALL + Pattern.UNICODE_CASE);\nMatcher flagsMatcher = flags.matcher(dotallInput);\nSystem.assert(flagsMatcher.find());\nSystem.assertEquals(dotallInput, flagsMatcher.group());\nPattern unicodeWord = Pattern.compile('\\\\w+', Pattern.UNICODE_CHARACTER_CLASS);\nSystem.assert(unicodeWord.matcher('Ω').matches());\nString multilineInput = String.fromCharArray(new List<Integer>{120,120,10,65,66,67,10,121,121});\nPattern multiline = Pattern.compile('^abc$', Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);\nMatcher multilineMatcher = multiline.matcher(multilineInput);\nSystem.assert(multilineMatcher.find());\nSystem.assertEquals('ABC', multilineMatcher.group());\nPattern literal = Pattern.compile('a.b', Pattern.LITERAL);\nSystem.assertEquals('a.b', literal.pattern());\nMatcher literalMatcher = literal.matcher('xx a.b axb 9');\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('a.b', literalMatcher.group());\nliteralMatcher.usePattern(Pattern.compile('[0-9]+'));\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('9', literalMatcher.group());\n"
+      "content": "Pattern inline = Pattern.compile('(?i)abc');\nSystem.assert(inline.matcher('ABC').matches());\nPattern word = Pattern.compile('[A-Z]+');\nMatcher wordMatcher = word.matcher('abc XYZ 9');\nSystem.assert(wordMatcher.find());\nSystem.assertEquals('XYZ', wordMatcher.group());\nPattern literal = Pattern.compile('a[.]b');\nSystem.assertEquals('a[.]b', literal.pattern());\nMatcher literalMatcher = literal.matcher('xx a.b axb 9');\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('a.b', literalMatcher.group());\nliteralMatcher.usePattern(Pattern.compile('[0-9]+'));\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('9', literalMatcher.group());\n"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "System.assertEquals(2, Pattern.CASE_INSENSITIVE);\nSystem.assertEquals(8, Pattern.MULTILINE);\nSystem.assertEquals(16, Pattern.LITERAL);\nSystem.assertEquals(32, Pattern.DOTALL);\nSystem.assertEquals(64, Pattern.UNICODE_CASE);\nSystem.assertEquals(256, Pattern.UNICODE_CHARACTER_CLASS);\nPattern inline = Pattern.compile('(?i)abc');\nSystem.assert(inline.matcher('ABC').matches());\nString dotallInput = String.fromCharArray(new List<Integer>{65,10,66});\nPattern flags = Pattern.compile('a.b', Pattern.CASE_INSENSITIVE + Pattern.DOTALL + Pattern.UNICODE_CASE);\nMatcher flagsMatcher = flags.matcher(dotallInput);\nSystem.assert(flagsMatcher.find());\nSystem.assertEquals(dotallInput, flagsMatcher.group());\nPattern unicodeWord = Pattern.compile('\\\\w+', Pattern.UNICODE_CHARACTER_CLASS);\nSystem.assert(unicodeWord.matcher('Ω').matches());\nString multilineInput = String.fromCharArray(new List<Integer>{120,120,10,65,66,67,10,121,121});\nPattern multiline = Pattern.compile('^abc$', Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);\nMatcher multilineMatcher = multiline.matcher(multilineInput);\nSystem.assert(multilineMatcher.find());\nSystem.assertEquals('ABC', multilineMatcher.group());\nPattern literal = Pattern.compile('a.b', Pattern.LITERAL);\nSystem.assertEquals('a.b', literal.pattern());\nMatcher literalMatcher = literal.matcher('xx a.b axb 9');\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('a.b', literalMatcher.group());\nliteralMatcher.usePattern(Pattern.compile('[0-9]+'));\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('9', literalMatcher.group());\n"
+      "Pattern inline = Pattern.compile('(?i)abc');\nSystem.assert(inline.matcher('ABC').matches());\nPattern word = Pattern.compile('[A-Z]+');\nMatcher wordMatcher = word.matcher('abc XYZ 9');\nSystem.assert(wordMatcher.find());\nSystem.assertEquals('XYZ', wordMatcher.group());\nPattern literal = Pattern.compile('a[.]b');\nSystem.assertEquals('a[.]b', literal.pattern());\nMatcher literalMatcher = literal.matcher('xx a.b axb 9');\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('a.b', literalMatcher.group());\nliteralMatcher.usePattern(Pattern.compile('[0-9]+'));\nSystem.assert(literalMatcher.find());\nSystem.assertEquals('9', literalMatcher.group());\n"
     ]
   },
   "expected": {

@@ -18,7 +18,7 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 		{"core-database-upsert-mode-runtime", "core-database-upsert-mode-runtime.json", true},
 		{"core-feature-management", "core-feature-management.json", false},
 		{"core-json-raw-runtime", "core-json-raw-runtime.json", false},
-		{"core-pattern-dialect-flags-stdlib", "core-pattern-dialect-flags-stdlib.json", false},
+		{"core-pattern-dialect-flags-stdlib", "core-pattern-dialect-flags-stdlib.json", true},
 		{"core-process-sparkplug-runtime", "core-process-sparkplug-runtime.json", true},
 		{"core-runtime-cache-builder-evidence", "core-runtime-cache-builder-evidence.json", true},
 		{"core-runtime-decimal-extra-accessors", "core-runtime-decimal-extra-accessors.json", true},
