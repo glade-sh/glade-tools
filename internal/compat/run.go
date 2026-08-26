@@ -307,6 +307,21 @@ func orgFromFixture(fixture Fixture) (storage.OrgState, error) {
 	return org, nil
 }
 
+// MaterializeFixtureDB writes the fixture's exact local org state for a public
+// glade exec --db invocation.
+func MaterializeFixtureDB(fixture Fixture, path string) error {
+	org, err := orgFromFixture(fixture)
+	if err != nil {
+		return err
+	}
+	store, err := storage.OpenSQLite(path)
+	if err != nil {
+		return err
+	}
+	defer store.Close()
+	return store.Save(org)
+}
+
 func assignFixtureObjectPrefixes(org *storage.OrgState) {
 	if org == nil || len(org.Objects) == 0 {
 		return

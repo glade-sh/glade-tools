@@ -31,6 +31,12 @@ func materializeLocalProofFixture(entry LocalProofFixture, candidatePath string)
 		cleanup()
 		return localProofCommand{}, nil, err
 	}
+	if localProofFixtureNeedsDB(fixture) {
+		if err := compat.MaterializeFixtureDB(fixture, localProofDBPath(root)); err != nil {
+			cleanup()
+			return localProofCommand{}, nil, err
+		}
+	}
 	command, err := localProofCommandForFixture(entry, fixture, candidatePath, root)
 	if err != nil {
 		cleanup()
@@ -147,21 +153,24 @@ var localProofFixtureExtensionFields = map[string]bool{
 }
 
 func localProofFixtureIsMaterializable(fixture compat.Fixture) bool {
-	return len(fixture.Metadata.Labels) == 0 &&
-		len(fixture.Metadata.ManagedLabelNamespaces) == 0 &&
-		len(fixture.Metadata.Tabs) == 0 &&
-		len(fixture.Metadata.DataCategoryGroups) == 0 &&
-		len(fixture.Metadata.QuickActions) == 0 &&
-		len(fixture.Metadata.FieldSets) == 0 &&
-		len(fixture.Metadata.StaticResources) == 0 &&
-		len(fixture.Metadata.ContentAssets) == 0 &&
-		len(fixture.Metadata.Endpoints) == 0 &&
-		len(fixture.Metadata.EmailTemplates) == 0 &&
-		len(fixture.SeedData) == 0 && len(fixture.ServerRequests) == 0 &&
+	return len(fixture.ServerRequests) == 0 &&
 		fixture.Command.LimitMode == "" && fixture.Expected.Stdout == "" && fixture.Expected.Stderr == "" &&
 		fixture.Expected.Error == nil && len(fixture.Expected.SideEffects) == 0 &&
 		fixture.Limits.SOQLQueries == nil && fixture.Limits.SOQLRows == nil && fixture.Limits.DMLStatements == nil &&
 		fixture.Limits.DMLRows == nil && fixture.Limits.CPUTimeMS == nil && fixture.Limits.HeapBytes == nil
+}
+
+func localProofFixtureNeedsDB(fixture compat.Fixture) bool {
+	return len(fixture.SeedData) != 0 || len(fixture.Metadata.Labels) != 0 ||
+		len(fixture.Metadata.ManagedLabelNamespaces) != 0 || len(fixture.Metadata.Tabs) != 0 ||
+		len(fixture.Metadata.DataCategoryGroups) != 0 || len(fixture.Metadata.QuickActions) != 0 ||
+		len(fixture.Metadata.FieldSets) != 0 || len(fixture.Metadata.StaticResources) != 0 ||
+		len(fixture.Metadata.ContentAssets) != 0 || len(fixture.Metadata.Endpoints) != 0 ||
+		len(fixture.Metadata.EmailTemplates) != 0
+}
+
+func localProofDBPath(root string) string {
+	return filepath.Join(root, "local-proof.sqlite")
 }
 
 func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.Fixture) error {
@@ -483,7 +492,11 @@ func localProofCommandForFixture(entry LocalProofFixture, fixture compat.Fixture
 	if fixture.Command.Kind != operation {
 		return localProofCommand{}, fmt.Errorf("fixture %q command kind %q does not satisfy %s proof", entry.ID, fixture.Command.Kind, entry.Disposition)
 	}
-	args := []string{operation, "--project", root, "--json"}
+	args := []string{operation, "--project", root}
+	if localProofFixtureNeedsDB(fixture) {
+		args = append(args, "--db", localProofDBPath(root))
+	}
+	args = append(args, "--json")
 	if operation != "exec" {
 		args = append(args, "--no-progress")
 	}

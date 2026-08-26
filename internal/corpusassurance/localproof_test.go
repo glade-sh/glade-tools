@@ -51,6 +51,38 @@ func TestCanonicalRuntimeGapFixturesHaveExactLocalEvidence(t *testing.T) {
 	}
 }
 
+func TestMaterializeLocalProofFixtureWritesFixtureDB(t *testing.T) {
+	path, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures", "core-runtime-businesshours-license-local-evidence.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	owned := make([]string, 0, len(fixture.Evidence))
+	for _, evidence := range fixture.Evidence {
+		owned = append(owned, evidence.SurfaceID)
+	}
+	entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, SHA256: replayBytesSHA256(data), OwnedSurfaceIDs: owned, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
+	command, cleanup, err := materializeLocalProofFixture(entry, filepath.Join(t.TempDir(), "glade"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	database := localProofDBPath(command.Dir)
+	if !strings.Contains(strings.Join(command.Args, "\n"), "--db\n"+database) {
+		t.Fatalf("command does not bind fixture database: %v", command.Args)
+	}
+	if info, err := os.Stat(database); err != nil || info.Size() == 0 {
+		t.Fatalf("fixture database was not materialized: info=%v err=%v", info, err)
+	}
+}
+
 func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSurface(t *testing.T) {
 	request, calls := localProofRequest(t)
 	proof, err := RunLocalProof(request)
@@ -653,7 +685,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 13},
 		{"core-runtime-async-context-tail-api67.json", 8},
 		{"core-runtime-finalizer-context-tail-api67.json", 6},
-		{"core-runtime-system-test-eventbus-lifecycle-tail-api67.json", 13},
+		{"core-runtime-system-test-eventbus-lifecycle-tail-api67.json", 14},
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
 		{"data-platform-schema-record-type-info-wave17-runtime.json", 8},
 		{"integration-metadata-core-dtos-wave17-runtime.json", 21},

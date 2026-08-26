@@ -12,13 +12,13 @@ func TestLocalProofBatchableTestCommandPolicyHasNegativeSiblingGuard(t *testing.
 		"apex:Database.BatchableContextImpl",
 		"apex:Database.BatchableContextImpl.BatchableContextImpl()",
 		"apex:System.Database.executeBatch(Object)",
+		"apex:System.Database.executeBatch(Object,Integer)",
 	} {
 		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", id) {
 			t.Fatalf("Batchable test command rejected for %s", id)
 		}
 	}
 	for _, id := range []string{
-		"apex:System.Database.executeBatch(Object,Integer)",
 		"apex:System.Database.getCursor(String,Object)",
 		"apex:Database.QueryLocator",
 	} {

@@ -21,6 +21,7 @@
   "evidence": [
     { "surfaceId": "apex:System.ExternalServiceTest.sendCallback(HttpRequest)", "symbol": "ExternalServiceTest.sendCallback(HttpRequest)", "kind": "test", "notes": "Test.getExternalService returns a deterministic local HTTP callback response." },
     { "surfaceId": "apex:System.System.attachFinalizer(finalizer)", "symbol": "System.attachFinalizer", "kind": "test", "notes": "A local queueable attaches and drains its finalizer during Test.stopTest." },
+    { "surfaceId": "apex:System.System.attachFinalizer(Object)", "symbol": "System.attachFinalizer", "kind": "test", "notes": "Canonical inventory identity for the same attached finalizer object." },
     { "surfaceId": "apex:System.Test.getEventBus()", "symbol": "Test.getEventBus", "kind": "test", "notes": "The local test broker is obtained and used for deterministic event delivery." },
     { "surfaceId": "apex:System.Test.getExternalService()", "symbol": "Test.getExternalService", "kind": "test", "notes": "The local external-service harness is obtained without live service execution." },
     { "surfaceId": "apex:System.Test.getStandardPricebookId", "symbol": "Test.getStandardPricebookId", "kind": "test", "notes": "The local test context returns the deterministic standard pricebook id." },

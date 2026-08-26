@@ -757,8 +757,13 @@ func validateLocalProofFixtureResult(fixture LocalProofFixture, result LocalProo
 
 func localProofReceiptSpecSHA256(command localProofCommand, executableSHA256 string) string {
 	args := append([]string(nil), command.Args...)
-	if len(args) >= 3 && args[1] == "--project" {
-		args[2] = "."
+	for index := 0; index+1 < len(args); index++ {
+		switch args[index] {
+		case "--project":
+			args[index+1] = "."
+		case "--db":
+			args[index+1] = "local-proof.sqlite"
+		}
 	}
 	return commandSpecSHA256(ReplayCommand{Path: command.Path, Args: args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256})
 }
