@@ -297,6 +297,17 @@ func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
 	}
 }
 
+func TestLocalProofReportsFailedCommandBeforeNormalizingOutput(t *testing.T) {
+	request, _ := localProofRequest(t)
+	request.executor = func(command localProofCommand) localProofExecution {
+		return localProofExecution{Receipt: CommandResult{ExitCode: 1}, Stderr: "candidate failed"}
+	}
+	_, err := RunLocalProof(request)
+	if err == nil || strings.Contains(err.Error(), "normalize") || !strings.Contains(err.Error(), "candidate failed") {
+		t.Fatalf("RunLocalProof error = %v", err)
+	}
+}
+
 func TestLocalProofRejectsFixtureSurfaceWithoutSourceWitness(t *testing.T) {
 	root := t.TempDir()
 	path := filepath.Join(root, "witness.json")
