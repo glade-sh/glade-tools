@@ -38,6 +38,20 @@ func TestFixedSearchResultsHasExactLocalEvidence(t *testing.T) {
 	t.Fatalf("missing exact test evidence %s", want)
 }
 
+func TestResidualRuntimeFixtureDoesNotRetainVolatileTriggerHash(t *testing.T) {
+	fixture, err := compat.LoadFile(filepath.Join("..", "..", "docs", "fixtures", "current-base-residual-runtime-api67.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	program := fixture.Command.Args[0]
+	if strings.Contains(program, "Integer triggerHash = triggerContext.hashCode()") {
+		t.Fatal("fixture retains a process-dependent TriggerContext hash in candidate output")
+	}
+	if !strings.Contains(program, "System.assertNotEquals(null, triggerContext.hashCode())") {
+		t.Fatal("fixture does not exercise TriggerContext.hashCode()")
+	}
+}
+
 func TestCanonicalRuntimeGapFixturesHaveExactLocalEvidence(t *testing.T) {
 	want := map[string]string{
 		"core-runtime-messaging-template-capacity-evidence.json": "apex:System.Messaging.sendEmailMessage(List<Id>,Boolean)",
