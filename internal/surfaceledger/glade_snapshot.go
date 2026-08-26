@@ -351,7 +351,7 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.Limits.getLimitDmlStatements", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Limits.getLimitDmlStatements"},
 	{SurfaceID: "apex:System.Long.MAX_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Long.MAX_VALUE"},
 	{SurfaceID: "apex:System.Long.MIN_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Long.MIN_VALUE"},
-	{SurfaceID: "apex:System.Map.containsValue(Object)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed exact local Map value-membership behavior"},
+	{SurfaceID: "apex:System.Map.containsValue(Object)", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "generated shape is absent from current Salesforce Apex and rejected by the candidate"},
 	{SurfaceID: "apex:System.Matcher.groupCount", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Matcher.groupCount"},
 	{SurfaceID: "apex:System.Matcher.hasAnchoringBounds", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for Matcher.hasAnchoringBounds()"},
 	{SurfaceID: "apex:System.Matcher.hasTransparentBounds", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for Matcher.hasTransparentBounds()"},

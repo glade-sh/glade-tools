@@ -555,7 +555,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		count    int
 	}{
 		{"core-datetime-stdlib.json", 45},
-		{"core-collection-stdlib.json", 40},
+		{"core-collection-stdlib.json", 39},
 		{"core-type-id-url-stdlib.json", 31},
 		{"core-string-stdlib.json", 28},
 		{"core-string-completion-stdlib.json", 31},

@@ -269,7 +269,7 @@
   "packetId": "CB193",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "Salesforce API 67 removed Map.containsValue after version 54; this is a local runtime compatibility contract.",
+  "salesforceExclusionReason": "This combined Cache, Metadata, Messaging, and UserProvisioning fixture is a deterministic local service mock; Salesforce parity requires family-specific live contexts.",
   "source": [
     {
       "path": "current-base-cb193-local-mock-core-positive.apex"

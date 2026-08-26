@@ -104,8 +104,8 @@ func TestG4ProofClassClosureDropsBareMapContainsValueAlias(t *testing.T) {
 	if !ok {
 		t.Fatal("exact Map.containsValue(Object) row disappeared")
 	}
-	if exact.GladeShape != ShapeSignatureKnown || exact.GladeBehavior != BehaviorSupported {
-		t.Fatalf("exact Map.containsValue(Object) = %s/%s, want signature-known/supported", exact.GladeShape, exact.GladeBehavior)
+	if exact.GladeShape != ShapeSignatureKnown || exact.GladeBehavior != BehaviorUnsupported {
+		t.Fatalf("exact Map.containsValue(Object) = %s/%s, want signature-known/unsupported", exact.GladeShape, exact.GladeBehavior)
 	}
 }
 

@@ -8,7 +8,6 @@ import (
 )
 
 var g3ResidualGladeSnapshotIDs = []string{
-	"apex:System.Map.containsValue(Object)",
 	"apex:System.Set.deepClone()",
 }
 
@@ -19,8 +18,8 @@ func TestG3ResidualRowsJoinExactGladeAndFixtureSnapshots(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(mapFixture), "counts.containsValue(2)") || !strings.Contains(string(mapFixture), "!counts.containsValue(3)") {
-		t.Fatalf("%s must execute positive and negative Map.containsValue assertions", mapFixturePath)
+	if strings.Contains(string(mapFixture), "containsValue") {
+		t.Fatalf("%s must not claim unsupported Apex Map.containsValue behavior", mapFixturePath)
 	}
 	fixturePaths := []string{
 		mapFixturePath,
@@ -63,5 +62,12 @@ func TestG3ResidualRowsJoinExactGladeAndFixtureSnapshots(t *testing.T) {
 		if _, ok := evidenceByID[id]; ok {
 			t.Errorf("stale bare fixture ID substitutes for exact row: %s", id)
 		}
+	}
+	mapID := "apex:System.Map.containsValue(Object)"
+	if _, ok := evidenceByID[mapID]; ok {
+		t.Fatalf("unsupported %s has direct fixture evidence", mapID)
+	}
+	if row := gladeByID[mapID]; row.GladeShape != ShapeSignatureKnown || row.GladeBehavior != BehaviorUnsupported {
+		t.Fatalf("Glade %s shape/behavior = %s/%s, want signature-known/unsupported", mapID, row.GladeShape, row.GladeBehavior)
 	}
 }
