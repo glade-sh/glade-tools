@@ -344,6 +344,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 func localRuntimeLifecycleTestSurface(surfaceID string) bool {
 	switch surfaceID {
 	case "apex:System.InstallContext.installerId()",
+		"apex:System.FinalizerContextImpl.getAsyncApexJobId()",
 		"apex:System.InstallContext.isPush()",
 		"apex:System.InstallContext.previousVersion()",
 		"apex:System.InstallHandler.onInstall(InstallContext)",

@@ -2,37 +2,41 @@
   "name": "async-finalizer-context-getters",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "This fixture default-constructs local FinalizerContext implementations and asserts empty synthetic job IDs; it grants zero Salesforce parity credit.",
+  "salesforceExclusionReason": "This fixture exercises the concrete local finalizer context through an attached queueable lifecycle; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "FinalizerContext.getAsyncApexJobId",
       "surfaceId": "apex:System.FinalizerContext.getAsyncApexJobId()",
-      "kind": "exec",
-      "notes": "Default constructed local finalizer contexts expose empty async job ids."
+      "kind": "test",
+      "notes": "The attached local finalizer context exposes its queueable job id."
     },
     {
       "symbol": "FinalizerContextImpl.getAsyncApexJobId",
       "surfaceId": "apex:System.FinalizerContextImpl.getAsyncApexJobId()",
-      "kind": "exec",
-      "notes": "Default constructed local finalizer context implementations expose empty async job ids."
+      "kind": "test",
+      "notes": "The attached concrete local finalizer context exposes the same queueable job id."
     }
   ],
   "source": [
     {
-      "path": "anonymous.apex",
-      "content": "System.FinalizerContext fc = new System.FinalizerContext(); System.assertEquals('', fc.getAsyncApexJobId()); System.FinalizerContextImpl fci = new System.FinalizerContextImpl(); System.assertEquals('', fci.getAsyncApexJobId());"
+      "path": "force-app/main/classes/FinalizerContextGetterFixture.cls",
+      "content": "public class FinalizerContextGetterFixture implements Queueable, Finalizer { public static String interfaceJobId; public static String implementationJobId; public void execute(QueueableContext context) { System.attachFinalizer(this); } public void execute(FinalizerContext context) { interfaceJobId = context.getAsyncApexJobId(); Object raw = context; System.FinalizerContextImpl implementation = (System.FinalizerContextImpl)raw; implementationJobId = implementation.getAsyncApexJobId(); } }"
+    },
+    {
+      "path": "force-app/main/classes/FinalizerContextGetterFixtureTest.cls",
+      "content": "@IsTest private class FinalizerContextGetterFixtureTest { @IsTest static void attachedContextExposesJobId() { Test.startTest(); System.enqueueJob(new FinalizerContextGetterFixture()); Test.stopTest(); System.assertNotEquals('', FinalizerContextGetterFixture.interfaceJobId); System.assertEquals(FinalizerContextGetterFixture.interfaceJobId, FinalizerContextGetterFixture.implementationJobId); } }"
     }
   ],
   "command": {
-    "kind": "exec",
-    "args": [
-      "System.FinalizerContext fc = new System.FinalizerContext(); System.assertEquals('', fc.getAsyncApexJobId()); System.FinalizerContextImpl fci = new System.FinalizerContextImpl(); System.assertEquals('', fci.getAsyncApexJobId());"
-    ]
+    "kind": "test"
   },
   "expected": {
     "result": {
-      "debug": null,
-      "ok": true
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
   }
 }
