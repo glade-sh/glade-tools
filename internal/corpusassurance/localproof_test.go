@@ -347,6 +347,21 @@ func TestLocalProofPlannerAcceptsExecutableDeterministicEvidence(t *testing.T) {
 	}
 }
 
+func TestLocalProofCommandUsesExecutableDeterministicOperation(t *testing.T) {
+	entry := LocalProofFixture{
+		ID: "mock", OwnedSurfaceIDs: []string{"apex:Mock.run()"},
+		Disposition: deterministicMockRequired, Operation: "exec",
+	}
+	fixture := compat.Fixture{Command: compat.Invocation{Kind: "exec", Args: []string{"Mock.run();"}}}
+	command, err := localProofCommandForFixture(entry, fixture, "glade", ".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if command.Args[0] != "exec" {
+		t.Fatalf("command operation = %q, want exec", command.Args[0])
+	}
+}
+
 func TestSelectLocalProofFixturesAssignsEachSurfaceOnce(t *testing.T) {
 	candidates := []localProofFixtureCandidate{
 		{entry: LocalProofFixture{ID: "first", OwnedSurfaceIDs: []string{"apex:One", "apex:Shared"}}, owned: map[string]bool{"apex:One": true, "apex:Shared": true}},
