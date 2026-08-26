@@ -36,6 +36,10 @@ func TestCB27ConnectAPIMockOverloadsAreSignatureKnownSupportedAndEvidenced(t *te
 	if err != nil {
 		t.Fatal(err)
 	}
+	result, err := compat.Run(mock)
+	if err != nil || !result.OK {
+		t.Fatalf("local mock fixture run = %#v, error = %v", result, err)
+	}
 	tail, err := compat.LoadFile(tailPath)
 	if err != nil {
 		t.Fatal(err)
