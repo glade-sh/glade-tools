@@ -2,7 +2,7 @@
   "name": "core-runtime-exception-accessors",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "The command asserts Glade-local exception line numbers and empty stack traces for constructed AssertException and AsyncException values; this fixture is policy-local-only and grants zero Salesforce parity credit.",
+  "salesforceExclusionReason": "The command asserts Glade-local source locations and stack traces for constructed AssertException and AsyncException values; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.AssertException.getCause()",
@@ -14,13 +14,13 @@
       "surfaceId": "apex:System.AssertException.getInaccessibleFields()",
       "symbol": "AssertException.getInaccessibleFields",
       "kind": "exec",
-      "notes": "AssertException returns the default empty inaccessible-fields map."
+      "notes": "AssertException rejects this QueryException-only procedure with TypeException."
     },
     {
       "surfaceId": "apex:System.AssertException.getLineNumber()",
       "symbol": "AssertException.getLineNumber",
       "kind": "exec",
-      "notes": "Constructed local AssertException reports the default line number."
+      "notes": "Constructed local AssertException reports its source line."
     },
     {
       "surfaceId": "apex:System.AssertException.getMessage()",
@@ -32,7 +32,7 @@
       "surfaceId": "apex:System.AssertException.getStackTraceString()",
       "symbol": "AssertException.getStackTraceString",
       "kind": "exec",
-      "notes": "Constructed local AssertException reports the default empty stack trace."
+      "notes": "Constructed local AssertException reports its source location stack."
     },
     {
       "surfaceId": "apex:System.AssertException.getTypeName()",
@@ -44,7 +44,7 @@
       "surfaceId": "apex:System.AssertException.initCause(Exception)",
       "symbol": "AssertException.initCause(Exception)",
       "kind": "exec",
-      "notes": "AssertException inherits one-shot cause initialization."
+      "notes": "AssertException inherits void one-shot cause initialization."
     },
     {
       "surfaceId": "apex:System.AssertException.setMessage(String)",
@@ -62,13 +62,13 @@
       "surfaceId": "apex:System.AsyncException.getInaccessibleFields()",
       "symbol": "AsyncException.getInaccessibleFields",
       "kind": "exec",
-      "notes": "AsyncException returns the default empty inaccessible-fields map."
+      "notes": "AsyncException rejects this QueryException-only procedure with TypeException."
     },
     {
       "surfaceId": "apex:System.AsyncException.getLineNumber()",
       "symbol": "AsyncException.getLineNumber",
       "kind": "exec",
-      "notes": "Constructed local AsyncException reports the default line number."
+      "notes": "Constructed local AsyncException reports its source line."
     },
     {
       "surfaceId": "apex:System.AsyncException.getMessage()",
@@ -80,7 +80,7 @@
       "surfaceId": "apex:System.AsyncException.getStackTraceString()",
       "symbol": "AsyncException.getStackTraceString",
       "kind": "exec",
-      "notes": "Constructed local AsyncException reports the default empty stack trace."
+      "notes": "Constructed local AsyncException reports its source location stack."
     },
     {
       "surfaceId": "apex:System.AsyncException.getTypeName()",
@@ -92,7 +92,7 @@
       "surfaceId": "apex:System.AsyncException.initCause(Exception)",
       "symbol": "AsyncException.initCause(Exception)",
       "kind": "exec",
-      "notes": "AsyncException inherits one-shot cause initialization."
+      "notes": "AsyncException inherits void one-shot cause initialization."
     },
     {
       "surfaceId": "apex:System.AsyncException.setMessage(String)",
@@ -104,13 +104,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Exception assertEx = new AssertException('assert message');\nSystem.assertEquals('assert message', assertEx.getMessage());\nSystem.assertEquals('System.AssertException', assertEx.getTypeName());\nSystem.assertEquals(0, assertEx.getLineNumber());\nSystem.assertEquals('', assertEx.getStackTraceString());\nSystem.assertEquals(0, assertEx.getInaccessibleFields().size());\nassertEx.setMessage('changed assert');\nSystem.assertEquals('changed assert', assertEx.getMessage());\nException assertCause = new DmlException('assert cause');\nSystem.assertEquals(assertEx, assertEx.initCause(assertCause));\nSystem.assertEquals('assert cause', assertEx.getCause().getMessage());\nException asyncEx = new AsyncException('async message');\nSystem.assertEquals('async message', asyncEx.getMessage());\nSystem.assertEquals('System.AsyncException', asyncEx.getTypeName());\nSystem.assertEquals(0, asyncEx.getLineNumber());\nSystem.assertEquals('', asyncEx.getStackTraceString());\nSystem.assertEquals(0, asyncEx.getInaccessibleFields().size());\nasyncEx.setMessage('changed async');\nSystem.assertEquals('changed async', asyncEx.getMessage());\nException asyncCause = new DmlException('async cause');\nSystem.assertEquals(asyncEx, asyncEx.initCause(asyncCause));\nSystem.assertEquals('async cause', asyncEx.getCause().getMessage());\n"
+      "content": "Exception assertEx = new AssertException('assert message');\nSystem.assertEquals('assert message', assertEx.getMessage());\nSystem.assertEquals('System.AssertException', assertEx.getTypeName());\nSystem.assertEquals(1, assertEx.getLineNumber());\nSystem.assertEquals('AnonymousBlock: line 1, column 1', assertEx.getStackTraceString());\nString assertFieldsError = '';\ntry { assertEx.getInaccessibleFields(); } catch (TypeException e) { assertFieldsError = e.getMessage(); }\nSystem.assertEquals('Procedure is only valid for System.QueryException', assertFieldsError);\nassertEx.setMessage('changed assert');\nSystem.assertEquals('changed assert', assertEx.getMessage());\nException assertCause = new DmlException('assert cause');\nassertEx.initCause(assertCause);\nSystem.assertEquals('assert cause', assertEx.getCause().getMessage());\nException asyncEx = new AsyncException('async message');\nSystem.assertEquals('async message', asyncEx.getMessage());\nSystem.assertEquals('System.AsyncException', asyncEx.getTypeName());\nSystem.assertEquals(14, asyncEx.getLineNumber());\nSystem.assertEquals('AnonymousBlock: line 14, column 1', asyncEx.getStackTraceString());\nString asyncFieldsError = '';\ntry { asyncEx.getInaccessibleFields(); } catch (TypeException e) { asyncFieldsError = e.getMessage(); }\nSystem.assertEquals('Procedure is only valid for System.QueryException', asyncFieldsError);\nasyncEx.setMessage('changed async');\nSystem.assertEquals('changed async', asyncEx.getMessage());\nException asyncCause = new DmlException('async cause');\nasyncEx.initCause(asyncCause);\nSystem.assertEquals('async cause', asyncEx.getCause().getMessage());\n"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Exception assertEx = new AssertException('assert message');\nSystem.assertEquals('assert message', assertEx.getMessage());\nSystem.assertEquals('System.AssertException', assertEx.getTypeName());\nSystem.assertEquals(0, assertEx.getLineNumber());\nSystem.assertEquals('', assertEx.getStackTraceString());\nSystem.assertEquals(0, assertEx.getInaccessibleFields().size());\nassertEx.setMessage('changed assert');\nSystem.assertEquals('changed assert', assertEx.getMessage());\nException assertCause = new DmlException('assert cause');\nSystem.assertEquals(assertEx, assertEx.initCause(assertCause));\nSystem.assertEquals('assert cause', assertEx.getCause().getMessage());\nException asyncEx = new AsyncException('async message');\nSystem.assertEquals('async message', asyncEx.getMessage());\nSystem.assertEquals('System.AsyncException', asyncEx.getTypeName());\nSystem.assertEquals(0, asyncEx.getLineNumber());\nSystem.assertEquals('', asyncEx.getStackTraceString());\nSystem.assertEquals(0, asyncEx.getInaccessibleFields().size());\nasyncEx.setMessage('changed async');\nSystem.assertEquals('changed async', asyncEx.getMessage());\nException asyncCause = new DmlException('async cause');\nSystem.assertEquals(asyncEx, asyncEx.initCause(asyncCause));\nSystem.assertEquals('async cause', asyncEx.getCause().getMessage());\n"
+      "Exception assertEx = new AssertException('assert message');\nSystem.assertEquals('assert message', assertEx.getMessage());\nSystem.assertEquals('System.AssertException', assertEx.getTypeName());\nSystem.assertEquals(1, assertEx.getLineNumber());\nSystem.assertEquals('AnonymousBlock: line 1, column 1', assertEx.getStackTraceString());\nString assertFieldsError = '';\ntry { assertEx.getInaccessibleFields(); } catch (TypeException e) { assertFieldsError = e.getMessage(); }\nSystem.assertEquals('Procedure is only valid for System.QueryException', assertFieldsError);\nassertEx.setMessage('changed assert');\nSystem.assertEquals('changed assert', assertEx.getMessage());\nException assertCause = new DmlException('assert cause');\nassertEx.initCause(assertCause);\nSystem.assertEquals('assert cause', assertEx.getCause().getMessage());\nException asyncEx = new AsyncException('async message');\nSystem.assertEquals('async message', asyncEx.getMessage());\nSystem.assertEquals('System.AsyncException', asyncEx.getTypeName());\nSystem.assertEquals(14, asyncEx.getLineNumber());\nSystem.assertEquals('AnonymousBlock: line 14, column 1', asyncEx.getStackTraceString());\nString asyncFieldsError = '';\ntry { asyncEx.getInaccessibleFields(); } catch (TypeException e) { asyncFieldsError = e.getMessage(); }\nSystem.assertEquals('Procedure is only valid for System.QueryException', asyncFieldsError);\nasyncEx.setMessage('changed async');\nSystem.assertEquals('changed async', asyncEx.getMessage());\nException asyncCause = new DmlException('async cause');\nasyncEx.initCause(asyncCause);\nSystem.assertEquals('async cause', asyncEx.getCause().getMessage());\n"
     ]
   },
   "expected": {

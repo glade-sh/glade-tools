@@ -9,13 +9,11 @@ import (
 
 func TestResidualConsolidationHasOneActiveOwnerPerAcceptedRow(t *testing.T) {
 	want := map[string]string{
-		"apex:UserProvisioning.PluginBatchable":                      "current-base-userprovisioning-deterministic-mock-004-api67.json",
-		"apex:UserProvisioning.UserProvisioningPlugin":               "current-base-userprovisioning-deterministic-mock-004-api67.json",
-		"apex:UserProvisioning.UserProvisioningPlugin.clone()":       "current-base-userprovisioning-deterministic-mock-004-api67.json",
-		"apex:Cache.Org.Org()":                                       "current-base-cache-tail-deterministic-api67.json",
-		"apex:Cache.Session.Session()":                               "current-base-cache-tail-deterministic-api67.json",
-		"apex:System.String.template(valueMap)":                      "core-runtime-system-string-template-value-map-api67.json",
-		"apex:System.Http.send(HttpRequest)":                         "core-runtime-deterministic-tail-local-evidence-api67.json",
+		"apex:UserProvisioning.PluginBatchable":                "current-base-userprovisioning-deterministic-mock-004-api67.json",
+		"apex:UserProvisioning.UserProvisioningPlugin":         "current-base-userprovisioning-deterministic-mock-004-api67.json",
+		"apex:UserProvisioning.UserProvisioningPlugin.clone()": "current-base-userprovisioning-deterministic-mock-004-api67.json",
+		"apex:System.String.template(valueMap)":                "core-runtime-system-string-template-value-map-api67.json",
+		"apex:System.Http.send(HttpRequest)":                   "core-runtime-deterministic-tail-local-evidence-api67.json",
 	}
 	owners := make(map[string][]string, len(want))
 	paths, err := filepath.Glob(filepath.Join("..", "..", "docs", "fixtures", "*.json"))

@@ -125,7 +125,7 @@
   ],
   "source": [
     {
-      "path": "StringExactEvidence.cls",
+      "path": "anonymous.apex",
       "content": "String base = 'Trail cabin trail';\nSystem.assert(base.contains('cabin'));\nSystem.assert(base.endsWith('trail'));\nSystem.assert('Cabin'.equalsIgnoreCase('cabin'));\nSystem.assertEquals(6, base.indexOf('cabin'));\nSystem.assertEquals(12, base.indexOf('trail', 7));\nSystem.assertEquals(1, 'abc'.indexOfChar(98));\nSystem.assertEquals(3, 'abca'.indexOfChar(97, 1));\nSystem.assertEquals(6, base.indexOfIgnoreCase('CABIN'));\nSystem.assertEquals(12, base.indexOfIgnoreCase('TRAIL', 7));\nSystem.assert(String.isBlank('   '));\nSystem.assert(String.isEmpty(''));\nSystem.assert(!String.isNotBlank('   '));\nSystem.assert(String.isNotEmpty('x'));\nList<String> pieces = new List<String>{'one','two','three'};\nSystem.assertEquals('one/two/three', String.join(pieces, '/'));\nSystem.assertEquals('one two', String.format('{0} {1}', new List<Object>{'one', 'two'}));\nSystem.assertEquals('spr', String.getCommonPrefix(new List<String>{'spruce', 'spring', 'sprout'}));\nString gumbo = 'gumbo';\nSystem.assertEquals(2, gumbo.getLevenshteinDistance('gambol'));\nSystem.assertEquals(-1, gumbo.getLevenshteinDistance('gambol', 1));\nSystem.assertEquals('ABC', String.fromCharArray(new List<Integer>{65, 66, 67}));\nSystem.assertEquals('don\\\\\\'t', String.escapeSingleQuotes('don\\'t'));\n"
     }
   ],

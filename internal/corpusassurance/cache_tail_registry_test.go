@@ -11,7 +11,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
-func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
+func TestCacheContainerConstructorsAreTerminalNegativeEvidence(t *testing.T) {
 	const filename = "current-base-cache-tail-deterministic-api67.json"
 	path := filepath.Join("..", "..", "docs", "fixtures", filename)
 	data, err := os.ReadFile(path)
@@ -25,7 +25,7 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 	if err := compat.Validate(fixture); err != nil {
 		t.Fatal(err)
 	}
-	if fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 || len(fixture.Source) != 1 || fixture.Source[0].Path != "anonymous.apex" || fixture.Source[0].Content != fixture.Command.Args[0] {
+	if fixture.Command.Kind != "check" || len(fixture.Source) != 1 || fixture.Source[0].Path != "force-app/main/default/classes/CacheContainerConstructorNegative.cls" {
 		t.Fatalf("source/command provenance = %#v", fixture)
 	}
 	want := []string{
@@ -44,7 +44,7 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 	}
 	got := make([]string, 0, len(fixture.Evidence))
 	for _, evidence := range fixture.Evidence {
-		if evidence.Kind != "exec" {
+		if evidence.Kind != "check" {
 			t.Fatalf("evidence kind = %q", evidence.Kind)
 		}
 		got = append(got, evidence.SurfaceID)
@@ -53,11 +53,8 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 		t.Fatalf("owned IDs = %v, want %v", got, want)
 	}
 	var metadata struct {
-		Mode      string `json:"mode"`
-		Candidate struct {
-			Commit string `json:"commit"`
-			SHA256 string `json:"sha256"`
-		} `json:"candidate"`
+		Mode                      string `json:"mode"`
+		EvidenceOnly              bool   `json:"evidenceOnly"`
 		SalesforceEligible        *bool  `json:"salesforceEligible"`
 		SalesforceExclusionClass  string `json:"salesforceExclusionClass"`
 		SalesforceExclusionReason string `json:"salesforceExclusionReason"`
@@ -65,7 +62,7 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 	if err := json.Unmarshal(data, &metadata); err != nil {
 		t.Fatal(err)
 	}
-	if metadata.Mode != "deterministic-mock" || metadata.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || metadata.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "zero salesforce parity") {
+	if metadata.Mode != "compile-shape" || !metadata.EvidenceOnly || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "zero salesforce parity") {
 		t.Fatalf("fixture provenance = %#v", metadata)
 	}
 	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
@@ -80,11 +77,8 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(preMissing) != len(rejected) || len(preManifest.Fixtures) != 2 {
+	if len(preMissing) != len(want)+len(rejected) || len(preManifest.Fixtures) != 1 {
 		t.Fatalf("pre-admission manifest = %#v, missing = %v", preManifest, preMissing)
-	}
-	if result, err := compat.Run(fixture); err != nil || !result.OK {
-		t.Fatalf("fixture execution = %#v, error = %v", result, err)
 	}
 	negative, err := compat.LoadFile(filepath.Join("..", "..", "docs", "fixtures", "current-base-cache-negative-api67.json"))
 	if err != nil {
@@ -109,7 +103,7 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(missing, rejected) || len(manifest.Fixtures) != 2 || manifest.Fixtures[0].ID != "core-runtime-cache-validatekeys-set-api67" || !reflect.DeepEqual(manifest.Fixtures[0].OwnedSurfaceIDs, accepted) || manifest.Fixtures[1].ID != fixture.Name || !reflect.DeepEqual(manifest.Fixtures[1].OwnedSurfaceIDs, want) {
+	if len(missing) != len(want)+len(rejected) || len(manifest.Fixtures) != 1 || manifest.Fixtures[0].ID != "core-runtime-cache-validatekeys-set-api67" || !reflect.DeepEqual(manifest.Fixtures[0].OwnedSurfaceIDs, accepted) {
 		t.Fatalf("admission manifest = %#v, missing = %v", manifest, missing)
 	}
 }

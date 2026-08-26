@@ -11,18 +11,18 @@
     {"surfaceId": "apex:System.Date.newInstance(Integer,Integer,Integer)", "symbol": "Date.newInstance(Integer,Integer,Integer)", "kind": "exec"},
     {"surfaceId": "apex:System.Date.parse(String)", "symbol": "Date.parse(String)", "kind": "exec"},
     {"surfaceId": "apex:System.Date.toStartOfWeek()", "symbol": "Date.toStartOfWeek", "kind": "exec"},
-    {"surfaceId": "apex:System.Date.valueOf(Object)", "symbol": "Date.valueOf(Object)", "kind": "exec"}
+    {"surfaceId": "apex:System.Date.valueOf(Object)", "symbol": "Date.valueOf(Object)", "kind": "exec", "notes": "Salesforce API 67 runtime rejects a String stored in Object with System.TypeException."}
   ],
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Date leap = Date.newInstance(2024, 2, 29);\nSystem.assertEquals(60, leap.dayOfYear());\nSystem.assertEquals('2/29/2024', leap.format());\nSystem.assert(Date.isLeapYear(2024));\nSystem.assertEquals(29, Date.daysInMonth(2024, 2));\nSystem.assert(leap.isSameDay(Date.newInstance(2024, 2, 29)));\nSystem.assertEquals(1, Date.newInstance(2024, 1, 29).monthsBetween(leap));\nSystem.assertEquals(Date.newInstance(2024, 2, 25), leap.toStartOfWeek());\nSystem.assertEquals(Date.newInstance(2024, 2, 29), Date.parse('2/29/2024'));\nObject dateObject = '2024-02-29';\nSystem.assertEquals(Date.newInstance(2024, 2, 29), Date.valueOf(dateObject));\n"
+      "content": "Date leap = Date.newInstance(2024, 2, 29);\nSystem.assertEquals(60, leap.dayOfYear());\nSystem.assertEquals('2/29/2024', leap.format());\nSystem.assert(Date.isLeapYear(2024));\nSystem.assertEquals(29, Date.daysInMonth(2024, 2));\nSystem.assert(leap.isSameDay(Date.newInstance(2024, 2, 29)));\nSystem.assertEquals(1, Date.newInstance(2024, 1, 29).monthsBetween(leap));\nSystem.assertEquals(Date.newInstance(2024, 2, 25), leap.toStartOfWeek());\nSystem.assertEquals(Date.newInstance(2024, 2, 29), Date.parse('2/29/2024'));\nObject dateObject = '2024-02-29';\nString dateObjectError = '';\ntry {\n  Date.valueOf(dateObject);\n} catch (TypeException e) {\n  dateObjectError = e.getMessage();\n}\nSystem.assertEquals('Invalid date: 2024-02-29', dateObjectError);\n"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Date leap = Date.newInstance(2024, 2, 29);\nSystem.assertEquals(60, leap.dayOfYear());\nSystem.assertEquals('2/29/2024', leap.format());\nSystem.assert(Date.isLeapYear(2024));\nSystem.assertEquals(29, Date.daysInMonth(2024, 2));\nSystem.assert(leap.isSameDay(Date.newInstance(2024, 2, 29)));\nSystem.assertEquals(1, Date.newInstance(2024, 1, 29).monthsBetween(leap));\nSystem.assertEquals(Date.newInstance(2024, 2, 25), leap.toStartOfWeek());\nSystem.assertEquals(Date.newInstance(2024, 2, 29), Date.parse('2/29/2024'));\nObject dateObject = '2024-02-29';\nSystem.assertEquals(Date.newInstance(2024, 2, 29), Date.valueOf(dateObject));\n"
+      "Date leap = Date.newInstance(2024, 2, 29);\nSystem.assertEquals(60, leap.dayOfYear());\nSystem.assertEquals('2/29/2024', leap.format());\nSystem.assert(Date.isLeapYear(2024));\nSystem.assertEquals(29, Date.daysInMonth(2024, 2));\nSystem.assert(leap.isSameDay(Date.newInstance(2024, 2, 29)));\nSystem.assertEquals(1, Date.newInstance(2024, 1, 29).monthsBetween(leap));\nSystem.assertEquals(Date.newInstance(2024, 2, 25), leap.toStartOfWeek());\nSystem.assertEquals(Date.newInstance(2024, 2, 29), Date.parse('2/29/2024'));\nObject dateObject = '2024-02-29';\nString dateObjectError = '';\ntry {\n  Date.valueOf(dateObject);\n} catch (TypeException e) {\n  dateObjectError = e.getMessage();\n}\nSystem.assertEquals('Invalid date: 2024-02-29', dateObjectError);\n"
     ]
   },
   "expected": {

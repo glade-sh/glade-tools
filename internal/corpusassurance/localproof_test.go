@@ -1123,6 +1123,19 @@ func TestLocalProofAcceptsSourceBackedTestContextRuntimeFixture(t *testing.T) {
 	}
 }
 
+func TestLocalProofRecognizesConcreteSubclassSuperConstructorWitness(t *testing.T) {
+	source := "public class Probe extends UserProvisioning.FlowProvisionBase { public Probe() { super('upr'); } }"
+	if !localProofHasConstructorWitness(source, "FlowProvisionBase") {
+		t.Fatal("explicit subclass super call was not accepted as a constructor witness")
+	}
+	if localProofHasConstructorWitness("public class Probe extends UserProvisioning.FlowProvisionBase {}", "FlowProvisionBase") {
+		t.Fatal("subclass without an explicit super call was accepted as a constructor witness")
+	}
+	if localProofHasConstructorWitness("public class Probe extends UserProvisioning.FlowProvisionBase {} public class Other extends Base { public Other() { super(); } }", "FlowProvisionBase") {
+		t.Fatal("super call from an unrelated class was accepted as a constructor witness")
+	}
+}
+
 func TestLocalProofExecutesAStagedCandidateCopy(t *testing.T) {
 	request, calls := localProofRequest(t)
 	if _, err := RunLocalProof(request); err != nil {

@@ -39,7 +39,7 @@
   "salesforceExclusionReason": "This fixture records Glade local-runtime behavior only and makes no hosted Salesforce package-lifecycle claim.",
   "source": [
     {
-      "content": "public class CurrentBaseSystem002Install implements InstallHandler { public static Boolean called; public void onInstall(InstallContext context) { called = context != null && context.previousVersion() == null && !context.isPush() && context.installerId() == null; } }",
+      "content": "public class CurrentBaseSystem002Install implements InstallHandler { public static Boolean called; public void onInstall(InstallContext context) { called = context != null && context.previousVersion() == null && !context.isPush() && context.installerId() == UserInfo.getUserId(); } }",
       "path": "force-app/main/default/classes/CurrentBaseSystem002Install.cls"
     },
     {

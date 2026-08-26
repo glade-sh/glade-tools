@@ -52,7 +52,7 @@
   "salesforceExclusionReason": "API 67 clean-org rejects the fixture's InstallContext member shape; retained as local runtime evidence and excluded from hosted parity.",
   "source": [
     {
-      "content": "public class LocalInstallScript implements InstallHandler { public static Boolean sawFresh = false; public static Boolean sawUpgrade = false; public void onInstall(InstallContext context) { if (context.previousVersion() == null) { sawFresh = !context.isPush() && context.installerId() == null; } else { sawUpgrade = context.previousVersion().compareTo(new Version(1, 47, 1)) < 0 && context.previousVersion().toString() == '1.47.0' && context.isPush() && context.installerId() == null; } } }",
+      "content": "public class LocalInstallScript implements InstallHandler { public static Boolean sawFresh = false; public static Boolean sawUpgrade = false; public void onInstall(InstallContext context) { if (context.previousVersion() == null) { sawFresh = !context.isPush() && context.installerId() == UserInfo.getUserId(); } else { sawUpgrade = context.previousVersion().compareTo(new Version(1, 47, 1)) < 0 && context.previousVersion().toString() == '1.47.0' && context.isPush() && context.installerId() == UserInfo.getUserId(); } } }",
       "path": "force-app/main/classes/LocalInstallScript.cls"
     },
     {

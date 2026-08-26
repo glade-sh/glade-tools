@@ -46,13 +46,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "SelectOption option = new SelectOption('1', 'One', true, false);\nSystem.assertEquals('1', option.getValue());\nSystem.assertEquals('One', option.getLabel());\nSystem.assertEquals(true, option.getDisabled());\nSystem.assertEquals(false, option.getEscapeItem());\noption.setValue('2');\noption.setLabel('Two');\noption.setDisabled(false);\noption.setEscapeItem(true);\nSystem.assertEquals('2', option.getValue());\nSystem.assertEquals('Two', option.getLabel());\nSystem.assertEquals(false, option.getDisabled());\nSystem.assertEquals(true, option.getEscapeItem());\n"
+      "content": "SelectOption option = new SelectOption('1', 'One', true);\noption.setEscapeItem(false);\nSystem.assertEquals('1', option.getValue());\nSystem.assertEquals('One', option.getLabel());\nSystem.assertEquals(true, option.getDisabled());\nSystem.assertEquals(false, option.getEscapeItem());\noption.setValue('2');\noption.setLabel('Two');\noption.setDisabled(false);\noption.setEscapeItem(true);\nSystem.assertEquals('2', option.getValue());\nSystem.assertEquals('Two', option.getLabel());\nSystem.assertEquals(false, option.getDisabled());\nSystem.assertEquals(true, option.getEscapeItem());\n"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "SelectOption option = new SelectOption('1', 'One', true, false);\nSystem.assertEquals('1', option.getValue());\nSystem.assertEquals('One', option.getLabel());\nSystem.assertEquals(true, option.getDisabled());\nSystem.assertEquals(false, option.getEscapeItem());\noption.setValue('2');\noption.setLabel('Two');\noption.setDisabled(false);\noption.setEscapeItem(true);\nSystem.assertEquals('2', option.getValue());\nSystem.assertEquals('Two', option.getLabel());\nSystem.assertEquals(false, option.getDisabled());\nSystem.assertEquals(true, option.getEscapeItem());\n"
+      "SelectOption option = new SelectOption('1', 'One', true);\noption.setEscapeItem(false);\nSystem.assertEquals('1', option.getValue());\nSystem.assertEquals('One', option.getLabel());\nSystem.assertEquals(true, option.getDisabled());\nSystem.assertEquals(false, option.getEscapeItem());\noption.setValue('2');\noption.setLabel('Two');\noption.setDisabled(false);\noption.setEscapeItem(true);\nSystem.assertEquals('2', option.getValue());\nSystem.assertEquals('Two', option.getLabel());\nSystem.assertEquals(false, option.getDisabled());\nSystem.assertEquals(true, option.getEscapeItem());\n"
     ]
   },
   "expected": {

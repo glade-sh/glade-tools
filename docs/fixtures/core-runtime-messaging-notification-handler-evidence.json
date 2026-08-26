@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-messaging-notification-handler-evidence",
+  "apiVersion": "67.0",
   "salesforceEligible": true,
   "evidence": [
     {

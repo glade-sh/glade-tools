@@ -176,7 +176,7 @@
   },
   "mode": "deterministic-mock",
   "name": "current-base-cache-exception-tail-deterministic-api67",
-  "notes": "Current-base lane current-base-deterministic-mock-required-cache-001: exception constructors/clones, cache container shapes, TTL constants, put overloads, and remaining ScanResult behavior are covered as local deterministic behavior. Cache.Org.Org() and Cache.Session.Session() are owned by the exact constructor fixture. Three ScanResult fields have direct exact-candidate ownership.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-cache-001: exception constructors/clones, cache container shapes, TTL constants, put overloads, and remaining ScanResult behavior are covered as local deterministic behavior. Cache.Org.Org() and Cache.Session.Session() are non-constructible static container rows retained as terminal negative evidence. Three ScanResult fields have direct exact-candidate ownership.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "laneId": "current-base-deterministic-mock-required-cache-001",
