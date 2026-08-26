@@ -146,6 +146,28 @@ func TestBuildSurfaceWavePlanDefaultsToTwoSixteenFixtureShards(t *testing.T) {
 	}
 }
 
+func TestBuildSurfaceWavePlanBalancesFixturesAcrossNineShards(t *testing.T) {
+	definitions := make([]surfaceWaveFixtureDefinition, 18)
+	for i := range definitions {
+		name := fmt.Sprintf("fixture%02d", i)
+		definitions[i] = surfaceWaveFixtureDefinition{name: name, surfaceIDs: []string{"apex:" + strings.Title(name) + ".run"}, disposition: localRuntimeRequired}
+	}
+	request, _, _ := buildSurfaceWavePlanRequest(t, definitions, nil)
+	request.ShardCount = 9
+	plan, err := BuildSurfaceWavePlan(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if plan.ShardCount != 9 || len(plan.Shards) != 9 {
+		t.Fatalf("shard count = %d/%d, want 9/9", plan.ShardCount, len(plan.Shards))
+	}
+	for _, shard := range plan.Shards {
+		if len(shard.Fixtures) != 2 || len(shard.SurfaceIDs) != 2 {
+			t.Fatalf("unbalanced shard = %#v", shard)
+		}
+	}
+}
+
 func TestBuildSurfaceWavePlanIsCreateOnly(t *testing.T) {
 	request, _, _ := surfaceWavePlanRequest(t)
 	if _, err := BuildSurfaceWavePlan(request); err != nil {

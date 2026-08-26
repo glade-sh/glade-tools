@@ -232,8 +232,9 @@ the plan is incomplete; authoritative local-proof inputs are written only at
 the exact all-runtime scope, local-proof profile, coverage, manifest, and proof
 written by `surface-local-proof-plan` and `local-proof`. Supply the terminal
 authority when coverage contains terminal rows. It accepts a fixture cap,
-never caller-selected SurfaceIDs, emits exactly two deterministic shards, and
-uses an optional cumulative index to exclude already adjudicated rows.
+never caller-selected SurfaceIDs, emits two deterministic shards by default
+or up to nine with `--shards`, and uses an optional cumulative index to exclude
+already adjudicated rows.
 
 `candidate-build` starts the product and tools builds concurrently. Its exact
 commit binding selects reusable commit-scoped Go build and module caches, so a

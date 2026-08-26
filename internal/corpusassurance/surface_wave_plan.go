@@ -9,7 +9,11 @@ import (
 	"strings"
 )
 
-const defaultSurfaceWaveFixtures = 32
+const (
+	defaultSurfaceWaveFixtures = 32
+	defaultSurfaceWaveShards   = 2
+	maxSurfaceWaveShards       = 9
+)
 
 type SurfaceWavePlanRequest struct {
 	ScopePath             string
@@ -20,6 +24,7 @@ type SurfaceWavePlanRequest struct {
 	TerminalAuthorityPath string
 	PredecessorIndexPath  string
 	MaxFixtures           int
+	ShardCount            int
 	OutputPath            string
 }
 
@@ -36,6 +41,7 @@ type SurfaceWavePlan struct {
 	Candidate               RuntimeArtifact        `json:"candidate"`
 	Tools                   RuntimeArtifact        `json:"tools"`
 	MaxFixtures             int                    `json:"maxFixtures"`
+	ShardCount              int                    `json:"shardCount"`
 	EligibleRows            int                    `json:"eligibleRows"`
 	IneligibleRows          int                    `json:"ineligibleRows"`
 	SelectedFixtures        int                    `json:"selectedFixtures"`
@@ -75,6 +81,13 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 	}
 	if maxFixtures < 1 || maxFixtures > defaultSurfaceWaveFixtures {
 		return SurfaceWavePlan{}, fmt.Errorf("max fixtures must be between 1 and %d", defaultSurfaceWaveFixtures)
+	}
+	shardCount := request.ShardCount
+	if shardCount == 0 {
+		shardCount = defaultSurfaceWaveShards
+	}
+	if shardCount < 1 || shardCount > maxSurfaceWaveShards {
+		return SurfaceWavePlan{}, fmt.Errorf("shard count must be between 1 and %d", maxSurfaceWaveShards)
 	}
 
 	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](request.ScopePath)
@@ -271,14 +284,17 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 	if len(fixtures) > maxFixtures {
 		fixtures = fixtures[:maxFixtures]
 	}
-	shards := []SurfaceWavePlanShard{{Index: 0}, {Index: 1}}
-	split := (len(fixtures) + 1) / 2
+	shards := make([]SurfaceWavePlanShard, shardCount)
+	for i := range shards {
+		shards[i].Index = i
+	}
+	activeShards := shardCount
+	if len(fixtures) < activeShards {
+		activeShards = len(fixtures)
+	}
 	selectedRows := make(map[string]bool)
 	for i, fixture := range fixtures {
-		shard := 0
-		if i >= split {
-			shard = 1
-		}
+		shard := i * activeShards / len(fixtures)
 		shards[shard].Fixtures = append(shards[shard].Fixtures, fixture)
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
 			if openRows[surfaceID] {
@@ -293,7 +309,7 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 	plan := SurfaceWavePlan{
 		SchemaVersion: 1, Kind: "all-runtime-wave", ScopeSHA256: scopeSHA, ProfileSHA256: profileSHA, LocalProofSHA256: proofSHA,
 		FixtureManifestSHA256: manifestSHA, CoverageSHA256: coverageSHA, TerminalAuthoritySHA256: authoritySHA, PredecessorIndexSHA256: predecessorSHA,
-		Candidate: proof.Candidate, Tools: proof.Tools, MaxFixtures: maxFixtures, EligibleRows: len(eligibleRows), IneligibleRows: len(profileRows) - len(eligibleRows), SelectedFixtures: len(fixtures), SelectedRows: len(selectedRows), RemainingOpen: len(openRows) - len(selectedRows), Shards: shards,
+		Candidate: proof.Candidate, Tools: proof.Tools, MaxFixtures: maxFixtures, ShardCount: shardCount, EligibleRows: len(eligibleRows), IneligibleRows: len(profileRows) - len(eligibleRows), SelectedFixtures: len(fixtures), SelectedRows: len(selectedRows), RemainingOpen: len(openRows) - len(selectedRows), Shards: shards,
 	}
 	if err := WriteNewJSON(request.OutputPath, plan); err != nil {
 		return SurfaceWavePlan{}, err
