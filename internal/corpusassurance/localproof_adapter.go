@@ -475,22 +475,14 @@ func localProofProjectPath(root, relative string) (string, error) {
 }
 
 func localProofCommandForFixture(entry LocalProofFixture, fixture compat.Fixture, candidatePath, root string) (localProofCommand, error) {
-	operation := ""
-	switch entry.Disposition {
-	case localRuntimeRequired:
-		operation = "exec"
-		if fixture.Command.Kind == "test" {
-			operation = "test"
-		}
-	case deterministicMockRequired:
-		operation = "test"
-	case compileShapeRequired:
-		operation = "check"
-	default:
+	if !validLocalProofDisposition(entry.Disposition) {
 		return localProofCommand{}, fmt.Errorf("invalid fixture disposition %q", entry.Disposition)
 	}
-	if fixture.Command.Kind != operation {
-		return localProofCommand{}, fmt.Errorf("fixture %q command kind %q does not satisfy %s proof", entry.ID, fixture.Command.Kind, entry.Disposition)
+	operation := fixture.Command.Kind
+	for _, surfaceID := range entry.OwnedSurfaceIDs {
+		if !localProofCommandMatchesDisposition(entry.Disposition, operation, surfaceID) {
+			return localProofCommand{}, fmt.Errorf("fixture %q command kind %q does not satisfy %s proof for %q", entry.ID, operation, entry.Disposition, surfaceID)
+		}
 	}
 	args := []string{operation, "--project", root}
 	if localProofFixtureNeedsDB(fixture) {
