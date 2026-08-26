@@ -8,19 +8,19 @@
       "surfaceId": "apex:System.AccessLevel.withPermissionSetId(String)",
       "symbol": "AccessLevel.withPermissionSetId",
       "kind": "exec",
-      "notes": "Permission-set-scoped user mode returns a local AccessLevel token for supported permission checks."
+      "notes": "USER_MODE.withPermissionSetId returns a local AccessLevel token for supported permission checks."
     }
   ],
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "AccessLevel.withPermissionSetId('0PS000000000001');"
+      "content": "AccessLevel.USER_MODE.withPermissionSetId('0PS000000000001');"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "AccessLevel.withPermissionSetId('0PS000000000001');"
+      "AccessLevel.USER_MODE.withPermissionSetId('0PS000000000001');"
     ]
   },
   "expected": {
