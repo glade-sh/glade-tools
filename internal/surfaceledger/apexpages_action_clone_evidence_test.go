@@ -80,7 +80,7 @@ func TestApexPagesActionCloneEvidenceHasUniqueExecutableOwner(t *testing.T) {
 
 	source := fixture.Source[0].Content
 	if !strings.Contains(source, "ApexPages.Action action = new ApexPages.Action('{!list}');") ||
-		!strings.Contains(source, "ApexPages.Action cloned = action.clone();") ||
+		!strings.Contains(source, "ApexPages.Action cloned = (ApexPages.Action)action.clone();") ||
 		!strings.Contains(source, "System.assertEquals(action.getExpression(), cloned.getExpression());") {
 		t.Fatalf("clone source lacks direct operation/assertion: %q", source)
 	}

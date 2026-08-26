@@ -175,7 +175,11 @@
       "path": "force-app/main/classes/CoreRuntimeLocalQuickActionTest.cls"
     },
     {
-      "content": "@isTest private class CoreRuntimeLocalQuickActionDefaultsHandlerTest { @isTest static void acceptsDefaultsListCallback() { QuickAction.QuickActionDefaultsHandler handler = new QuickAction.QuickActionDefaultsHandler(); List<QuickAction.QuickActionDefaults> defaults = new List<QuickAction.QuickActionDefaults>{new QuickAction.QuickActionDefaults()}; handler.onInitDefaults(defaults); System.assertEquals(1, defaults.size()); System.assertEquals(null, defaults[0].getActionName()); System.assertEquals(null, defaults[0].getActionType()); } }",
+      "content": "public class CoreRuntimeLocalQuickActionDefaultsHandler implements QuickAction.QuickActionDefaultsHandler { public void onInitDefaults(List<QuickAction.QuickActionDefaults> defaults) {} }",
+      "path": "force-app/main/classes/CoreRuntimeLocalQuickActionDefaultsHandler.cls"
+    },
+    {
+      "content": "@isTest private class CoreRuntimeLocalQuickActionDefaultsHandlerTest { @isTest static void acceptsDefaultsListCallback() { QuickAction.QuickActionDefaultsHandler handler = new CoreRuntimeLocalQuickActionDefaultsHandler(); List<QuickAction.QuickActionDefaults> defaults = new List<QuickAction.QuickActionDefaults>{new QuickAction.QuickActionDefaults()}; handler.onInitDefaults(defaults); System.assertEquals(1, defaults.size()); System.assertEquals(null, defaults[0].getActionName()); System.assertEquals(null, defaults[0].getActionType()); } }",
       "path": "force-app/main/classes/CoreRuntimeLocalQuickActionDefaultsHandlerTest.cls"
     },
     {

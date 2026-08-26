@@ -17,6 +17,14 @@
   ],
   "source": [
     {
+      "path": "force-app/main/default/staticresources/Images.resource",
+      "content": "fixture resource"
+    },
+    {
+      "path": "force-app/main/default/staticresources/Images.resource-meta.xml",
+      "content": "<StaticResource><contentType>application/octet-stream</contentType><cacheControl>Private</cacheControl></StaticResource>"
+    },
+    {
       "path": "anonymous.apex",
       "content": "PageReference resource = PageReference.forResource('Images');\nSystem.assertEquals('/resource/Images', resource.getUrl());\nPageReference nested = PageReference.forResource('Images', 'icons/logo.png');\nSystem.assertEquals('/resource/Images/icons/logo.png', nested.getUrl());"
     }

@@ -264,7 +264,7 @@ func localProofCodeIdentifiers(source string) map[string]bool {
 	identifiers := make(map[string]bool)
 	for _, token := range localProofCodeTokens(source) {
 		switch token {
-		case ".", "(", "{", "<", ">":
+		case ".", "(", "{", "}", "<", ">":
 			continue
 		}
 		identifiers[token] = true
@@ -302,6 +302,32 @@ func localProofHasConstructorWitness(source, typeName string) bool {
 		}
 		if j < len(tokens) && (tokens[j] == "(" || tokens[j] == "{") {
 			return true
+		}
+	}
+	for i := 0; i < len(tokens); i++ {
+		if tokens[i] != "extends" {
+			continue
+		}
+		j := i + 1
+		matched := false
+		for ; j < len(tokens) && tokens[j] != "{"; j++ {
+			matched = matched || tokens[j] == typeName
+		}
+		if !matched || j == len(tokens) {
+			continue
+		}
+		depth := 1
+		for k := j + 1; k+1 < len(tokens) && depth > 0; k++ {
+			switch tokens[k] {
+			case "{":
+				depth++
+			case "}":
+				depth--
+			case "super":
+				if tokens[k+1] == "(" {
+					return true
+				}
+			}
 		}
 	}
 	return false
@@ -358,7 +384,7 @@ func localProofCodeTokens(source string) []string {
 				token = append(token, r)
 			} else {
 				flush()
-				if r == '.' || r == '(' || r == '{' || r == '<' || r == '>' {
+				if r == '.' || r == '(' || r == '{' || r == '}' || r == '<' || r == '>' {
 					tokens = append(tokens, string(r))
 				}
 			}
