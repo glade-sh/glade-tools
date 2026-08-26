@@ -13,6 +13,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/glade-sh/glade/internal/automation"
+	"github.com/glade-sh/glade/internal/project"
+	"github.com/glade-sh/glade/internal/resource"
+	"github.com/glade-sh/glade/internal/schema"
+	"github.com/glade-sh/glade/internal/sobject"
+	"github.com/glade-sh/glade/internal/storage"
+	"github.com/glade-sh/glade/internal/typesys"
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
@@ -80,6 +87,81 @@ func TestMaterializeLocalProofFixtureWritesFixtureDB(t *testing.T) {
 	}
 	if info, err := os.Stat(database); err != nil || info.Size() == 0 {
 		t.Fatalf("fixture database was not materialized: info=%v err=%v", info, err)
+	}
+}
+
+func TestMaterializedLocalProofFixtureDBMatchesProjectSchema(t *testing.T) {
+	for _, name := range []string{"core-runtime-address-value-object.json", "core-runtime-businesshours-license-local-evidence.json"} {
+		t.Run(name, func(t *testing.T) { assertMaterializedLocalProofFixtureDBMatchesProjectSchema(t, name) })
+	}
+}
+
+func assertMaterializedLocalProofFixtureDBMatchesProjectSchema(t *testing.T, name string) {
+	t.Helper()
+	path, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures", name))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	owned := make([]string, 0, len(fixture.Evidence))
+	for _, evidence := range fixture.Evidence {
+		owned = append(owned, evidence.SurfaceID)
+	}
+	entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, SHA256: replayBytesSHA256(data), OwnedSurfaceIDs: owned, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
+	command, cleanup, err := materializeLocalProofFixture(entry, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	store, err := storage.OpenSQLite(localProofDBPath(command.Dir))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer store.Close()
+	loadedProject, err := project.Load(command.Dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	loadedSchema, err := schema.LoadProject(loadedProject)
+	if err != nil {
+		t.Fatal(err)
+	}
+	index := typesys.Build(loadedProject, loadedSchema)
+	expected := storage.NewOrgState()
+	expected.APIVersion = storage.DefaultRESTAPIVersion
+	expected.Namespace = index.Project.Namespace
+	registry := sobject.BuildDescribeRegistry(schema.Schema{Objects: append([]schema.Object(nil), index.Objects...)})
+	for name, describe := range registry.Objects {
+		expected.Objects[name] = storage.ObjectState{Definition: sobject.ToObjectDefinition(describe), Records: make(map[storage.ID]storage.Record)}
+	}
+	if err := storage.ApplyCustomMetadataRecords(&expected, index.CustomMetadataRecords); err != nil {
+		t.Fatal(err)
+	}
+	if err := resource.ApplyProject(&expected, loadedProject); err != nil {
+		t.Fatal(err)
+	}
+	if automationIndex, err := automation.LoadProject(loadedProject); err == nil {
+		automation.ApplyToOrg(&expected, automationIndex)
+	}
+	storage.EnsureDeterministicPlatformData(&expected)
+	storage.ApplyOrgShape(&expected, project.OrgShapeFeatures(command.Dir))
+	expectedFingerprint, err := storage.SchemaFingerprint(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	binding, ok, err := store.ProjectBinding()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok || binding.ProjectRoot != command.Dir || binding.SchemaFingerprint != expectedFingerprint || binding.SourceAPIVersion != loadedProject.SourceAPIVersion || binding.Namespace != expected.Namespace {
+		t.Fatalf("materialized fixture binding = %#v, project root = %q schema = %q", binding, command.Dir, expectedFingerprint)
 	}
 }
 
