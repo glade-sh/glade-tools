@@ -88,10 +88,12 @@ func TestOrchestratorRawPrecreationAbortObserveAndAccept(t *testing.T) {
 	}
 
 	rawRoot := filepath.Join(root, "raw")
-	if err := os.Mkdir(rawRoot, 0o700); err != nil {
+	remoteScope := filepath.Join(root, "remote-scope.json")
+	scopeBytes, err := os.ReadFile(scope)
+	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := WriteOrchestratorBatchBinding(filepath.Join(rawRoot, "ORCHESTRATOR_BINDING.json"), plan, lease); err != nil {
+	if err := os.WriteFile(remoteScope, scopeBytes, 0o600); err != nil {
 		t.Fatal(err)
 	}
 	planSHA, leaseSHA, err := canonicalPlanLeaseHashes(plan, lease)
@@ -128,9 +130,15 @@ func TestOrchestratorRawPrecreationAbortObserveAndAccept(t *testing.T) {
 	}
 	observeRequest := OrchestratorRawPrecreationAbortObservationRequest{
 		Plan: plan, Lease: lease, PlanSHA256: planSHA, LeaseSHA256: leaseSHA, FailedSSHReceipt: failed, FailedSSHReceiptSHA256: failedSHA,
-		BundlePath: bundlePath, RawRoot: rawRoot, AllocationAlias: allocation, TargetOrg: allocation, SFBin: canonicalSF, OutputPath: outputPath,
+		BundlePath: bundlePath, ScopePath: remoteScope, RawRoot: rawRoot, AllocationAlias: allocation, TargetOrg: allocation, SFBin: canonicalSF, OutputPath: outputPath,
 		validateBundle: func(string) error { return nil }, recoveryTool: func() (string, error) { return canonicalSF, nil },
 		runner: runner,
+	}
+	if _, err := ObserveOrchestratorRawPrecreationAbort(observeRequest); err != nil {
+		t.Fatalf("missing raw root recovery = %v", err)
+	}
+	if err := validateRawAbortRoot(rawRoot, plan, lease); err != nil {
+		t.Fatalf("sealed recovery root = %v", err)
 	}
 	extraPath := filepath.Join(rawRoot, "unexpected.json")
 	if err := os.WriteFile(extraPath, []byte("{}\n"), 0o600); err != nil {

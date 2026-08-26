@@ -325,7 +325,7 @@ func TestCorpusAssuranceOrchestratorRawAbortUsesTypedFixedFlags(t *testing.T) {
 		name string
 		args []string
 	}{
-		{"observe", []string{"corpus", "assurance", "orchestrator", "raw-abort-observe", "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--bundle", filepath.Join(root, "bundle.json"), "--allocation", "scratch-canary", "--sf-bin", filepath.Join(root, "sf"), "--raw-root", filepath.Join(root, "raw"), "--output", filepath.Join(root, "observation.json")}},
+		{"observe", []string{"corpus", "assurance", "orchestrator", "raw-abort-observe", "--plan", filepath.Join(root, "plan.json"), "--scope", filepath.Join(root, "scope.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--bundle", filepath.Join(root, "bundle.json"), "--allocation", "scratch-canary", "--sf-bin", filepath.Join(root, "sf"), "--raw-root", filepath.Join(root, "raw"), "--output", filepath.Join(root, "observation.json")}},
 		{"accept", []string{"corpus", "assurance", "orchestrator", "raw-abort-accept", "--db", filepath.Join(root, "orchestrator.db"), "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--allocation", "scratch-canary", "--observation", filepath.Join(root, "observation.json"), "--output", filepath.Join(root, "acceptance.json")}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
