@@ -12,6 +12,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"golang.org/x/mod/modfile"
 )
 
 const candidateAuthorityStatus = "sealed-candidate-authority"
@@ -140,6 +142,9 @@ func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (ca
 	if err := validateSealedToolsBuild(document.ToolsBuild.SourceRoot, input.Tools, document.ToolsBuild); err != nil {
 		return candidateAuthorityInput{}, fmt.Errorf("candidate authority tools source build is stale")
 	}
+	if err := validateToolsCandidatePair(document.Build.SourceRoot, document.ToolsBuild); err != nil {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority source pairing is stale")
+	}
 	return input, nil
 }
 
@@ -175,6 +180,9 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 	toolsBuild, err := deriveToolsBuildBinding(toolsRoot)
 	if err != nil || validateSealedToolsBuild(toolsRoot, receipt.Tools, toolsBuild) != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools source build is invalid")
+	}
+	if err := validateToolsCandidatePair(candidateRoot, toolsBuild); err != nil {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority source pairing is invalid")
 	}
 	if err := validateCandidateParser(receipt.Candidate, candidateRoot); err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
@@ -231,9 +239,55 @@ func deriveBuildBinding(sourceRoot, target string) (candidateBuildBinding, error
 		SourceRoot:  canonical,
 		SourceTree:  tree,
 		Go:          candidateAuthoritySource{Path: goPath, SHA256: goSHA256},
-		Arguments:   []string{"build", "-trimpath", "-o", "<candidate>", target},
+		Arguments:   []string{"build", "-buildvcs=false", "-trimpath", "-o", "<candidate>", target},
 		Environment: environment,
 	}, nil
+}
+
+func validateToolsCandidatePair(candidateRoot string, toolsBuild candidateBuildBinding) error {
+	candidateRoot, err := filepath.EvalSymlinks(candidateRoot)
+	if err != nil || !filepath.IsAbs(candidateRoot) {
+		return fmt.Errorf("candidate source pairing is unavailable")
+	}
+	if err := validateToolsLocalReplacements(toolsBuild.SourceRoot, candidateRoot); err != nil {
+		return fmt.Errorf("tools candidate source pairing is invalid")
+	}
+	data, err := os.ReadFile(filepath.Join(toolsBuild.SourceRoot, "go.mod"))
+	if err != nil {
+		return fmt.Errorf("tools candidate source pairing is unavailable")
+	}
+	parsed, err := modfile.Parse("go.mod", data, nil)
+	if err != nil {
+		return fmt.Errorf("tools candidate source pairing is invalid")
+	}
+	expected := map[string]string{
+		"github.com/glade-sh/glade":       candidateRoot,
+		"github.com/glade-sh/apex-parser": filepath.Join(candidateRoot, "third_party", "glade-apex-parser"),
+	}
+	seen := make(map[string]bool, len(expected))
+	for _, replacement := range parsed.Replace {
+		want, required := expected[replacement.Old.Path]
+		if !required {
+			continue
+		}
+		got := replacement.New.Path
+		if seen[replacement.Old.Path] || replacement.Old.Version != "" || replacement.New.Version != "" {
+			return fmt.Errorf("tools candidate source pairing is invalid")
+		}
+		if !filepath.IsAbs(got) {
+			got = filepath.Join(toolsBuild.SourceRoot, got)
+		}
+		got, err = filepath.EvalSymlinks(got)
+		want, wantErr := filepath.EvalSymlinks(want)
+		if err != nil || wantErr != nil || filepath.Clean(got) != filepath.Clean(want) {
+			return fmt.Errorf("tools candidate source pairing is invalid")
+		}
+		seen[replacement.Old.Path] = true
+	}
+	if len(seen) != len(expected) {
+		return fmt.Errorf("tools candidate source pairing is invalid")
+	}
+	return nil
 }
 
 func validateToolsBuildBinding(sourceRoot string, _ candidateTool, binding candidateBuildBinding) error {
@@ -317,7 +371,7 @@ func validateCandidateBuildFromSource(sourceRoot string, candidate attemptCandid
 }
 
 func runBoundCandidateBuild(binding candidateBuildBinding, outputPath string) error {
-	if !filepath.IsAbs(outputPath) || len(binding.Arguments) != 5 || binding.Arguments[3] != "<candidate>" {
+	if !filepath.IsAbs(outputPath) || len(binding.Arguments) != 6 || binding.Arguments[4] != "<candidate>" {
 		return fmt.Errorf("candidate build output is invalid")
 	}
 	before, err := sha256File(binding.Go.Path)
@@ -333,7 +387,7 @@ func runBoundCandidateBuild(binding candidateBuildBinding, outputPath string) er
 		}
 	}
 	arguments := append([]string(nil), binding.Arguments...)
-	arguments[3] = outputPath
+	arguments[4] = outputPath
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 	var stderr bytes.Buffer

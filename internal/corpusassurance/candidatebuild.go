@@ -112,6 +112,9 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (receipt candida
 	if err != nil {
 		return candidateBuildReceipt{}, err
 	}
+	if err := validateToolsCandidatePair(request.CandidateRoot, toolsBuild); err != nil {
+		return candidateBuildReceipt{}, err
+	}
 	for _, path := range []string{request.CandidateOutput, request.ToolsOutput, request.ReceiptOutput, request.ReviewOutput, request.ToolsFreezeOutput} {
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 			return candidateBuildReceipt{}, err
