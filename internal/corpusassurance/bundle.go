@@ -27,6 +27,7 @@ type OracleBundleRequest struct {
 	DevHubAuthorityPath        string
 	ProfilePath                string
 	PlanPath                   string
+	SurfaceWavePlanPath        string
 	AuthorityPath              string
 	ReleaseValidationPath      string
 	LocalProofPath             string
@@ -47,6 +48,7 @@ type OracleBundle struct {
 	ToolsAMD64                             RuntimeArtifact              `json:"toolsAmd64"`
 	ProfileSHA256                          string                       `json:"profileSha256"`
 	OraclePlanSHA256                       string                       `json:"oraclePlanSha256"`
+	SurfaceWavePlanSHA256                  string                       `json:"surfaceWavePlanSha256,omitempty"`
 	ExclusionAuthoritySHA256               string                       `json:"exclusionAuthoritySha256"`
 	ReleaseValidationSHA256                string                       `json:"releaseValidationSha256"`
 	AttemptSHA256                          string                       `json:"attemptSha256"`
@@ -108,6 +110,9 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 			return OracleBundle{}, fmt.Errorf("absolute oracle bundle paths are required")
 		}
 	}
+	if request.SurfaceWavePlanPath != "" && !filepath.IsAbs(request.SurfaceWavePlanPath) {
+		return OracleBundle{}, fmt.Errorf("absolute oracle bundle paths are required")
+	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
 		return OracleBundle{}, fmt.Errorf("oracle bundle output already exists: %s", request.OutputPath)
 	} else if !os.IsNotExist(err) {
@@ -167,6 +172,28 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := ValidateLocalProof(proof, manifest); err != nil {
 		return OracleBundle{}, fmt.Errorf("validate local proof: %w", err)
 	}
+	bundleManifest := manifest
+	waveSHA := ""
+	if plan.SurfaceWavePlanSHA256 != "" {
+		if request.SurfaceWavePlanPath == "" {
+			return OracleBundle{}, fmt.Errorf("surface wave plan is required")
+		}
+		wave, waveBytes, err := readExactJSONBytes[SurfaceWavePlan](request.SurfaceWavePlanPath)
+		if err != nil {
+			return OracleBundle{}, err
+		}
+		waveSHA = replayBytesSHA256(waveBytes)
+		bundleManifest, err = surfaceWaveBundleManifest(plan, profile, proof, manifest, wave, waveSHA, proofSHA, manifestSHA)
+		if err != nil {
+			return OracleBundle{}, err
+		}
+		rows, err := exclusionRowsFromPlan(plan)
+		if err != nil || len(rows) != 0 || len(authority.Rows) != 0 || authority.SalesforceParityCredit != 0 || authority.PolicySHA256 != profile.PolicySHA256 {
+			return OracleBundle{}, fmt.Errorf("surface wave exclusion authority is invalid")
+		}
+	} else if request.SurfaceWavePlanPath != "" {
+		return OracleBundle{}, fmt.Errorf("oracle plan does not bind surface wave plan")
+	}
 	if err := validateCleanGitRoot(request.ToolsRoot, attempt.Tools.Commit); err != nil {
 		return OracleBundle{}, fmt.Errorf("tools source: %w", err)
 	}
@@ -185,13 +212,16 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if current, err := sha256File(request.ReleaseValidationPath); err != nil || current != releaseSHA {
 		return OracleBundle{}, fmt.Errorf("release validation changed after validation")
 	}
-	fixtures, err := oracleBundleFixtures(plan, manifest)
+	fixtures, err := oracleBundleFixtures(plan, bundleManifest)
 	if err != nil {
 		return OracleBundle{}, err
 	}
 	devHubAuthoritySHA := replayBytesSHA256(devHubAuthorityBytes)
 	remoteAuthoritySHA := replayBytesSHA256(remoteAuthorityBytes)
 	inputs := map[string]string{request.AttemptPath: replayBytesSHA256(attemptBytes), proof.AttemptPath: replayBytesSHA256(attemptBytes), request.RemoteCleanupAuthorityPath: remoteAuthoritySHA, request.DevHubAuthorityPath: devHubAuthoritySHA, request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
+	if waveSHA != "" {
+		inputs[request.SurfaceWavePlanPath] = waveSHA
+	}
 	for _, path := range []string{request.FilterScriptPath, request.ScratchDefinitionPath} {
 		hash, err := sha256File(path)
 		if err != nil {
@@ -231,7 +261,11 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 			return OracleBundle{}, err
 		}
 	}
-	for _, item := range []struct{ path, name string }{{request.AttemptPath, "ATTEMPT.json"}, {request.RemoteCleanupAuthorityPath, "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json"}, {request.DevHubAuthorityPath, "DEV_HUB_AUTHORITY.json"}, {request.ProfilePath, "profile.json"}, {request.PlanPath, "ORACLE_PLAN.json"}, {request.AuthorityPath, "EXCLUSION_AUTHORITY.json"}, {request.ReleaseValidationPath, "RELEASE_VALIDATION.json"}, {request.ScratchDefinitionPath, "corpus-assurance-scratch-def.json"}} {
+	items := []struct{ path, name string }{{request.AttemptPath, "ATTEMPT.json"}, {request.RemoteCleanupAuthorityPath, "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json"}, {request.DevHubAuthorityPath, "DEV_HUB_AUTHORITY.json"}, {request.ProfilePath, "profile.json"}, {request.PlanPath, "ORACLE_PLAN.json"}, {request.AuthorityPath, "EXCLUSION_AUTHORITY.json"}, {request.ReleaseValidationPath, "RELEASE_VALIDATION.json"}, {request.ScratchDefinitionPath, "corpus-assurance-scratch-def.json"}}
+	if waveSHA != "" {
+		items = append(items, struct{ path, name string }{request.SurfaceWavePlanPath, "SURFACE_WAVE_PLAN.json"})
+	}
+	for _, item := range items {
 		if err := copyOracleBundleFile(item.path, filepath.Join(bundleRoot, item.name), 0o600); err != nil {
 			return OracleBundle{}, err
 		}
@@ -293,7 +327,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if current, err := amd64ToolsArtifactFor(toolsAMD64Path, attempt.Tools.Commit); err != nil || current != toolsAMD64 {
 		return OracleBundle{}, fmt.Errorf("amd64 tools changed during staging")
 	}
-	bundle := OracleBundle{SchemaVersion: 2, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], SalesforceRemoteCleanupAuthoritySHA256: remoteAuthoritySHA, LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], DevHubAuthoritySHA256: devHubAuthoritySHA, DevHub: devHubAuthority.Alias, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, SalesforceExecution: devHubAuthority.Execution, ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
+	bundle := OracleBundle{SchemaVersion: 2, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, SurfaceWavePlanSHA256: waveSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], SalesforceRemoteCleanupAuthoritySHA256: remoteAuthoritySHA, LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], DevHubAuthoritySHA256: devHubAuthoritySHA, DevHub: devHubAuthority.Alias, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, SalesforceExecution: devHubAuthority.Execution, ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
 	if err := WriteNewJSON(filepath.Join(bundleRoot, "bundle.json"), bundle); err != nil {
 		return OracleBundle{}, err
 	}

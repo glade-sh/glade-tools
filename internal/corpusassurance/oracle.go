@@ -53,13 +53,14 @@ type OracleBundleFixture struct {
 }
 
 type OraclePlan struct {
-	Candidate         RuntimeArtifact `json:"candidate"`
-	Tools             RuntimeArtifact `json:"tools"`
-	ProfileSHA256     string          `json:"profileSha256,omitempty"`
-	SealedUsageSHA256 string          `json:"sealedUsageSha256,omitempty"`
-	LocalProofSHA256  string          `json:"localProofSha256,omitempty"`
-	DirectiveSHA256   string          `json:"directiveSha256,omitempty"`
-	Rows              []OraclePlanRow `json:"rows"`
+	Candidate             RuntimeArtifact `json:"candidate"`
+	Tools                 RuntimeArtifact `json:"tools"`
+	SurfaceWavePlanSHA256 string          `json:"surfaceWavePlanSha256,omitempty"`
+	ProfileSHA256         string          `json:"profileSha256,omitempty"`
+	SealedUsageSHA256     string          `json:"sealedUsageSha256,omitempty"`
+	LocalProofSHA256      string          `json:"localProofSha256,omitempty"`
+	DirectiveSHA256       string          `json:"directiveSha256,omitempty"`
+	Rows                  []OraclePlanRow `json:"rows"`
 }
 
 type OracleProfileRow struct {
@@ -73,6 +74,7 @@ type OracleProfileRow struct {
 // them eligible; historical corpus and queue data is intentionally absent.
 type AssuranceProfile struct {
 	SchemaVersion         int                   `json:"schemaVersion"`
+	SurfaceWavePlanSHA256 string                `json:"surfaceWavePlanSha256,omitempty"`
 	SourceProfileSHA256   string                `json:"sourceProfileSha256"`
 	SealedUsageSHA256     string                `json:"sealedUsageSha256"`
 	LedgerSHA256          string                `json:"ledgerSha256"`

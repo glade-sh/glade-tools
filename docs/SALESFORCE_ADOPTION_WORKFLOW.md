@@ -160,6 +160,7 @@ surface-local-proof-plan
 local-proof-plan
 local-proof
 surface-wave-plan
+surface-oracle-plan
 release-validate
 oracle-profile
 oracle-directives-draft
@@ -235,6 +236,13 @@ authority when coverage contains terminal rows. It accepts a fixture cap,
 never caller-selected SurfaceIDs, emits two deterministic shards by default
 or up to nine with `--shards`, and uses an optional cumulative index to exclude
 already adjudicated rows.
+
+`surface-oracle-plan` recomputes that exact wave from its bound scope, local
+proof, fixture manifest, coverage, terminal authority, and predecessor. It
+writes the assurance profile, Oracle plan, and zero-credit exclusion authority
+consumed by the existing Salesforce executor. `oracle-bundle` requires the
+same `--surface-wave-plan` when staging a wave plan, so it cannot stage a
+caller-selected subset.
 
 `candidate-build` starts the product and tools builds concurrently. Its exact
 commit binding selects reusable commit-scoped Go build and module caches, so a

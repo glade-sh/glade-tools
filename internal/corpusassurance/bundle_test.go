@@ -214,6 +214,22 @@ func TestBuildOracleBundleRejectsAnUnsealedToolsSourceRoot(t *testing.T) {
 	}
 }
 
+func TestBuildOracleBundleRequiresBoundSurfaceWavePlan(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	inputs.plan.SurfaceWavePlanSHA256 = strings.Repeat("f", 64)
+	writeLocalProofJSON(t, inputs.planPath, inputs.plan)
+	authority, _, err := readExactJSONBytes[ExclusionAuthority](inputs.authorityPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	authority.PlanSHA256 = localProofFileSHA256(t, inputs.planPath)
+	writeLocalProofJSON(t, inputs.authorityPath, authority)
+	if _, err := BuildOracleBundle(inputs.request(filepath.Join(t.TempDir(), "salesforce-worker"))); err == nil || !strings.Contains(err.Error(), "surface wave plan is required") {
+		t.Fatalf("missing wave plan error = %v", err)
+	}
+}
+
 type oracleBundleTestInputs struct {
 	proof               LocalProof
 	plan                OraclePlan
