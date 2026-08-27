@@ -86,7 +86,7 @@ func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(fixtures) != 2 || fixtures[0].ID != "compiler" || fixtures[1].ID != "system" || !reflect.DeepEqual(fixtures[1].SurfaceIDs, []string{"apex:System.run()"}) {
+	if len(fixtures) != 2 || fixtures[0].ID != "system" || fixtures[1].ID != "compiler" || !reflect.DeepEqual(fixtures[0].SurfaceIDs, []string{"apex:System.run()"}) {
 		t.Fatalf("fixtures = %#v", fixtures)
 	}
 }

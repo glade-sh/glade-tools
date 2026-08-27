@@ -517,11 +517,14 @@ func oracleBundleFixtures(plan OraclePlan, manifest LocalProofFixtureManifest) (
 		}
 	}
 	result := make([]OracleBundleFixture, 0, len(selected))
-	for _, fixture := range selected {
+	for _, declared := range manifest.Fixtures {
+		fixture, ok := selected[declared.ID]
+		if !ok {
+			continue
+		}
 		sort.Strings(fixture.SurfaceIDs)
 		result = append(result, fixture)
 	}
-	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
 	return result, nil
 }
 
