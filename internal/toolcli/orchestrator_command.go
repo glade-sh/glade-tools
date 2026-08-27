@@ -1,6 +1,7 @@
 package toolcli
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -613,7 +614,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			if err != nil {
 				return err
 			}
-			if err := writeOrchestratorJSON(*output, receipt); err != nil {
+			if err := writeOrchestratorReceiptJSON(*output, receipt); err != nil {
 				return err
 			}
 			return writeOrchestratorOutput(w, receipt)
@@ -775,6 +776,31 @@ func readOrchestratorJSONBytes(path string, value any) ([]byte, error) {
 
 func writeOrchestratorJSON(path string, value any) error {
 	return corpusassurance.WriteNewJSON(path, value)
+}
+
+func writeOrchestratorReceiptJSON(path string, receipt corpusassurance.OrchestratorReceipt) error {
+	if err := corpusassurance.WriteNewJSON(path, receipt); err == nil {
+		return nil
+	} else if !errors.Is(err, os.ErrExist) {
+		return err
+	}
+	info, err := os.Lstat(path)
+	if err != nil || !info.Mode().IsRegular() || info.Mode().Perm() != 0o600 {
+		return fmt.Errorf("existing receipt output is not a mode-0600 regular file")
+	}
+	existing, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	want, err := json.Marshal(receipt)
+	if err != nil {
+		return err
+	}
+	want = append(want, '\n')
+	if !bytes.Equal(existing, want) {
+		return fmt.Errorf("existing receipt output differs from recorded receipt")
+	}
+	return nil
 }
 
 func writeOrchestratorOutput(w io.Writer, value any) error {

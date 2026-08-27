@@ -93,6 +93,30 @@ func TestCorpusAssuranceOrchestratorProductionBuildIsReachable(t *testing.T) {
 	}
 }
 
+func TestWriteOrchestratorReceiptJSONAcceptsOnlyExactReplay(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "RECEIPT.json")
+	receipt := corpusassurance.OrchestratorReceipt{ID: "receipt-a", CampaignID: "campaign-a", JobID: "job-a", Generation: 1, AcceptedCredit: 2}
+	writeOrchestratorCLIJSON(t, path, receipt)
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := writeOrchestratorReceiptJSON(path, receipt); err != nil {
+		t.Fatalf("exact receipt replay: %v", err)
+	}
+	receipt.AcceptedCredit++
+	if err := writeOrchestratorReceiptJSON(path, receipt); err == nil {
+		t.Fatal("changed receipt replay succeeded")
+	}
+	after, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(before, after) {
+		t.Fatal("changed receipt replay replaced immutable output")
+	}
+}
+
 func TestCorpusAssuranceOrchestratorHubObserveRequiresModeProtectedSanitizedJSON(t *testing.T) {
 	root := t.TempDir()
 	database := filepath.Join(root, "orchestrator.db")
