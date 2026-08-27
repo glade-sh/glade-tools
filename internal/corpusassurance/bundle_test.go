@@ -32,7 +32,7 @@ func TestToolsAMD64BuildEnvironmentIgnoresAmbientToolchain(t *testing.T) {
 }
 
 func TestToolsAMD64BuildArgsForceFreshBuild(t *testing.T) {
-	want := []string{"build", "-a", "-trimpath", "-o", "/sealed/bin/glade-tools-darwin-amd64", "./cmd/glade-tools"}
+	want := []string{"build", "-a", "-buildvcs=false", "-trimpath", "-o", "/sealed/bin/glade-tools-darwin-amd64", "./cmd/glade-tools"}
 	if got := toolsAMD64BuildArgs("/sealed/bin/glade-tools-darwin-amd64"); !equalStrings(got, want) {
 		t.Fatalf("toolsAMD64BuildArgs = %#v, want %#v", got, want)
 	}
@@ -211,6 +211,18 @@ func TestBuildOracleBundleRejectsAnUnsealedToolsSourceRoot(t *testing.T) {
 	request.ToolsRoot = t.TempDir()
 	if _, err := BuildOracleBundle(request); err == nil {
 		t.Fatal("BuildOracleBundle accepted an unsealed tools source root")
+	}
+}
+
+func TestBuildOracleBundleRejectsAnotherCheckoutAtTheSameToolsCommit(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	alternateRoot := filepath.Join(t.TempDir(), "glade-tools")
+	gitRun(t, filepath.Dir(alternateRoot), "clone", "--quiet", inputs.toolsRoot, alternateRoot)
+	request := inputs.request(filepath.Join(t.TempDir(), "salesforce-worker"))
+	request.ToolsRoot = alternateRoot
+	if _, err := BuildOracleBundle(request); err == nil || !strings.Contains(err.Error(), "tools source does not match sealed release validation") {
+		t.Fatalf("BuildOracleBundle accepted another checkout at the same tools commit: %v", err)
 	}
 }
 

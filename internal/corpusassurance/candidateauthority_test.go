@@ -11,8 +11,7 @@ import (
 
 func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
-	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
 	toolsPath, err := os.Executable()
 	if err != nil {
@@ -69,6 +68,24 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	data, err := os.ReadFile(authorityPath)
 	if err != nil {
 		t.Fatal(err)
+	}
+	var goTampered candidateAuthorityDocument
+	if err := json.Unmarshal(data, &goTampered); err != nil {
+		t.Fatal(err)
+	}
+	marker := filepath.Join(root, "fake-go-ran")
+	fakeGo := filepath.Join(root, "fake-go")
+	if err := os.WriteFile(fakeGo, []byte("#!/bin/sh\n/usr/bin/touch '"+marker+"'\nexit 1\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	goTampered.ToolsBuild.Go = candidateAuthoritySource{Path: fakeGo, SHA256: fileSHA256(t, fakeGo)}
+	goTamperedPath := filepath.Join(root, "GO_TAMPERED_AUTHORITY.json")
+	writeCandidateAuthorityJSON(t, goTamperedPath, goTampered)
+	if _, _, err := readCandidateAuthority(goTamperedPath); err == nil {
+		t.Fatal("readCandidateAuthority accepted a changed Go executable")
+	}
+	if _, err := os.Lstat(marker); !os.IsNotExist(err) {
+		t.Fatalf("readCandidateAuthority executed an untrusted Go executable: %v", err)
 	}
 	var platformTampered candidateAuthorityDocument
 	if err := json.Unmarshal(data, &platformTampered); err != nil {
@@ -145,6 +162,79 @@ func TestCandidateBuildBindingUsesCommitScopedCaches(t *testing.T) {
 			t.Fatalf("candidate build environment = %q, missing %q", environment, name)
 		}
 	}
+	if !equalStrings(binding.Arguments, []string{"build", "-buildvcs=false", "-trimpath", "-o", "<candidate>", "./cmd/glade"}) {
+		t.Fatalf("candidate build arguments = %#v", binding.Arguments)
+	}
+}
+
+func TestCandidateAuthorityRejectsToolsBoundToAnotherCandidateRoot(t *testing.T) {
+	candidateRoot, _ := newPairedBuildRepositories(t, "package main\n", "package main\n")
+	otherCandidateRoot := newInventoryRepository(t, map[string]string{"go.mod": "module github.com/glade-sh/glade\n\ngo 1.23.0\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{
+		"go.mod":                  "module github.com/glade-sh/glade/tools\n\ngo 1.23.0\n\nrequire github.com/glade-sh/glade v0.0.0\n\nreplace github.com/glade-sh/glade => " + otherCandidateRoot + "\n",
+		"cmd/glade-tools/main.go": "package main\n",
+	})
+	toolsBuild, err := deriveToolsBuildBinding(toolsRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := validateToolsCandidatePair(candidateRoot, toolsBuild); err == nil {
+		t.Fatal("candidate authority accepted tools bound to another candidate root")
+	}
+}
+
+func TestCandidateAuthorityRejectsToolsBoundToAnotherParserRoot(t *testing.T) {
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
+	otherParserRoot := newInventoryRepository(t, map[string]string{"go.mod": "module github.com/glade-sh/apex-parser\n\ngo 1.23.0\n"})
+	goModPath := filepath.Join(toolsRoot, "go.mod")
+	goMod, err := os.ReadFile(goModPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	goMod = []byte(strings.Replace(string(goMod), "../glade/third_party/glade-apex-parser", otherParserRoot, 1))
+	if err := os.WriteFile(goModPath, goMod, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	gitRun(t, toolsRoot, "add", "go.mod")
+	gitRun(t, toolsRoot, "commit", "--quiet", "-m", "replace parser")
+	toolsBuild, err := deriveToolsBuildBinding(toolsRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := validateToolsCandidatePair(candidateRoot, toolsBuild); err == nil {
+		t.Fatal("candidate authority accepted tools bound to another parser root")
+	}
+}
+
+func TestCandidateAuthorityRejectsVersionSpecificReplacementOverride(t *testing.T) {
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
+	alternateRoot := filepath.Join(candidateRoot, "alternate")
+	if err := os.MkdirAll(alternateRoot, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(alternateRoot, "go.mod"), []byte("module github.com/glade-sh/glade\n\ngo 1.23.0\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	goModPath := filepath.Join(toolsRoot, "go.mod")
+	file, err := os.OpenFile(goModPath, os.O_APPEND|os.O_WRONLY, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := file.WriteString("\nreplace github.com/glade-sh/glade v0.0.0 => ../glade/alternate\n"); err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+	gitRun(t, toolsRoot, "add", "go.mod")
+	gitRun(t, toolsRoot, "commit", "--quiet", "-m", "override glade")
+	toolsBuild, err := deriveToolsBuildBinding(toolsRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := validateToolsCandidatePair(candidateRoot, toolsBuild); err == nil {
+		t.Fatal("candidate authority accepted a version-specific replacement override")
+	}
 }
 
 func TestToolsBuildValidatorBindsExactSource(t *testing.T) {
@@ -196,8 +286,7 @@ func TestCreateCandidateAuthorityRejectsToolsThatAreNotExecuting(t *testing.T) {
 
 func TestCreateAssuranceAttemptRejectsToolsOutsideCandidateAuthority(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
-	sealedToolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidateRoot, sealedToolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
 	writeCandidateAuthorityExecutable(t, candidatePath, true)
 	sealedToolsPath, err := os.Executable()
@@ -370,4 +459,35 @@ func writeCandidateBuildReceiptForTest(t *testing.T, path string, candidate seal
 	t.Helper()
 	receipt := candidateBuildReceipt{SchemaVersion: 2, Status: "clean-exact-candidate", SourceCommit: candidate.Commit, BinarySHA256: candidate.SHA256, CleanWorktree: true, CandidateRef: "HEAD", CandidateRefCommit: candidate.Commit, ToolsRef: "HEAD", ToolsRefCommit: tools.Commit, Candidate: attemptCandidate(candidate), Tools: tools}
 	writeCandidateAuthorityJSON(t, path, receipt)
+}
+
+func newPairedBuildRepositories(t *testing.T, candidateMain, toolsMain string) (string, string) {
+	t.Helper()
+	root := t.TempDir()
+	candidateRoot := filepath.Join(root, "glade")
+	toolsRoot := filepath.Join(root, "glade-tools")
+	for path, files := range map[string]map[string]string{
+		candidateRoot: {
+			"go.mod":                               "module github.com/glade-sh/glade\n\ngo 1.23.0\n",
+			"cmd/glade/main.go":                    candidateMain,
+			"third_party/glade-apex-parser/go.mod": "module github.com/glade-sh/apex-parser\n\ngo 1.23.0\n",
+		},
+		toolsRoot: {
+			"go.mod":                  "module github.com/glade-sh/glade/tools\n\ngo 1.23.0\n\nrequire (\n\tgithub.com/glade-sh/glade v0.0.0\n\tgithub.com/glade-sh/apex-parser v0.1.0\n)\n\nreplace github.com/glade-sh/glade => ../glade\n\nreplace github.com/glade-sh/apex-parser => ../glade/third_party/glade-apex-parser\n",
+			"cmd/glade-tools/main.go": toolsMain,
+		},
+	} {
+		if err := os.MkdirAll(path, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		gitRun(t, path, "init", "--quiet")
+		gitRun(t, path, "config", "user.email", "inventory@example.test")
+		gitRun(t, path, "config", "user.name", "Inventory Test")
+		for relativePath, content := range files {
+			writeFixtureFile(t, path, relativePath, content)
+		}
+		gitRun(t, path, "add", ".")
+		gitRun(t, path, "commit", "--quiet", "-m", "fixture")
+	}
+	return candidateRoot, toolsRoot
 }

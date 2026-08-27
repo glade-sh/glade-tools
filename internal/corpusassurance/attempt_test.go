@@ -12,8 +12,7 @@ import (
 
 func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
-	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
 	toolsPath, err := os.Executable()
 	if err != nil {
@@ -43,8 +42,7 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 
 func TestCreateAssuranceAttemptWithAuthorities(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
-	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
 	writeCandidateAuthorityExecutable(t, candidatePath, true)
 	toolsPath, err := os.Executable()
@@ -105,8 +103,7 @@ func TestCreateAssuranceAttemptWithAuthorities(t *testing.T) {
 
 func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
-	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
 	writeCandidateAuthorityExecutable(t, candidatePath, true)
 	toolsPath, err := os.Executable()

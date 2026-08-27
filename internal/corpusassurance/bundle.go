@@ -209,6 +209,11 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := validateOracleReleaseSources(release, plan); err != nil {
 		return OracleBundle{}, fmt.Errorf("validate release provenance: %w", err)
 	}
+	requestToolsRoot, requestToolsErr := filepath.EvalSymlinks(request.ToolsRoot)
+	releaseToolsRoot, releaseToolsErr := filepath.EvalSymlinks(release.ToolsRoot)
+	if requestToolsErr != nil || releaseToolsErr != nil || filepath.Clean(requestToolsRoot) != filepath.Clean(releaseToolsRoot) {
+		return OracleBundle{}, fmt.Errorf("tools source does not match sealed release validation")
+	}
 	if current, err := sha256File(request.ReleaseValidationPath); err != nil || current != releaseSHA {
 		return OracleBundle{}, fmt.Errorf("release validation changed after validation")
 	}
@@ -392,7 +397,7 @@ func buildAMD64Tools(root, output, commit string) (RuntimeArtifact, error) {
 }
 
 func toolsAMD64BuildArgs(output string) []string {
-	return []string{"build", "-a", "-trimpath", "-o", output, "./cmd/glade-tools"}
+	return []string{"build", "-a", "-buildvcs=false", "-trimpath", "-o", output, "./cmd/glade-tools"}
 }
 
 func toolsAMD64BuildEnvironment() []string {

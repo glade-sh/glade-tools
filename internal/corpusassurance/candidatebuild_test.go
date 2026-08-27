@@ -10,14 +10,7 @@ import (
 
 func TestCreateCandidateBuildReceiptBuildsAndBindsExactBinaries(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{
-		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
-		"cmd/glade/main.go": "package main\nfunc main() {}\n",
-	})
-	toolsRoot := newInventoryRepository(t, map[string]string{
-		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",
-		"cmd/glade-tools/main.go": "package main\nfunc main() {}\n",
-	})
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")
 	request := CandidateBuildRequest{
 		CandidateRoot:     candidateRoot,
 		ToolsRoot:         toolsRoot,
@@ -69,14 +62,7 @@ func TestCreateCandidateBuildReceiptBuildsAndBindsExactBinaries(t *testing.T) {
 
 func TestCreateCandidateBuildReceiptPreservesFailedBuildEvidence(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{
-		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
-		"cmd/glade/main.go": "package main\nfunc main() {}\n",
-	})
-	toolsRoot := newInventoryRepository(t, map[string]string{
-		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",
-		"cmd/glade-tools/main.go": "package main\nfunc main() {\n",
-	})
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {\n")
 	request := CandidateBuildRequest{
 		CandidateRoot:     candidateRoot,
 		ToolsRoot:         toolsRoot,
@@ -116,14 +102,7 @@ func TestCreateCandidateBuildReceiptPreservesFailedBuildEvidence(t *testing.T) {
 
 func TestCreateCandidateBuildReceiptPreservesBothBuildFailures(t *testing.T) {
 	root := t.TempDir()
-	candidateRoot := newInventoryRepository(t, map[string]string{
-		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
-		"cmd/glade/main.go": "package main\nfunc main() {\n",
-	})
-	toolsRoot := newInventoryRepository(t, map[string]string{
-		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",
-		"cmd/glade-tools/main.go": "package main\nfunc main() {\n",
-	})
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {\n", "package main\nfunc main() {\n")
 	request := CandidateBuildRequest{
 		CandidateRoot:     candidateRoot,
 		ToolsRoot:         toolsRoot,
@@ -165,6 +144,9 @@ func TestCreateCandidateBuildReceiptRejectsUnboundInputs(t *testing.T) {
 		}},
 		{name: "unknown ref", mutate: func(request *CandidateBuildRequest) { request.CandidateRef = "missing-ref" }},
 		{name: "ref and head mismatch", mutate: func(request *CandidateBuildRequest) { request.CandidateRef = "HEAD^" }},
+		{name: "tools candidate mismatch", mutate: func(request *CandidateBuildRequest) {
+			_, request.ToolsRoot = newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")
+		}},
 		{name: "pre-existing output", mutate: func(request *CandidateBuildRequest) {
 			if err := os.MkdirAll(filepath.Dir(request.CandidateOutput), 0o700); err != nil {
 				t.Fatal(err)
@@ -176,8 +158,7 @@ func TestCreateCandidateBuildReceiptRejectsUnboundInputs(t *testing.T) {
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
 			root := t.TempDir()
-			candidateRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.invalid/candidate\n\ngo 1.22\n", "cmd/glade/main.go": "package main\nfunc main() {}\n"})
-			toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.invalid/tools\n\ngo 1.22\n", "cmd/glade-tools/main.go": "package main\nfunc main() {}\n"})
+			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")
 			request := CandidateBuildRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, CandidateRef: "HEAD", ToolsRef: "HEAD", CandidateOutput: filepath.Join(root, "bin", "glade"), ToolsOutput: filepath.Join(root, "bin", "glade-tools"), ReceiptOutput: filepath.Join(root, "bindings", "CANDIDATE_BUILD_RECEIPT.json"), ReviewOutput: filepath.Join(root, "bindings", "REVIEW.md"), ToolsFreezeOutput: filepath.Join(root, "bindings", "TOOLS_COMMIT")}
 			testCase.mutate(&request)
 			if _, err := CreateCandidateBuildReceipt(request); err == nil {
