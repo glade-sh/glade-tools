@@ -179,7 +179,11 @@ func validateWorkerCleanupLifecycle(request OrchestratorWorkerCleanupRequest) (s
 		return "", "", "", fmt.Errorf("worker cleanup binding mode is invalid")
 	}
 	binding, bindingBytes, err := readExactJSONBytes[OrchestratorBatchBinding](bindingPath)
-	wantBinding, wantErr := expectedOrchestratorBatchBinding(request.Plan, request.Lease)
+	scopePath := request.ScopePath
+	if scopePath == "" {
+		scopePath = request.Plan.Definition.ScopePath
+	}
+	wantBinding, wantErr := expectedOrchestratorBatchBindingAtScope(request.Plan, request.Lease, scopePath)
 	if err != nil || wantErr != nil || !reflect.DeepEqual(binding, wantBinding) {
 		return "", "", "", fmt.Errorf("worker cleanup binding drift")
 	}

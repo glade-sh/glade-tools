@@ -42,6 +42,28 @@ func TestOrchestratorWorkerCleanupClosesEveryPreflightCrashStageAndReplays(t *te
 	}
 }
 
+func TestOrchestratorWorkerCleanupUsesRemoteScopePath(t *testing.T) {
+	plan, _, request, _ := workerCleanupTestRequest(t, "dispatched-before-shard")
+	scope, err := os.ReadFile(plan.Definition.ScopePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.ScopePath = filepath.Join(t.TempDir(), "scope.json")
+	if err := os.WriteFile(request.ScopePath, scope, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(plan.Definition.ScopePath); err != nil {
+		t.Fatal(err)
+	}
+	request.cleanup = func(cleanupRequest SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		cleanup := SalesforceOrgCleanup{SchemaVersion: 1, ResidueAbsent: true}
+		return cleanup, WriteNewJSON(cleanupRequest.OutputPath, cleanup)
+	}
+	if _, err := RunOrchestratorWorkerCleanup(request); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestOrchestratorWorkerCleanupRejectsTamperedOrProofEligibleLifecycle(t *testing.T) {
 	for name, mutate := range map[string]func(t *testing.T, request OrchestratorWorkerCleanupRequest){
 		"binding": func(t *testing.T, request OrchestratorWorkerCleanupRequest) {
