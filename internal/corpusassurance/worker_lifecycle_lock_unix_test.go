@@ -5,9 +5,22 @@ package corpusassurance
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"syscall"
 	"testing"
 )
+
+func TestWorkerLifecycleLockCreatesMissingParent(t *testing.T) {
+	outputRoot := filepath.Join(t.TempDir(), "shard", "raw")
+	release, err := acquireWorkerLifecycleLock(outputRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	release()
+	if info, err := os.Stat(filepath.Dir(outputRoot)); err != nil || !info.IsDir() || info.Mode().Perm() != 0o700 {
+		t.Fatalf("worker lifecycle parent is not sealed: info=%v err=%v", info, err)
+	}
+}
 
 func TestWorkerLifecycleLockFencesRawCreationAndCleanup(t *testing.T) {
 	_, _, cleanupRequest, _ := workerCleanupTestRequest(t, "reservation-only")

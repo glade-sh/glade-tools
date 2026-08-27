@@ -5,10 +5,14 @@ package corpusassurance
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"syscall"
 )
 
 func acquireWorkerLifecycleLock(outputRoot string) (func(), error) {
+	if err := os.MkdirAll(filepath.Dir(outputRoot), 0o700); err != nil {
+		return nil, fmt.Errorf("worker lifecycle is unavailable")
+	}
 	fd, err := syscall.Open(outputRoot+".lifecycle.lock", syscall.O_CREAT|syscall.O_RDWR|syscall.O_NOFOLLOW, 0o600)
 	if err != nil {
 		return nil, fmt.Errorf("worker lifecycle is unavailable")
