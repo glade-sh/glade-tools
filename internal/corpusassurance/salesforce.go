@@ -1947,8 +1947,10 @@ func validSalesforceRuntimeObservation(kind string, raw json.RawMessage) bool {
 
 func validSalesforceFailureObservation(raw json.RawMessage) bool {
 	var payload struct {
-		Status *int `json:"status"`
-		Result struct {
+		Status  *int   `json:"status"`
+		Name    string `json:"name"`
+		Message string `json:"message"`
+		Result  struct {
 			Success          *bool  `json:"success"`
 			Compiled         *bool  `json:"compiled"`
 			CompileProblem   string `json:"compileProblem"`
@@ -1958,7 +1960,9 @@ func validSalesforceFailureObservation(raw json.RawMessage) bool {
 	if len(raw) == 0 || json.Unmarshal(raw, &payload) != nil || payload.Status == nil || *payload.Status == 0 {
 		return false
 	}
-	return payload.Result.Success != nil && !*payload.Result.Success && payload.Result.Compiled != nil && (payload.Result.CompileProblem != "" || *payload.Result.Compiled && payload.Result.ExceptionMessage != "")
+	nested := payload.Result.Success != nil && !*payload.Result.Success && payload.Result.Compiled != nil && (payload.Result.CompileProblem != "" || *payload.Result.Compiled && payload.Result.ExceptionMessage != "")
+	typed := payload.Name == "executeCompileFailure" && strings.HasPrefix(payload.Message, "Compilation failed at Line ") || payload.Name == "executeRuntimeFailure" && strings.HasPrefix(payload.Message, "Execution failed at this code:\n\n")
+	return nested || typed
 }
 
 func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bundlePath string) bool {

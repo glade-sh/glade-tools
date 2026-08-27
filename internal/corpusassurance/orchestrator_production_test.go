@@ -947,7 +947,7 @@ func markSalesforceFixtureMismatchForTest(t *testing.T, fixture orchestratorSale
 	one, failed := 1, false
 	results.Results[0].ExitCode, results.Results[0].Deployable, results.Results[0].RuntimePassed = &one, false, &failed
 	rawPath := filepath.Join(results.Results[0].Project, "salesforce-"+shard.OrgAlias+".json")
-	overwriteReconciliationJSON(t, rawPath, map[string]any{"status": 1, "result": map[string]any{"success": false, "compiled": false, "compileProblem": "Invalid type: Missing"}})
+	overwriteReconciliationJSON(t, rawPath, map[string]any{"status": 1, "name": "executeCompileFailure", "message": "Compilation failed at Line 1 column 1 with the error:\n\nInvalid type: Missing"})
 	overwriteReconciliationJSON(t, resultsPath, results)
 	manifestPath := filepath.Join(shard.ExecutorRoot, salesforceExecutorManifestName)
 	manifest, _, err := readExactJSONBytes[salesforceExecutorManifest](manifestPath)

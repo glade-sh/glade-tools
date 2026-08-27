@@ -252,6 +252,20 @@ func TestSalesforceDeployObservationRequiresMaterializedComponent(t *testing.T) 
 	}
 }
 
+func TestValidSalesforceFailureObservationRequiresSemanticCLIShape(t *testing.T) {
+	for _, raw := range []string{
+		`{"status":1,"name":"executeCompileFailure","message":"Compilation failed at Line 1 column 1 with the error:\n\nInvalid type: Missing"}`,
+		`{"status":1,"name":"executeRuntimeFailure","message":"Execution failed at this code:\n\nSystem.AssertException: Assertion Failed"}`,
+	} {
+		if !validSalesforceFailureObservation(json.RawMessage(raw)) {
+			t.Fatalf("rejected semantic failure: %s", raw)
+		}
+	}
+	if validSalesforceFailureObservation(json.RawMessage(`{"status":1,"message":"request failed"}`)) {
+		t.Fatal("accepted operational failure")
+	}
+}
+
 func TestValidSalesforceInvocationRejectsTestWithoutRuntimeCommand(t *testing.T) {
 	project, org := "/private/tmp/worker/projects/fixture", "assurance-sf0@example.invalid"
 	invocation := salesforceInvocationForTest(project, org, "test")
@@ -423,7 +437,7 @@ func TestCreateSalesforceReconciliationAndVerifyAfterRemoteCleanup(t *testing.T)
 		t.Fatal(err)
 	}
 	negativeRawPath := filepath.ToSlash(filepath.Join("filter", "projects", negativeStem, "salesforce-"+alias+".json"))
-	negative.Files[negativeRawPath] = []byte(`{"status":1,"result":{"success":false,"compiled":false,"compileProblem":"Invalid type: Missing"}}`)
+	negative.Files[negativeRawPath] = []byte(`{"status":1,"name":"executeCompileFailure","message":"Compilation failed at Line 1 column 1 with the error:\n\nInvalid type: Missing"}`)
 	negativeEvidence, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, negative)
 	if err != nil || len(negativeEvidence.Results) != 1 || negativeEvidence.Results[0].ExitCode == nil || *negativeEvidence.Results[0].ExitCode != 1 || negativeEvidence.Results[0].Deployable {
 		t.Fatalf("negative adapter evidence = %#v, %v", negativeEvidence.Results, err)
