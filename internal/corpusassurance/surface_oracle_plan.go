@@ -69,7 +69,6 @@ func surfaceWaveBundleManifest(plan OraclePlan, profile AssuranceProfile, proof 
 			return LocalProofFixtureManifest{}, fmt.Errorf("oracle plan row %q is outside surface wave", row.SurfaceID)
 		}
 	}
-	sort.Slice(selectedFixtures, func(i, j int) bool { return selectedFixtures[i].ID < selectedFixtures[j].ID })
 	return LocalProofFixtureManifest{Fixtures: selectedFixtures, SalesforceFixtures: append([]LocalProofFixture(nil), selectedFixtures...)}, nil
 }
 
