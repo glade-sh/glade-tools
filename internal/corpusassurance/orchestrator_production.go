@@ -334,17 +334,21 @@ func validateOrchestratorProductionBatch(root string, plan OrchestratorCampaignP
 	expectedRows := make([]ProductionRuntimeReviewRow, len(reconciliation.Rows))
 	states := make(map[string]string, len(reconciliation.Rows))
 	for index, row := range reconciliation.Rows {
-		if !row.Passed || states[row.SurfaceID] != "" {
-			return validatedProductionBatch{}, fmt.Errorf("production receipt accepts only passed unique rows")
+		if states[row.SurfaceID] != "" {
+			return validatedProductionBatch{}, fmt.Errorf("production receipt requires unique rows")
 		}
-		expectedRows[index] = ProductionRuntimeReviewRow{SurfaceID: row.SurfaceID, Action: row.Action, Classification: "match", ReviewDisposition: "confirmed-match"}
-		states[row.SurfaceID] = "accepted"
+		classification, disposition, state := "mismatch", "confirmed-mismatch", "rejected"
+		if row.Passed {
+			classification, disposition, state = "match", "confirmed-match", "accepted"
+		}
+		expectedRows[index] = ProductionRuntimeReviewRow{SurfaceID: row.SurfaceID, Action: row.Action, Classification: classification, ReviewDisposition: disposition}
+		states[row.SurfaceID] = state
 	}
 	if !reflect.DeepEqual(review.Rows, expectedRows) || len(states) != len(lease.SurfaceIDs) {
 		return validatedProductionBatch{}, fmt.Errorf("production review rows do not match exact lease")
 	}
 	for _, surfaceID := range lease.SurfaceIDs {
-		if states[surfaceID] != "accepted" {
+		if states[surfaceID] != "accepted" && states[surfaceID] != "rejected" {
 			return validatedProductionBatch{}, fmt.Errorf("production review rows do not match exact lease")
 		}
 	}

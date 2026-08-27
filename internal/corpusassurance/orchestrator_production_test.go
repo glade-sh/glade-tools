@@ -521,6 +521,30 @@ func TestOrchestratorWorkerBuildsProductionBatchEndToEnd(t *testing.T) {
 	}
 }
 
+func TestProductionBatchRecordsSealedMismatchAsRejected(t *testing.T) {
+	fixture := withOraclePlanCampaignScope(t, newOrchestratorSalesforceReconciliationFixture(t))
+	markSalesforceFixtureMismatchForTest(t, fixture)
+	root := t.TempDir()
+	reconciliationPath, packetPath := filepath.Join(root, "SALESFORCE_RECONCILIATION.json"), filepath.Join(root, "salesforce-packet")
+	if _, err := CreateOrchestratorSalesforceReconciliation(OrchestratorSalesforceReconciliationRequest{Plan: fixture.plan, Lease: fixture.lease, OraclePlanPath: fixture.oraclePlanPath, BindingPath: fixture.bindingPath, ShardFiles: fixture.files, PacketOutput: packetPath, OutputPath: reconciliationPath}); err != nil {
+		t.Fatal(err)
+	}
+	rawRoot := productionRawRootForTest(t, root, fixture, reconciliationPath)
+	planPath, leasePath := filepath.Join(root, "ORCHESTRATOR_PLAN.json"), filepath.Join(root, "ORCHESTRATOR_LEASE.json")
+	writeJSONValue(t, planPath, fixture.plan)
+	writeJSONValue(t, leasePath, fixture.lease)
+	reviewPath := filepath.Join(root, "PRODUCTION_REVIEW.json")
+	writeJSONValue(t, reviewPath, ProductionRuntimeReview{SchemaVersion: 1, PlanSHA256: surfaceOracleFileSHA256(t, planPath), LeaseSHA256: surfaceOracleFileSHA256(t, leasePath), LocalProofSHA256: surfaceOracleFileSHA256(t, fixture.localProofPath), ReconciliationSHA256: surfaceOracleFileSHA256(t, reconciliationPath), Rows: []ProductionRuntimeReviewRow{{SurfaceID: "apex:Runtime.run", Action: oracleRuntime, Classification: "mismatch", ReviewDisposition: "confirmed-mismatch"}}})
+	output := filepath.Join(root, "production-batch")
+	if _, err := BuildOrchestratorProductionBatch(BuildOrchestratorProductionBatchRequest{PlanPath: planPath, LeasePath: leasePath, LocalProofPath: fixture.localProofPath, ReviewPath: reviewPath, OracleBundleRoot: fixture.oracleBundleRoot, RawRoot: rawRoot, SalesforceReconciliationPath: reconciliationPath, SalesforcePacketPath: packetPath, OutputPath: output}); err != nil {
+		t.Fatal(err)
+	}
+	validated, err := validateOrchestratorProductionBatch(output, fixture.plan, fixture.lease)
+	if err != nil || validated.proofStates["apex:Runtime.run"] != "rejected" {
+		t.Fatalf("mismatch proof states = %#v, %v", validated.proofStates, err)
+	}
+}
+
 func TestOrchestratorProductionCleanupTakeoverClosesAbandonedCleanupWithoutCredit(t *testing.T) {
 	inputs := newProductionWorkerInputsForTest(t)
 	if _, err := BuildOrchestratorProductionBatch(inputs.build); err != nil {
@@ -907,6 +931,38 @@ func mustProductionLocalProof(t *testing.T, path string) LocalProof {
 		t.Fatal(err)
 	}
 	return proof
+}
+
+func markSalesforceFixtureMismatchForTest(t *testing.T, fixture orchestratorSalesforceReconciliationFixture) {
+	t.Helper()
+	shard, _, err := readExactJSONBytes[SalesforceShard](fixture.files.ShardPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resultsPath := filepath.Join(shard.ExecutorRoot, "filter", "results.json")
+	results, _, err := readExactJSONBytes[salesforceFilterResults](resultsPath)
+	if err != nil || len(results.Results) != 1 {
+		t.Fatal(err)
+	}
+	one, failed := 1, false
+	results.Results[0].ExitCode, results.Results[0].Deployable, results.Results[0].RuntimePassed = &one, false, &failed
+	rawPath := filepath.Join(results.Results[0].Project, "salesforce-"+shard.OrgAlias+".json")
+	overwriteReconciliationJSON(t, rawPath, map[string]any{"status": 1, "result": map[string]any{"success": false, "compiled": false, "compileProblem": "Invalid type: Missing"}})
+	overwriteReconciliationJSON(t, resultsPath, results)
+	manifestPath := filepath.Join(shard.ExecutorRoot, salesforceExecutorManifestName)
+	manifest, _, err := readExactJSONBytes[salesforceExecutorManifest](manifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index := range manifest.Files {
+		path := filepath.Join(shard.ExecutorRoot, filepath.FromSlash(manifest.Files[index].Path))
+		manifest.Files[index].SHA256 = surfaceOracleFileSHA256(t, path)
+	}
+	overwriteReconciliationJSON(t, manifestPath, manifest)
+	shard.Results[0].Passed = false
+	shard.FilterResultsSHA256 = surfaceOracleFileSHA256(t, resultsPath)
+	shard.ExecutorManifestSHA256 = surfaceOracleFileSHA256(t, manifestPath)
+	overwriteReconciliationJSON(t, fixture.files.ShardPath, shard)
 }
 
 func productionRawRootForTest(t *testing.T, root string, fixture orchestratorSalesforceReconciliationFixture, receiptPath string) string {

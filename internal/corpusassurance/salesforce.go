@@ -1413,7 +1413,7 @@ func deriveSalesforceFilterEvidenceWithCLI(bundle OracleBundle, bundlePath, orgA
 		}
 		seenFixtures[item.Fixture] = true
 		adapterResult, hasAdapterResult := adapterByFixture[item.Fixture]
-		if !hasAdapterResult || adapterResult.FixtureSHA256 != fixture.SHA256 || !reflect.DeepEqual(adapterResult.SourceFiles, fixture.SourceFiles) || !equalStrings(sortedStrings(adapterResult.SurfaceIDs), item.SurfaceIDs) || adapterResult.Org != orgAlias || adapterResult.Kind != item.Kind || adapterResult.ExitCode == nil || *adapterResult.ExitCode != 0 {
+		if !hasAdapterResult || adapterResult.FixtureSHA256 != fixture.SHA256 || !reflect.DeepEqual(adapterResult.SourceFiles, fixture.SourceFiles) || !equalStrings(sortedStrings(adapterResult.SurfaceIDs), item.SurfaceIDs) || adapterResult.Org != orgAlias || adapterResult.Kind != item.Kind || adapterResult.ExitCode == nil || (*adapterResult.ExitCode == 0) != adapterResult.Deployable {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q lacks a sealed adapter receipt", item.Fixture)
 		}
 		kind, err := oracleTransportFixtureKind(bundleRoot, fixture)
@@ -1441,12 +1441,13 @@ func deriveSalesforceFilterEvidenceWithCLI(bundle OracleBundle, bundlePath, orgA
 		if !deployOK || !stderrOK || !setupOK {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q lacks retained command evidence", item.Fixture)
 		}
-		if kind == "exec" {
-			if !validSalesforceRuntimeObservation(kind, deploy) {
-				return salesforceFilterResults{}, fmt.Errorf("Salesforce runtime fixture %q lacks raw success", item.Fixture)
-			}
-		} else if !validSalesforceDeployObservationForProject(deploy, snapshot.Files, filepath.ToSlash(filepath.Join("filter", "projects", stem))) {
+		deployPassed := *adapterResult.ExitCode == 0 && adapterResult.Deployable
+		if deployPassed && kind == "exec" && !validSalesforceRuntimeObservation(kind, deploy) {
+			return salesforceFilterResults{}, fmt.Errorf("Salesforce runtime fixture %q lacks raw success", item.Fixture)
+		} else if deployPassed && kind != "exec" && !validSalesforceDeployObservationForProject(deploy, snapshot.Files, filepath.ToSlash(filepath.Join("filter", "projects", stem))) {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce deploy fixture %q lacks raw success", item.Fixture)
+		} else if !deployPassed && (kind != "exec" || len(item.SurfaceIDs) != 1 || !validSalesforceFailureObservation(deploy)) {
+			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q lacks raw failure", item.Fixture)
 		}
 		projectTreeSHA, err := salesforceFixtureProjectTreeSHA256(snapshot.Files, filepath.ToSlash(filepath.Join("filter", "projects", stem)))
 		if err != nil {
@@ -1456,9 +1457,9 @@ func deriveSalesforceFilterEvidenceWithCLI(bundle OracleBundle, bundlePath, orgA
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q project tree does not match the sealed transport receipt", item.Fixture)
 		}
 		exitCode := *adapterResult.ExitCode
-		row := salesforceFilterFixtureResult{Fixture: item.Fixture, FixtureSHA256: fixture.SHA256, SourceFiles: append([]oracleSourceFile(nil), fixture.SourceFiles...), OrgIdentity: adapterResult.OrgIdentity, Project: expectedProject, Invocation: adapterResult.Invocation, ProjectManifest: append([]salesforceExecutorFile(nil), adapterResult.ProjectManifest...), ProjectTreeSHA256: projectTreeSHA, StdoutSHA256: replayBytesSHA256(deploy), StderrSHA256: replayBytesSHA256(stderr), SetupSHA256: replayBytesSHA256(setup), TestClasses: append([]string(nil), adapterResult.TestClasses...), RuntimeExitCode: adapterResult.RuntimeExitCode, SurfaceIDs: append([]string(nil), item.SurfaceIDs...), Org: orgAlias, Kind: kind, ExitCode: &exitCode, Deployable: true, OrgCleanup: adapterResult.OrgCleanup}
+		row := salesforceFilterFixtureResult{Fixture: item.Fixture, FixtureSHA256: fixture.SHA256, SourceFiles: append([]oracleSourceFile(nil), fixture.SourceFiles...), OrgIdentity: adapterResult.OrgIdentity, Project: expectedProject, Invocation: adapterResult.Invocation, ProjectManifest: append([]salesforceExecutorFile(nil), adapterResult.ProjectManifest...), ProjectTreeSHA256: projectTreeSHA, StdoutSHA256: replayBytesSHA256(deploy), StderrSHA256: replayBytesSHA256(stderr), SetupSHA256: replayBytesSHA256(setup), TestClasses: append([]string(nil), adapterResult.TestClasses...), RuntimeExitCode: adapterResult.RuntimeExitCode, SurfaceIDs: append([]string(nil), item.SurfaceIDs...), Org: orgAlias, Kind: kind, ExitCode: &exitCode, Deployable: adapterResult.Deployable, OrgCleanup: adapterResult.OrgCleanup}
 		if kind == "exec" {
-			passed := true
+			passed := deployPassed
 			row.RuntimePassed, row.RuntimeResult = &passed, append(json.RawMessage(nil), deploy...)
 		}
 		if kind == "test" {
@@ -1883,7 +1884,9 @@ func NormalizeSalesforceFilterResultsAt(plan OraclePlan, bundle OracleBundle, bu
 	}
 	bySurface := make(map[string]salesforceFilterFixtureResult, len(expected))
 	for _, result := range filter.Results {
-		if result.Org != preflight.OrgAlias || result.ExitCode == nil || *result.ExitCode != 0 || !result.Deployable || !result.OrgCleanup.ResidueAbsent || len(result.SurfaceIDs) == 0 {
+		passed := salesforceFilterFixturePassed(result)
+		negativeRuntime := !passed && len(result.SurfaceIDs) == 1 && result.Kind == "exec" && expected[result.SurfaceIDs[0]] == oracleRuntime
+		if result.Org != preflight.OrgAlias || result.ExitCode == nil || (*result.ExitCode == 0) != result.Deployable || !result.OrgCleanup.ResidueAbsent || len(result.SurfaceIDs) == 0 || !passed && !negativeRuntime {
 			return SalesforceShard{}, fmt.Errorf("invalid Salesforce filter fixture result")
 		}
 		for _, surfaceID := range result.SurfaceIDs {
@@ -1891,7 +1894,7 @@ func NormalizeSalesforceFilterResultsAt(plan OraclePlan, bundle OracleBundle, bu
 			if !exists || bySurface[surfaceID].SurfaceIDs != nil {
 				return SalesforceShard{}, fmt.Errorf("unexpected or duplicate Salesforce surface %q", surfaceID)
 			}
-			if action == oracleRuntime && (result.RuntimePassed == nil || !*result.RuntimePassed || !validSalesforceRuntimeObservation(result.Kind, result.RuntimeResult)) {
+			if action == oracleRuntime && (result.RuntimePassed == nil || *result.RuntimePassed != passed || passed && !validSalesforceRuntimeObservation(result.Kind, result.RuntimeResult)) {
 				return SalesforceShard{}, fmt.Errorf("runtime surface %q lacks Salesforce runtime proof", surfaceID)
 			}
 			bySurface[surfaceID] = result
@@ -1900,11 +1903,16 @@ func NormalizeSalesforceFilterResultsAt(plan OraclePlan, bundle OracleBundle, bu
 	results := make([]SalesforceSurfaceResult, 0, len(bySurface))
 	for _, row := range plan.Rows {
 		if action, exists := expected[row.SurfaceID]; exists && bySurface[row.SurfaceID].SurfaceIDs != nil {
-			results = append(results, SalesforceSurfaceResult{SurfaceID: row.SurfaceID, Kind: action, Passed: true})
+			result := bySurface[row.SurfaceID]
+			results = append(results, SalesforceSurfaceResult{SurfaceID: row.SurfaceID, Kind: action, Passed: salesforceFilterFixturePassed(result)})
 		}
 	}
 	bundleSHA := preflight.BundleSHA256
 	return SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: shardIndex, ShardCount: shardCount, OrgAlias: preflight.OrgAlias, OrgID: preflight.OrgID, OrgStatus: preflight.OrgStatus, Preflight: preflight, PreInventory: preflight.Inventory, Commands: []CommandResult{command}, Postflight: postflight, PostInventory: postflight.Inventory, Results: results, Cleanup: CleanupReceipt{ResidueAbsent: true}}, nil
+}
+
+func salesforceFilterFixturePassed(result salesforceFilterFixtureResult) bool {
+	return result.ExitCode != nil && *result.ExitCode == 0 && result.Deployable && (result.RuntimePassed == nil || *result.RuntimePassed)
 }
 
 func validSalesforceRuntimeObservation(kind string, raw json.RawMessage) bool {
@@ -1935,6 +1943,22 @@ func validSalesforceRuntimeObservation(kind string, raw json.RawMessage) bool {
 		} `json:"result"`
 	}
 	return len(raw) > 0 && json.Unmarshal(raw, &payload) == nil && payload.Status != nil && *payload.Status == 0 && payload.Result.Success != nil && *payload.Result.Success && payload.Result.Compiled != nil && *payload.Result.Compiled && payload.Result.CompileProblem == "" && payload.Result.ExceptionMessage == ""
+}
+
+func validSalesforceFailureObservation(raw json.RawMessage) bool {
+	var payload struct {
+		Status *int `json:"status"`
+		Result struct {
+			Success          *bool  `json:"success"`
+			Compiled         *bool  `json:"compiled"`
+			CompileProblem   string `json:"compileProblem"`
+			ExceptionMessage string `json:"exceptionMessage"`
+		} `json:"result"`
+	}
+	if len(raw) == 0 || json.Unmarshal(raw, &payload) != nil || payload.Status == nil || *payload.Status == 0 {
+		return false
+	}
+	return payload.Result.Success != nil && !*payload.Result.Success && payload.Result.Compiled != nil && (payload.Result.CompileProblem != "" || *payload.Result.Compiled && payload.Result.ExceptionMessage != "")
 }
 
 func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bundlePath string) bool {
@@ -2591,7 +2615,7 @@ func validateSalesforceShards(shards []SalesforceShard, expected []string, logic
 		}
 		indexes[shard.ShardIndex], aliases[shard.OrgAlias], orgs[shard.OrgID] = true, true, true
 		for _, result := range shard.Results {
-			if result.SurfaceID == "" || results[result.SurfaceID] || !expectedSet[result.SurfaceID] || !result.Passed || (result.Kind != oracleRuntime && result.Kind != oracleCompile) {
+			if result.SurfaceID == "" || results[result.SurfaceID] || !expectedSet[result.SurfaceID] || (result.Kind != oracleRuntime && result.Kind != oracleCompile) {
 				return fmt.Errorf("invalid Salesforce result %q", result.SurfaceID)
 			}
 			results[result.SurfaceID] = true

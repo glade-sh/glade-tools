@@ -15,6 +15,19 @@ SPEC.loader.exec_module(FILTER)
 
 
 class SalesforceFirstFilterTest(unittest.TestCase):
+    def test_semantic_failure_is_still_complete_evidence(self):
+        semantic = {
+            "status": "Failed",
+            "exitCode": 1,
+            "kind": "exec",
+            "surfaceIds": ["apex:Missing.run()"],
+            "runtimeResult": {"status": 1, "result": {"success": False, "compiled": False, "compileProblem": "Invalid type: Missing"}},
+        }
+        self.assertFalse(FILTER.result_failed(semantic))
+        self.assertTrue(FILTER.result_failed({**semantic, "surfaceIds": ["apex:Missing.a()", "apex:Missing.b()"]}))
+        self.assertTrue(FILTER.result_failed({"status": "Failed", "exitCode": 1, "kind": "exec", "surfaceIds": ["apex:Missing.run()"], "runtimeResult": {"status": 1, "message": "request failed"}}))
+        self.assertTrue(FILTER.result_failed({"status": "Succeeded", "exitCode": 0, "kind": "test", "runtimeRequested": True, "runtimePassed": False}))
+
     def test_project_manifest_uses_posix_string_order(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
