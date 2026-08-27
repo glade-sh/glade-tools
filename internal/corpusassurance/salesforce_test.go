@@ -168,6 +168,10 @@ func TestValidateSalesforceShardsRequiresCleanDisjointCompleteEvidence(t *testin
 	if err := ValidateSalesforceShards(shards, []string{"apex:System.compile()", "apex:System.run()"}); err != nil {
 		t.Fatal(err)
 	}
+	shards[1].Results[0].Passed = false
+	if err := ValidateSalesforceShards(shards, []string{"apex:System.compile()", "apex:System.run()"}); err != nil {
+		t.Fatalf("rejected complete negative evidence: %v", err)
+	}
 }
 
 func TestValidateSalesforceShardsRejectsResidueAndGaps(t *testing.T) {
@@ -398,6 +402,39 @@ func TestCreateSalesforceReconciliationAndVerifyAfterRemoteCleanup(t *testing.T)
 	snapshot, err := readSealedSalesforceExecutor(executorRoot)
 	if err != nil {
 		t.Fatal(err)
+	}
+	negative := snapshot
+	negative.Files = make(map[string][]byte, len(snapshot.Files))
+	for path, data := range snapshot.Files {
+		negative.Files[path] = append([]byte(nil), data...)
+	}
+	var negativePayload map[string]any
+	if err := json.Unmarshal(negative.Files["filter/results.json"], &negativePayload); err != nil {
+		t.Fatal(err)
+	}
+	negativeResult := negativePayload["results"].([]any)[0].(map[string]any)
+	negativeResult["exitCode"], negativeResult["deployable"], negativeResult["runtimePassed"] = float64(1), false, false
+	negative.Files["filter/results.json"], err = json.Marshal(negativePayload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	negativeStem, err := salesforceFixtureStem(negativeResult["fixture"].(string))
+	if err != nil {
+		t.Fatal(err)
+	}
+	negativeRawPath := filepath.ToSlash(filepath.Join("filter", "projects", negativeStem, "salesforce-"+alias+".json"))
+	negative.Files[negativeRawPath] = []byte(`{"status":1,"result":{"success":false,"compiled":false,"compileProblem":"Invalid type: Missing"}}`)
+	negativeEvidence, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, negative)
+	if err != nil || len(negativeEvidence.Results) != 1 || negativeEvidence.Results[0].ExitCode == nil || *negativeEvidence.Results[0].ExitCode != 1 || negativeEvidence.Results[0].Deployable {
+		t.Fatalf("negative adapter evidence = %#v, %v", negativeEvidence.Results, err)
+	}
+	negative.Files[negativeRawPath] = []byte(`{"status":1,"message":"request failed"}`)
+	if _, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, negative); err == nil {
+		t.Fatal("accepted an operational failure as negative Salesforce evidence")
+	}
+	negative.Files[negativeRawPath] = snapshot.Files[negativeRawPath]
+	if _, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, negative); err == nil {
+		t.Fatal("accepted a negative adapter result without raw Salesforce failure evidence")
 	}
 	missingProjectManifest := snapshot
 	missingProjectManifest.Files = make(map[string][]byte, len(snapshot.Files))
@@ -1376,6 +1413,25 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 	if shard.Results[0].Kind != oracleRuntime || shard.Results[1].Kind != oracleCompile || !sameInventory(shard.PreInventory, preflight.Inventory) || !sameInventory(shard.PostInventory, postflight.Inventory) {
 		t.Fatalf("shard = %#v", shard)
 	}
+	one := 1
+	runtimeFailed := false
+	filter.Results[0].ExitCode = &one
+	filter.Results[0].Deployable = false
+	filter.Results[0].RuntimePassed = &runtimeFailed
+	shard, err = NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2)
+	if err != nil || shard.Results[0].Passed {
+		t.Fatalf("negative Salesforce runtime evidence = %#v, %v", shard.Results, err)
+	}
+	filter.Results[0].ExitCode = &zero
+	filter.Results[0].Deployable = true
+	filter.Results[0].RuntimePassed = &runtimePassed
+	filter.Results[1].ExitCode = &one
+	filter.Results[1].Deployable = false
+	if _, err = NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2); err == nil {
+		t.Fatal("accepted fixture failure as negative compile evidence")
+	}
+	filter.Results[1].ExitCode = &zero
+	filter.Results[1].Deployable = true
 	filter.Results[0].RuntimePassed = nil
 	if _, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2); err == nil {
 		t.Fatal("accepted a runtime result without a successful runtime observation")

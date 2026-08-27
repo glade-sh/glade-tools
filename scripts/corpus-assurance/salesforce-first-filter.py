@@ -597,7 +597,23 @@ def deployable_counts(results: list[dict]) -> tuple[int, int]:
 def result_failed(result: dict) -> bool:
     if result.get("status") in {"skipped", "not-selected", "excluded"}:
         return False
-    return result.get("exitCode") is None or result.get("exitCode") != 0
+    if result.get("exitCode") == 0:
+        return result.get("kind") == "test" and result.get("runtimeRequested") is True and result.get("runtimePassed") is not True
+    return not singleton_semantic_failure(result)
+
+
+def singleton_semantic_failure(result: dict) -> bool:
+    if result.get("exitCode") is None or len(result.get("surfaceIds", [])) != 1:
+        return False
+    if result.get("kind") != "exec":
+        return False
+    raw = result.get("runtimeResult", {})
+    payload = raw.get("result", raw) if isinstance(raw, dict) else {}
+    return (
+        payload.get("success") is False
+        and isinstance(payload.get("compiled"), bool)
+        and bool(payload.get("compileProblem") or payload.get("exceptionMessage"))
+    )
 
 
 def expected_result_indexes(manifest_count: int, selected: list[tuple], partitioned: bool) -> set[int]:
@@ -1288,7 +1304,6 @@ def main() -> int:
         bool(selected) and not results
         or any(result_failed(r) for r in results)
         or any(r.get("status") == "skipped-local-failure" for r in results)
-        or any(args.runtime and r.get("kind") == "test" and r.get("runtimePassed") is not True for r in results)
         or any(r.get("orgCleanup") and not r["orgCleanup"].get("residueAbsent", False) for r in results)
         or bool(args.runtime and (not org_postflight or org_postflight.get("matchesPreflight") is not True))
     )
