@@ -324,6 +324,35 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "surface-wave-plan", plan.SelectedRows, *output)
+	case "surface-oracle-plan":
+		flags := flag.NewFlagSet("corpus assurance surface-oracle-plan", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		wave, scope := flags.String("wave-plan", "", ""), flags.String("scope", "", "")
+		profile, localProof := flags.String("profile", "", ""), flags.String("local-proof", "", "")
+		manifest, coverage := flags.String("fixture-manifest", "", ""), flags.String("coverage", "", "")
+		terminalAuthority, predecessor := flags.String("terminal-authority", "", ""), flags.String("predecessor-index", "", "")
+		output := flags.String("output", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if flags.NArg() != 0 {
+			return errors.New("surface-oracle-plan does not accept positional SurfaceIDs")
+		}
+		if err := requiredAssuranceFlags(*wave, *scope, *profile, *localProof, *manifest, *coverage, *output); err != nil {
+			return err
+		}
+		artifacts, err := corpusassurance.BuildSurfaceOraclePlan(corpusassurance.SurfaceOraclePlanRequest{
+			WavePlanPath: *wave, ScopePath: *scope, ProfilePath: *profile, LocalProofPath: *localProof,
+			FixtureManifestPath: *manifest, CoveragePath: *coverage, TerminalAuthorityPath: *terminalAuthority,
+			PredecessorIndexPath: *predecessor, OutputPath: *output,
+		})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "surface-oracle-plan", len(artifacts.Plan.Rows), *output)
 	case "surface-oracle-index":
 		flags := flag.NewFlagSet("corpus assurance surface-oracle-index", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -514,6 +543,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		flags := flag.NewFlagSet("corpus assurance oracle-bundle", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
 		profile, plan, authority := flags.String("profile", "", ""), flags.String("oracle-plan", "", ""), flags.String("exclusion-authority", "", "")
+		wave := flags.String("surface-wave-plan", "", "")
 		attempt, devHubAuthority, release, proof, fixtures := flags.String("attempt", "", ""), flags.String("dev-hub-authority", "", ""), flags.String("release-validation", "", ""), flags.String("local-proof", "", ""), flags.String("fixture-manifest", "", "")
 		remoteAuthority := flags.String("remote-cleanup-authority", "", "")
 		filter, scratch, toolsRoot, output := flags.String("filter-script", "", ""), flags.String("scratch-definition", "", ""), flags.String("tools-root", "", ""), flags.String("output", "", "")
@@ -523,7 +553,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		if err := requiredAssuranceFlags(*attempt, *remoteAuthority, *devHubAuthority, *profile, *plan, *authority, *release, *proof, *fixtures, *filter, *scratch, *toolsRoot, *output); err != nil {
 			return err
 		}
-		bundle, err := corpusassurance.BuildOracleBundle(corpusassurance.OracleBundleRequest{AttemptPath: *attempt, RemoteCleanupAuthorityPath: *remoteAuthority, DevHubAuthorityPath: *devHubAuthority, ProfilePath: *profile, PlanPath: *plan, AuthorityPath: *authority, ReleaseValidationPath: *release, LocalProofPath: *proof, FixtureManifestPath: *fixtures, FilterScriptPath: *filter, ScratchDefinitionPath: *scratch, ToolsRoot: *toolsRoot, OutputPath: *output})
+		bundle, err := corpusassurance.BuildOracleBundle(corpusassurance.OracleBundleRequest{AttemptPath: *attempt, RemoteCleanupAuthorityPath: *remoteAuthority, DevHubAuthorityPath: *devHubAuthority, ProfilePath: *profile, PlanPath: *plan, SurfaceWavePlanPath: *wave, AuthorityPath: *authority, ReleaseValidationPath: *release, LocalProofPath: *proof, FixtureManifestPath: *fixtures, FilterScriptPath: *filter, ScratchDefinitionPath: *scratch, ToolsRoot: *toolsRoot, OutputPath: *output})
 		if err != nil {
 			return err
 		}
@@ -872,6 +902,7 @@ Usage:
   glade-tools corpus assurance surface-terminal-authority --surface-scope <SURFACE_ORACLE_SCOPE.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --classifications <EXCLUSION_POLICY.json> --output <SURFACE_TERMINAL_AUTHORITY.json>
   glade-tools corpus assurance surface-local-proof-plan --surface-scope <SURFACE_ORACLE_SCOPE.json> --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json> --coverage-output <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>]
   glade-tools corpus assurance surface-wave-plan --scope <SURFACE_ORACLE_SCOPE.json> --profile <local-profile.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>] [--predecessor-index <SURFACE_ORACLE_INDEX.json>] [--max-fixtures 32] [--shards 2] --output <SURFACE_WAVE_PLAN.json>
+  glade-tools corpus assurance surface-oracle-plan --wave-plan <SURFACE_WAVE_PLAN.json> --scope <SURFACE_ORACLE_SCOPE.json> --profile <local-profile.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>] [--predecessor-index <SURFACE_ORACLE_INDEX.json>] --output <new-dir>
   glade-tools corpus assurance surface-oracle-index --scope <SURFACE_ORACLE_SCOPE.json> --reviewed-runtime-batch <root> [--reviewed-runtime-batch <root> ...] --output <SURFACE_ORACLE_INDEX.json>
   glade-tools corpus assurance local-proof-plan --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <USAGE_DECISIONS.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
@@ -883,7 +914,7 @@ Usage:
   glade-tools corpus assurance exclusion-request --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --output <EXCLUSION_REQUEST.json>
   glade-tools corpus assurance authorize-exclusions --request <EXCLUSION_REQUEST.json> --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --policy <policy.json> --output <EXCLUSION_AUTHORITY.json>
   glade-tools corpus assurance dev-hub-authority --target-org <approved-dev-hub-alias> --sf-bin <absolute-sf> --python-bin <absolute-python> --home <worker-home> --path <exact-path> --tmpdir <worker-tmp> --output <DEV_HUB_AUTHORITY.json>
-  glade-tools corpus assurance oracle-bundle --attempt <ATTEMPT.json> --remote-cleanup-authority <SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json> --dev-hub-authority <DEV_HUB_AUTHORITY.json> --profile <ASSURANCE_PROFILE.json> --oracle-plan <ORACLE_PLAN.json> --exclusion-authority <EXCLUSION_AUTHORITY.json> --release-validation <RELEASE_VALIDATION.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --filter-script <filter.py> --scratch-definition <scratch.json> --tools-root <clean-glade-tools-root> --output <new-dir>
+  glade-tools corpus assurance oracle-bundle --attempt <ATTEMPT.json> --remote-cleanup-authority <SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json> --dev-hub-authority <DEV_HUB_AUTHORITY.json> --profile <ASSURANCE_PROFILE.json> --oracle-plan <ORACLE_PLAN.json> [--surface-wave-plan <SURFACE_WAVE_PLAN.json>] --exclusion-authority <EXCLUSION_AUTHORITY.json> --release-validation <RELEASE_VALIDATION.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --filter-script <filter.py> --scratch-definition <scratch.json> --tools-root <clean-glade-tools-root> --output <new-dir>
   glade-tools corpus assurance org-create --bundle <bundle.json> --alias <scratch-alias> --sf-bin <absolute-sf> --output <ORG_CREATION.json>
   glade-tools corpus assurance org-preflight --bundle <bundle.json> --target-org <scratch-alias> --sf-bin <absolute-sf> --output <ORG_PREFLIGHT.json>
   glade-tools corpus assurance salesforce-dispatch --bundle <bundle.json> --target-org <scratch-alias> --executor-root <attempt/executor/shard-N> --run-id <attempt-shard-N> --shard-index <0|1> --shard-count 2 --output <SALESFORCE_DISPATCH.json>
