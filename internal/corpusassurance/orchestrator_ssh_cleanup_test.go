@@ -42,6 +42,28 @@ func TestOrchestratorWorkerCleanupClosesEveryPreflightCrashStageAndReplays(t *te
 	}
 }
 
+func TestOrchestratorWorkerCleanupUsesRemoteScopePath(t *testing.T) {
+	plan, _, request, _ := workerCleanupTestRequest(t, "dispatched-before-shard")
+	scope, err := os.ReadFile(plan.Definition.ScopePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.ScopePath = filepath.Join(t.TempDir(), "scope.json")
+	if err := os.WriteFile(request.ScopePath, scope, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(plan.Definition.ScopePath); err != nil {
+		t.Fatal(err)
+	}
+	request.cleanup = func(cleanupRequest SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		cleanup := SalesforceOrgCleanup{SchemaVersion: 1, ResidueAbsent: true}
+		return cleanup, WriteNewJSON(cleanupRequest.OutputPath, cleanup)
+	}
+	if _, err := RunOrchestratorWorkerCleanup(request); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestOrchestratorWorkerCleanupRejectsTamperedOrProofEligibleLifecycle(t *testing.T) {
 	for name, mutate := range map[string]func(t *testing.T, request OrchestratorWorkerCleanupRequest){
 		"binding": func(t *testing.T, request OrchestratorWorkerCleanupRequest) {
@@ -133,6 +155,7 @@ func TestOrchestratorWorkerCleanupResumesAfterCleanupReceiptWrite(t *testing.T) 
 
 func TestOrchestratorSSHCleanupTakeoverUsesSeparateRemotePathsAndPermanentlyBlocksCredit(t *testing.T) {
 	request, workerReceipt := coordinatorCleanupTestRequest(t)
+	workerReceipt.LifecycleStage = "dispatched-before-shard"
 	var gotArgs []string
 	request.sshRunner = func(_ context.Context, binary string, args ...string) (salesforceCommandOutput, error) {
 		if binary != orchestratorSSHBinary {
@@ -152,7 +175,7 @@ func TestOrchestratorSSHCleanupTakeoverUsesSeparateRemotePathsAndPermanentlyBloc
 		if err := WriteNewJSON(filepath.Join(destination, "WORKER_CLEANUP.json"), workerReceipt); err != nil {
 			t.Fatal(err)
 		}
-		return salesforceCommandOutput{}, nil
+		return salesforceCommandOutput{Stderr: []byte("transport warning\n")}, nil
 	}
 	receipt, err := runOrchestratorSSHCleanupTakeover(request, 5*time.Minute)
 	if err != nil {

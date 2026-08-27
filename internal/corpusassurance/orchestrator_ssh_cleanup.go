@@ -179,7 +179,11 @@ func validateWorkerCleanupLifecycle(request OrchestratorWorkerCleanupRequest) (s
 		return "", "", "", fmt.Errorf("worker cleanup binding mode is invalid")
 	}
 	binding, bindingBytes, err := readExactJSONBytes[OrchestratorBatchBinding](bindingPath)
-	wantBinding, wantErr := expectedOrchestratorBatchBinding(request.Plan, request.Lease)
+	scopePath := request.ScopePath
+	if scopePath == "" {
+		scopePath = request.Plan.Definition.ScopePath
+	}
+	wantBinding, wantErr := expectedOrchestratorBatchBindingAtScope(request.Plan, request.Lease, scopePath)
 	if err != nil || wantErr != nil || !reflect.DeepEqual(binding, wantBinding) {
 		return "", "", "", fmt.Errorf("worker cleanup binding drift")
 	}
@@ -374,9 +378,6 @@ func runOrchestratorSSHCleanupTakeover(request OrchestratorSSHCleanupTakeoverReq
 	if copyErr != nil || copyOutput.ExitCode != 0 || readErr != nil || !reflect.DeepEqual(fetched, completion) {
 		return receipt, fmt.Errorf("fetch worker cleanup receipt failed")
 	}
-	if len(strings.TrimSpace(string(copyOutput.Stdout))) != 0 || len(strings.TrimSpace(string(copyOutput.Stderr))) != 0 {
-		return receipt, fmt.Errorf("fetch worker cleanup receipt produced output")
-	}
 	if err := WriteNewJSON(request.FetchedReceiptPath, fetched); err != nil {
 		existing, existingBytes, readErr := readMode0600JSON[OrchestratorWorkerCleanupReceipt](request.FetchedReceiptPath)
 		if readErr != nil || !reflect.DeepEqual(existing, fetched) || !reflect.DeepEqual(existingBytes, fetchedBytes) {
@@ -566,6 +567,6 @@ func orchestratorSSHWorkerCleanupCommand(request OrchestratorSSHCleanupTakeoverR
 }
 
 func validWorkerCleanupCompletion(receipt OrchestratorWorkerCleanupReceipt, plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA, leaseSHA, failedSHA string) bool {
-	stages := map[string]bool{"reservation-only": true, "invalidated-creation": true, "created-before-preflight": true}
+	stages := map[string]bool{"reservation-only": true, "invalidated-creation": true, "created-before-preflight": true, "dispatched-before-shard": true}
 	return receipt.SchemaVersion == 1 && receipt.Status == "cleanup-closed" && stages[receipt.LifecycleStage] && receipt.CampaignID == lease.CampaignID && receipt.JobID == lease.JobID && receipt.ShardIndex == lease.ShardIndex && receipt.Generation == lease.Generation && receipt.SpecSHA256 == plan.SpecSHA256 && receipt.PlanSHA256 == planSHA && receipt.LeaseSHA256 == leaseSHA && receipt.FailedSSHReceiptSHA256 == failedSHA && sha256Pattern.MatchString(receipt.OrchestratorBindingSHA256) && sha256Pattern.MatchString(receipt.LifecycleAuthoritySHA256) && sha256Pattern.MatchString(receipt.OrgCleanupSHA256) && receipt.ResidueAbsent && receipt.ProofCredit == 0 && validOrchestratorExecutedTools(receipt.ExecutedTools, plan) && receipt.ExecutedTools != (RuntimeArtifact{})
 }
