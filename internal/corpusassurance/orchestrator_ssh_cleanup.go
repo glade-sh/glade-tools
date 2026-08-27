@@ -378,9 +378,6 @@ func runOrchestratorSSHCleanupTakeover(request OrchestratorSSHCleanupTakeoverReq
 	if copyErr != nil || copyOutput.ExitCode != 0 || readErr != nil || !reflect.DeepEqual(fetched, completion) {
 		return receipt, fmt.Errorf("fetch worker cleanup receipt failed")
 	}
-	if len(strings.TrimSpace(string(copyOutput.Stdout))) != 0 || len(strings.TrimSpace(string(copyOutput.Stderr))) != 0 {
-		return receipt, fmt.Errorf("fetch worker cleanup receipt produced output")
-	}
 	if err := WriteNewJSON(request.FetchedReceiptPath, fetched); err != nil {
 		existing, existingBytes, readErr := readMode0600JSON[OrchestratorWorkerCleanupReceipt](request.FetchedReceiptPath)
 		if readErr != nil || !reflect.DeepEqual(existing, fetched) || !reflect.DeepEqual(existingBytes, fetchedBytes) {

@@ -175,7 +175,7 @@ func TestOrchestratorSSHCleanupTakeoverUsesSeparateRemotePathsAndPermanentlyBloc
 		if err := WriteNewJSON(filepath.Join(destination, "WORKER_CLEANUP.json"), workerReceipt); err != nil {
 			t.Fatal(err)
 		}
-		return salesforceCommandOutput{}, nil
+		return salesforceCommandOutput{Stderr: []byte("transport warning\n")}, nil
 	}
 	receipt, err := runOrchestratorSSHCleanupTakeover(request, 5*time.Minute)
 	if err != nil {
