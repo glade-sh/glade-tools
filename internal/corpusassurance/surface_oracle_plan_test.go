@@ -1,9 +1,11 @@
 package corpusassurance
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -80,6 +82,60 @@ func TestBuildSurfaceOraclePlanProjectsExactWave(t *testing.T) {
 	campaignScope := filepath.Join(filepath.Dir(output), "campaign-scope.json")
 	if _, err := BuildSurfaceOracleCampaignScope(filepath.Join(output, "ORACLE_PLAN.json"), filepath.Join(output, "ASSURANCE_PROFILE.json"), campaignScope); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestSurfaceWaveBundleManifestInterleavesFixturesByShard(t *testing.T) {
+	definitions := make([]surfaceWaveFixtureDefinition, 7)
+	for i := range definitions {
+		name := fmt.Sprintf("fixture%02d", i)
+		definitions[i] = surfaceWaveFixtureDefinition{name: name, surfaceIDs: []string{"apex:" + name + ".run"}, disposition: localRuntimeRequired}
+	}
+	waveRequest, _, _ := buildSurfaceWavePlanRequest(t, definitions, nil)
+	waveRequest.ShardCount = 3
+	wave, err := BuildSurfaceWavePlan(waveRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(filepath.Dir(waveRequest.OutputPath), "oracle-wave")
+	artifacts, err := BuildSurfaceOraclePlan(SurfaceOraclePlanRequest{
+		WavePlanPath: waveRequest.OutputPath, ScopePath: waveRequest.ScopePath, ProfilePath: waveRequest.ProfilePath,
+		LocalProofPath: waveRequest.LocalProofPath, FixtureManifestPath: waveRequest.FixtureManifestPath,
+		CoveragePath: waveRequest.CoveragePath, OutputPath: output,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	proof, proofBytes, err := readExactJSONBytes[LocalProof](waveRequest.LocalProofPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifest, manifestBytes, err := readExactJSONBytes[LocalProofFixtureManifest](waveRequest.FixtureManifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	waveBytes, err := os.ReadFile(waveRequest.OutputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	selected, err := surfaceWaveBundleManifest(artifacts.Plan, artifacts.Profile, proof, manifest, wave, replayBytesSHA256(waveBytes), replayBytesSHA256(proofBytes), replayBytesSHA256(manifestBytes))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, shard := range wave.Shards {
+		gotFixtures, gotSurfaces := []string{}, []string{}
+		for index := shard.Index; index < len(selected.Fixtures); index += wave.ShardCount {
+			gotFixtures = append(gotFixtures, selected.Fixtures[index].ID)
+			gotSurfaces = append(gotSurfaces, selected.Fixtures[index].OwnedSurfaceIDs...)
+		}
+		wantFixtures := make([]string, len(shard.Fixtures))
+		for i, fixture := range shard.Fixtures {
+			wantFixtures[i] = fixture.ID
+		}
+		sort.Strings(gotSurfaces)
+		if !reflect.DeepEqual(gotFixtures, wantFixtures) || !reflect.DeepEqual(gotSurfaces, shard.SurfaceIDs) {
+			t.Fatalf("manifest partition %d = fixtures %v surfaces %v, want %v %v", shard.Index, gotFixtures, gotSurfaces, wantFixtures, shard.SurfaceIDs)
+		}
 	}
 }
 

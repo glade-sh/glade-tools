@@ -33,8 +33,14 @@ func surfaceWaveBundleManifest(plan OraclePlan, profile AssuranceProfile, proof 
 	ownedSurfaces := make(map[string]bool, wave.SelectedRows)
 	selectedFixtures := make([]LocalProofFixture, 0, wave.SelectedFixtures)
 	seenFixtures := make(map[string]bool, wave.SelectedFixtures)
-	for _, shard := range wave.Shards {
-		for _, fixture := range shard.Fixtures {
+	for fixtureIndex := 0; ; fixtureIndex++ {
+		appended := false
+		for _, shard := range wave.Shards {
+			if fixtureIndex >= len(shard.Fixtures) {
+				continue
+			}
+			appended = true
+			fixture := shard.Fixtures[fixtureIndex]
 			if seenFixtures[fixture.ID] || !reflect.DeepEqual(fixtures[fixture.ID], fixture) {
 				return LocalProofFixtureManifest{}, fmt.Errorf("surface wave fixture %q does not bind manifest", fixture.ID)
 			}
@@ -47,6 +53,11 @@ func surfaceWaveBundleManifest(plan OraclePlan, profile AssuranceProfile, proof 
 				ownedSurfaces[surfaceID] = true
 			}
 		}
+		if !appended {
+			break
+		}
+	}
+	for _, shard := range wave.Shards {
 		for _, surfaceID := range shard.SurfaceIDs {
 			if selectedSurfaces[surfaceID] {
 				return LocalProofFixtureManifest{}, fmt.Errorf("duplicate surface wave row %q", surfaceID)
