@@ -180,6 +180,7 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 
 	predecessorStates := make(map[string]string, len(scope.Rows))
 	predecessorSHA := ""
+	predecessorTerminalAuthoritySHA := ""
 	if request.PredecessorIndexPath != "" {
 		predecessor, predecessorBytes, err := readExactJSONBytes[SurfaceOracleIndex](request.PredecessorIndexPath)
 		if err != nil {
@@ -198,8 +199,12 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 			predecessorStates[row.SurfaceID] = row.State
 		}
 		predecessorSHA = replayBytesSHA256(predecessorBytes)
+		predecessorTerminalAuthoritySHA = predecessor.TerminalAuthoritySHA256
 	}
 	if request.PredecessorIndexPath != "" {
+		if request.TerminalAuthorityPath != "" && predecessorTerminalAuthoritySHA != authoritySHA {
+			return SurfaceWavePlan{}, fmt.Errorf("surface wave predecessor terminal authority binding is invalid")
+		}
 		for surfaceID := range excluded {
 			if predecessorStates[surfaceID] == "open" {
 				return SurfaceWavePlan{}, fmt.Errorf("terminal surface %q remains open in predecessor", surfaceID)

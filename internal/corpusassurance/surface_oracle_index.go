@@ -1,8 +1,12 @@
 package corpusassurance
 
 import (
+	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"maps"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -10,36 +14,49 @@ import (
 )
 
 type SurfaceOracleIndexRequest struct {
-	ScopePath         string
-	RuntimeBatchRoots []string
-	OutputPath        string
+	ScopePath             string
+	PredecessorIndexPath  string
+	TerminalAuthorityPath string
+	OrchestratorDBPath    string
+	RuntimeBatchRoots     []string
+	OutputPath            string
 }
 
 type SurfaceOracleIndex struct {
-	SchemaVersion       int                              `json:"schemaVersion"`
-	Kind                string                           `json:"kind"`
-	ScopeSHA256         string                           `json:"scopeSha256"`
-	SourceProfileSHA256 string                           `json:"sourceProfileSha256"`
-	LedgerSHA256        string                           `json:"ledgerSha256"`
-	PolicySHA256        string                           `json:"policySha256"`
-	Candidate           SurfaceOracleIndexArtifact       `json:"candidate"`
-	Tools               SurfaceOracleIndexArtifact       `json:"tools"`
-	RuntimeBatches      []SurfaceOracleIndexRuntimeBatch `json:"runtimeBatches"`
-	Total               int                              `json:"total"`
-	Counts              SurfaceOracleIndexCounts         `json:"counts"`
-	Rows                []SurfaceOracleIndexRow          `json:"rows"`
+	SchemaVersion               int                              `json:"schemaVersion"`
+	Kind                        string                           `json:"kind"`
+	ScopeSHA256                 string                           `json:"scopeSha256"`
+	SourceProfileSHA256         string                           `json:"sourceProfileSha256"`
+	LedgerSHA256                string                           `json:"ledgerSha256"`
+	PolicySHA256                string                           `json:"policySha256"`
+	Candidate                   SurfaceOracleIndexArtifact       `json:"candidate"`
+	Tools                       SurfaceOracleIndexArtifact       `json:"tools"`
+	TerminalAuthoritySHA256     string                           `json:"terminalAuthoritySha256,omitempty"`
+	ExplicitNonParitySurfaceIDs []string                         `json:"explicitNonParitySurfaceIds,omitempty"`
+	RuntimeBatches              []SurfaceOracleIndexRuntimeBatch `json:"runtimeBatches"`
+	Total                       int                              `json:"total"`
+	Counts                      SurfaceOracleIndexCounts         `json:"counts"`
+	Rows                        []SurfaceOracleIndexRow          `json:"rows"`
 }
 
 type SurfaceOracleIndexRuntimeBatch struct {
+	Layout                  string   `json:"layout,omitempty"`
 	ManifestSHA256          string   `json:"manifestSha256"`
-	ProfileSHA256           string   `json:"profileSha256"`
-	BindingsSHA256          string   `json:"bindingsSha256"`
-	LocalSummarySHA256      string   `json:"localSummarySha256"`
-	OracleResultsSHA256     string   `json:"oracleResultsSha256"`
-	RawReconciliationSHA256 string   `json:"rawReconciliationSha256"`
-	MismatchReviewSHA256    string   `json:"mismatchReviewSha256"`
-	FinalAuditSHA256        string   `json:"finalAuditSha256"`
+	ProfileSHA256           string   `json:"profileSha256,omitempty"`
+	BindingsSHA256          string   `json:"bindingsSha256,omitempty"`
+	LocalSummarySHA256      string   `json:"localSummarySha256,omitempty"`
+	OracleResultsSHA256     string   `json:"oracleResultsSha256,omitempty"`
+	RawReconciliationSHA256 string   `json:"rawReconciliationSha256,omitempty"`
+	MismatchReviewSHA256    string   `json:"mismatchReviewSha256,omitempty"`
+	FinalAuditSHA256        string   `json:"finalAuditSha256,omitempty"`
+	PlanSHA256              string   `json:"planSha256,omitempty"`
+	LeaseSHA256             string   `json:"leaseSha256,omitempty"`
+	LocalProofSHA256        string   `json:"localProofSha256,omitempty"`
+	ProductionReviewSHA256  string   `json:"productionReviewSha256,omitempty"`
+	ReconciliationSHA256    string   `json:"reconciliationSha256,omitempty"`
+	OrchestratorReceiptID   string   `json:"orchestratorReceiptId,omitempty"`
 	SurfaceIDs              []string `json:"surfaceIds"`
+	States                  []string `json:"states,omitempty"`
 	candidateCommit         string
 	candidateSHA256         string
 	toolsCommit             string
@@ -339,10 +356,16 @@ type surfaceFinalSourceCheck struct {
 	HeadMatched bool `json:"headMatched"`
 }
 
-// CreateSurfaceOracleIndex advances only rows backed by an exact, reviewed
-// Salesforce runtime match. It emits no private paths or org identity data.
+// CreateSurfaceOracleIndex records exact, reviewed Salesforce runtime
+// adjudications. It emits no private paths or org identity data.
 func CreateSurfaceOracleIndex(request SurfaceOracleIndexRequest) (SurfaceOracleIndex, error) {
-	for _, input := range []struct{ path, label string }{{request.ScopePath, "surface scope"}, {request.OutputPath, "surface oracle index output"}} {
+	inputs := []struct{ path, label string }{{request.ScopePath, "surface scope"}, {request.OutputPath, "surface oracle index output"}}
+	for _, input := range []struct{ path, label string }{{request.PredecessorIndexPath, "predecessor index"}, {request.TerminalAuthorityPath, "terminal authority"}, {request.OrchestratorDBPath, "orchestrator database"}} {
+		if input.path != "" {
+			inputs = append(inputs, input)
+		}
+	}
+	for _, input := range inputs {
 		if err := validateCleanReviewPath(input.path, input.label); err != nil {
 			return SurfaceOracleIndex{}, err
 		}
@@ -371,40 +394,121 @@ func CreateSurfaceOracleIndex(request SurfaceOracleIndexRequest) (SurfaceOracleI
 	if scope.Kind != "all-runtime" {
 		return SurfaceOracleIndex{}, fmt.Errorf("surface oracle index requires an all-runtime scope")
 	}
-	credited := make(map[string]bool)
+	adjudicated := make(map[string]string)
 	batches := make([]SurfaceOracleIndexRuntimeBatch, 0, len(request.RuntimeBatchRoots))
+	type pendingProductionReceipt struct {
+		batchIndex int
+		authority  productionSurfaceReceiptAuthority
+	}
+	productionReceipts := make([]pendingProductionReceipt, 0, len(request.RuntimeBatchRoots))
 	var candidate, tools SurfaceOracleIndexArtifact
-	for i, root := range request.RuntimeBatchRoots {
-		batch, batchCredit, err := validateSurfaceRuntimeBatch(root, scope)
+	terminalAuthoritySHA := ""
+	explicitNonParity := []string(nil)
+	if request.PredecessorIndexPath != "" {
+		predecessor, _, err := readSurfaceOracleJSON[SurfaceOracleIndex](request.PredecessorIndexPath, "predecessor index")
+		if err != nil || ValidateSurfaceOracleIndex(predecessor) != nil {
+			return SurfaceOracleIndex{}, fmt.Errorf("invalid predecessor surface oracle index")
+		}
+		if predecessor.ScopeSHA256 != replayBytesSHA256(scopeBytes) || predecessor.SourceProfileSHA256 != scope.SourceProfileSHA256 || predecessor.LedgerSHA256 != scope.LedgerSHA256 || predecessor.PolicySHA256 != scope.PolicySHA256 || predecessor.Total != len(scope.Rows) || len(predecessor.Rows) != len(scope.Rows) {
+			return SurfaceOracleIndex{}, fmt.Errorf("predecessor surface oracle index bindings differ")
+		}
+		for i, row := range predecessor.Rows {
+			if row.SurfaceID != scope.Rows[i].SurfaceID {
+				return SurfaceOracleIndex{}, fmt.Errorf("predecessor surface oracle index row set differs")
+			}
+			if row.State != "open" {
+				adjudicated[row.SurfaceID] = row.State
+			}
+		}
+		candidate, tools = predecessor.Candidate, predecessor.Tools
+		batches = append(batches, predecessor.RuntimeBatches...)
+		terminalAuthoritySHA = predecessor.TerminalAuthoritySHA256
+		explicitNonParity = append(explicitNonParity, predecessor.ExplicitNonParitySurfaceIDs...)
+	}
+	if request.TerminalAuthorityPath != "" {
+		authority, authorityBytes, err := readSurfaceOracleJSON[SurfaceTerminalAuthority](request.TerminalAuthorityPath, "terminal authority")
+		if err != nil {
+			return SurfaceOracleIndex{}, err
+		}
+		ids, err := validateSurfaceTerminalAuthorityForIndex(authority, scope, replayBytesSHA256(scopeBytes))
+		if err != nil {
+			return SurfaceOracleIndex{}, err
+		}
+		hash := replayBytesSHA256(authorityBytes)
+		if terminalAuthoritySHA != "" && (terminalAuthoritySHA != hash || !equalStringSet(explicitNonParity, ids)) {
+			return SurfaceOracleIndex{}, fmt.Errorf("terminal authority differs from predecessor index")
+		}
+		terminalAuthoritySHA, explicitNonParity = hash, ids
+		for _, id := range ids {
+			if state := adjudicated[id]; state != "" && state != "explicit-non-parity" {
+				return SurfaceOracleIndex{}, fmt.Errorf("terminal surface %q is also runtime adjudicated", id)
+			}
+			adjudicated[id] = "explicit-non-parity"
+		}
+	}
+	for _, root := range request.RuntimeBatchRoots {
+		batch, batchStates, productionAuthority, err := validateSurfaceRuntimeBatch(root, scope, request.OrchestratorDBPath)
 		if err != nil {
 			return SurfaceOracleIndex{}, err
 		}
 		batchCandidate := SurfaceOracleIndexArtifact{Commit: batch.candidateCommit, BinarySHA256: batch.candidateSHA256}
 		batchTools := SurfaceOracleIndexArtifact{Commit: batch.toolsCommit, BinarySHA256: batch.toolsSHA256}
-		if i == 0 {
+		if candidate.Commit == "" {
 			candidate, tools = batchCandidate, batchTools
 		} else if candidate != batchCandidate || tools != batchTools {
 			return SurfaceOracleIndex{}, fmt.Errorf("runtime batch candidate or tools bindings differ")
 		}
-		for id := range batchCredit {
-			if credited[id] {
-				return SurfaceOracleIndex{}, fmt.Errorf("surface %q is credited by more than one runtime batch", id)
-			}
-			credited[id] = true
-			batch.SurfaceIDs = append(batch.SurfaceIDs, id)
+		ids := make([]string, 0, len(batchStates))
+		for id := range batchStates {
+			ids = append(ids, id)
 		}
-		sort.Strings(batch.SurfaceIDs)
+		sort.Strings(ids)
+		includeStates := batch.Layout != ""
+		for _, id := range ids {
+			if adjudicated[id] != "" {
+				return SurfaceOracleIndex{}, fmt.Errorf("surface %q is adjudicated by more than one runtime batch", id)
+			}
+			state := batchStates[id]
+			adjudicated[id] = state
+			batch.SurfaceIDs = append(batch.SurfaceIDs, id)
+			includeStates = includeStates || state != "matched"
+		}
+		if includeStates {
+			for _, id := range ids {
+				batch.States = append(batch.States, batchStates[id])
+			}
+		}
 		batches = append(batches, batch)
+		if productionAuthority != nil {
+			productionReceipts = append(productionReceipts, pendingProductionReceipt{batchIndex: len(batches) - 1, authority: *productionAuthority})
+		}
+	}
+	if len(productionReceipts) == 0 {
+		if request.OrchestratorDBPath != "" {
+			return SurfaceOracleIndex{}, fmt.Errorf("orchestrator database requires production runtime batches")
+		}
+	} else {
+		authorities := make([]productionSurfaceReceiptAuthority, len(productionReceipts))
+		for i := range productionReceipts {
+			authorities[i] = productionReceipts[i].authority
+		}
+		receipts, err := validateProductionSurfaceReceiptDatabase(request.OrchestratorDBPath, authorities)
+		if err != nil {
+			return SurfaceOracleIndex{}, err
+		}
+		for _, pending := range productionReceipts {
+			batches[pending.batchIndex].OrchestratorReceiptID = receipts[pending.authority.root]
+		}
 	}
 	sort.Slice(batches, func(i, j int) bool { return batches[i].ManifestSHA256 < batches[j].ManifestSHA256 })
 	rows := make([]SurfaceOracleIndexRow, len(scope.Rows))
 	for i, row := range scope.Rows {
 		rows[i] = SurfaceOracleIndexRow{SurfaceID: row.SurfaceID, State: "open"}
-		if credited[row.SurfaceID] {
-			rows[i].State = "matched"
+		if adjudicated[row.SurfaceID] != "" {
+			rows[i].State = adjudicated[row.SurfaceID]
 		}
 	}
-	index := SurfaceOracleIndex{SchemaVersion: 1, Kind: "all-runtime", ScopeSHA256: replayBytesSHA256(scopeBytes), SourceProfileSHA256: scope.SourceProfileSHA256, LedgerSHA256: scope.LedgerSHA256, PolicySHA256: scope.PolicySHA256, Candidate: candidate, Tools: tools, RuntimeBatches: batches, Total: len(rows), Rows: rows}
+	index := SurfaceOracleIndex{SchemaVersion: 1, Kind: "all-runtime", ScopeSHA256: replayBytesSHA256(scopeBytes), SourceProfileSHA256: scope.SourceProfileSHA256, LedgerSHA256: scope.LedgerSHA256, PolicySHA256: scope.PolicySHA256, Candidate: candidate, Tools: tools, TerminalAuthoritySHA256: terminalAuthoritySHA, ExplicitNonParitySurfaceIDs: explicitNonParity, RuntimeBatches: batches, Total: len(rows), Rows: rows}
 	index.Counts = surfaceOracleIndexCounts(rows)
 	if err := ValidateSurfaceOracleIndex(index); err != nil {
 		return SurfaceOracleIndex{}, err
@@ -427,9 +531,39 @@ func ValidateSurfaceOracleIndex(index SurfaceOracleIndex) error {
 	if !commitPattern.MatchString(index.Candidate.Commit) || !commitPattern.MatchString(index.Tools.Commit) {
 		return fmt.Errorf("invalid surface oracle runtime batch commit")
 	}
-	credited := make(map[string]bool)
+	adjudicated := make(map[string]string)
+	if index.TerminalAuthoritySHA256 == "" {
+		if len(index.ExplicitNonParitySurfaceIDs) != 0 {
+			return fmt.Errorf("invalid surface oracle terminal authority binding")
+		}
+	} else {
+		if !sha256Pattern.MatchString(index.TerminalAuthoritySHA256) || len(index.ExplicitNonParitySurfaceIDs) == 0 {
+			return fmt.Errorf("invalid surface oracle terminal authority binding")
+		}
+		for i, id := range index.ExplicitNonParitySurfaceIDs {
+			if strings.TrimSpace(id) == "" || (i > 0 && index.ExplicitNonParitySurfaceIDs[i-1] >= id) {
+				return fmt.Errorf("invalid surface oracle explicit non-parity rows")
+			}
+			adjudicated[id] = "explicit-non-parity"
+		}
+	}
 	for i, batch := range index.RuntimeBatches {
-		for _, value := range []string{batch.ManifestSHA256, batch.ProfileSHA256, batch.BindingsSHA256, batch.LocalSummarySHA256, batch.OracleResultsSHA256, batch.RawReconciliationSHA256, batch.MismatchReviewSHA256, batch.FinalAuditSHA256} {
+		hashes := []string{batch.ManifestSHA256}
+		switch batch.Layout {
+		case "":
+			hashes = append(hashes, batch.ProfileSHA256, batch.BindingsSHA256, batch.LocalSummarySHA256, batch.OracleResultsSHA256, batch.RawReconciliationSHA256, batch.MismatchReviewSHA256, batch.FinalAuditSHA256)
+			if batch.PlanSHA256 != "" || batch.LeaseSHA256 != "" || batch.LocalProofSHA256 != "" || batch.ProductionReviewSHA256 != "" || batch.ReconciliationSHA256 != "" || batch.OrchestratorReceiptID != "" || len(batch.States) != 0 && len(batch.States) != len(batch.SurfaceIDs) {
+				return fmt.Errorf("invalid legacy surface oracle runtime batch receipt")
+			}
+		case "orchestrator-production-v3":
+			hashes = append(hashes, batch.PlanSHA256, batch.LeaseSHA256, batch.LocalProofSHA256, batch.ProductionReviewSHA256, batch.ReconciliationSHA256)
+			if batch.ProfileSHA256 != "" || batch.BindingsSHA256 != "" || batch.LocalSummarySHA256 != "" || batch.OracleResultsSHA256 != "" || batch.RawReconciliationSHA256 != "" || batch.MismatchReviewSHA256 != "" || batch.FinalAuditSHA256 != "" || !validOrchestratorReceiptID(batch.OrchestratorReceiptID) || len(batch.States) != len(batch.SurfaceIDs) {
+				return fmt.Errorf("invalid production surface oracle runtime batch receipt")
+			}
+		default:
+			return fmt.Errorf("invalid surface oracle runtime batch layout")
+		}
+		for _, value := range hashes {
 			if !sha256Pattern.MatchString(value) {
 				return fmt.Errorf("invalid surface oracle runtime batch receipt hash")
 			}
@@ -438,28 +572,35 @@ func ValidateSurfaceOracleIndex(index SurfaceOracleIndex) error {
 			return fmt.Errorf("runtime batches are empty, duplicate, or unsorted")
 		}
 		for j, id := range batch.SurfaceIDs {
-			if strings.TrimSpace(id) == "" || credited[id] || (j > 0 && batch.SurfaceIDs[j-1] >= id) {
+			if strings.TrimSpace(id) == "" || adjudicated[id] != "" || (j > 0 && batch.SurfaceIDs[j-1] >= id) {
 				return fmt.Errorf("runtime batch surface IDs are duplicate or unsorted")
 			}
-			credited[id] = true
+			state := "matched"
+			if len(batch.States) != 0 {
+				state = batch.States[j]
+			}
+			if state == "open" || state == "explicit-non-parity" || !surfaceOracleStatusValid(state) || batch.Layout == "orchestrator-production-v3" && state != "matched" && state != "product-mismatch" {
+				return fmt.Errorf("invalid runtime batch surface state %q", state)
+			}
+			adjudicated[id] = state
 		}
 	}
-	seen, matched := make(map[string]bool, len(index.Rows)), make(map[string]bool)
+	seen, terminal := make(map[string]bool, len(index.Rows)), make(map[string]string)
 	for i, row := range index.Rows {
 		if strings.TrimSpace(row.SurfaceID) == "" || seen[row.SurfaceID] || !surfaceOracleStatusValid(row.State) || (i > 0 && index.Rows[i-1].SurfaceID >= row.SurfaceID) {
 			return fmt.Errorf("invalid or unsorted surface oracle index row %q", row.SurfaceID)
 		}
 		seen[row.SurfaceID] = true
-		if row.State == "matched" {
-			matched[row.SurfaceID] = true
+		if row.State != "open" {
+			terminal[row.SurfaceID] = row.State
 		}
 	}
-	if len(matched) != len(credited) {
-		return fmt.Errorf("surface oracle matched row set does not equal runtime batch credit")
+	if len(terminal) != len(adjudicated) {
+		return fmt.Errorf("surface oracle row states do not equal runtime batch adjudications")
 	}
-	for id := range matched {
-		if !credited[id] {
-			return fmt.Errorf("surface oracle matched row set does not equal runtime batch credit")
+	for id, state := range terminal {
+		if adjudicated[id] != state {
+			return fmt.Errorf("surface oracle row states do not equal runtime batch adjudications")
 		}
 	}
 	if index.Counts != surfaceOracleIndexCounts(index.Rows) {
@@ -515,19 +656,45 @@ func surfaceScopeDispositionAllowed(kind, disposition string) bool {
 	return kind == "oracle-plan" && disposition == compileShapeRequired
 }
 
-func validateSurfaceRuntimeBatch(root string, scope SurfaceOracleScope) (SurfaceOracleIndexRuntimeBatch, map[string]bool, error) {
-	batch, states, err := validateSurfaceRuntimeAdjudications(root, scope)
-	if err != nil {
-		return SurfaceOracleIndexRuntimeBatch{}, nil, err
-	}
-	credited := make(map[string]bool, len(states))
-	for id, state := range states {
-		if state != "matched" {
-			return SurfaceOracleIndexRuntimeBatch{}, nil, fmt.Errorf("runtime batch contains non-match row %q", id)
+func validateSurfaceTerminalAuthorityForIndex(authority SurfaceTerminalAuthority, scope SurfaceOracleScope, scopeSHA string) ([]string, error) {
+	for _, hash := range []string{authority.SourceCoverageSHA256, authority.DirectCoverageSHA256, authority.ClassificationSHA256, authority.FixtureSetSHA256, authority.RowsSHA256} {
+		if !sha256Pattern.MatchString(hash) {
+			return nil, fmt.Errorf("terminal authority contains an invalid hash")
 		}
-		credited[id] = true
 	}
-	return batch, credited, nil
+	if authority.SchemaVersion != 1 || authority.ScopeSHA256 != scopeSHA || authority.SourceProfileSHA256 != scope.SourceProfileSHA256 || authority.LedgerSHA256 != scope.LedgerSHA256 || authority.SupportPolicySHA256 != scope.PolicySHA256 || authority.Count != len(authority.Rows) || authority.Count == 0 || authority.RowsSHA256 != surfaceTerminalRowsSHA256(authority.Rows) || authority.LocalRuntimeCredit != 0 || authority.SalesforceParityCredit != 0 {
+		return nil, fmt.Errorf("terminal authority does not bind the surface oracle scope")
+	}
+	scopeIDs := make(map[string]bool, len(scope.Rows))
+	for _, row := range scope.Rows {
+		scopeIDs[row.SurfaceID] = true
+	}
+	ids := make([]string, len(authority.Rows))
+	counts := map[string]int{}
+	for i, row := range authority.Rows {
+		if !scopeIDs[row.SurfaceID] || row.Reason == "" || (row.Class != terminalVersionCurrentAPI && row.Class != terminalHostedContext) || (i > 0 && authority.Rows[i-1].SurfaceID >= row.SurfaceID) || row.Policy.Disposition == "" || row.Policy.MatchRule == "" || row.Policy.Reason == "" || !sha256Pattern.MatchString(row.Ledger.SHA256) || len(row.Ledger.Sources) == 0 {
+			return nil, fmt.Errorf("invalid terminal authority surface %q", row.SurfaceID)
+		}
+		ids[i] = row.SurfaceID
+		counts[row.Class]++
+	}
+	if !sameStringCounts(counts, authority.ByClass) {
+		return nil, fmt.Errorf("terminal authority class counts do not reconcile")
+	}
+	return ids, nil
+}
+
+func validateSurfaceRuntimeBatch(root string, scope SurfaceOracleScope, orchestratorDBPath string) (SurfaceOracleIndexRuntimeBatch, map[string]string, *productionSurfaceReceiptAuthority, error) {
+	if _, err := os.Lstat(filepath.Join(root, "production", "PRODUCTION_RUNTIME_BATCH.json")); err == nil {
+		if orchestratorDBPath == "" {
+			return SurfaceOracleIndexRuntimeBatch{}, nil, nil, fmt.Errorf("an orchestrator database is required for production runtime batches")
+		}
+		return validateProductionSurfaceRuntimeAdjudications(root, scope)
+	} else if !os.IsNotExist(err) {
+		return SurfaceOracleIndexRuntimeBatch{}, nil, nil, err
+	}
+	batch, states, err := validateSurfaceRuntimeAdjudications(root, scope)
+	return batch, states, nil, err
 }
 
 func validateSurfaceRuntimeAdjudications(root string, scope SurfaceOracleScope) (SurfaceOracleIndexRuntimeBatch, map[string]string, error) {
@@ -642,6 +809,207 @@ func validateSurfaceRuntimeAdjudications(root string, scope SurfaceOracleScope) 
 		}
 	}
 	return SurfaceOracleIndexRuntimeBatch{ManifestSHA256: hash("manifest"), ProfileSHA256: hash("profile"), BindingsSHA256: hash("bindings"), LocalSummarySHA256: hash("local"), OracleResultsSHA256: hash("oracle"), RawReconciliationSHA256: hash("reconciliation"), MismatchReviewSHA256: hash("review"), FinalAuditSHA256: hash("audit"), candidateCommit: bindings.CandidateCommit, candidateSHA256: bindings.CandidateSHA256, toolsCommit: bindings.ToolsCommit, toolsSHA256: bindings.ToolsSHA256}, states, nil
+}
+
+type productionSurfaceReceiptAuthority struct {
+	root       string
+	plan       OrchestratorCampaignPlan
+	planBytes  []byte
+	lease      OrchestratorLease
+	leaseBytes []byte
+	batch      validatedOrchestratorBatch
+}
+
+func readProductionSurfaceReceiptAuthority(root string) (productionSurfaceReceiptAuthority, error) {
+	production := filepath.Join(root, "production")
+	plan, planBytes, err := readMode0600JSON[OrchestratorCampaignPlan](filepath.Join(production, "ORCHESTRATOR_PLAN.json"))
+	if err != nil {
+		return productionSurfaceReceiptAuthority{}, err
+	}
+	lease, leaseBytes, err := readMode0600JSON[OrchestratorLease](filepath.Join(production, "ORCHESTRATOR_LEASE.json"))
+	if err != nil {
+		return productionSurfaceReceiptAuthority{}, err
+	}
+	validated, err := validateOrchestratorBatch(root, plan, lease, false)
+	if err != nil {
+		return productionSurfaceReceiptAuthority{}, err
+	}
+	return productionSurfaceReceiptAuthority{root: root, plan: plan, planBytes: planBytes, lease: lease, leaseBytes: leaseBytes, batch: validated}, nil
+}
+
+func validateProductionSurfaceRuntimeAdjudications(root string, scope SurfaceOracleScope) (SurfaceOracleIndexRuntimeBatch, map[string]string, *productionSurfaceReceiptAuthority, error) {
+	authority, err := readProductionSurfaceReceiptAuthority(root)
+	if err != nil {
+		return SurfaceOracleIndexRuntimeBatch{}, nil, nil, err
+	}
+	validated := authority.batch
+	states := make(map[string]string, len(validated.ProofStates))
+	scopeIDs := make(map[string]bool, len(scope.Rows))
+	for _, row := range scope.Rows {
+		scopeIDs[row.SurfaceID] = true
+	}
+	for id, state := range validated.ProofStates {
+		if !scopeIDs[id] {
+			return SurfaceOracleIndexRuntimeBatch{}, nil, nil, fmt.Errorf("adjudicated surface %q is not in scope", id)
+		}
+		switch state {
+		case "accepted":
+			states[id] = "matched"
+		case "rejected":
+			states[id] = "product-mismatch"
+		default:
+			return SurfaceOracleIndexRuntimeBatch{}, nil, nil, fmt.Errorf("production runtime batch contains unrecordable proof state %q", state)
+		}
+	}
+	files := make(map[string]string, len(validated.ProductionFiles))
+	for _, file := range validated.ProductionFiles {
+		files[file.Path] = file.SHA256
+	}
+	batch := SurfaceOracleIndexRuntimeBatch{
+		Layout: "orchestrator-production-v3", ManifestSHA256: validated.ManifestSHA256,
+		PlanSHA256: replayBytesSHA256(authority.planBytes), LeaseSHA256: replayBytesSHA256(authority.leaseBytes),
+		LocalProofSHA256: files["LOCAL_PROOF.json"], ProductionReviewSHA256: files["PRODUCTION_REVIEW.json"], ReconciliationSHA256: files["salesforce/SALESFORCE_RECONCILIATION.json"],
+		candidateCommit: validated.Candidate.Commit, candidateSHA256: validated.Candidate.SHA256, toolsCommit: validated.Tools.Commit, toolsSHA256: validated.Tools.SHA256,
+	}
+	for _, hash := range []string{batch.LocalProofSHA256, batch.ProductionReviewSHA256, batch.ReconciliationSHA256} {
+		if !sha256Pattern.MatchString(hash) {
+			return SurfaceOracleIndexRuntimeBatch{}, nil, nil, fmt.Errorf("production runtime batch authority is incomplete")
+		}
+	}
+	return batch, states, &authority, nil
+}
+
+func validateProductionSurfaceReceiptDatabase(path string, authorities []productionSurfaceReceiptAuthority) (map[string]string, error) {
+	info, err := os.Lstat(path)
+	if err != nil || !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink != 0 {
+		return nil, fmt.Errorf("orchestrator database must be a regular file")
+	}
+	if len(authorities) == 0 {
+		return nil, fmt.Errorf("production receipt authorities are required")
+	}
+	campaignID := authorities[0].lease.CampaignID
+	jobs, roots := make(map[string]bool, len(authorities)), make(map[string]bool, len(authorities))
+	for _, authority := range authorities {
+		if authority.lease.CampaignID != campaignID {
+			return nil, fmt.Errorf("production runtime batches must belong to one campaign")
+		}
+		if jobs[authority.lease.JobID] || roots[authority.root] {
+			return nil, fmt.Errorf("production runtime batches contain a duplicate job or root")
+		}
+		jobs[authority.lease.JobID], roots[authority.root] = true, true
+	}
+	for _, authority := range authorities {
+		if authority.plan.CampaignID != campaignID || len(authority.plan.Jobs) != len(authorities) {
+			return nil, fmt.Errorf("production roots do not exactly cover one campaign plan")
+		}
+		for _, job := range authority.plan.Jobs {
+			if !jobs[job.ID] {
+				return nil, fmt.Errorf("production roots do not exactly cover one campaign plan")
+			}
+		}
+	}
+	dsn := (&url.URL{Scheme: "file", Path: path, RawQuery: "mode=ro"}).String()
+	database, err := sql.Open("sqlite", dsn)
+	if err != nil {
+		return nil, err
+	}
+	defer database.Close()
+	if _, err := database.Exec("PRAGMA query_only = ON"); err != nil {
+		return nil, err
+	}
+	tx, err := database.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	var spec, candidateCommit, candidateSHA, toolsCommit, toolsSHA string
+	if err := tx.QueryRow(`SELECT spec_sha256, candidate_commit, candidate_sha256, tools_commit, tools_sha256 FROM campaigns WHERE id = ?`, campaignID).Scan(&spec, &candidateCommit, &candidateSHA, &toolsCommit, &toolsSHA); err != nil {
+		return nil, fmt.Errorf("production orchestrator campaign is missing")
+	}
+	for _, authority := range authorities {
+		if authority.plan.SpecSHA256 != spec || authority.batch.Candidate.Commit != candidateCommit || authority.batch.Candidate.SHA256 != candidateSHA || authority.batch.Tools.Commit != toolsCommit || authority.batch.Tools.SHA256 != toolsSHA {
+			return nil, fmt.Errorf("production runtime batch campaign binding drift")
+		}
+	}
+	var jobCount, closedJobs, attemptCount, runningAttempts, receiptCount, validatedReceipts, allocationCount, closedAllocations, cleanupCount, closedCleanup, openActions, blocks int
+	err = tx.QueryRow(`SELECT
+		(SELECT count(*) FROM jobs WHERE campaign_id = ?),
+		(SELECT count(*) FROM jobs WHERE campaign_id = ? AND status = 'closed'),
+		(SELECT count(*) FROM attempts WHERE campaign_id = ?),
+		(SELECT count(*) FROM attempts WHERE campaign_id = ? AND status = 'running'),
+		(SELECT count(*) FROM receipts WHERE campaign_id = ?),
+		(SELECT count(*) FROM receipts WHERE campaign_id = ? AND validated = 1),
+		(SELECT count(*) FROM scratch_allocations WHERE campaign_id = ?),
+		(SELECT count(*) FROM scratch_allocations WHERE campaign_id = ? AND state = 'closed'),
+		(SELECT count(*) FROM cleanup_journal WHERE campaign_id = ?),
+		(SELECT count(*) FROM cleanup_journal WHERE campaign_id = ? AND state = 'closed'),
+		(SELECT count(*) FROM actions WHERE campaign_id = ? AND state = 'open'),
+		(SELECT count(*) FROM cleanup_credit_blocks b JOIN cleanup_journal c ON c.allocation_alias = b.allocation_alias WHERE c.campaign_id = ?)`,
+		campaignID, campaignID, campaignID, campaignID, campaignID, campaignID, campaignID, campaignID, campaignID, campaignID, campaignID, campaignID,
+	).Scan(&jobCount, &closedJobs, &attemptCount, &runningAttempts, &receiptCount, &validatedReceipts, &allocationCount, &closedAllocations, &cleanupCount, &closedCleanup, &openActions, &blocks)
+	if err != nil || jobCount != len(authorities) || closedJobs != jobCount || attemptCount < jobCount || runningAttempts != 0 || receiptCount != jobCount || validatedReceipts != receiptCount || allocationCount < jobCount || closedAllocations != allocationCount || cleanupCount != allocationCount || closedCleanup != cleanupCount || openActions != 0 || blocks != 0 {
+		return nil, fmt.Errorf("production roots do not exactly cover one fully closed campaign")
+	}
+	receipts := make(map[string]string, len(authorities))
+	for _, authority := range authorities {
+		receiptID, err := validateProductionSurfaceReceipt(tx, authority)
+		if err != nil {
+			return nil, err
+		}
+		receipts[authority.root] = receiptID
+	}
+	return receipts, nil
+}
+
+func validateProductionSurfaceReceipt(tx *sql.Tx, authority productionSurfaceReceiptAuthority) (string, error) {
+	root, lease, batch := authority.root, authority.lease, authority.batch
+	receipt, states, found, err := loadOrchestratorReceipt(tx, lease.CampaignID, lease.JobID, lease.Generation)
+	if err != nil || !found {
+		return "", fmt.Errorf("production runtime batch lacks a recorded orchestrator receipt")
+	}
+	receiptIdentity := "orchestrator-production-receipt/v3\x00" + lease.CampaignID + "\x00" + lease.JobID + "\x00" + fmt.Sprint(lease.Generation) + "\x00" + batch.ManifestSHA256 + "\x00" + batch.AuthoritySHA256
+	expected := OrchestratorReceipt{
+		ID: "receipt-" + replayBytesSHA256([]byte(receiptIdentity))[:16], CampaignID: lease.CampaignID, JobID: lease.JobID, Generation: lease.Generation,
+		BatchRoot: root, ManifestSHA256: batch.ManifestSHA256, BindingSHA256: batch.AuthoritySHA256,
+	}
+	for _, state := range batch.ProofStates {
+		if state == "accepted" {
+			expected.AcceptedCredit++
+		} else if state == "rejected" {
+			expected.RejectedCredit++
+		}
+	}
+	if receipt != expected || !maps.Equal(states, batch.ProofStates) {
+		return "", fmt.Errorf("production runtime batch differs from recorded orchestrator receipt")
+	}
+	var validated, jobGeneration, attemptGeneration, allocationGeneration, cleanupGeneration, blocks int
+	var jobStatus, attemptStatus, allocationState, cleanupState, leasedBy, worker, surfacesJSON string
+	err = tx.QueryRow(`SELECT r.validated, j.status, a.status, s.state, c.state, j.generation, a.generation, s.generation, c.generation, j.leased_by, a.worker, j.surface_ids_json,
+		(SELECT count(*) FROM cleanup_credit_blocks b WHERE b.allocation_alias = s.allocation_alias)
+		FROM receipts r
+		JOIN jobs j ON j.campaign_id = r.campaign_id AND j.id = r.job_id
+		JOIN attempts a ON a.campaign_id = r.campaign_id AND a.job_id = r.job_id AND a.generation = r.generation
+		JOIN scratch_allocations s ON s.campaign_id = r.campaign_id AND s.job_id = r.job_id AND s.generation = r.generation
+		JOIN cleanup_journal c ON c.allocation_alias = s.allocation_alias AND c.campaign_id = r.campaign_id AND c.job_id = r.job_id AND c.generation = r.generation
+		WHERE r.id = ? AND r.campaign_id = ? AND r.job_id = ? AND r.generation = ?`, receipt.ID, lease.CampaignID, lease.JobID, lease.Generation).Scan(
+		&validated, &jobStatus, &attemptStatus, &allocationState, &cleanupState, &jobGeneration, &attemptGeneration, &allocationGeneration, &cleanupGeneration, &leasedBy, &worker, &surfacesJSON, &blocks,
+	)
+	if err != nil {
+		return "", fmt.Errorf("production orchestrator receipt lifecycle is incomplete")
+	}
+	var surfaces []string
+	if json.Unmarshal([]byte(surfacesJSON), &surfaces) != nil || validated != 1 || jobStatus != "closed" || attemptStatus != "closed" || allocationState != "closed" || cleanupState != "closed" || jobGeneration != lease.Generation || attemptGeneration != lease.Generation || allocationGeneration != lease.Generation || cleanupGeneration != lease.Generation || leasedBy != lease.Worker || worker != lease.Worker || !equalStringSet(surfaces, lease.SurfaceIDs) || blocks != 0 {
+		return "", fmt.Errorf("production orchestrator receipt lifecycle is not closed and proof-eligible")
+	}
+	return receipt.ID, nil
+}
+
+func validOrchestratorReceiptID(value string) bool {
+	if len(value) != len("receipt-")+16 || !strings.HasPrefix(value, "receipt-") {
+		return false
+	}
+	_, err := hex.DecodeString(strings.TrimPrefix(value, "receipt-"))
+	return err == nil
 }
 
 func validateSurfaceManifest(manifest surfaceRuntimeManifest) error {
@@ -920,7 +1288,7 @@ func equalStringSet(left, right []string) bool {
 }
 
 func surfaceOracleStatusValid(status string) bool {
-	return status == "open" || status == "matched"
+	return status == "open" || status == "matched" || status == "explicit-non-parity" || status == "product-mismatch" || status == "inconclusive"
 }
 
 func surfaceOracleIndexCounts(rows []SurfaceOracleIndexRow) SurfaceOracleIndexCounts {
@@ -931,6 +1299,12 @@ func surfaceOracleIndexCounts(rows []SurfaceOracleIndexRow) SurfaceOracleIndexCo
 			counts.Open++
 		case "matched":
 			counts.Matched++
+		case "explicit-non-parity":
+			counts.ExplicitNonParity++
+		case "product-mismatch":
+			counts.ProductMismatch++
+		case "inconclusive":
+			counts.Inconclusive++
 		}
 	}
 	counts.Adjudicated = len(rows) - counts.Open

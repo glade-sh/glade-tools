@@ -358,7 +358,9 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 	case "surface-oracle-index":
 		flags := flag.NewFlagSet("corpus assurance surface-oracle-index", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
-		scope, output := flags.String("scope", "", ""), flags.String("output", "", "")
+		scope, predecessor := flags.String("scope", "", ""), flags.String("predecessor-index", "", "")
+		terminalAuthority, orchestratorDB := flags.String("terminal-authority", "", ""), flags.String("orchestrator-db", "", "")
+		output := flags.String("output", "", "")
 		var runtimeBatches assurancePathList
 		flags.Var(&runtimeBatches, "reviewed-runtime-batch", "")
 		if err := rejectDuplicateAssuranceFlags(args[1:], map[string]bool{"reviewed-runtime-batch": true}); err != nil {
@@ -376,7 +378,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		if err := rejectDuplicateRuntimeBatchRoots(runtimeBatches); err != nil {
 			return err
 		}
-		index, err := corpusassurance.CreateSurfaceOracleIndex(corpusassurance.SurfaceOracleIndexRequest{ScopePath: *scope, RuntimeBatchRoots: runtimeBatches, OutputPath: *output})
+		index, err := corpusassurance.CreateSurfaceOracleIndex(corpusassurance.SurfaceOracleIndexRequest{ScopePath: *scope, PredecessorIndexPath: *predecessor, TerminalAuthorityPath: *terminalAuthority, OrchestratorDBPath: *orchestratorDB, RuntimeBatchRoots: runtimeBatches, OutputPath: *output})
 		if err != nil {
 			return err
 		}
@@ -905,7 +907,7 @@ Usage:
   glade-tools corpus assurance surface-local-proof-plan --surface-scope <SURFACE_ORACLE_SCOPE.json> --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json> --coverage-output <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>]
   glade-tools corpus assurance surface-wave-plan --scope <SURFACE_ORACLE_SCOPE.json> --profile <local-profile.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>] [--predecessor-index <SURFACE_ORACLE_INDEX.json>] [--fixture <fixture-id> ...] [--max-fixtures 32] [--shards 2] --output <SURFACE_WAVE_PLAN.json>
   glade-tools corpus assurance surface-oracle-plan --wave-plan <SURFACE_WAVE_PLAN.json> --scope <SURFACE_ORACLE_SCOPE.json> --profile <local-profile.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>] [--predecessor-index <SURFACE_ORACLE_INDEX.json>] --output <new-dir>
-  glade-tools corpus assurance surface-oracle-index --scope <SURFACE_ORACLE_SCOPE.json> --reviewed-runtime-batch <root> [--reviewed-runtime-batch <root> ...] --output <SURFACE_ORACLE_INDEX.json>
+  glade-tools corpus assurance surface-oracle-index --scope <SURFACE_ORACLE_SCOPE.json> [--predecessor-index <SURFACE_ORACLE_INDEX.json>] [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>] [--orchestrator-db <orchestrator.db>] --reviewed-runtime-batch <root> [--reviewed-runtime-batch <root> ...] --output <SURFACE_ORACLE_INDEX.json>
   glade-tools corpus assurance local-proof-plan --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <USAGE_DECISIONS.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
   glade-tools corpus assurance release-validate --attempt <ATTEMPT.json> --glade-root <glade-root> --candidate <glade> --tools-root <glade-tools-root> --tools <glade-tools> --tools-freeze <FINAL_TOOLS_COMMIT> --output <RELEASE_VALIDATION.json>
