@@ -155,6 +155,7 @@ func TestOrchestratorWorkerCleanupResumesAfterCleanupReceiptWrite(t *testing.T) 
 
 func TestOrchestratorSSHCleanupTakeoverUsesSeparateRemotePathsAndPermanentlyBlocksCredit(t *testing.T) {
 	request, workerReceipt := coordinatorCleanupTestRequest(t)
+	workerReceipt.LifecycleStage = "dispatched-before-shard"
 	var gotArgs []string
 	request.sshRunner = func(_ context.Context, binary string, args ...string) (salesforceCommandOutput, error) {
 		if binary != orchestratorSSHBinary {

@@ -570,6 +570,6 @@ func orchestratorSSHWorkerCleanupCommand(request OrchestratorSSHCleanupTakeoverR
 }
 
 func validWorkerCleanupCompletion(receipt OrchestratorWorkerCleanupReceipt, plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA, leaseSHA, failedSHA string) bool {
-	stages := map[string]bool{"reservation-only": true, "invalidated-creation": true, "created-before-preflight": true}
+	stages := map[string]bool{"reservation-only": true, "invalidated-creation": true, "created-before-preflight": true, "dispatched-before-shard": true}
 	return receipt.SchemaVersion == 1 && receipt.Status == "cleanup-closed" && stages[receipt.LifecycleStage] && receipt.CampaignID == lease.CampaignID && receipt.JobID == lease.JobID && receipt.ShardIndex == lease.ShardIndex && receipt.Generation == lease.Generation && receipt.SpecSHA256 == plan.SpecSHA256 && receipt.PlanSHA256 == planSHA && receipt.LeaseSHA256 == leaseSHA && receipt.FailedSSHReceiptSHA256 == failedSHA && sha256Pattern.MatchString(receipt.OrchestratorBindingSHA256) && sha256Pattern.MatchString(receipt.LifecycleAuthoritySHA256) && sha256Pattern.MatchString(receipt.OrgCleanupSHA256) && receipt.ResidueAbsent && receipt.ProofCredit == 0 && validOrchestratorExecutedTools(receipt.ExecutedTools, plan) && receipt.ExecutedTools != (RuntimeArtifact{})
 }
