@@ -222,7 +222,8 @@ func AcceptOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAbo
 		}
 	}
 	var cleanupState, allocationState string
-	if err := request.Coordinator.db.QueryRow(`SELECT c.state, a.state FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ?`, request.AllocationAlias, request.Lease.CampaignID, request.Lease.JobID, request.Lease.Generation).Scan(&cleanupState, &allocationState); err != nil {
+	var claimUntil *int64
+	if err := request.Coordinator.db.QueryRow(`SELECT c.state, a.state, c.claim_until FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ?`, request.AllocationAlias, request.Lease.CampaignID, request.Lease.JobID, request.Lease.Generation).Scan(&cleanupState, &allocationState, &claimUntil); err != nil {
 		return OrchestratorRawPrecreationAbortReceipt{}, err
 	}
 	if cleanupState == "closed" && allocationState == "closed" {
@@ -233,10 +234,11 @@ func AcceptOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAbo
 		}
 		return receipt, nil
 	}
-	if cleanupState != "pending" || allocationState != "reserved" {
+	now := time.Now().UTC()
+	if (cleanupState != "pending" && (cleanupState != "running" || claimUntil == nil || *claimUntil > now.UnixMilli())) || allocationState != "reserved" {
 		return OrchestratorRawPrecreationAbortReceipt{}, fmt.Errorf("raw abort cleanup is not closable")
 	}
-	if err := request.Coordinator.closeRawAcceptanceCleanup(request.Lease, request.AllocationAlias, time.Now().UTC(), false); err != nil {
+	if err := request.Coordinator.closeRawAcceptanceCleanup(request.Lease, request.AllocationAlias, now, false); err != nil {
 		return OrchestratorRawPrecreationAbortReceipt{}, fmt.Errorf("close raw abort cleanup: %w", err)
 	}
 	if !outputExists {
