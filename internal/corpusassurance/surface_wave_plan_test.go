@@ -37,6 +37,30 @@ func TestBuildSurfaceWavePlanSelectsWholeFixturesInDeterministicOrder(t *testing
 	}
 }
 
+func TestBuildSurfaceWavePlanSelectsRequestedWholeFixtures(t *testing.T) {
+	request, _, _ := surfaceWavePlanRequest(t)
+	request.FixtureIDs = []string{"mock"}
+	plan, err := BuildSurfaceWavePlan(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if plan.SelectedFixtures != 1 || plan.SelectedRows != 1 || len(plan.FixtureIDs) != 1 || plan.FixtureIDs[0] != "mock" || len(plan.Shards[0].Fixtures) != 1 || plan.Shards[0].Fixtures[0].ID != "mock" || len(plan.Shards[1].Fixtures) != 0 {
+		t.Fatalf("selected plan = %#v", plan)
+	}
+}
+
+func TestBuildSurfaceWavePlanRejectsInvalidRequestedFixtures(t *testing.T) {
+	for name, fixtureIDs := range map[string][]string{"missing": {"missing"}, "duplicate": {"mock", "mock"}} {
+		t.Run(name, func(t *testing.T) {
+			request, _, _ := surfaceWavePlanRequest(t)
+			request.FixtureIDs = fixtureIDs
+			if _, err := BuildSurfaceWavePlan(request); err == nil || !strings.Contains(err.Error(), "fixture") {
+				t.Fatalf("invalid fixture error = %v", err)
+			}
+		})
+	}
+}
+
 func TestBuildSurfaceWavePlanConsumesCanonicalTerminalAuthority(t *testing.T) {
 	planRequest := surfaceLocalProofPlanRequest(t)
 	localProofFixture(t, planRequest.FixtureRoot, "runtime", []string{"apex:System.Runtime.run()"}, localRuntimeRequired)

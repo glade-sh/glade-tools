@@ -23,6 +23,7 @@ type SurfaceWavePlanRequest struct {
 	CoveragePath          string
 	TerminalAuthorityPath string
 	PredecessorIndexPath  string
+	FixtureIDs            []string
 	MaxFixtures           int
 	ShardCount            int
 	OutputPath            string
@@ -40,6 +41,7 @@ type SurfaceWavePlan struct {
 	PredecessorIndexSHA256  string                 `json:"predecessorIndexSha256,omitempty"`
 	Candidate               RuntimeArtifact        `json:"candidate"`
 	Tools                   RuntimeArtifact        `json:"tools"`
+	FixtureIDs              []string               `json:"fixtureIds,omitempty"`
 	MaxFixtures             int                    `json:"maxFixtures"`
 	ShardCount              int                    `json:"shardCount"`
 	EligibleRows            int                    `json:"eligibleRows"`
@@ -81,6 +83,16 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 	}
 	if maxFixtures < 1 || maxFixtures > defaultSurfaceWaveFixtures {
 		return SurfaceWavePlan{}, fmt.Errorf("max fixtures must be between 1 and %d", defaultSurfaceWaveFixtures)
+	}
+	requestedFixtures := make(map[string]bool, len(request.FixtureIDs))
+	for _, fixtureID := range request.FixtureIDs {
+		if fixtureID == "" || requestedFixtures[fixtureID] {
+			return SurfaceWavePlan{}, fmt.Errorf("invalid or duplicate requested fixture %q", fixtureID)
+		}
+		requestedFixtures[fixtureID] = true
+	}
+	if len(requestedFixtures) > maxFixtures {
+		return SurfaceWavePlan{}, fmt.Errorf("requested fixtures exceed max fixtures")
 	}
 	shardCount := request.ShardCount
 	if shardCount == 0 {
@@ -243,6 +255,7 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 			openRows[surfaceID] = true
 		}
 	}
+	availableFixtures := make(map[string]bool, len(manifest.SalesforceFixtures))
 	for _, fixture := range manifest.SalesforceFixtures {
 		ownedOpen, ownedTerminal := 0, 0
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
@@ -260,7 +273,15 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 			return SurfaceWavePlan{}, fmt.Errorf("predecessor splits fixture %q", fixture.ID)
 		}
 		if ownedOpen > 0 {
-			fixtures = append(fixtures, fixture)
+			availableFixtures[fixture.ID] = true
+			if len(requestedFixtures) == 0 || requestedFixtures[fixture.ID] {
+				fixtures = append(fixtures, fixture)
+			}
+		}
+	}
+	for fixtureID := range requestedFixtures {
+		if !availableFixtures[fixtureID] {
+			return SurfaceWavePlan{}, fmt.Errorf("requested fixture %q is not open and Salesforce eligible", fixtureID)
 		}
 	}
 	sort.Slice(fixtures, func(i, j int) bool {
@@ -306,10 +327,12 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 	for i := range shards {
 		sort.Strings(shards[i].SurfaceIDs)
 	}
+	selectedFixtureIDs := append([]string(nil), request.FixtureIDs...)
+	sort.Strings(selectedFixtureIDs)
 	plan := SurfaceWavePlan{
 		SchemaVersion: 1, Kind: "all-runtime-wave", ScopeSHA256: scopeSHA, ProfileSHA256: profileSHA, LocalProofSHA256: proofSHA,
 		FixtureManifestSHA256: manifestSHA, CoverageSHA256: coverageSHA, TerminalAuthoritySHA256: authoritySHA, PredecessorIndexSHA256: predecessorSHA,
-		Candidate: proof.Candidate, Tools: proof.Tools, MaxFixtures: maxFixtures, ShardCount: shardCount, EligibleRows: len(eligibleRows), IneligibleRows: len(profileRows) - len(eligibleRows), SelectedFixtures: len(fixtures), SelectedRows: len(selectedRows), RemainingOpen: len(openRows) - len(selectedRows), Shards: shards,
+		Candidate: proof.Candidate, Tools: proof.Tools, FixtureIDs: selectedFixtureIDs, MaxFixtures: maxFixtures, ShardCount: shardCount, EligibleRows: len(eligibleRows), IneligibleRows: len(profileRows) - len(eligibleRows), SelectedFixtures: len(fixtures), SelectedRows: len(selectedRows), RemainingOpen: len(openRows) - len(selectedRows), Shards: shards,
 	}
 	if err := WriteNewJSON(request.OutputPath, plan); err != nil {
 		return SurfaceWavePlan{}, err

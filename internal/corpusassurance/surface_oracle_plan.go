@@ -114,7 +114,7 @@ func BuildSurfaceOraclePlan(request SurfaceOraclePlanRequest) (SurfaceOraclePlan
 		ScopePath: request.ScopePath, ProfilePath: request.ProfilePath, LocalProofPath: request.LocalProofPath,
 		FixtureManifestPath: request.FixtureManifestPath, CoveragePath: request.CoveragePath,
 		TerminalAuthorityPath: request.TerminalAuthorityPath, PredecessorIndexPath: request.PredecessorIndexPath,
-		MaxFixtures: wave.MaxFixtures, ShardCount: wave.ShardCount, OutputPath: rebuiltPath,
+		FixtureIDs: wave.FixtureIDs, MaxFixtures: wave.MaxFixtures, ShardCount: wave.ShardCount, OutputPath: rebuiltPath,
 	}); err != nil {
 		return SurfaceOraclePlanArtifacts{}, err
 	}

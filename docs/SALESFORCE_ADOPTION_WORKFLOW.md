@@ -232,9 +232,10 @@ the plan is incomplete; authoritative local-proof inputs are written only at
 `surface-wave-plan` selects the next whole Salesforce-eligible fixtures from
 the exact all-runtime scope, local-proof profile, coverage, manifest, and proof
 written by `surface-local-proof-plan` and `local-proof`. Supply the terminal
-authority when coverage contains terminal rows. It accepts a fixture cap,
-never caller-selected SurfaceIDs, emits two deterministic shards by default
-or up to nine with `--shards`, and uses an optional cumulative index to exclude
+authority when coverage contains terminal rows. It accepts a fixture cap or
+repeatable exact `--fixture` IDs for bounded whole-fixture canaries, never
+caller-selected SurfaceIDs. It emits two deterministic shards by default or up
+to nine with `--shards`, and uses an optional cumulative index to exclude
 already adjudicated rows.
 
 `surface-oracle-plan` recomputes that exact wave from its bound scope, local
