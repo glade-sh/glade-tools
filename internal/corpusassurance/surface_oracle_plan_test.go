@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -49,6 +50,19 @@ func TestBuildSurfaceOraclePlanProjectsExactWave(t *testing.T) {
 	selectedManifest, err := surfaceWaveBundleManifest(artifacts.Plan, artifacts.Profile, proof, manifest, wave, replayBytesSHA256(waveBytes), replayBytesSHA256(proofBytes), replayBytesSHA256(manifestBytes))
 	if err != nil || len(selectedManifest.Fixtures) != 2 || len(selectedManifest.SalesforceFixtures) != 2 {
 		t.Fatalf("bundle manifest = %#v, %v", selectedManifest, err)
+	}
+	wantFixtureOrder := []string{}
+	for _, shard := range wave.Shards {
+		for _, fixture := range shard.Fixtures {
+			wantFixtureOrder = append(wantFixtureOrder, fixture.ID)
+		}
+	}
+	gotFixtureOrder := []string{}
+	for _, fixture := range selectedManifest.Fixtures {
+		gotFixtureOrder = append(gotFixtureOrder, fixture.ID)
+	}
+	if !reflect.DeepEqual(gotFixtureOrder, wantFixtureOrder) {
+		t.Fatalf("bundle fixture order = %v, want wave shard order %v", gotFixtureOrder, wantFixtureOrder)
 	}
 	shortPlan := artifacts.Plan
 	shortPlan.Rows = shortPlan.Rows[:1]
