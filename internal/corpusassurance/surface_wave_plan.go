@@ -320,7 +320,7 @@ func BuildSurfaceWavePlan(request SurfaceWavePlanRequest) (SurfaceWavePlan, erro
 	}
 	selectedRows := make(map[string]bool)
 	for i, fixture := range fixtures {
-		shard := i * activeShards / len(fixtures)
+		shard := i % activeShards
 		shards[shard].Fixtures = append(shards[shard].Fixtures, fixture)
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
 			if openRows[surfaceID] {
