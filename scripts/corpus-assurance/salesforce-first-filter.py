@@ -609,11 +609,17 @@ def singleton_semantic_failure(result: dict) -> bool:
         return False
     raw = result.get("runtimeResult", {})
     payload = raw.get("result", raw) if isinstance(raw, dict) else {}
-    return (
+    nested = (
         payload.get("success") is False
         and isinstance(payload.get("compiled"), bool)
         and bool(payload.get("compileProblem") or payload.get("exceptionMessage"))
     )
+    name, message = raw.get("name"), raw.get("message", "")
+    typed = (
+        name == "executeCompileFailure" and message.startswith("Compilation failed at Line ")
+        or name == "executeRuntimeFailure" and message.startswith("Execution failed at this code:\n\n")
+    )
+    return nested or typed
 
 
 def expected_result_indexes(manifest_count: int, selected: list[tuple], partitioned: bool) -> set[int]:

@@ -24,6 +24,8 @@ class SalesforceFirstFilterTest(unittest.TestCase):
             "runtimeResult": {"status": 1, "result": {"success": False, "compiled": False, "compileProblem": "Invalid type: Missing"}},
         }
         self.assertFalse(FILTER.result_failed(semantic))
+        typed = {**semantic, "runtimeResult": {"status": 1, "name": "executeCompileFailure", "message": "Compilation failed at Line 1 column 1 with the error:\n\nInvalid type: Missing"}}
+        self.assertFalse(FILTER.result_failed(typed))
         self.assertTrue(FILTER.result_failed({**semantic, "surfaceIds": ["apex:Missing.a()", "apex:Missing.b()"]}))
         self.assertTrue(FILTER.result_failed({"status": "Failed", "exitCode": 1, "kind": "exec", "surfaceIds": ["apex:Missing.run()"], "runtimeResult": {"status": 1, "message": "request failed"}}))
         self.assertTrue(FILTER.result_failed({"status": "Succeeded", "exitCode": 0, "kind": "test", "runtimeRequested": True, "runtimePassed": False}))
