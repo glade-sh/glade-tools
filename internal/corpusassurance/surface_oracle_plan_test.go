@@ -85,17 +85,23 @@ func TestBuildSurfaceOraclePlanProjectsExactWave(t *testing.T) {
 	}
 }
 
-func TestSurfaceWaveBundleManifestInterleavesFixturesByShard(t *testing.T) {
-	definitions := make([]surfaceWaveFixtureDefinition, 7)
+func TestSurfaceWaveBundleManifestPreservesUnevenNineShardTail(t *testing.T) {
+	definitions := make([]surfaceWaveFixtureDefinition, 32)
 	for i := range definitions {
 		name := fmt.Sprintf("fixture%02d", i)
 		definitions[i] = surfaceWaveFixtureDefinition{name: name, surfaceIDs: []string{"apex:" + name + ".run"}, disposition: localRuntimeRequired}
 	}
 	waveRequest, _, _ := buildSurfaceWavePlanRequest(t, definitions, nil)
-	waveRequest.ShardCount = 3
+	waveRequest.ShardCount = 9
 	wave, err := BuildSurfaceWavePlan(waveRequest)
 	if err != nil {
 		t.Fatal(err)
+	}
+	wantShardSizes := []int{4, 4, 4, 4, 4, 3, 3, 3, 3}
+	for i, shard := range wave.Shards {
+		if len(shard.Fixtures) != wantShardSizes[i] {
+			t.Fatalf("shard %d fixtures = %d, want %d", i, len(shard.Fixtures), wantShardSizes[i])
+		}
 	}
 	output := filepath.Join(filepath.Dir(waveRequest.OutputPath), "oracle-wave")
 	artifacts, err := BuildSurfaceOraclePlan(SurfaceOraclePlanRequest{
