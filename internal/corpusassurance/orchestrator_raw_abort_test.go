@@ -185,11 +185,22 @@ func TestOrchestratorRawPrecreationAbortObserveAndAccept(t *testing.T) {
 	if _, err := AcceptOrchestratorRawPrecreationAbort(badAccept); err == nil || !strings.Contains(err.Error(), "executing recovery tool hash") {
 		t.Fatalf("mismatched acceptance tool error = %v", err)
 	}
-	got, err := AcceptOrchestratorRawPrecreationAbort(OrchestratorRawPrecreationAbortAcceptanceRequest{
+	_, err = orchestrator.ClaimCleanupForLease(lease, allocation, now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := OrchestratorRawPrecreationAbortAcceptanceRequest{
 		Coordinator: orchestrator, Plan: plan, Lease: lease, PlanSHA256: planSHA, LeaseSHA256: leaseSHA, FailedSSHReceipt: failed, FailedSSHReceiptSHA256: failedSHA,
 		AllocationAlias: allocation, ObservationPath: outputPath, ObservationSHA256: obsSHA, OutputPath: receiptPath,
 		executingTool: func() (string, error) { return canonicalSF, nil },
-	})
+	}
+	if _, err := AcceptOrchestratorRawPrecreationAbort(request); err == nil || !strings.Contains(err.Error(), "not closable") {
+		t.Fatalf("unexpired cleanup claim error = %v", err)
+	}
+	if _, err := orchestrator.db.Exec(`UPDATE cleanup_journal SET claim_until = ? WHERE allocation_alias = ?`, now.Add(-time.Second).UnixMilli(), allocation); err != nil {
+		t.Fatal(err)
+	}
+	got, err := AcceptOrchestratorRawPrecreationAbort(request)
 	if err != nil {
 		t.Fatal(err)
 	}

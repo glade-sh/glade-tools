@@ -639,7 +639,7 @@ func (o *Orchestrator) closeRawAcceptanceCleanup(lease OrchestratorLease, alloca
 	}
 	defer tx.Rollback()
 	var hubAlias string
-	if err := tx.QueryRow(`SELECT s.hub_alias FROM cleanup_journal c JOIN scratch_allocations s ON s.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id JOIN attempts a ON a.campaign_id = c.campaign_id AND a.job_id = c.job_id AND a.generation = c.generation WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND c.state = 'pending' AND s.state = 'reserved' AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until = ? AND a.worker = ? AND a.status = 'running' AND a.lease_until = ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker, lease.LeaseUntil.UTC().UnixMilli(), lease.Worker, lease.LeaseUntil.UTC().UnixMilli()).Scan(&hubAlias); err != nil {
+	if err := tx.QueryRow(`SELECT s.hub_alias FROM cleanup_journal c JOIN scratch_allocations s ON s.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id JOIN attempts a ON a.campaign_id = c.campaign_id AND a.job_id = c.job_id AND a.generation = c.generation WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND (c.state = 'pending' OR (c.state = 'running' AND c.claim_until <= ?)) AND s.state = 'reserved' AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until = ? AND a.worker = ? AND a.status = 'running' AND a.lease_until = ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, now.UTC().UnixMilli(), lease.Worker, lease.LeaseUntil.UTC().UnixMilli(), lease.Worker, lease.LeaseUntil.UTC().UnixMilli()).Scan(&hubAlias); err != nil {
 		return fmt.Errorf("validated raw cleanup journal is not closable")
 	}
 	if !proofEligible {
@@ -647,7 +647,7 @@ func (o *Orchestrator) closeRawAcceptanceCleanup(lease OrchestratorLease, alloca
 			return err
 		}
 	}
-	result, err := tx.Exec(`UPDATE cleanup_journal SET state = 'closed', closed_at = ? WHERE allocation_alias = ? AND campaign_id = ? AND job_id = ? AND generation = ? AND state = 'pending'`, now.UTC().UnixMilli(), allocationAlias, lease.CampaignID, lease.JobID, lease.Generation)
+	result, err := tx.Exec(`UPDATE cleanup_journal SET state = 'closed', closed_at = ? WHERE allocation_alias = ? AND campaign_id = ? AND job_id = ? AND generation = ? AND (state = 'pending' OR (state = 'running' AND claim_until <= ?))`, now.UTC().UnixMilli(), allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, now.UTC().UnixMilli())
 	if err != nil {
 		return err
 	}
