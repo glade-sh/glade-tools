@@ -93,6 +93,41 @@ func TestBuildSurfaceWavePlanConsumesCanonicalTerminalAuthority(t *testing.T) {
 	}
 }
 
+func TestBuildSurfaceWavePlanRejectsPredecessorWithDifferentTerminalAuthority(t *testing.T) {
+	planRequest := surfaceLocalProofPlanRequest(t)
+	localProofFixture(t, planRequest.FixtureRoot, "runtime", []string{"apex:System.Runtime.run()"}, localRuntimeRequired)
+	if _, _, err := BuildSurfaceLocalProofPlan(planRequest); err == nil {
+		t.Fatal("incomplete full-scope plan unexpectedly passed")
+	}
+	classificationPath := filepath.Join(filepath.Dir(planRequest.CoveragePath), "terminal-classifications.json")
+	writeLocalProofJSON(t, classificationPath, ExclusionPolicy{SchemaVersion: 1, Rows: []ExclusionPolicyRow{{SurfaceID: "apex:System.Mock.run()", Class: terminalHostedContext, Reason: "requires hosted context"}}})
+	authorityPath := filepath.Join(filepath.Dir(planRequest.CoveragePath), "terminal-authority.json")
+	if _, err := CreateSurfaceTerminalAuthority(SurfaceTerminalAuthorityRequest{ScopePath: planRequest.ScopePath, CoveragePath: planRequest.CoveragePath, LedgerPath: planRequest.LedgerPath, SupportPolicyPath: planRequest.PolicyPath, FixtureRoot: planRequest.FixtureRoot, ClassificationPath: classificationPath, OutputPath: authorityPath}); err != nil {
+		t.Fatal(err)
+	}
+	planRequest.TerminalAuthorityPath = authorityPath
+	planRequest.ProfilePath += ".terminal"
+	planRequest.UsagePath += ".terminal"
+	planRequest.LocalDecisionPath += ".terminal"
+	planRequest.ManifestPath += ".terminal"
+	planRequest.CoveragePath += ".terminal"
+	if _, _, err := BuildSurfaceLocalProofPlan(planRequest); err != nil {
+		t.Fatal(err)
+	}
+	request, proof, scope := surfaceWaveRequestFromLocalPlan(t, planRequest)
+	request.TerminalAuthorityPath = authorityPath
+	predecessorPath := filepath.Join(filepath.Dir(request.OutputPath), "SURFACE_ORACLE_INDEX.json")
+	writeSurfaceWavePredecessor(t, predecessorPath, request, proof, scope, map[string]string{
+		"apex:System.Mock.run()":    "explicit-non-parity",
+		"apex:System.Runtime.run()": "matched",
+	})
+	updateJSONMap(t, predecessorPath, func(value map[string]any) { value["terminalAuthoritySha256"] = strings.Repeat("f", 64) })
+	request.PredecessorIndexPath = predecessorPath
+	if _, err := BuildSurfaceWavePlan(request); err == nil || !strings.Contains(err.Error(), "predecessor terminal authority binding") {
+		t.Fatalf("terminal authority drift error = %v", err)
+	}
+}
+
 func TestBuildSurfaceWavePlanSelectsOnlyPredecessorOpenRows(t *testing.T) {
 	request, proof, scope := surfaceWavePlanRequest(t)
 	predecessorPath := filepath.Join(filepath.Dir(request.OutputPath), "SURFACE_ORACLE_INDEX.json")
@@ -287,10 +322,13 @@ func writeSurfaceWavePredecessor(t *testing.T, path string, request SurfaceWaveP
 	t.Helper()
 	rows := make([]SurfaceOracleIndexRow, len(scope.Rows))
 	matched := []string{}
+	explicitNonParity := []string{}
 	for i, row := range scope.Rows {
 		rows[i] = SurfaceOracleIndexRow{SurfaceID: row.SurfaceID, State: states[row.SurfaceID]}
 		if states[row.SurfaceID] == "matched" {
 			matched = append(matched, row.SurfaceID)
+		} else if states[row.SurfaceID] == "explicit-non-parity" {
+			explicitNonParity = append(explicitNonParity, row.SurfaceID)
 		}
 	}
 	batches := []SurfaceOracleIndexRuntimeBatch{}
@@ -303,7 +341,10 @@ func writeSurfaceWavePredecessor(t *testing.T, path string, request SurfaceWaveP
 	index := SurfaceOracleIndex{
 		SchemaVersion: 1, Kind: "all-runtime", ScopeSHA256: localProofFileSHA256(t, request.ScopePath), SourceProfileSHA256: scope.SourceProfileSHA256, LedgerSHA256: scope.LedgerSHA256, PolicySHA256: scope.PolicySHA256,
 		Candidate: SurfaceOracleIndexArtifact{Commit: proof.Candidate.Commit, BinarySHA256: proof.Candidate.SHA256}, Tools: SurfaceOracleIndexArtifact{Commit: proof.Tools.Commit, BinarySHA256: proof.Tools.SHA256},
-		RuntimeBatches: batches, Total: len(rows), Rows: rows, Counts: surfaceOracleIndexCounts(rows),
+		ExplicitNonParitySurfaceIDs: explicitNonParity, RuntimeBatches: batches, Total: len(rows), Rows: rows, Counts: surfaceOracleIndexCounts(rows),
+	}
+	if len(explicitNonParity) != 0 {
+		index.TerminalAuthoritySHA256 = localProofFileSHA256(t, request.TerminalAuthorityPath)
 	}
 	writeLocalProofJSON(t, path, index)
 }

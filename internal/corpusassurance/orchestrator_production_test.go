@@ -843,7 +843,8 @@ func newProductionWorkerInputsForTest(t *testing.T) productionWorkerInputs {
 	writeJSONValue(t, planPath, fixture.plan)
 	writeJSONValue(t, leasePath, lease)
 	reviewPath := filepath.Join(root, "PRODUCTION_REVIEW.json")
-	writeJSONValue(t, reviewPath, ProductionRuntimeReview{SchemaVersion: 1, PlanSHA256: surfaceOracleFileSHA256(t, planPath), LeaseSHA256: surfaceOracleFileSHA256(t, leasePath), LocalProofSHA256: surfaceOracleFileSHA256(t, fixture.localProofPath), ReconciliationSHA256: surfaceOracleFileSHA256(t, reconciliationPath), Rows: []ProductionRuntimeReviewRow{{SurfaceID: "apex:Runtime.run", Action: oracleRuntime, Classification: "match", ReviewDisposition: "confirmed-match"}}})
+	classification, disposition := "match", "confirmed-match"
+	writeJSONValue(t, reviewPath, ProductionRuntimeReview{SchemaVersion: 1, PlanSHA256: surfaceOracleFileSHA256(t, planPath), LeaseSHA256: surfaceOracleFileSHA256(t, leasePath), LocalProofSHA256: surfaceOracleFileSHA256(t, fixture.localProofPath), ReconciliationSHA256: surfaceOracleFileSHA256(t, reconciliationPath), Rows: []ProductionRuntimeReviewRow{{SurfaceID: "apex:Runtime.run", Action: oracleRuntime, Classification: classification, ReviewDisposition: disposition}}})
 	build := BuildOrchestratorProductionBatchRequest{PlanPath: planPath, LeasePath: leasePath, LocalProofPath: fixture.localProofPath, ReviewPath: reviewPath, OracleBundleRoot: fixture.oracleBundleRoot, RawRoot: rawRoot, SalesforceReconciliationPath: reconciliationPath, SalesforcePacketPath: packetPath, OutputPath: filepath.Join(root, "production-batch")}
 	worker := OrchestratorWorkerRequest{Plan: fixture.plan, Lease: lease, HubAlias: "hub-production-worker", HubCapacity: 1, AllocationAlias: "scratch-production-worker", EvidenceRoot: filepath.Join(root, "evidence"), OraclePlanPath: fixture.oraclePlanPath}
 	if err := orchestrator.SetHubCapacity(worker.HubAlias, worker.HubCapacity); err != nil {

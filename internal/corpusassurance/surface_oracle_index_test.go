@@ -2,10 +2,12 @@ package corpusassurance
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestCreateSurfaceOracleIndex(t *testing.T) {
@@ -49,6 +51,166 @@ func TestCreateSurfaceOracleIndex(t *testing.T) {
 	}
 	if _, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, RuntimeBatchRoots: []string{batchRoot}, OutputPath: output}); err == nil || !strings.Contains(err.Error(), "already exists") {
 		t.Fatalf("create-only error = %v", err)
+	}
+}
+
+func TestCreateSurfaceOracleIndexRejectsUnrecordedProductionRuntimeBatch(t *testing.T) {
+	batch, _, _ := buildStandaloneProductionBatchForTest(t)
+	root := t.TempDir()
+	scopePath := writeProductionSurfaceIndexScope(t, root)
+	if _, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, RuntimeBatchRoots: []string{batch}, OutputPath: filepath.Join(root, "index.json")}); err == nil || !strings.Contains(err.Error(), "orchestrator database") {
+		t.Fatalf("unrecorded production batch error = %v", err)
+	}
+}
+
+func TestCreateSurfaceOracleIndexPreservesProductionMismatch(t *testing.T) {
+	batches, database, scopePath := writeRecordedProductionCampaignForSurfaceIndex(t, 0)
+	root := t.TempDir()
+	index, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, RuntimeBatchRoots: batches, OrchestratorDBPath: database, OutputPath: filepath.Join(root, "index.json")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.Counts.Matched != 2 || index.Counts.ProductMismatch != 1 || index.Counts.Adjudicated != 3 || index.Counts.Open != 0 || index.Rows[0].State != "product-mismatch" {
+		t.Fatalf("production mismatch index = %#v", index)
+	}
+	persisted, _, err := readExactJSONBytes[SurfaceOracleIndex](filepath.Join(root, "index.json"))
+	if err != nil || ValidateSurfaceOracleIndex(persisted) != nil || persisted.RuntimeBatches[0].Layout != "orchestrator-production-v3" || persisted.Rows[0].State != "product-mismatch" {
+		t.Fatalf("persisted production mismatch index = %#v, err = %v", persisted, err)
+	}
+}
+
+func TestCreateSurfaceOracleIndexAcceptsRecordedProductionMatch(t *testing.T) {
+	batches, database, scopePath := writeRecordedProductionCampaignForSurfaceIndex(t, -1)
+	root := t.TempDir()
+	index, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, RuntimeBatchRoots: batches, OrchestratorDBPath: database, OutputPath: filepath.Join(root, "index.json")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.Counts.Matched != 3 || index.Counts.Adjudicated != 3 || index.Rows[0].State != "matched" || len(index.RuntimeBatches) != 3 {
+		t.Fatalf("production index = %#v", index)
+	}
+	surfaceID := index.RuntimeBatches[0].SurfaceIDs[0]
+	index.RuntimeBatches[0].States[0] = "inconclusive"
+	for i := range index.Rows {
+		if index.Rows[i].SurfaceID == surfaceID {
+			index.Rows[i].State = "inconclusive"
+		}
+	}
+	index.Counts = surfaceOracleIndexCounts(index.Rows)
+	if err := ValidateSurfaceOracleIndex(index); err == nil || !strings.Contains(err.Error(), "runtime batch surface state") {
+		t.Fatalf("production inconclusive state error = %v", err)
+	}
+}
+
+func TestCreateSurfaceOracleIndexRejectsProductionReceiptDrift(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		mutate func(*testing.T, *Orchestrator)
+	}{
+		{name: "receipt root", mutate: func(t *testing.T, orchestrator *Orchestrator) {
+			if _, err := orchestrator.db.Exec(`UPDATE receipts SET batch_root = batch_root || '-drift'`); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{name: "proof state", mutate: func(t *testing.T, orchestrator *Orchestrator) {
+			if _, err := orchestrator.db.Exec(`UPDATE proof_credits SET state = 'rejected'`); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{name: "attempt lifecycle", mutate: func(t *testing.T, orchestrator *Orchestrator) {
+			if _, err := orchestrator.db.Exec(`UPDATE attempts SET status = 'retryable' WHERE rowid = (SELECT min(rowid) FROM attempts)`); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{name: "allocation lifecycle", mutate: func(t *testing.T, orchestrator *Orchestrator) {
+			if _, err := orchestrator.db.Exec(`UPDATE scratch_allocations SET state = 'reserved'`); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{name: "cleanup credit block", mutate: func(t *testing.T, orchestrator *Orchestrator) {
+			if _, err := orchestrator.db.Exec(`INSERT INTO cleanup_credit_blocks (allocation_alias) SELECT allocation_alias FROM cleanup_journal`); err != nil {
+				t.Fatal(err)
+			}
+		}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			batches, database, scopePath := writeRecordedProductionCampaignForSurfaceIndex(t, -1)
+			orchestrator, err := OpenOrchestrator(database)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = orchestrator.Close() })
+			test.mutate(t, orchestrator)
+			root := t.TempDir()
+			_, err = CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, RuntimeBatchRoots: batches, OrchestratorDBPath: database, OutputPath: filepath.Join(root, "index.json")})
+			if err == nil {
+				t.Fatal("production receipt drift was accepted")
+			}
+		})
+	}
+}
+
+func TestCreateSurfaceOracleIndexRejectsOmittedCampaignReceipt(t *testing.T) {
+	batches, database, scopePath := writeRecordedProductionCampaignForSurfaceIndex(t, -1)
+	root := t.TempDir()
+	_, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, RuntimeBatchRoots: batches[:len(batches)-1], OrchestratorDBPath: database, OutputPath: filepath.Join(root, "index.json")})
+	if err == nil || !strings.Contains(err.Error(), "exactly cover") {
+		t.Fatalf("omitted campaign receipt error = %v", err)
+	}
+}
+
+func TestProductionSurfaceReceiptDatabaseRejectsMixedCampaigns(t *testing.T) {
+	batches, database, _ := writeRecordedProductionCampaignForSurfaceIndex(t, -1)
+	authority, err := readProductionSurfaceReceiptAuthority(batches[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	mixed := authority
+	mixed.lease.CampaignID += "-other"
+	if _, err := validateProductionSurfaceReceiptDatabase(database, []productionSurfaceReceiptAuthority{authority, mixed}); err == nil || !strings.Contains(err.Error(), "one campaign") {
+		t.Fatalf("mixed campaign error = %v", err)
+	}
+}
+
+func TestCreateSurfaceOracleIndexAcceptsLeaseExpiryRetry(t *testing.T) {
+	batches, database, scopePath := writeRecordedProductionCampaignForSurfaceIndex(t, -1, true)
+	orchestrator, err := OpenOrchestrator(database)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = orchestrator.Close() })
+	var retryable int
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM attempts WHERE status = 'retryable'`).Scan(&retryable); err != nil || retryable != 1 {
+		t.Fatalf("retryable attempts = %d, err = %v", retryable, err)
+	}
+	root := t.TempDir()
+	if _, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, RuntimeBatchRoots: batches, OrchestratorDBPath: database, OutputPath: filepath.Join(root, "index.json")}); err != nil {
+		t.Fatalf("lease expiry retry: %v", err)
+	}
+}
+
+func TestCreateSurfaceOracleIndexPreservesLegacyReviewedStates(t *testing.T) {
+	for _, test := range []struct {
+		name, classification, state string
+	}{
+		{name: "mismatch", classification: "mismatch", state: "product-mismatch"},
+		{name: "inconclusive", classification: "environment", state: "inconclusive"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			scope, batch := writeSurfaceOracleIndexInputs(t, root)
+			if test.classification == "mismatch" {
+				setSurfaceOracleBatchFixtureKind(t, batch, "test")
+			}
+			setSurfaceOracleBatchAdjudication(t, batch, "apex:System.One", test.classification)
+			index, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scope, RuntimeBatchRoots: []string{batch}, OutputPath: filepath.Join(root, "index.json")})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if index.Rows[0].State != test.state || strings.Join(index.RuntimeBatches[0].States, ",") != test.state+",matched" || index.Counts.Adjudicated != 2 || index.Counts.Open != 1 {
+				t.Fatalf("legacy reviewed index = %#v", index)
+			}
+		})
 	}
 }
 
@@ -136,6 +298,52 @@ func TestCreateSurfaceOracleIndexAccumulatesOnlyDisjointIdenticalCandidateBatche
 	}
 }
 
+func TestCreateSurfaceOracleIndexExtendsPredecessor(t *testing.T) {
+	root := t.TempDir()
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	first := writeSurfaceOracleBatch(t, root, "first", []string{"apex:System.One"})
+	second := writeSurfaceOracleBatch(t, root, "second", []string{"apex:System.Two"})
+	predecessorPath := filepath.Join(root, "predecessor.json")
+	if _, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scope, RuntimeBatchRoots: []string{first}, OutputPath: predecessorPath}); err != nil {
+		t.Fatal(err)
+	}
+	index, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scope, PredecessorIndexPath: predecessorPath, RuntimeBatchRoots: []string{second}, OutputPath: filepath.Join(root, "successor.json")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.Counts.Matched != 2 || index.Counts.Open != 1 || len(index.RuntimeBatches) != 2 {
+		t.Fatalf("successor index = %#v", index)
+	}
+}
+
+func TestCreateSurfaceOracleIndexIncludesTerminalAuthority(t *testing.T) {
+	root := t.TempDir()
+	scopePath, batch := writeSurfaceOracleIndexInputs(t, root)
+	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](scopePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	authority := SurfaceTerminalAuthority{
+		SchemaVersion: 1, ScopeSHA256: replayBytesSHA256(scopeBytes), SourceProfileSHA256: scope.SourceProfileSHA256, LedgerSHA256: scope.LedgerSHA256, SupportPolicySHA256: scope.PolicySHA256,
+		SourceCoverageSHA256: strings.Repeat("d", 64), DirectCoverageSHA256: strings.Repeat("e", 64), ClassificationSHA256: strings.Repeat("f", 64), FixtureSetSHA256: strings.Repeat("1", 64),
+		Count: 1, ByClass: map[string]int{terminalHostedContext: 1}, Rows: []SurfaceTerminalAuthorityRow{{
+			SurfaceID: "apex:System.Three", Class: terminalHostedContext, Reason: "synthetic terminal authority",
+			Policy: SurfaceTerminalPolicyProvenance{Disposition: localRuntimeRequired, MatchRule: "synthetic", Reason: "synthetic"},
+			Ledger: SurfaceTerminalLedgerProvenance{SHA256: strings.Repeat("2", 64), Sources: []string{"synthetic"}},
+		}},
+	}
+	authority.RowsSHA256 = surfaceTerminalRowsSHA256(authority.Rows)
+	authorityPath := filepath.Join(root, "terminal-authority.json")
+	writeJSONValue(t, authorityPath, authority)
+	index, err := CreateSurfaceOracleIndex(SurfaceOracleIndexRequest{ScopePath: scopePath, TerminalAuthorityPath: authorityPath, RuntimeBatchRoots: []string{batch}, OutputPath: filepath.Join(root, "index.json")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.Counts.Matched != 2 || index.Counts.ExplicitNonParity != 1 || index.Counts.Open != 0 || index.Rows[1].State != "explicit-non-parity" || index.TerminalAuthoritySHA256 != surfaceOracleFileSHA256(t, authorityPath) {
+		t.Fatalf("terminal index = %#v", index)
+	}
+}
+
 func TestValidateSurfaceOracleIndexRejectsForgedMatchedRow(t *testing.T) {
 	root := t.TempDir()
 	scope, batch := writeSurfaceOracleIndexInputs(t, root)
@@ -148,14 +356,121 @@ func TestValidateSurfaceOracleIndexRejectsForgedMatchedRow(t *testing.T) {
 	}
 	index.Rows[1].State = "matched"
 	index.Counts = surfaceOracleIndexCounts(index.Rows)
-	if err := ValidateSurfaceOracleIndex(index); err == nil || !strings.Contains(err.Error(), "matched row set") {
+	if err := ValidateSurfaceOracleIndex(index); err == nil || !strings.Contains(err.Error(), "runtime batch adjudications") {
 		t.Fatalf("forged matched row error = %v", err)
 	}
 	index.Rows[1].State = "inconclusive"
 	index.Counts = surfaceOracleIndexCounts(index.Rows)
-	if err := ValidateSurfaceOracleIndex(index); err == nil || !strings.Contains(err.Error(), "invalid or unsorted") {
+	if err := ValidateSurfaceOracleIndex(index); err == nil || !strings.Contains(err.Error(), "runtime batch adjudications") {
 		t.Fatalf("speculative state error = %v", err)
 	}
+	index.Rows[0].State = "explicit-non-parity"
+	index.Rows[1].State = "open"
+	index.RuntimeBatches[0].States = []string{"explicit-non-parity", "matched"}
+	index.Counts = surfaceOracleIndexCounts(index.Rows)
+	if err := ValidateSurfaceOracleIndex(index); err == nil || !strings.Contains(err.Error(), "runtime batch surface state") {
+		t.Fatalf("runtime-invented explicit non-parity error = %v", err)
+	}
+}
+
+func writeProductionSurfaceIndexScope(t *testing.T, root string) string {
+	t.Helper()
+	path := filepath.Join(root, "scope.json")
+	writeJSONValue(t, path, SurfaceOracleScope{
+		SchemaVersion: 1, Kind: "all-runtime", SourceProfileSHA256: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64), PolicySHA256: strings.Repeat("c", 64),
+		Total: 1, ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 1}, Rows: []SurfaceOracleScopeRow{{SurfaceID: "apex:Runtime.run", Disposition: localRuntimeRequired}},
+	})
+	return path
+}
+
+func writeRecordedProductionCampaignForSurfaceIndex(t *testing.T, mismatchIndex int, expireFirst ...bool) ([]string, string, string) {
+	t.Helper()
+	inputs := newProductionV3N3Fixture(t)
+	if mismatchIndex >= 0 {
+		fixture := inputs.fixture
+		fixture.files = inputs.shards[mismatchIndex]
+		markSalesforceFixtureMismatchForTest(t, fixture)
+	}
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(inputs.plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 8, 24, 12, 0, 0, 0, time.UTC)
+	batchRoots := make([]string, 0, len(inputs.plan.Jobs))
+	for index := range inputs.plan.Jobs {
+		lease, err := orchestrator.Lease(inputs.plan.CampaignID, fmt.Sprintf("surface-index-worker-%d", index), now, time.Minute)
+		if err != nil {
+			t.Fatal(err)
+		}
+		operationNow := now
+		if index == 0 && len(expireFirst) != 0 && expireFirst[0] {
+			operationNow = now.Add(2 * time.Minute)
+			lease, err = orchestrator.Lease(inputs.plan.CampaignID, "surface-index-worker-0-retry", operationNow, time.Minute)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+		root := t.TempDir()
+		planPath, leasePath := filepath.Join(root, "ORCHESTRATOR_PLAN.json"), filepath.Join(root, "ORCHESTRATOR_LEASE.json")
+		writeJSONValue(t, planPath, inputs.plan)
+		writeJSONValue(t, leasePath, lease)
+		bindingPath := filepath.Join(root, "ORCHESTRATOR_BINDING.json")
+		if _, err := WriteOrchestratorBatchBinding(bindingPath, inputs.plan, lease); err != nil {
+			t.Fatal(err)
+		}
+		reconciliationPath, packetPath := filepath.Join(root, "SALESFORCE_RECONCILIATION.json"), filepath.Join(root, "salesforce-packet")
+		if _, err := CreateOrchestratorSalesforceReconciliation(OrchestratorSalesforceReconciliationRequest{Plan: inputs.plan, Lease: lease, OraclePlanPath: inputs.oraclePlanPath, BindingPath: bindingPath, ShardFiles: inputs.shards[index], PacketOutput: packetPath, OutputPath: reconciliationPath}); err != nil {
+			t.Fatal(err)
+		}
+		jobFixture := inputs.fixture
+		jobFixture.lease, jobFixture.bindingPath, jobFixture.files = lease, bindingPath, inputs.shards[index]
+		rawRoot := productionRawRootForTest(t, root, jobFixture, reconciliationPath)
+		classification, disposition := "match", "confirmed-match"
+		if index == mismatchIndex {
+			classification, disposition = "mismatch", "confirmed-mismatch"
+		}
+		reviewPath := filepath.Join(root, "PRODUCTION_REVIEW.json")
+		writeJSONValue(t, reviewPath, ProductionRuntimeReview{SchemaVersion: 1, PlanSHA256: surfaceOracleFileSHA256(t, planPath), LeaseSHA256: surfaceOracleFileSHA256(t, leasePath), LocalProofSHA256: surfaceOracleFileSHA256(t, inputs.localProofPath), ReconciliationSHA256: surfaceOracleFileSHA256(t, reconciliationPath), Rows: []ProductionRuntimeReviewRow{{SurfaceID: lease.SurfaceIDs[0], Action: oracleRuntime, Classification: classification, ReviewDisposition: disposition}}})
+		output := filepath.Join(root, "production-batch")
+		if _, err := BuildOrchestratorProductionBatch(BuildOrchestratorProductionBatchRequest{PlanPath: planPath, LeasePath: leasePath, LocalProofPath: inputs.localProofPath, ReviewPath: reviewPath, OracleBundleRoot: inputs.oracleBundleRoot, RawRoot: rawRoot, SalesforceReconciliationPath: reconciliationPath, SalesforcePacketPath: packetPath, OutputPath: output}); err != nil {
+			t.Fatal(err)
+		}
+		transfer, err := TransferOrchestratorWorkerBatch(OrchestratorWorkerTransferRequest{Plan: inputs.plan, Lease: lease, SourceBatchRoot: output, EvidenceRoot: filepath.Join(root, "evidence"), OraclePlanPath: inputs.oraclePlanPath})
+		if err != nil {
+			t.Fatal(err)
+		}
+		hub, allocation := fmt.Sprintf("surface-index-hub-%d", index), fmt.Sprintf("surface-index-scratch-%d", index)
+		if err := orchestrator.SetHubCapacity(hub, 1); err != nil {
+			t.Fatal(err)
+		}
+		observeReadyHub(t, orchestrator, hub, now)
+		if err := orchestrator.Reserve(lease, hub, allocation, operationNow); err != nil {
+			t.Fatal(err)
+		}
+		claim, err := orchestrator.ClaimCleanup(inputs.plan.CampaignID, lease.Worker, operationNow, time.Minute)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := orchestrator.CloseCleanup(claim, operationNow.Add(time.Second)); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := orchestrator.RecordReceipt(OrchestratorReceiptRequest{Lease: lease, BatchRoot: transfer.BatchRoot}, operationNow.Add(2*time.Second)); err != nil {
+			t.Fatal(err)
+		}
+		batchRoots = append(batchRoots, transfer.BatchRoot)
+	}
+	var sequence int
+	var name, database string
+	if err := orchestrator.db.QueryRow(`PRAGMA database_list`).Scan(&sequence, &name, &database); err != nil {
+		t.Fatal(err)
+	}
+	scopePath := filepath.Join(t.TempDir(), "surface-index-scope.json")
+	rows := make([]SurfaceOracleScopeRow, len(inputs.surfaceIDs))
+	for i, surfaceID := range inputs.surfaceIDs {
+		rows[i] = SurfaceOracleScopeRow{SurfaceID: surfaceID, Disposition: localRuntimeRequired}
+	}
+	writeJSONValue(t, scopePath, SurfaceOracleScope{SchemaVersion: 1, Kind: "all-runtime", SourceProfileSHA256: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64), PolicySHA256: strings.Repeat("c", 64), Total: len(rows), ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: len(rows)}, Rows: rows})
+	return batchRoots, database, scopePath
 }
 
 func writeSurfaceOracleIndexInputs(t *testing.T, root string) (string, string) {
