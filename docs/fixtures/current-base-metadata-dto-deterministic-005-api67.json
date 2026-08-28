@@ -71,36 +71,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Metadata.StatusCode",
-      "symbol": "Metadata.StatusCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Metadata.StatusCode.equals(Object)",
-      "symbol": "Metadata.StatusCode.equals(Object)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Metadata.StatusCode.hashCode()",
-      "symbol": "Metadata.StatusCode.hashCode()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Metadata.StatusCode.ordinal()",
-      "symbol": "Metadata.StatusCode.ordinal()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Metadata.StatusCode.valueOf(String)",
-      "symbol": "Metadata.StatusCode.valueOf(String)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Metadata.StatusCode.values()",
-      "symbol": "Metadata.StatusCode.values()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Metadata.SubtabComponents",
       "symbol": "Metadata.SubtabComponents"
     },

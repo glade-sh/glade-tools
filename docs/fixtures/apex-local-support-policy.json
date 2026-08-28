@@ -898,7 +898,14 @@
     {
       "namespace": "Metadata",
       "disposition": "deterministic-mock-required",
-      "reason": "shallow Metadata operations — deterministic mock"
+      "reason": "shallow Metadata operations — deterministic mock",
+      "memberExceptions": [
+        {
+          "typeName": "StatusCode",
+          "disposition": "local-runtime-required",
+          "reason": "passive Metadata.StatusCode enum runtime contract"
+        }
+      ]
     },
     {
       "namespace": "Auth",
