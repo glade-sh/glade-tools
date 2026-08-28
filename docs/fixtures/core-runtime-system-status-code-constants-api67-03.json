@@ -1,0 +1,533 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "System.StatusCode value = System.StatusCode.INVALID_QUERY_LOCATOR;\nvalue = System.StatusCode.INVALID_QUERY_VALUE;\nvalue = System.StatusCode.INVALID_READ_ONLY_USER_DML;\nvalue = System.StatusCode.INVALID_RECEIVEDDOCUMENTID_ATTACHMENT;\nvalue = System.StatusCode.INVALID_RECORD_ATTRIBUTE_VALUE;\nvalue = System.StatusCode.INVALID_RECORD_STATUS;\nvalue = System.StatusCode.INVALID_RECORD_TYPE;\nvalue = System.StatusCode.INVALID_REFRESH_TOKEN;\nvalue = System.StatusCode.INVALID_REORDER_PORTAL_RECORD_ASSOCIATION;\nvalue = System.StatusCode.INVALID_REQUEST_STATE;\nvalue = System.StatusCode.INVALID_RUNTIME_VALUE;\nvalue = System.StatusCode.INVALID_SAVE_AS_ACTIVITY_FLAG;\nvalue = System.StatusCode.INVALID_SCS_INBOUND_USER;\nvalue = System.StatusCode.INVALID_SEARCH_PROVIDER_REQUEST;\nvalue = System.StatusCode.INVALID_SESSION_ID;\nvalue = System.StatusCode.INVALID_SETUP_OWNER;\nvalue = System.StatusCode.INVALID_SIGNUP_COUNTRY;\nvalue = System.StatusCode.INVALID_SIGNUP_OPTION;\nvalue = System.StatusCode.INVALID_SITE_DELETE_EXCEPTION;\nvalue = System.StatusCode.INVALID_SITE_FILE_IMPORTED_EXCEPTION;\nvalue = System.StatusCode.INVALID_SITE_FILE_TYPE_EXCEPTION;\nvalue = System.StatusCode.INVALID_SOURCE_OBJECT_ID;\nvalue = System.StatusCode.INVALID_SOURCE_OBJECT_NAME;\nvalue = System.StatusCode.INVALID_STATUS;\nvalue = System.StatusCode.INVALID_SUBDOMAIN;\nvalue = System.StatusCode.INVALID_TARGET_OBJECT_NAME;\nvalue = System.StatusCode.INVALID_TEXT_REPRESENTATION;\nvalue = System.StatusCode.INVALID_TYPE;\nvalue = System.StatusCode.INVALID_TYPE_FOR_OPERATION;\nvalue = System.StatusCode.INVALID_TYPE_ON_FIELD_IN_RECORD;\nvalue = System.StatusCode.INVALID_UNMERGE_RECORD;\nvalue = System.StatusCode.INVALID_USERID;\nvalue = System.StatusCode.INVALID_USER_OBJECT;\nvalue = System.StatusCode.IP_RANGE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.ITEM_NOT_FOUND;\nvalue = System.StatusCode.JIGSAW_IMPORT_LIMIT_EXCEEDED;\nvalue = System.StatusCode.LICENSE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.LIGHT_PORTAL_USER_EXCEPTION;\nvalue = System.StatusCode.LIMIT_EXCEEDED;\nvalue = System.StatusCode.LIST_PRICE_NOT_FOUND;\nvalue = System.StatusCode.MALFORMED_ID;\nvalue = System.StatusCode.MANAGER_NOT_DEFINED;\nvalue = System.StatusCode.MAPPING_TYPE_NOT_SUPPORTED;\nvalue = System.StatusCode.MASSMAIL_RETRY_LIMIT_EXCEEDED;\nvalue = System.StatusCode.MASS_MAIL_LIMIT_EXCEEDED;\nvalue = System.StatusCode.MATCH_DEFINITION_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_INVALID_ENGINE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_INVALID_RULE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_ENGINE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_OBJECT_TYPE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_OPTIONS_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_RULE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_UNKNOWN_RULE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_UNSUPPORTED_VERSION_ERROR;\nvalue = System.StatusCode.MATCH_PRECONDITION_FAILED;\nvalue = System.StatusCode.MATCH_PRECONDITION_REQUIRED;\nvalue = System.StatusCode.MATCH_RUNTIME_ERROR;\nvalue = System.StatusCode.MATCH_SERVICE_ERROR;\nvalue = System.StatusCode.MATCH_SERVICE_TIMED_OUT;\nvalue = System.StatusCode.MATCH_SERVICE_UNAVAILABLE_ERROR;\nvalue = System.StatusCode.MAXIMUM_CCEMAILS_EXCEEDED;\nvalue = System.StatusCode.MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED;\nvalue = System.StatusCode.MAXIMUM_HIERARCHY_CHILDREN_REACHED;\nvalue = System.StatusCode.MAXIMUM_HIERARCHY_LEVELS_REACHED;\nvalue = System.StatusCode.MAXIMUM_HIERARCHY_TREE_SIZE_REACHED;\nvalue = System.StatusCode.MAXIMUM_SIZE_OF_ATTACHMENT;\nvalue = System.StatusCode.MAXIMUM_SIZE_OF_DOCUMENT;\nvalue = System.StatusCode.MAX_ACTIONS_PER_RULE_EXCEEDED;\nvalue = System.StatusCode.MAX_ACTIVE_RULES_EXCEEDED;\nvalue = System.StatusCode.MAX_APPROVAL_STEPS_EXCEEDED;\nvalue = System.StatusCode.MAX_DEPTH_IN_FLOW_EXECUTION;\nvalue = System.StatusCode.MAX_FORMULAS_PER_RULE_EXCEEDED;\nvalue = System.StatusCode.MAX_LIMIT_EXCEEDED;\nvalue = System.StatusCode.MAX_LOCALES_EXCEEDED;\nvalue = System.StatusCode.MAX_RULES_EXCEEDED;\nvalue = System.StatusCode.MAX_RULE_ENTRIES_EXCEEDED;\nvalue = System.StatusCode.MAX_STREAM_SUBSCRIPTIONS_EXCEEDED;\nvalue = System.StatusCode.MAX_TASK_DESCRIPTION_EXCEEEDED;\nvalue = System.StatusCode.MAX_TM_RULES_EXCEEDED;\nvalue = System.StatusCode.MAX_TM_RULE_ITEMS_EXCEEDED;\nvalue = System.StatusCode.MAX_TRIGGERS_EXCEEDED;\nvalue = System.StatusCode.MCONTENT_TAXONOMY_GET_ERROR;\nvalue = System.StatusCode.MCONTENT_TAXONOMY_PUBLISH_ERROR;\nvalue = System.StatusCode.MCONTENT_TAXONOMY_UPDATE_ERROR;\nvalue = System.StatusCode.MERGE_FAILED;\nvalue = System.StatusCode.METADATA_FIELD_UPDATE_ERROR;\nvalue = System.StatusCode.METHOD_NOT_ALLOWED;\nvalue = System.StatusCode.MISMATCHING_TYPES;\nvalue = System.StatusCode.MISSING_ARGUMENT;\nvalue = System.StatusCode.MISSING_OMNI_PROCESS_ID;\nvalue = System.StatusCode.MISSING_PAYMENTS_DEPENDENCY;\nvalue = System.StatusCode.MISSING_PAY_NOW_SITE_URL_ORG_VALUE;\nvalue = System.StatusCode.MISSING_RECEIVEDDOCUMENTID_ATTACHMENT;\nvalue = System.StatusCode.MISSING_RECORD;\nvalue = System.StatusCode.MIXED_DML_OPERATION;\nvalue = System.StatusCode.MODEL_NOT_ACTIVE;\nvalue = System.StatusCode.MULTIPLE_CONTENT_FOUND;\nvalue = System.StatusCode.MULTIPLE_VOUCHERS;\nvalue = System.StatusCode.NONUNIQUE_SHIPPING_ADDRESS;\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_QUERY_LOCATOR",
+      "symbol": "apex:System.StatusCode.INVALID_QUERY_LOCATOR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_QUERY_VALUE",
+      "symbol": "apex:System.StatusCode.INVALID_QUERY_VALUE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_READ_ONLY_USER_DML",
+      "symbol": "apex:System.StatusCode.INVALID_READ_ONLY_USER_DML"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_RECEIVEDDOCUMENTID_ATTACHMENT",
+      "symbol": "apex:System.StatusCode.INVALID_RECEIVEDDOCUMENTID_ATTACHMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_RECORD_ATTRIBUTE_VALUE",
+      "symbol": "apex:System.StatusCode.INVALID_RECORD_ATTRIBUTE_VALUE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_RECORD_STATUS",
+      "symbol": "apex:System.StatusCode.INVALID_RECORD_STATUS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_RECORD_TYPE",
+      "symbol": "apex:System.StatusCode.INVALID_RECORD_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_REFRESH_TOKEN",
+      "symbol": "apex:System.StatusCode.INVALID_REFRESH_TOKEN"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_REORDER_PORTAL_RECORD_ASSOCIATION",
+      "symbol": "apex:System.StatusCode.INVALID_REORDER_PORTAL_RECORD_ASSOCIATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_REQUEST_STATE",
+      "symbol": "apex:System.StatusCode.INVALID_REQUEST_STATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_RUNTIME_VALUE",
+      "symbol": "apex:System.StatusCode.INVALID_RUNTIME_VALUE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SAVE_AS_ACTIVITY_FLAG",
+      "symbol": "apex:System.StatusCode.INVALID_SAVE_AS_ACTIVITY_FLAG"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SCS_INBOUND_USER",
+      "symbol": "apex:System.StatusCode.INVALID_SCS_INBOUND_USER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SEARCH_PROVIDER_REQUEST",
+      "symbol": "apex:System.StatusCode.INVALID_SEARCH_PROVIDER_REQUEST"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SESSION_ID",
+      "symbol": "apex:System.StatusCode.INVALID_SESSION_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SETUP_OWNER",
+      "symbol": "apex:System.StatusCode.INVALID_SETUP_OWNER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SIGNUP_COUNTRY",
+      "symbol": "apex:System.StatusCode.INVALID_SIGNUP_COUNTRY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SIGNUP_OPTION",
+      "symbol": "apex:System.StatusCode.INVALID_SIGNUP_OPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SITE_DELETE_EXCEPTION",
+      "symbol": "apex:System.StatusCode.INVALID_SITE_DELETE_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SITE_FILE_IMPORTED_EXCEPTION",
+      "symbol": "apex:System.StatusCode.INVALID_SITE_FILE_IMPORTED_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SITE_FILE_TYPE_EXCEPTION",
+      "symbol": "apex:System.StatusCode.INVALID_SITE_FILE_TYPE_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SOURCE_OBJECT_ID",
+      "symbol": "apex:System.StatusCode.INVALID_SOURCE_OBJECT_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SOURCE_OBJECT_NAME",
+      "symbol": "apex:System.StatusCode.INVALID_SOURCE_OBJECT_NAME"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_STATUS",
+      "symbol": "apex:System.StatusCode.INVALID_STATUS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_SUBDOMAIN",
+      "symbol": "apex:System.StatusCode.INVALID_SUBDOMAIN"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_TARGET_OBJECT_NAME",
+      "symbol": "apex:System.StatusCode.INVALID_TARGET_OBJECT_NAME"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_TEXT_REPRESENTATION",
+      "symbol": "apex:System.StatusCode.INVALID_TEXT_REPRESENTATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_TYPE",
+      "symbol": "apex:System.StatusCode.INVALID_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_TYPE_FOR_OPERATION",
+      "symbol": "apex:System.StatusCode.INVALID_TYPE_FOR_OPERATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_TYPE_ON_FIELD_IN_RECORD",
+      "symbol": "apex:System.StatusCode.INVALID_TYPE_ON_FIELD_IN_RECORD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_UNMERGE_RECORD",
+      "symbol": "apex:System.StatusCode.INVALID_UNMERGE_RECORD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_USERID",
+      "symbol": "apex:System.StatusCode.INVALID_USERID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_USER_OBJECT",
+      "symbol": "apex:System.StatusCode.INVALID_USER_OBJECT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IP_RANGE_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.IP_RANGE_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ITEM_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.ITEM_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.JIGSAW_IMPORT_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.JIGSAW_IMPORT_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.LICENSE_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.LICENSE_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.LIGHT_PORTAL_USER_EXCEPTION",
+      "symbol": "apex:System.StatusCode.LIGHT_PORTAL_USER_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.LIST_PRICE_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.LIST_PRICE_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MALFORMED_ID",
+      "symbol": "apex:System.StatusCode.MALFORMED_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MANAGER_NOT_DEFINED",
+      "symbol": "apex:System.StatusCode.MANAGER_NOT_DEFINED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAPPING_TYPE_NOT_SUPPORTED",
+      "symbol": "apex:System.StatusCode.MAPPING_TYPE_NOT_SUPPORTED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MASSMAIL_RETRY_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MASSMAIL_RETRY_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MASS_MAIL_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MASS_MAIL_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_DEFINITION_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_DEFINITION_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_INVALID_ENGINE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_INVALID_ENGINE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_INVALID_RULE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_INVALID_RULE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_MISSING_ENGINE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_MISSING_ENGINE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_MISSING_OBJECT_TYPE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_MISSING_OBJECT_TYPE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_MISSING_OPTIONS_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_MISSING_OPTIONS_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_MISSING_RULE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_MISSING_RULE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_UNKNOWN_RULE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_UNKNOWN_RULE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_OPERATION_UNSUPPORTED_VERSION_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_OPERATION_UNSUPPORTED_VERSION_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_PRECONDITION_FAILED",
+      "symbol": "apex:System.StatusCode.MATCH_PRECONDITION_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_PRECONDITION_REQUIRED",
+      "symbol": "apex:System.StatusCode.MATCH_PRECONDITION_REQUIRED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_RUNTIME_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_RUNTIME_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_SERVICE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_SERVICE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_SERVICE_TIMED_OUT",
+      "symbol": "apex:System.StatusCode.MATCH_SERVICE_TIMED_OUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MATCH_SERVICE_UNAVAILABLE_ERROR",
+      "symbol": "apex:System.StatusCode.MATCH_SERVICE_UNAVAILABLE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAXIMUM_CCEMAILS_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAXIMUM_CCEMAILS_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAXIMUM_HIERARCHY_CHILDREN_REACHED",
+      "symbol": "apex:System.StatusCode.MAXIMUM_HIERARCHY_CHILDREN_REACHED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAXIMUM_HIERARCHY_LEVELS_REACHED",
+      "symbol": "apex:System.StatusCode.MAXIMUM_HIERARCHY_LEVELS_REACHED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAXIMUM_HIERARCHY_TREE_SIZE_REACHED",
+      "symbol": "apex:System.StatusCode.MAXIMUM_HIERARCHY_TREE_SIZE_REACHED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAXIMUM_SIZE_OF_ATTACHMENT",
+      "symbol": "apex:System.StatusCode.MAXIMUM_SIZE_OF_ATTACHMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAXIMUM_SIZE_OF_DOCUMENT",
+      "symbol": "apex:System.StatusCode.MAXIMUM_SIZE_OF_DOCUMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_ACTIONS_PER_RULE_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_ACTIONS_PER_RULE_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_ACTIVE_RULES_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_ACTIVE_RULES_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_APPROVAL_STEPS_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_APPROVAL_STEPS_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_DEPTH_IN_FLOW_EXECUTION",
+      "symbol": "apex:System.StatusCode.MAX_DEPTH_IN_FLOW_EXECUTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_FORMULAS_PER_RULE_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_FORMULAS_PER_RULE_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_LOCALES_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_LOCALES_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_RULES_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_RULES_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_RULE_ENTRIES_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_RULE_ENTRIES_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_STREAM_SUBSCRIPTIONS_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_STREAM_SUBSCRIPTIONS_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_TASK_DESCRIPTION_EXCEEEDED",
+      "symbol": "apex:System.StatusCode.MAX_TASK_DESCRIPTION_EXCEEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_TM_RULES_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_TM_RULES_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_TM_RULE_ITEMS_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_TM_RULE_ITEMS_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MAX_TRIGGERS_EXCEEDED",
+      "symbol": "apex:System.StatusCode.MAX_TRIGGERS_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MCONTENT_TAXONOMY_GET_ERROR",
+      "symbol": "apex:System.StatusCode.MCONTENT_TAXONOMY_GET_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MCONTENT_TAXONOMY_PUBLISH_ERROR",
+      "symbol": "apex:System.StatusCode.MCONTENT_TAXONOMY_PUBLISH_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MCONTENT_TAXONOMY_UPDATE_ERROR",
+      "symbol": "apex:System.StatusCode.MCONTENT_TAXONOMY_UPDATE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MERGE_FAILED",
+      "symbol": "apex:System.StatusCode.MERGE_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.METADATA_FIELD_UPDATE_ERROR",
+      "symbol": "apex:System.StatusCode.METADATA_FIELD_UPDATE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.METHOD_NOT_ALLOWED",
+      "symbol": "apex:System.StatusCode.METHOD_NOT_ALLOWED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MISMATCHING_TYPES",
+      "symbol": "apex:System.StatusCode.MISMATCHING_TYPES"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MISSING_ARGUMENT",
+      "symbol": "apex:System.StatusCode.MISSING_ARGUMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MISSING_OMNI_PROCESS_ID",
+      "symbol": "apex:System.StatusCode.MISSING_OMNI_PROCESS_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MISSING_PAYMENTS_DEPENDENCY",
+      "symbol": "apex:System.StatusCode.MISSING_PAYMENTS_DEPENDENCY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MISSING_PAY_NOW_SITE_URL_ORG_VALUE",
+      "symbol": "apex:System.StatusCode.MISSING_PAY_NOW_SITE_URL_ORG_VALUE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MISSING_RECEIVEDDOCUMENTID_ATTACHMENT",
+      "symbol": "apex:System.StatusCode.MISSING_RECEIVEDDOCUMENTID_ATTACHMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MISSING_RECORD",
+      "symbol": "apex:System.StatusCode.MISSING_RECORD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MIXED_DML_OPERATION",
+      "symbol": "apex:System.StatusCode.MIXED_DML_OPERATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MODEL_NOT_ACTIVE",
+      "symbol": "apex:System.StatusCode.MODEL_NOT_ACTIVE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MULTIPLE_CONTENT_FOUND",
+      "symbol": "apex:System.StatusCode.MULTIPLE_CONTENT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.MULTIPLE_VOUCHERS",
+      "symbol": "apex:System.StatusCode.MULTIPLE_VOUCHERS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NONUNIQUE_SHIPPING_ADDRESS",
+      "symbol": "apex:System.StatusCode.NONUNIQUE_SHIPPING_ADDRESS"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-system-status-code-constants-api67-03",
+  "notes": "Exact-candidate bounded local-runtime witness for one shard of the API 67 System.StatusCode enum family. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "statuscode-local-evidence",
+    "selectedRowCount": 100
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "System.StatusCode value = System.StatusCode.INVALID_QUERY_LOCATOR;\nvalue = System.StatusCode.INVALID_QUERY_VALUE;\nvalue = System.StatusCode.INVALID_READ_ONLY_USER_DML;\nvalue = System.StatusCode.INVALID_RECEIVEDDOCUMENTID_ATTACHMENT;\nvalue = System.StatusCode.INVALID_RECORD_ATTRIBUTE_VALUE;\nvalue = System.StatusCode.INVALID_RECORD_STATUS;\nvalue = System.StatusCode.INVALID_RECORD_TYPE;\nvalue = System.StatusCode.INVALID_REFRESH_TOKEN;\nvalue = System.StatusCode.INVALID_REORDER_PORTAL_RECORD_ASSOCIATION;\nvalue = System.StatusCode.INVALID_REQUEST_STATE;\nvalue = System.StatusCode.INVALID_RUNTIME_VALUE;\nvalue = System.StatusCode.INVALID_SAVE_AS_ACTIVITY_FLAG;\nvalue = System.StatusCode.INVALID_SCS_INBOUND_USER;\nvalue = System.StatusCode.INVALID_SEARCH_PROVIDER_REQUEST;\nvalue = System.StatusCode.INVALID_SESSION_ID;\nvalue = System.StatusCode.INVALID_SETUP_OWNER;\nvalue = System.StatusCode.INVALID_SIGNUP_COUNTRY;\nvalue = System.StatusCode.INVALID_SIGNUP_OPTION;\nvalue = System.StatusCode.INVALID_SITE_DELETE_EXCEPTION;\nvalue = System.StatusCode.INVALID_SITE_FILE_IMPORTED_EXCEPTION;\nvalue = System.StatusCode.INVALID_SITE_FILE_TYPE_EXCEPTION;\nvalue = System.StatusCode.INVALID_SOURCE_OBJECT_ID;\nvalue = System.StatusCode.INVALID_SOURCE_OBJECT_NAME;\nvalue = System.StatusCode.INVALID_STATUS;\nvalue = System.StatusCode.INVALID_SUBDOMAIN;\nvalue = System.StatusCode.INVALID_TARGET_OBJECT_NAME;\nvalue = System.StatusCode.INVALID_TEXT_REPRESENTATION;\nvalue = System.StatusCode.INVALID_TYPE;\nvalue = System.StatusCode.INVALID_TYPE_FOR_OPERATION;\nvalue = System.StatusCode.INVALID_TYPE_ON_FIELD_IN_RECORD;\nvalue = System.StatusCode.INVALID_UNMERGE_RECORD;\nvalue = System.StatusCode.INVALID_USERID;\nvalue = System.StatusCode.INVALID_USER_OBJECT;\nvalue = System.StatusCode.IP_RANGE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.ITEM_NOT_FOUND;\nvalue = System.StatusCode.JIGSAW_IMPORT_LIMIT_EXCEEDED;\nvalue = System.StatusCode.LICENSE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.LIGHT_PORTAL_USER_EXCEPTION;\nvalue = System.StatusCode.LIMIT_EXCEEDED;\nvalue = System.StatusCode.LIST_PRICE_NOT_FOUND;\nvalue = System.StatusCode.MALFORMED_ID;\nvalue = System.StatusCode.MANAGER_NOT_DEFINED;\nvalue = System.StatusCode.MAPPING_TYPE_NOT_SUPPORTED;\nvalue = System.StatusCode.MASSMAIL_RETRY_LIMIT_EXCEEDED;\nvalue = System.StatusCode.MASS_MAIL_LIMIT_EXCEEDED;\nvalue = System.StatusCode.MATCH_DEFINITION_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_INVALID_ENGINE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_INVALID_RULE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_ENGINE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_OBJECT_TYPE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_OPTIONS_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_MISSING_RULE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_UNKNOWN_RULE_ERROR;\nvalue = System.StatusCode.MATCH_OPERATION_UNSUPPORTED_VERSION_ERROR;\nvalue = System.StatusCode.MATCH_PRECONDITION_FAILED;\nvalue = System.StatusCode.MATCH_PRECONDITION_REQUIRED;\nvalue = System.StatusCode.MATCH_RUNTIME_ERROR;\nvalue = System.StatusCode.MATCH_SERVICE_ERROR;\nvalue = System.StatusCode.MATCH_SERVICE_TIMED_OUT;\nvalue = System.StatusCode.MATCH_SERVICE_UNAVAILABLE_ERROR;\nvalue = System.StatusCode.MAXIMUM_CCEMAILS_EXCEEDED;\nvalue = System.StatusCode.MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED;\nvalue = System.StatusCode.MAXIMUM_HIERARCHY_CHILDREN_REACHED;\nvalue = System.StatusCode.MAXIMUM_HIERARCHY_LEVELS_REACHED;\nvalue = System.StatusCode.MAXIMUM_HIERARCHY_TREE_SIZE_REACHED;\nvalue = System.StatusCode.MAXIMUM_SIZE_OF_ATTACHMENT;\nvalue = System.StatusCode.MAXIMUM_SIZE_OF_DOCUMENT;\nvalue = System.StatusCode.MAX_ACTIONS_PER_RULE_EXCEEDED;\nvalue = System.StatusCode.MAX_ACTIVE_RULES_EXCEEDED;\nvalue = System.StatusCode.MAX_APPROVAL_STEPS_EXCEEDED;\nvalue = System.StatusCode.MAX_DEPTH_IN_FLOW_EXECUTION;\nvalue = System.StatusCode.MAX_FORMULAS_PER_RULE_EXCEEDED;\nvalue = System.StatusCode.MAX_LIMIT_EXCEEDED;\nvalue = System.StatusCode.MAX_LOCALES_EXCEEDED;\nvalue = System.StatusCode.MAX_RULES_EXCEEDED;\nvalue = System.StatusCode.MAX_RULE_ENTRIES_EXCEEDED;\nvalue = System.StatusCode.MAX_STREAM_SUBSCRIPTIONS_EXCEEDED;\nvalue = System.StatusCode.MAX_TASK_DESCRIPTION_EXCEEEDED;\nvalue = System.StatusCode.MAX_TM_RULES_EXCEEDED;\nvalue = System.StatusCode.MAX_TM_RULE_ITEMS_EXCEEDED;\nvalue = System.StatusCode.MAX_TRIGGERS_EXCEEDED;\nvalue = System.StatusCode.MCONTENT_TAXONOMY_GET_ERROR;\nvalue = System.StatusCode.MCONTENT_TAXONOMY_PUBLISH_ERROR;\nvalue = System.StatusCode.MCONTENT_TAXONOMY_UPDATE_ERROR;\nvalue = System.StatusCode.MERGE_FAILED;\nvalue = System.StatusCode.METADATA_FIELD_UPDATE_ERROR;\nvalue = System.StatusCode.METHOD_NOT_ALLOWED;\nvalue = System.StatusCode.MISMATCHING_TYPES;\nvalue = System.StatusCode.MISSING_ARGUMENT;\nvalue = System.StatusCode.MISSING_OMNI_PROCESS_ID;\nvalue = System.StatusCode.MISSING_PAYMENTS_DEPENDENCY;\nvalue = System.StatusCode.MISSING_PAY_NOW_SITE_URL_ORG_VALUE;\nvalue = System.StatusCode.MISSING_RECEIVEDDOCUMENTID_ATTACHMENT;\nvalue = System.StatusCode.MISSING_RECORD;\nvalue = System.StatusCode.MIXED_DML_OPERATION;\nvalue = System.StatusCode.MODEL_NOT_ACTIVE;\nvalue = System.StatusCode.MULTIPLE_CONTENT_FOUND;\nvalue = System.StatusCode.MULTIPLE_VOUCHERS;\nvalue = System.StatusCode.NONUNIQUE_SHIPPING_ADDRESS;\n",
+      "path": "anonymous.apex"
+    }
+  ]
+}

@@ -10,12 +10,24 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
-const systemStatusCodeFixture = "core-runtime-system-status-code-api67.json"
+var systemStatusCodeFixtures = []string{
+	"core-runtime-system-status-code-enum-api67.json",
+	"core-runtime-system-status-code-constants-api67-00.json",
+	"core-runtime-system-status-code-constants-api67-01.json",
+	"core-runtime-system-status-code-constants-api67-02.json",
+	"core-runtime-system-status-code-constants-api67-03.json",
+	"core-runtime-system-status-code-constants-api67-04.json",
+	"core-runtime-system-status-code-constants-api67-05.json",
+	"core-runtime-system-status-code-constants-api67-06.json",
+}
 
 func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 	root := filepath.Join("..", "..")
 	sourcePath := filepath.Join(root, "docs", "fixtures", "current-base-cb191-system-rebind-positive-api67.json")
-	fixturePath := filepath.Join(root, "docs", "fixtures", systemStatusCodeFixture)
+	fixturePaths := make([]string, len(systemStatusCodeFixtures))
+	for i, name := range systemStatusCodeFixtures {
+		fixturePaths[i] = filepath.Join(root, "docs", "fixtures", name)
+	}
 
 	wantIDs := statusCodeIDs(t, sourcePath)
 	if len(wantIDs) != 628 {
@@ -37,46 +49,66 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 	if len(wantIDs)-6 != 622 {
 		t.Fatalf("source StatusCode constants = %d, want 622", len(wantIDs)-6)
 	}
-	fixture, err := compat.LoadFile(fixturePath)
-	if err != nil {
-		t.Fatal(err)
+	selectedRows := 0
+	wantFixtureRows := []int{6, 100, 100, 100, 100, 100, 100, 22}
+	for i, fixturePath := range fixturePaths {
+		fixture, err := compat.LoadFile(fixturePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := compat.Validate(fixture); err != nil {
+			t.Fatal(err)
+		}
+		if fixture.Name != strings.TrimSuffix(systemStatusCodeFixtures[i], ".json") || fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 || len(fixture.Source) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
+			t.Fatalf("fixture execution envelope = %#v", fixture)
+		}
+		if len(fixture.Evidence) != wantFixtureRows[i] {
+			t.Fatalf("fixture %s evidence rows = %d, want %d", fixture.Name, len(fixture.Evidence), wantFixtureRows[i])
+		}
+		if len(fixture.Source[0].Content) > 12*1024 {
+			t.Fatalf("fixture %s anonymous Apex bytes = %d, want at most 12288", fixture.Name, len(fixture.Source[0].Content))
+		}
+
+		data, err := os.ReadFile(fixturePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var metadata struct {
+			APIVersion         string `json:"apiVersion"`
+			Mode               string `json:"mode"`
+			Notes              string `json:"notes"`
+			EvidenceOnly       bool   `json:"evidenceOnly"`
+			SalesforceEligible *bool  `json:"salesforceEligible"`
+			Salesforce         any    `json:"salesforce"`
+			Comparisons        any    `json:"comparisons"`
+			Profile            struct {
+				CandidateCommit string `json:"candidateCommit"`
+				CandidateSHA256 string `json:"candidateSha256"`
+				SelectedRows    int    `json:"selectedRowCount"`
+			} `json:"profile"`
+		}
+		if err := json.Unmarshal(data, &metadata); err != nil {
+			t.Fatal(err)
+		}
+		if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || !*metadata.SalesforceEligible || metadata.Profile.CandidateCommit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || metadata.Profile.CandidateSHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" {
+			t.Fatalf("fixture provenance = %#v", metadata)
+		}
+		if metadata.Profile.SelectedRows != wantFixtureRows[i] {
+			t.Fatalf("fixture %s selected rows = %d, want %d", fixture.Name, metadata.Profile.SelectedRows, wantFixtureRows[i])
+		}
+		selectedRows += metadata.Profile.SelectedRows
+		if metadata.Salesforce != nil || metadata.Comparisons != nil || !strings.Contains(metadata.Notes, "no hosted Salesforce execution or parity claim") {
+			t.Fatalf("fixture makes an unsupported Salesforce parity claim: %#v", metadata)
+		}
+		if result, err := compat.Run(fixture); err != nil || !result.OK {
+			t.Fatalf("fixture execution = %#v, error = %v", result, err)
+		}
 	}
-	if err := compat.Validate(fixture); err != nil {
-		t.Fatal(err)
-	}
-	if fixture.Name != strings.TrimSuffix(systemStatusCodeFixture, ".json") || fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 || len(fixture.Source) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
-		t.Fatalf("fixture execution envelope = %#v", fixture)
+	if selectedRows != 628 {
+		t.Fatalf("fixture selected rows = %d, want 628", selectedRows)
 	}
 
-	data, err := os.ReadFile(fixturePath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var metadata struct {
-		APIVersion         string `json:"apiVersion"`
-		Mode               string `json:"mode"`
-		Notes              string `json:"notes"`
-		EvidenceOnly       bool   `json:"evidenceOnly"`
-		SalesforceEligible *bool  `json:"salesforceEligible"`
-		Salesforce         any    `json:"salesforce"`
-		Comparisons        any    `json:"comparisons"`
-		Profile            struct {
-			CandidateCommit string `json:"candidateCommit"`
-			CandidateSHA256 string `json:"candidateSha256"`
-			SelectedRows    int    `json:"selectedRowCount"`
-		} `json:"profile"`
-	}
-	if err := json.Unmarshal(data, &metadata); err != nil {
-		t.Fatal(err)
-	}
-	if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || !*metadata.SalesforceEligible || metadata.Profile.CandidateCommit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || metadata.Profile.CandidateSHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || metadata.Profile.SelectedRows != 628 {
-		t.Fatalf("fixture provenance = %#v", metadata)
-	}
-	if metadata.Salesforce != nil || metadata.Comparisons != nil || !strings.Contains(metadata.Notes, "no hosted Salesforce execution or parity claim") {
-		t.Fatalf("fixture makes an unsupported Salesforce parity claim: %#v", metadata)
-	}
-
-	evidence, err := BuildEvidenceSnapshot([]string{fixturePath})
+	evidence, err := BuildEvidenceSnapshot(fixturePaths)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,6 +117,10 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
 			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/supported", row.SurfaceID, row.Evidence, row.GladeBehavior)
 		}
+	}
+	fixture, err := compat.LoadFile(fixturePaths[0])
+	if err != nil {
+		t.Fatal(err)
 	}
 	source := fixture.Source[0].Content
 	for _, assertion := range []string{
@@ -127,9 +163,6 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 		}
 	}
 
-	if result, err := compat.Run(fixture); err != nil || !result.OK {
-		t.Fatalf("fixture execution = %#v, error = %v", result, err)
-	}
 }
 
 func statusCodeIDs(t *testing.T, path string) []string {

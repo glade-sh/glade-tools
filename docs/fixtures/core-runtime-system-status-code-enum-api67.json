@@ -1,0 +1,63 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "System.StatusCode value = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assertEquals(622, System.StatusCode.values().size());\nvalue = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assert(value.equals(value));\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('ALERT_NOTIFICATION_LIMIT_EXCEEDED').ordinal());\nSystem.assert(value.ordinal() \u003e= 0);\nSystem.assertEquals(value.hashCode(), value.hashCode());\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode",
+      "symbol": "apex:System.StatusCode"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.equals(Object)",
+      "symbol": "apex:System.StatusCode.equals(Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.hashCode()",
+      "symbol": "apex:System.StatusCode.hashCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ordinal()",
+      "symbol": "apex:System.StatusCode.ordinal()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.valueOf(String)",
+      "symbol": "apex:System.StatusCode.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.values()",
+      "symbol": "apex:System.StatusCode.values()"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-system-status-code-enum-api67",
+  "notes": "Exact-candidate bounded local-runtime witness for one shard of the API 67 System.StatusCode enum family. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "statuscode-local-evidence",
+    "selectedRowCount": 6
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "System.StatusCode value = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assertEquals(622, System.StatusCode.values().size());\nvalue = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assert(value.equals(value));\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('ALERT_NOTIFICATION_LIMIT_EXCEEDED').ordinal());\nSystem.assert(value.ordinal() \u003e= 0);\nSystem.assertEquals(value.hashCode(), value.hashCode());\n",
+      "path": "anonymous.apex"
+    }
+  ]
+}
