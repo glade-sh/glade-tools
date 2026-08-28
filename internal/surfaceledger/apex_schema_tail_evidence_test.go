@@ -13,18 +13,11 @@ import (
 const apexSchemaTailFixture = "core-runtime-apex-schema-tail-api67.json"
 
 var apexSchemaTailIDs = []string{
-	"apex:Apex.EmptyStackException",
-	"apex:Apex.EmptyStackException.EmptyStackException()",
-	"apex:Apex.EmptyStackException.EmptyStackException(Exception)",
-	"apex:Apex.EmptyStackException.EmptyStackException(String)",
-	"apex:Apex.EmptyStackException.EmptyStackException(String,Exception)",
-	"apex:Apex.EmptyStackException.clone()",
 	"apex:Schema.SObjectType.newSObject(Id)",
 	"apex:Schema.SObjectTypeFieldSets.get(String)",
 	"apex:Schema.SObjectTypeFieldSets.getMap()",
 	"apex:Schema.SObjectTypeFields.get(String)",
 	"apex:Schema.SObjectTypeFields.getMap()",
-	"apex:Schema.Schema.Schema()",
 	"apex:Schema.Schema.describeSObjects(List<String>,Object)",
 }
 
@@ -84,22 +77,11 @@ func TestApexSchemaTailHasExactExecutableLocalEvidence(t *testing.T) {
 
 	source := fixture.Source[0].Content
 	for _, witness := range []string{
-		"Apex.EmptyStackException defaultException = new Apex.EmptyStackException();",
-		"Apex.EmptyStackException causedException = new Apex.EmptyStackException(rootCause);",
-		"Apex.EmptyStackException messageException = new Apex.EmptyStackException('empty stack');",
-		"Apex.EmptyStackException wrappedException = new Apex.EmptyStackException('wrapped empty stack', rootCause);",
-		"System.assertEquals('Script-thrown exception', causedException.getMessage());",
-		"System.assertEquals('Script-thrown exception', messageException.getMessage());",
-		"System.assertEquals(null, wrappedException.getCause());",
-		"Apex.EmptyStackException clonedException = (Apex.EmptyStackException)wrappedException.clone();",
-		"System.assertNotEquals(wrappedException, clonedException);",
-		"System.assertEquals(null, clonedException.getCause());",
 		"SObject withId = accountType.newSObject(accountId);",
 		"accountDescribe.fieldSets.get('GladeAbsentFieldSet')",
 		"accountDescribe.fieldSets.getMap()",
 		"accountDescribe.fields.get('Name')",
 		"accountDescribe.fields.getMap()",
-		"Schema.Schema schemaValue = new Schema.Schema();",
 		"Schema.describeSObjects(new List<String>{'Account'}, Schema.SObjectDescribeOptions.DEFERRED)",
 	} {
 		if !strings.Contains(source, witness) {

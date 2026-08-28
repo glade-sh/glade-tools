@@ -1,0 +1,32 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.Cursor emptyCursor = new Database.Cursor();\nSystem.assertNotEquals(null, emptyCursor);\nDatabase.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER;\nSystem.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter);"
+    ]
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Database.Cursor.Cursor()","symbol":"apex:Database.Cursor.Cursor()"},
+    {"kind":"exec","surfaceId":"apex:Database.Cursor.DeleteFilter","symbol":"apex:Database.Cursor.DeleteFilter"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-database-cursor-sync-tail-local-only-api67",
+  "notes": "Exact-candidate executable local-runtime witness for Glade's directly constructible Database.Cursor and nested DeleteFilter alias. These shapes are not portable hosted anonymous Apex probes and earn zero Salesforce parity.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "database-cursor-local-only-evidence",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 does not expose the Database.Cursor constructor or Cursor.DeleteFilter nested type to anonymous Apex, so this local contract earns zero Salesforce parity.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.Cursor emptyCursor = new Database.Cursor();\nSystem.assertNotEquals(null, emptyCursor);\nDatabase.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER;\nSystem.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter);"
+    }
+  ]
+}

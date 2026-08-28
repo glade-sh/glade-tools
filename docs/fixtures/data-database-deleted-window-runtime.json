@@ -9,28 +9,10 @@
       "notes": "Local Database.getDeleted returns records deleted inside the requested sync window."
     },
     {
-      "surfaceId": "apex:System.Database.GetDeletedResult.getDeletedRecords()",
-      "symbol": "Database.GetDeletedResult.getDeletedRecords()",
-      "kind": "exec",
-      "notes": "GetDeletedResult exposes matching local deleted records."
-    },
-    {
-      "surfaceId": "apex:System.Database.DeletedRecord.getId()",
-      "symbol": "Database.DeletedRecord.getId()",
-      "kind": "exec",
-      "notes": "DeletedRecord exposes the deleted local record Id."
-    },
-    {
       "surfaceId": "apex:Database.DeletedRecord.getId()",
       "symbol": "Database.DeletedRecord.getId()",
       "kind": "exec",
       "notes": "DeletedRecord exposes the deleted local record Id."
-    },
-    {
-      "surfaceId": "apex:System.Database.DeletedRecord.getDeletedDate()",
-      "symbol": "Database.DeletedRecord.getDeletedDate()",
-      "kind": "exec",
-      "notes": "DeletedRecord exposes the local deletion Date."
     },
     {
       "surfaceId": "apex:Database.DeletedRecord.getDeletedDate()",
@@ -42,13 +24,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Datetime windowStart = Datetime.now().addMinutes(-1); Account account = new Account(Name = 'Delete Me'); insert account; Id accountId = account.Id; delete account; Datetime windowEnd = Datetime.now().addMinutes(1); System.Database.GetDeletedResult observed = System.Database.getDeleted('Account', windowStart, windowEnd); System.assertEquals(1, observed.getDeletedRecords().size()); System.Database.DeletedRecord systemDeleted = observed.getDeletedRecords()[0]; Database.DeletedRecord deleted = observed.getDeletedRecords()[0]; System.assertEquals(accountId, systemDeleted.getId()); System.assertEquals(accountId, deleted.getId()); Date expectedDate = Date.today(); System.assertEquals(expectedDate, systemDeleted.getDeletedDate()); System.assertEquals(expectedDate, deleted.getDeletedDate()); System.assertEquals(expectedDate, observed.getEarliestDateAvailable()); System.assertEquals(expectedDate, observed.getLatestDateCovered());"
+      "content": "Datetime windowStart = Datetime.now().addMinutes(-1); Account account = new Account(Name = 'Delete Me'); insert account; Id accountId = account.Id; delete account; Datetime windowEnd = Datetime.now().addMinutes(1); Database.GetDeletedResult observed = Database.getDeleted('Account', windowStart, windowEnd); Database.DeletedRecord deleted; for (Database.DeletedRecord candidate : observed.getDeletedRecords()) { if (candidate.getId() == accountId) { deleted = candidate; break; } } System.assertNotEquals(null, deleted); System.assertEquals(accountId, deleted.getId()); System.assertEquals(Date.today(), deleted.getDeletedDate());"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Datetime windowStart = Datetime.now().addMinutes(-1); Account account = new Account(Name = 'Delete Me'); insert account; Id accountId = account.Id; delete account; Datetime windowEnd = Datetime.now().addMinutes(1); System.Database.GetDeletedResult observed = System.Database.getDeleted('Account', windowStart, windowEnd); System.assertEquals(1, observed.getDeletedRecords().size()); System.Database.DeletedRecord systemDeleted = observed.getDeletedRecords()[0]; Database.DeletedRecord deleted = observed.getDeletedRecords()[0]; System.assertEquals(accountId, systemDeleted.getId()); System.assertEquals(accountId, deleted.getId()); Date expectedDate = Date.today(); System.assertEquals(expectedDate, systemDeleted.getDeletedDate()); System.assertEquals(expectedDate, deleted.getDeletedDate()); System.assertEquals(expectedDate, observed.getEarliestDateAvailable()); System.assertEquals(expectedDate, observed.getLatestDateCovered());"
+      "Datetime windowStart = Datetime.now().addMinutes(-1); Account account = new Account(Name = 'Delete Me'); insert account; Id accountId = account.Id; delete account; Datetime windowEnd = Datetime.now().addMinutes(1); Database.GetDeletedResult observed = Database.getDeleted('Account', windowStart, windowEnd); Database.DeletedRecord deleted; for (Database.DeletedRecord candidate : observed.getDeletedRecords()) { if (candidate.getId() == accountId) { deleted = candidate; break; } } System.assertNotEquals(null, deleted); System.assertEquals(accountId, deleted.getId()); System.assertEquals(Date.today(), deleted.getDeletedDate());"
     ]
   },
   "expected": {

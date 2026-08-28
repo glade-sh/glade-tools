@@ -3,7 +3,7 @@
   "command": {
     "kind": "exec",
     "args": [
-      "insert new List<Account>{new Account(Name = 'Locator One'), new Account(Name = 'Locator Two')};\nString queryText = 'SELECT Id, Name FROM Account ORDER BY Name';\nDatabase.QueryLocator locator = Database.getQueryLocator(queryText);\nSystem.assertEquals(queryText, locator.getQuery());\nDatabase.QueryLocatorIterator rowIterator = locator.iterator();\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator One', ((Account)rowIterator.next()).Name);\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator Two', ((Account)rowIterator.next()).Name);\nSystem.assertEquals(false, rowIterator.hasNext());"
+      "List<Account> accounts = new List<Account>{new Account(Name = 'Locator One'), new Account(Name = 'Locator Two')};\ninsert accounts;\nSet<Id> accountIds = new Set<Id>{accounts[0].Id, accounts[1].Id};\nString queryText = 'SELECT Id, Name FROM Account WHERE Id IN :accountIds ORDER BY Name';\nDatabase.QueryLocator locator = Database.getQueryLocator(queryText);\nSystem.assertEquals(queryText, locator.getQuery());\nDatabase.QueryLocatorIterator rowIterator = locator.iterator();\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator One', ((Account)rowIterator.next()).Name);\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator Two', ((Account)rowIterator.next()).Name);\nSystem.assertEquals(false, rowIterator.hasNext());"
     ]
   },
   "evidence": [
@@ -57,7 +57,7 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "insert new List<Account>{new Account(Name = 'Locator One'), new Account(Name = 'Locator Two')};\nString queryText = 'SELECT Id, Name FROM Account ORDER BY Name';\nDatabase.QueryLocator locator = Database.getQueryLocator(queryText);\nSystem.assertEquals(queryText, locator.getQuery());\nDatabase.QueryLocatorIterator rowIterator = locator.iterator();\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator One', ((Account)rowIterator.next()).Name);\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator Two', ((Account)rowIterator.next()).Name);\nSystem.assertEquals(false, rowIterator.hasNext());"
+      "content": "List<Account> accounts = new List<Account>{new Account(Name = 'Locator One'), new Account(Name = 'Locator Two')};\ninsert accounts;\nSet<Id> accountIds = new Set<Id>{accounts[0].Id, accounts[1].Id};\nString queryText = 'SELECT Id, Name FROM Account WHERE Id IN :accountIds ORDER BY Name';\nDatabase.QueryLocator locator = Database.getQueryLocator(queryText);\nSystem.assertEquals(queryText, locator.getQuery());\nDatabase.QueryLocatorIterator rowIterator = locator.iterator();\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator One', ((Account)rowIterator.next()).Name);\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator Two', ((Account)rowIterator.next()).Name);\nSystem.assertEquals(false, rowIterator.hasNext());"
     }
   ]
 }

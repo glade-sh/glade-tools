@@ -13,8 +13,6 @@ import (
 const databaseCursorSyncTailFixture = "core-runtime-database-cursor-sync-tail-api67.json"
 
 var databaseCursorSyncTailIDs = []string{
-	"apex:Database.Cursor.Cursor()",
-	"apex:Database.Cursor.DeleteFilter",
 	"apex:Database.CursorFetchResult.getNextIndex()",
 	"apex:Database.CursorFetchResult.getNumDeletedRecords()",
 	"apex:Database.CursorFetchResult.getRecords()",
@@ -78,8 +76,7 @@ func TestDatabaseCursorSyncTailHasExactExecutableLocalEvidence(t *testing.T) {
 		}
 	}
 	for _, witness := range []string{
-		"new Database.Cursor()",
-		"Database.Cursor.DeleteFilter.NO_FILTER",
+		"WHERE Id IN :accountIds",
 		"page.fetchPage(0, 2)",
 		"pageResult.getRecords()",
 		"pageResult.getNextIndex()",

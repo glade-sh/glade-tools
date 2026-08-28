@@ -24,7 +24,7 @@
   "command": {
     "kind": "exec",
     "args": [
-      "Boolean caught = false; try { insert new Account(); } catch (DmlException e) { caught = true; System.assertEquals(1, e.getNumDml()); System.assertEquals(0, e.getDmlIndex(0)); System.assertEquals('REQUIRED_FIELD_MISSING', e.getDmlStatusCode(0)); System.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, e.getDmlType(0)); System.assert(e.getDmlMessage(0).contains('Name')); System.assertEquals('Name', e.getDmlFields(0).get(0)); System.assertEquals('Name', e.getDmlFieldNames(0).get(0)); System.assertEquals(null, e.getDmlId(0)); } System.assert(caught);"
+      "Boolean caught = false; try { insert new Account(); } catch (DmlException e) { caught = true; System.assertEquals(1, e.getNumDml()); System.assertEquals(0, e.getDmlIndex(0)); System.assertEquals('REQUIRED_FIELD_MISSING', e.getDmlStatusCode(0)); System.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, e.getDmlType(0)); System.assert(e.getDmlMessage(0).contains('Name')); System.assertEquals(Account.Name, e.getDmlFields(0).get(0)); System.assertEquals('Name', e.getDmlFieldNames(0).get(0)); System.assertEquals(null, e.getDmlId(0)); } System.assert(caught);"
     ]
   },
   "expected": {"result": {"debug": null, "ok": true}}
