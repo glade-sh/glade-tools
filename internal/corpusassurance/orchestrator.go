@@ -351,7 +351,7 @@ func (o *Orchestrator) Lease(campaignID, worker string, now time.Time, duration 
 	var kind string
 	var surfaces string
 	var previousStatus string
-	if err := tx.QueryRow(`SELECT id, kind, shard_index, surface_ids_json, generation, status FROM jobs WHERE campaign_id = ? AND (status = 'queued' OR (status = 'running' AND lease_until <= ? AND generation < ?)) ORDER BY CASE status WHEN 'running' THEN 0 ELSE 1 END, shard_index LIMIT 1`, campaignID, now.UTC().UnixMilli(), maxAttempts).Scan(&lease.JobID, &kind, &lease.ShardIndex, &surfaces, &lease.Generation, &previousStatus); err != nil {
+	if err := tx.QueryRow(`SELECT id, kind, shard_index, surface_ids_json, generation, status FROM jobs WHERE campaign_id = ? AND (status = 'queued' OR (status = 'running' AND generation < ? AND (lease_until <= ? OR EXISTS (SELECT 1 FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias AND a.campaign_id = c.campaign_id AND a.job_id = c.job_id AND a.generation = c.generation WHERE c.campaign_id = jobs.campaign_id AND c.job_id = jobs.id AND c.generation = jobs.generation AND c.state = 'closed' AND a.state = 'closed' AND (SELECT count(*) FROM cleanup_credit_blocks b WHERE b.allocation_alias = c.allocation_alias) = 1)))) ORDER BY CASE status WHEN 'running' THEN 0 ELSE 1 END, shard_index LIMIT 1`, campaignID, maxAttempts, now.UTC().UnixMilli()).Scan(&lease.JobID, &kind, &lease.ShardIndex, &surfaces, &lease.Generation, &previousStatus); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			if cappedJobs > 0 {
 				if err := tx.Commit(); err != nil {
