@@ -1,0 +1,39 @@
+{
+  "name": "core-database-upsert-list-object-boolean-accesslevel-runtime",
+  "salesforceEligible": true,
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Database.upsert(List<Object>,Boolean,AccessLevel)",
+      "symbol": "Database.upsert",
+      "kind": "exec"
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "List<Object> rows = new List<Object>{new Account(Name = 'Upsert List Boolean Access One'), new Account(Name = 'Upsert List Boolean Access Two')}; List<Database.UpsertResult> results = Database.upsert(rows, false, AccessLevel.SYSTEM_MODE); System.assertEquals(2, results.size()); System.assert(results[0].isSuccess()); System.assert(results[0].isCreated()); System.assertNotEquals(null, results[0].getId()); System.assert(results[1].isSuccess()); System.assert(results[1].isCreated()); System.assertNotEquals(null, results[1].getId());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Object> rows = new List<Object>{new Account(Name = 'Upsert List Boolean Access One'), new Account(Name = 'Upsert List Boolean Access Two')}; List<Database.UpsertResult> results = Database.upsert(rows, false, AccessLevel.SYSTEM_MODE); System.assertEquals(2, results.size()); System.assert(results[0].isSuccess()); System.assert(results[0].isCreated()); System.assertNotEquals(null, results[0].getId()); System.assert(results[1].isSuccess()); System.assert(results[1].isCreated()); System.assertNotEquals(null, results[1].getId());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

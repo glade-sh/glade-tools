@@ -15,7 +15,14 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 	}{
 		{"async-finalizer-context-getters", "async-finalizer-unsupported.json", false},
 		{"core-blob-crypto-partial-encrypt-unsupported-decrypt-sign-verify", "core-blob-crypto-partial-encrypt-unsupported-decrypt-sign-verify.json", false},
-		{"core-database-upsert-mode-runtime", "core-database-upsert-mode-runtime.json", true},
+		{"core-database-upsert-object-runtime", "core-database-upsert-object-runtime.json", true},
+		{"core-database-upsert-object-accesslevel-runtime", "core-database-upsert-object-accesslevel-runtime.json", true},
+		{"core-database-upsert-object-boolean-runtime", "core-database-upsert-object-boolean-runtime.json", true},
+		{"core-database-upsert-object-boolean-accesslevel-runtime", "core-database-upsert-object-boolean-accesslevel-runtime.json", true},
+		{"core-database-upsert-list-object-runtime", "core-database-upsert-list-object-runtime.json", true},
+		{"core-database-upsert-list-object-accesslevel-runtime", "core-database-upsert-list-object-accesslevel-runtime.json", true},
+		{"core-database-upsert-list-object-boolean-runtime", "core-database-upsert-list-object-boolean-runtime.json", true},
+		{"core-database-upsert-list-object-boolean-accesslevel-runtime", "core-database-upsert-list-object-boolean-accesslevel-runtime.json", true},
 		{"core-feature-management", "core-feature-management.json", false},
 		{"core-json-raw-runtime", "core-json-raw-runtime.json", false},
 		{"core-pattern-dialect-flags-stdlib", "core-pattern-dialect-flags-stdlib.json", true},
@@ -43,8 +50,8 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 		{"test-helper-unsupported-fixed-search-results", "test-helper-unsupported-fixed-search-results.json", false},
 	}
 
-	if len(tests) != 28 {
-		t.Fatalf("fixture count = %d, want 28", len(tests))
+	if len(tests) != 35 {
+		t.Fatalf("fixture count = %d, want 35", len(tests))
 	}
 	for _, test := range tests {
 		t.Run(test.id, func(t *testing.T) {
