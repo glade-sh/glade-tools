@@ -1,0 +1,59 @@
+{
+  "name": "core-runtime-metadata-status-code-enum-api67",
+  "title": "Metadata.StatusCode enum runtime contract",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "evidenceOnly": false,
+  "salesforceEligible": true,
+  "evidence": [
+    {
+      "surfaceId": "apex:Metadata.StatusCode",
+      "symbol": "Metadata.StatusCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.equals(Object)",
+      "symbol": "Metadata.StatusCode.equals(Object)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.hashCode()",
+      "symbol": "Metadata.StatusCode.hashCode()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.ordinal()",
+      "symbol": "Metadata.StatusCode.ordinal()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.valueOf(String)",
+      "symbol": "Metadata.StatusCode.valueOf(String)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.values()",
+      "symbol": "Metadata.StatusCode.values()",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Metadata.StatusCode value = Metadata.StatusCode.APEX_FAILED;\nMetadata.StatusCode other = Metadata.StatusCode.INTERNAL_ERROR;\nSystem.assert(value.equals(value));\nSystem.assert(!value.equals(other));\nSystem.assert(!value.equals(null));\nSystem.assertNotEquals(value.hashCode(), other.hashCode());\nSystem.assertNotEquals(value.ordinal(), other.ordinal());\nSystem.assertEquals(value.ordinal(), Metadata.StatusCode.valueOf('APEX_FAILED').ordinal());\nSystem.assertEquals(other.ordinal(), Metadata.StatusCode.valueOf('INTERNAL_ERROR').ordinal());\nSystem.assertEquals(value, Metadata.StatusCode.valueOf('APEX_FAILED'));\nSystem.assertEquals(other, Metadata.StatusCode.valueOf('INTERNAL_ERROR'));\nList<Metadata.StatusCode> values = Metadata.StatusCode.values();\nSystem.assertEquals(513, values.size());\nSystem.assertEquals(value, values[value.ordinal()]);\nSystem.assertEquals(other, values[other.ordinal()]);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Metadata.StatusCode value = Metadata.StatusCode.APEX_FAILED;\nMetadata.StatusCode other = Metadata.StatusCode.INTERNAL_ERROR;\nSystem.assert(value.equals(value));\nSystem.assert(!value.equals(other));\nSystem.assert(!value.equals(null));\nSystem.assertNotEquals(value.hashCode(), other.hashCode());\nSystem.assertNotEquals(value.ordinal(), other.ordinal());\nSystem.assertEquals(value.ordinal(), Metadata.StatusCode.valueOf('APEX_FAILED').ordinal());\nSystem.assertEquals(other.ordinal(), Metadata.StatusCode.valueOf('INTERNAL_ERROR').ordinal());\nSystem.assertEquals(value, Metadata.StatusCode.valueOf('APEX_FAILED'));\nSystem.assertEquals(other, Metadata.StatusCode.valueOf('INTERNAL_ERROR'));\nList<Metadata.StatusCode> values = Metadata.StatusCode.values();\nSystem.assertEquals(513, values.size());\nSystem.assertEquals(value, values[value.ordinal()]);\nSystem.assertEquals(other, values[other.ordinal()]);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "notes": "Metadata.StatusCode is a passive enum runtime contract. Retained Salesforce comparisons justify classification only; current-candidate parity requires fresh orchestrated runtime receipts."
+}
