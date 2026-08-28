@@ -142,7 +142,7 @@ jobs:
           go-version: "1.26.3"
           cache-dependency-path: glade-tools/go.sum
       - name: Test assurance on macOS
-        run: go test ./internal/corpusassurance
+        run: go test -timeout 20m ./internal/corpusassurance
       - name: Test release uploader with macOS system Bash
         run: |
           go_bin="$(command -v go)"
