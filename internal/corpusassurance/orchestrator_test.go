@@ -302,6 +302,151 @@ func TestOrchestratorLeasesAtLeastOnceAndHeartbeatsTransactionally(t *testing.T)
 	}
 }
 
+func TestOrchestratorLeasesClosedZeroCreditGenerationBeforeExpiry(t *testing.T) {
+	orchestrator, plan := initializedTestOrchestrator(t)
+	now := time.Date(2026, 8, 28, 12, 0, 0, 0, time.UTC)
+	first, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
+	if err := orchestrator.Reserve(first, "hub-a", "scratch-zero-credit", now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.closeCleanup(claim, now.Add(time.Second), false); err != nil {
+		t.Fatal(err)
+	}
+
+	second, err := orchestrator.Lease(plan.CampaignID, "worker-b", now.Add(2*time.Second), time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if second.JobID != first.JobID || second.Generation != first.Generation+1 {
+		t.Fatalf("immediate retry lease = %#v, want next generation of %#v", second, first)
+	}
+	var status string
+	if err := orchestrator.db.QueryRow(`SELECT status FROM attempts WHERE campaign_id = ? AND job_id = ? AND generation = ?`, plan.CampaignID, first.JobID, first.Generation).Scan(&status); err != nil {
+		t.Fatal(err)
+	}
+	if status != "retryable" {
+		t.Fatalf("first attempt status = %q, want retryable", status)
+	}
+}
+
+func TestOrchestratorDoesNotLeaseIncompleteZeroCreditLifecycleBeforeExpiry(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		close func(t *testing.T, orchestrator *Orchestrator, plan OrchestratorCampaignPlan, lease OrchestratorLease, now time.Time)
+	}{
+		{
+			name: "ordinary cleanup without permanent block",
+			close: func(t *testing.T, orchestrator *Orchestrator, plan OrchestratorCampaignPlan, lease OrchestratorLease, now time.Time) {
+				t.Helper()
+				claim, err := orchestrator.ClaimCleanup(plan.CampaignID, lease.Worker, now, time.Minute)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err := orchestrator.CloseCleanup(claim, now.Add(time.Second)); err != nil {
+					t.Fatal(err)
+				}
+			},
+		},
+		{
+			name: "open allocation",
+			close: func(t *testing.T, orchestrator *Orchestrator, plan OrchestratorCampaignPlan, lease OrchestratorLease, now time.Time) {
+				t.Helper()
+				if _, err := orchestrator.db.Exec(`UPDATE cleanup_journal SET state = 'closed', closed_at = ? WHERE campaign_id = ? AND job_id = ? AND generation = ?`, now.UTC().UnixMilli(), plan.CampaignID, lease.JobID, lease.Generation); err != nil {
+					t.Fatal(err)
+				}
+				if _, err := orchestrator.db.Exec(`INSERT INTO cleanup_credit_blocks (allocation_alias) SELECT allocation_alias FROM cleanup_journal WHERE campaign_id = ? AND job_id = ? AND generation = ?`, plan.CampaignID, lease.JobID, lease.Generation); err != nil {
+					t.Fatal(err)
+				}
+			},
+		},
+		{
+			name: "open cleanup",
+			close: func(t *testing.T, orchestrator *Orchestrator, plan OrchestratorCampaignPlan, lease OrchestratorLease, now time.Time) {
+				t.Helper()
+				if _, err := orchestrator.db.Exec(`UPDATE scratch_allocations SET state = 'closed' WHERE campaign_id = ? AND job_id = ? AND generation = ?`, plan.CampaignID, lease.JobID, lease.Generation); err != nil {
+					t.Fatal(err)
+				}
+				if _, err := orchestrator.db.Exec(`INSERT INTO cleanup_credit_blocks (allocation_alias) SELECT allocation_alias FROM cleanup_journal WHERE campaign_id = ? AND job_id = ? AND generation = ?`, plan.CampaignID, lease.JobID, lease.Generation); err != nil {
+					t.Fatal(err)
+				}
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			orchestrator, plan := initializedTestOrchestrator(t)
+			now := time.Date(2026, 8, 28, 12, 0, 0, 0, time.UTC)
+			first, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Hour)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+				t.Fatal(err)
+			}
+			observeReadyHub(t, orchestrator, "hub-a", now)
+			if err := orchestrator.Reserve(first, "hub-a", "scratch-incomplete", now); err != nil {
+				t.Fatal(err)
+			}
+			test.close(t, orchestrator, plan, first, now)
+
+			second, err := orchestrator.Lease(plan.CampaignID, "worker-b", now.Add(2*time.Second), time.Hour)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if second.JobID == first.JobID {
+				t.Fatalf("incomplete lifecycle retried before expiry: %#v", second)
+			}
+		})
+	}
+}
+
+func TestOrchestratorDoesNotLeaseMismatchedZeroCreditAllocationBeforeExpiry(t *testing.T) {
+	orchestrator, plan := initializedTestOrchestrator(t)
+	now := time.Date(2026, 8, 28, 12, 0, 0, 0, time.UTC)
+	first, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, orchestrator, "hub-a", now)
+	if err := orchestrator.Reserve(first, "hub-a", "scratch-mismatched", now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, first.Worker, now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.closeCleanup(claim, now.Add(time.Second), false); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := orchestrator.db.Exec(`INSERT INTO attempts (campaign_id, job_id, generation, worker, status, leased_at, lease_until, heartbeat_at) VALUES (?, ?, ?, ?, 'closed', ?, ?, ?)`, plan.CampaignID, plan.Jobs[1].ID, 777, "worker-forged", now.UTC().UnixMilli(), first.LeaseUntil.UTC().UnixMilli(), now.UTC().UnixMilli()); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := orchestrator.db.Exec(`UPDATE scratch_allocations SET job_id = ?, generation = ? WHERE allocation_alias = ?`, plan.Jobs[1].ID, 777, "scratch-mismatched"); err != nil {
+		t.Fatal(err)
+	}
+
+	second, err := orchestrator.Lease(plan.CampaignID, "worker-b", now.Add(2*time.Second), time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if second.JobID == first.JobID {
+		t.Fatalf("mismatched allocation retried before expiry: %#v", second)
+	}
+}
+
 func TestOrchestratorLeaseStopsAfterDefaultAttemptCap(t *testing.T) {
 	root := t.TempDir()
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)
