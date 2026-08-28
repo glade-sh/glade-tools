@@ -1,0 +1,143 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "System.StatusCode value = System.StatusCode.UNSUPPORTED_SOCIAL_PROVIDER;\nvalue = System.StatusCode.UNVERIFIED_SENDER_ADDRESS;\nvalue = System.StatusCode.UPDATE_GOOGLE_EMAIL_LABEL_FAILED;\nvalue = System.StatusCode.USER_OWNS_PORTAL_ACCOUNT_EXCEPTION;\nvalue = System.StatusCode.USER_WITHOUT_WEM_PERMISSION;\nvalue = System.StatusCode.USER_WITH_APEX_SHARES_EXCEPTION;\nvalue = System.StatusCode.VARIANT_NOT_FOUND;\nvalue = System.StatusCode.VF_COMPILE_ERROR;\nvalue = System.StatusCode.VOICE_CAPACITY_ERROR;\nvalue = System.StatusCode.WEBLINK_SIZE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.WEBLINK_URL_INVALID;\nvalue = System.StatusCode.WEM_SEGMENTS_CAN_NOT_HAVE_NON_ACTIVE_SEGMENT_TYPE;\nvalue = System.StatusCode.WEM_SHIFT_SEGMENT_TIME_IS_OUTSIDE_OF_THE_SHIFT_DURATION;\nvalue = System.StatusCode.WEM_USER_NOT_ORG_ADMIN;\nvalue = System.StatusCode.WORKSPACE_NOT_FOUND;\nvalue = System.StatusCode.WRONG_CONTROLLER_TYPE;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_IGNORABLE_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_INTERNAL_DJ_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_NON_RETRIABLE_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_RETRIABLE_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_UNKNOWN_ERROR;\nvalue = System.StatusCode.XCLEAN_UNEXPECTED_ERROR;\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.UNSUPPORTED_SOCIAL_PROVIDER",
+      "symbol": "apex:System.StatusCode.UNSUPPORTED_SOCIAL_PROVIDER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.UNVERIFIED_SENDER_ADDRESS",
+      "symbol": "apex:System.StatusCode.UNVERIFIED_SENDER_ADDRESS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.UPDATE_GOOGLE_EMAIL_LABEL_FAILED",
+      "symbol": "apex:System.StatusCode.UPDATE_GOOGLE_EMAIL_LABEL_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.USER_OWNS_PORTAL_ACCOUNT_EXCEPTION",
+      "symbol": "apex:System.StatusCode.USER_OWNS_PORTAL_ACCOUNT_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.USER_WITHOUT_WEM_PERMISSION",
+      "symbol": "apex:System.StatusCode.USER_WITHOUT_WEM_PERMISSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.USER_WITH_APEX_SHARES_EXCEPTION",
+      "symbol": "apex:System.StatusCode.USER_WITH_APEX_SHARES_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.VARIANT_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.VARIANT_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.VF_COMPILE_ERROR",
+      "symbol": "apex:System.StatusCode.VF_COMPILE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.VOICE_CAPACITY_ERROR",
+      "symbol": "apex:System.StatusCode.VOICE_CAPACITY_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.WEBLINK_SIZE_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.WEBLINK_SIZE_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.WEBLINK_URL_INVALID",
+      "symbol": "apex:System.StatusCode.WEBLINK_URL_INVALID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.WEM_SEGMENTS_CAN_NOT_HAVE_NON_ACTIVE_SEGMENT_TYPE",
+      "symbol": "apex:System.StatusCode.WEM_SEGMENTS_CAN_NOT_HAVE_NON_ACTIVE_SEGMENT_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.WEM_SHIFT_SEGMENT_TIME_IS_OUTSIDE_OF_THE_SHIFT_DURATION",
+      "symbol": "apex:System.StatusCode.WEM_SHIFT_SEGMENT_TIME_IS_OUTSIDE_OF_THE_SHIFT_DURATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.WEM_USER_NOT_ORG_ADMIN",
+      "symbol": "apex:System.StatusCode.WEM_USER_NOT_ORG_ADMIN"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.WORKSPACE_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.WORKSPACE_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.WRONG_CONTROLLER_TYPE",
+      "symbol": "apex:System.StatusCode.WRONG_CONTROLLER_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.XCLEAN_DJ_MATCH_IGNORABLE_ERROR",
+      "symbol": "apex:System.StatusCode.XCLEAN_DJ_MATCH_IGNORABLE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.XCLEAN_DJ_MATCH_INTERNAL_DJ_ERROR",
+      "symbol": "apex:System.StatusCode.XCLEAN_DJ_MATCH_INTERNAL_DJ_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.XCLEAN_DJ_MATCH_NON_RETRIABLE_ERROR",
+      "symbol": "apex:System.StatusCode.XCLEAN_DJ_MATCH_NON_RETRIABLE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.XCLEAN_DJ_MATCH_RETRIABLE_ERROR",
+      "symbol": "apex:System.StatusCode.XCLEAN_DJ_MATCH_RETRIABLE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.XCLEAN_DJ_MATCH_UNKNOWN_ERROR",
+      "symbol": "apex:System.StatusCode.XCLEAN_DJ_MATCH_UNKNOWN_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.XCLEAN_UNEXPECTED_ERROR",
+      "symbol": "apex:System.StatusCode.XCLEAN_UNEXPECTED_ERROR"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-system-status-code-constants-api67-06",
+  "notes": "Exact-candidate executable local-runtime witness for the complete API 67 System.StatusCode enum family. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "statuscode-local-evidence",
+    "selectedRowCount": 22
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "System.StatusCode value = System.StatusCode.UNSUPPORTED_SOCIAL_PROVIDER;\nvalue = System.StatusCode.UNVERIFIED_SENDER_ADDRESS;\nvalue = System.StatusCode.UPDATE_GOOGLE_EMAIL_LABEL_FAILED;\nvalue = System.StatusCode.USER_OWNS_PORTAL_ACCOUNT_EXCEPTION;\nvalue = System.StatusCode.USER_WITHOUT_WEM_PERMISSION;\nvalue = System.StatusCode.USER_WITH_APEX_SHARES_EXCEPTION;\nvalue = System.StatusCode.VARIANT_NOT_FOUND;\nvalue = System.StatusCode.VF_COMPILE_ERROR;\nvalue = System.StatusCode.VOICE_CAPACITY_ERROR;\nvalue = System.StatusCode.WEBLINK_SIZE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.WEBLINK_URL_INVALID;\nvalue = System.StatusCode.WEM_SEGMENTS_CAN_NOT_HAVE_NON_ACTIVE_SEGMENT_TYPE;\nvalue = System.StatusCode.WEM_SHIFT_SEGMENT_TIME_IS_OUTSIDE_OF_THE_SHIFT_DURATION;\nvalue = System.StatusCode.WEM_USER_NOT_ORG_ADMIN;\nvalue = System.StatusCode.WORKSPACE_NOT_FOUND;\nvalue = System.StatusCode.WRONG_CONTROLLER_TYPE;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_IGNORABLE_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_INTERNAL_DJ_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_NON_RETRIABLE_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_RETRIABLE_ERROR;\nvalue = System.StatusCode.XCLEAN_DJ_MATCH_UNKNOWN_ERROR;\nvalue = System.StatusCode.XCLEAN_UNEXPECTED_ERROR;\n",
+      "path": "anonymous.apex"
+    }
+  ]
+}

@@ -1,0 +1,533 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "System.StatusCode value = System.StatusCode.NOT_FOUND;\nvalue = System.StatusCode.NOT_RECOVERABLE_SEARCH_PROVIDER_ERROR;\nvalue = System.StatusCode.NO_ACCESS_TOKEN;\nvalue = System.StatusCode.NO_ACCESS_TOKEN_FROM_REFRESH;\nvalue = System.StatusCode.NO_APPLICABLE_PROCESS;\nvalue = System.StatusCode.NO_ATTACHMENT_PERMISSION;\nvalue = System.StatusCode.NO_AUTH_PROVIDER;\nvalue = System.StatusCode.NO_BUSINESS_HOURS_FOUND;\nvalue = System.StatusCode.NO_GUEST_PROFILE_ASSOCIATED_WITH_PRICE_ENGINE;\nvalue = System.StatusCode.NO_INACTIVE_DIVISION_MEMBERS;\nvalue = System.StatusCode.NO_INDEXABLE_PRODUCTS;\nvalue = System.StatusCode.NO_INDEXABLE_PRODUCTS_IN_PARTIAL_BUILD;\nvalue = System.StatusCode.NO_MASS_MAIL_PERMISSION;\nvalue = System.StatusCode.NO_MESSAGE_TYPE_MESSAGES;\nvalue = System.StatusCode.NO_PARTNER_PERMISSION;\nvalue = System.StatusCode.NO_REFRESH_TOKEN;\nvalue = System.StatusCode.NO_SEARCHABLE_PRODUCTS;\nvalue = System.StatusCode.NO_SEARCH_ATTRIBUTES;\nvalue = System.StatusCode.NO_SINGLE_MAIL_PERMISSION;\nvalue = System.StatusCode.NO_SORT_PRICEBOOK_ASSOCIATED_ERROR;\nvalue = System.StatusCode.NO_SUCH_USER_EXISTS;\nvalue = System.StatusCode.NO_TOKEN_ENDPOINT;\nvalue = System.StatusCode.NUMBER_OUTSIDE_VALID_RANGE;\nvalue = System.StatusCode.NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED;\nvalue = System.StatusCode.OCR_INVALID_REQUEST;\nvalue = System.StatusCode.OPERATION_CONFLICT;\nvalue = System.StatusCode.OPERATION_ENQUEUED;\nvalue = System.StatusCode.OPERATION_WITH_CALLBACK_ENQUEUED;\nvalue = System.StatusCode.OPTED_OUT_OF_MASS_MAIL;\nvalue = System.StatusCode.OP_WITH_INVALID_USER_TYPE_EXCEPTION;\nvalue = System.StatusCode.ORCHESTRATION_INVALID;\nvalue = System.StatusCode.ORDER_ALREADY_SUBMITTED;\nvalue = System.StatusCode.ORDER_MANAGEMENT_ACTION_NOT_ALLOWED;\nvalue = System.StatusCode.ORDER_MANAGEMENT_DUPLICATE_ORDER_REFERENCE_NUMBER;\nvalue = System.StatusCode.ORDER_MANAGEMENT_INVALID_RECORD;\nvalue = System.StatusCode.ORDER_MANAGEMENT_RECORD_EXISTS;\nvalue = System.StatusCode.ORDER_MANAGEMENT_RECORD_NOT_FOUND;\nvalue = System.StatusCode.ORG_SETTING_REQUIRED;\nvalue = System.StatusCode.PACKAGE_DISABLED;\nvalue = System.StatusCode.PACKAGE_LICENSE_REQUIRED;\nvalue = System.StatusCode.PACKAGING_API_INSTALL_FAILED;\nvalue = System.StatusCode.PACKAGING_API_UNINSTALL_FAILED;\nvalue = System.StatusCode.PALI_INVALID_ACTION_ID;\nvalue = System.StatusCode.PALI_INVALID_ACTION_NAME;\nvalue = System.StatusCode.PALI_INVALID_ACTION_TYPE;\nvalue = System.StatusCode.PAL_INVALID_ASSISTANT_RECOMMENDATION_TYPE_ID;\nvalue = System.StatusCode.PAL_INVALID_ENTITY_ID;\nvalue = System.StatusCode.PAL_INVALID_FLEXIPAGE_ID;\nvalue = System.StatusCode.PAL_INVALID_LAYOUT_ID;\nvalue = System.StatusCode.PAL_INVALID_PARAMETERS;\nvalue = System.StatusCode.PARAMETER_TOO_LARGE;\nvalue = System.StatusCode.PARTICIPANT_RELATIONSHIP_EXISTS;\nvalue = System.StatusCode.PAYLOAD_SIZE_EXCEEDED;\nvalue = System.StatusCode.PAYMENTS_TOO_MANY_REQUESTS_ERROR;\nvalue = System.StatusCode.PAYMENT_GATEWAY_DEPENDENCY_EXCEPTION;\nvalue = System.StatusCode.PAYMENT_GATEWAY_REQUEST_EXCEPTION;\nvalue = System.StatusCode.PA_API_EXCEPTION;\nvalue = System.StatusCode.PA_AXIS_FAULT;\nvalue = System.StatusCode.PA_INVALID_ID_EXCEPTION;\nvalue = System.StatusCode.PA_NO_ACCESS_EXCEPTION;\nvalue = System.StatusCode.PA_NO_DATA_FOUND_EXCEPTION;\nvalue = System.StatusCode.PA_URI_SYNTAX_EXCEPTION;\nvalue = System.StatusCode.PA_VISIBLE_ACTIONS_FILTER_ORDERING_EXCEPTION;\nvalue = System.StatusCode.PENDING_COMMIT;\nvalue = System.StatusCode.PICKLIST_INACTIVE_VALUES_EXCEEDED;\nvalue = System.StatusCode.PLATFORM_EVENT_ENCRYPTION_ERROR;\nvalue = System.StatusCode.PLATFORM_EVENT_PUBLISHING_UNAVAILABLE;\nvalue = System.StatusCode.PLATFORM_EVENT_PUBLISH_FAILED;\nvalue = System.StatusCode.PORTAL_NO_ACCESS;\nvalue = System.StatusCode.PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT;\nvalue = System.StatusCode.PORTAL_USER_CREATION_RESTRICTED_WITH_ENCRYPTION;\nvalue = System.StatusCode.PRICE_NOT_FOUND;\nvalue = System.StatusCode.PRICING_SERVICE_MISCONFIGURATION;\nvalue = System.StatusCode.PRINCIPAL_NOT_ASSIGNED;\nvalue = System.StatusCode.PRINCIPAL_NOT_CONFIGURED;\nvalue = System.StatusCode.PRINCIPAL_UNAUTHENTICATED;\nvalue = System.StatusCode.PRIVATE_CONTACT_ON_ASSET;\nvalue = System.StatusCode.PROCESSING_HALTED;\nvalue = System.StatusCode.PROGRAM_PROGRESS_NOT_ACTIVE;\nvalue = System.StatusCode.PROMOTION_NOT_FOUND;\nvalue = System.StatusCode.QA_INVALID_CREATE_FEED_ITEM;\nvalue = System.StatusCode.QA_INVALID_SUCCESS_MESSAGE;\nvalue = System.StatusCode.QUERY_REFINEMENT_VALUE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.QUERY_TIMEOUT;\nvalue = System.StatusCode.QUERY_TOKEN_COUNT_LIMIT_EXCEEDED;\nvalue = System.StatusCode.QUICK_ACTION_LIST_ITEM_NOT_ALLOWED;\nvalue = System.StatusCode.QUICK_ACTION_LIST_NOT_ALLOWED;\nvalue = System.StatusCode.QUOTE_ITEM_OPERATION_BLOCKED;\nvalue = System.StatusCode.RECORD_CREATION_FAILED;\nvalue = System.StatusCode.RECORD_IN_USE_BY_WORKFLOW;\nvalue = System.StatusCode.RECORD_LOCKED;\nvalue = System.StatusCode.RECORD_MISSING_REQUIRED_FIELD;\nvalue = System.StatusCode.RECORD_NOT_FOUND;\nvalue = System.StatusCode.RECORD_TYPE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.RECORD_UPDATE_FAILED;\nvalue = System.StatusCode.RECOVERABLE_SEARCH_PROVIDER_ERROR;\nvalue = System.StatusCode.REFRESH_FAILED;\nvalue = System.StatusCode.RELATED_ENTITY_FILTER_VALIDATION_EXCEPTION;\nvalue = System.StatusCode.REL_FIELD_BAD_ACCESSIBILITY;\nvalue = System.StatusCode.REPUTATION_MINIMUM_NUMBER_NOT_REACHED;\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NOT_FOUND",
+      "symbol": "apex:System.StatusCode.NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NOT_RECOVERABLE_SEARCH_PROVIDER_ERROR",
+      "symbol": "apex:System.StatusCode.NOT_RECOVERABLE_SEARCH_PROVIDER_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_ACCESS_TOKEN",
+      "symbol": "apex:System.StatusCode.NO_ACCESS_TOKEN"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_ACCESS_TOKEN_FROM_REFRESH",
+      "symbol": "apex:System.StatusCode.NO_ACCESS_TOKEN_FROM_REFRESH"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_APPLICABLE_PROCESS",
+      "symbol": "apex:System.StatusCode.NO_APPLICABLE_PROCESS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_ATTACHMENT_PERMISSION",
+      "symbol": "apex:System.StatusCode.NO_ATTACHMENT_PERMISSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_AUTH_PROVIDER",
+      "symbol": "apex:System.StatusCode.NO_AUTH_PROVIDER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_BUSINESS_HOURS_FOUND",
+      "symbol": "apex:System.StatusCode.NO_BUSINESS_HOURS_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_GUEST_PROFILE_ASSOCIATED_WITH_PRICE_ENGINE",
+      "symbol": "apex:System.StatusCode.NO_GUEST_PROFILE_ASSOCIATED_WITH_PRICE_ENGINE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_INACTIVE_DIVISION_MEMBERS",
+      "symbol": "apex:System.StatusCode.NO_INACTIVE_DIVISION_MEMBERS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_INDEXABLE_PRODUCTS",
+      "symbol": "apex:System.StatusCode.NO_INDEXABLE_PRODUCTS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_INDEXABLE_PRODUCTS_IN_PARTIAL_BUILD",
+      "symbol": "apex:System.StatusCode.NO_INDEXABLE_PRODUCTS_IN_PARTIAL_BUILD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_MASS_MAIL_PERMISSION",
+      "symbol": "apex:System.StatusCode.NO_MASS_MAIL_PERMISSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_MESSAGE_TYPE_MESSAGES",
+      "symbol": "apex:System.StatusCode.NO_MESSAGE_TYPE_MESSAGES"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_PARTNER_PERMISSION",
+      "symbol": "apex:System.StatusCode.NO_PARTNER_PERMISSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_REFRESH_TOKEN",
+      "symbol": "apex:System.StatusCode.NO_REFRESH_TOKEN"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_SEARCHABLE_PRODUCTS",
+      "symbol": "apex:System.StatusCode.NO_SEARCHABLE_PRODUCTS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_SEARCH_ATTRIBUTES",
+      "symbol": "apex:System.StatusCode.NO_SEARCH_ATTRIBUTES"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_SINGLE_MAIL_PERMISSION",
+      "symbol": "apex:System.StatusCode.NO_SINGLE_MAIL_PERMISSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_SORT_PRICEBOOK_ASSOCIATED_ERROR",
+      "symbol": "apex:System.StatusCode.NO_SORT_PRICEBOOK_ASSOCIATED_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_SUCH_USER_EXISTS",
+      "symbol": "apex:System.StatusCode.NO_SUCH_USER_EXISTS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NO_TOKEN_ENDPOINT",
+      "symbol": "apex:System.StatusCode.NO_TOKEN_ENDPOINT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NUMBER_OUTSIDE_VALID_RANGE",
+      "symbol": "apex:System.StatusCode.NUMBER_OUTSIDE_VALID_RANGE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.OCR_INVALID_REQUEST",
+      "symbol": "apex:System.StatusCode.OCR_INVALID_REQUEST"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.OPERATION_CONFLICT",
+      "symbol": "apex:System.StatusCode.OPERATION_CONFLICT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.OPERATION_ENQUEUED",
+      "symbol": "apex:System.StatusCode.OPERATION_ENQUEUED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.OPERATION_WITH_CALLBACK_ENQUEUED",
+      "symbol": "apex:System.StatusCode.OPERATION_WITH_CALLBACK_ENQUEUED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.OPTED_OUT_OF_MASS_MAIL",
+      "symbol": "apex:System.StatusCode.OPTED_OUT_OF_MASS_MAIL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.OP_WITH_INVALID_USER_TYPE_EXCEPTION",
+      "symbol": "apex:System.StatusCode.OP_WITH_INVALID_USER_TYPE_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORCHESTRATION_INVALID",
+      "symbol": "apex:System.StatusCode.ORCHESTRATION_INVALID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORDER_ALREADY_SUBMITTED",
+      "symbol": "apex:System.StatusCode.ORDER_ALREADY_SUBMITTED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORDER_MANAGEMENT_ACTION_NOT_ALLOWED",
+      "symbol": "apex:System.StatusCode.ORDER_MANAGEMENT_ACTION_NOT_ALLOWED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORDER_MANAGEMENT_DUPLICATE_ORDER_REFERENCE_NUMBER",
+      "symbol": "apex:System.StatusCode.ORDER_MANAGEMENT_DUPLICATE_ORDER_REFERENCE_NUMBER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORDER_MANAGEMENT_INVALID_RECORD",
+      "symbol": "apex:System.StatusCode.ORDER_MANAGEMENT_INVALID_RECORD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORDER_MANAGEMENT_RECORD_EXISTS",
+      "symbol": "apex:System.StatusCode.ORDER_MANAGEMENT_RECORD_EXISTS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORDER_MANAGEMENT_RECORD_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.ORDER_MANAGEMENT_RECORD_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.ORG_SETTING_REQUIRED",
+      "symbol": "apex:System.StatusCode.ORG_SETTING_REQUIRED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PACKAGE_DISABLED",
+      "symbol": "apex:System.StatusCode.PACKAGE_DISABLED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PACKAGE_LICENSE_REQUIRED",
+      "symbol": "apex:System.StatusCode.PACKAGE_LICENSE_REQUIRED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PACKAGING_API_INSTALL_FAILED",
+      "symbol": "apex:System.StatusCode.PACKAGING_API_INSTALL_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PACKAGING_API_UNINSTALL_FAILED",
+      "symbol": "apex:System.StatusCode.PACKAGING_API_UNINSTALL_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PALI_INVALID_ACTION_ID",
+      "symbol": "apex:System.StatusCode.PALI_INVALID_ACTION_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PALI_INVALID_ACTION_NAME",
+      "symbol": "apex:System.StatusCode.PALI_INVALID_ACTION_NAME"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PALI_INVALID_ACTION_TYPE",
+      "symbol": "apex:System.StatusCode.PALI_INVALID_ACTION_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAL_INVALID_ASSISTANT_RECOMMENDATION_TYPE_ID",
+      "symbol": "apex:System.StatusCode.PAL_INVALID_ASSISTANT_RECOMMENDATION_TYPE_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAL_INVALID_ENTITY_ID",
+      "symbol": "apex:System.StatusCode.PAL_INVALID_ENTITY_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAL_INVALID_FLEXIPAGE_ID",
+      "symbol": "apex:System.StatusCode.PAL_INVALID_FLEXIPAGE_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAL_INVALID_LAYOUT_ID",
+      "symbol": "apex:System.StatusCode.PAL_INVALID_LAYOUT_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAL_INVALID_PARAMETERS",
+      "symbol": "apex:System.StatusCode.PAL_INVALID_PARAMETERS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PARAMETER_TOO_LARGE",
+      "symbol": "apex:System.StatusCode.PARAMETER_TOO_LARGE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PARTICIPANT_RELATIONSHIP_EXISTS",
+      "symbol": "apex:System.StatusCode.PARTICIPANT_RELATIONSHIP_EXISTS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAYLOAD_SIZE_EXCEEDED",
+      "symbol": "apex:System.StatusCode.PAYLOAD_SIZE_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAYMENTS_TOO_MANY_REQUESTS_ERROR",
+      "symbol": "apex:System.StatusCode.PAYMENTS_TOO_MANY_REQUESTS_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAYMENT_GATEWAY_DEPENDENCY_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PAYMENT_GATEWAY_DEPENDENCY_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PAYMENT_GATEWAY_REQUEST_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PAYMENT_GATEWAY_REQUEST_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PA_API_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PA_API_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PA_AXIS_FAULT",
+      "symbol": "apex:System.StatusCode.PA_AXIS_FAULT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PA_INVALID_ID_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PA_INVALID_ID_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PA_NO_ACCESS_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PA_NO_ACCESS_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PA_NO_DATA_FOUND_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PA_NO_DATA_FOUND_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PA_URI_SYNTAX_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PA_URI_SYNTAX_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PA_VISIBLE_ACTIONS_FILTER_ORDERING_EXCEPTION",
+      "symbol": "apex:System.StatusCode.PA_VISIBLE_ACTIONS_FILTER_ORDERING_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PENDING_COMMIT",
+      "symbol": "apex:System.StatusCode.PENDING_COMMIT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PICKLIST_INACTIVE_VALUES_EXCEEDED",
+      "symbol": "apex:System.StatusCode.PICKLIST_INACTIVE_VALUES_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PLATFORM_EVENT_ENCRYPTION_ERROR",
+      "symbol": "apex:System.StatusCode.PLATFORM_EVENT_ENCRYPTION_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PLATFORM_EVENT_PUBLISHING_UNAVAILABLE",
+      "symbol": "apex:System.StatusCode.PLATFORM_EVENT_PUBLISHING_UNAVAILABLE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PLATFORM_EVENT_PUBLISH_FAILED",
+      "symbol": "apex:System.StatusCode.PLATFORM_EVENT_PUBLISH_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PORTAL_NO_ACCESS",
+      "symbol": "apex:System.StatusCode.PORTAL_NO_ACCESS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT",
+      "symbol": "apex:System.StatusCode.PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PORTAL_USER_CREATION_RESTRICTED_WITH_ENCRYPTION",
+      "symbol": "apex:System.StatusCode.PORTAL_USER_CREATION_RESTRICTED_WITH_ENCRYPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PRICE_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.PRICE_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PRICING_SERVICE_MISCONFIGURATION",
+      "symbol": "apex:System.StatusCode.PRICING_SERVICE_MISCONFIGURATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PRINCIPAL_NOT_ASSIGNED",
+      "symbol": "apex:System.StatusCode.PRINCIPAL_NOT_ASSIGNED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PRINCIPAL_NOT_CONFIGURED",
+      "symbol": "apex:System.StatusCode.PRINCIPAL_NOT_CONFIGURED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PRINCIPAL_UNAUTHENTICATED",
+      "symbol": "apex:System.StatusCode.PRINCIPAL_UNAUTHENTICATED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PRIVATE_CONTACT_ON_ASSET",
+      "symbol": "apex:System.StatusCode.PRIVATE_CONTACT_ON_ASSET"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PROCESSING_HALTED",
+      "symbol": "apex:System.StatusCode.PROCESSING_HALTED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PROGRAM_PROGRESS_NOT_ACTIVE",
+      "symbol": "apex:System.StatusCode.PROGRAM_PROGRESS_NOT_ACTIVE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.PROMOTION_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.PROMOTION_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QA_INVALID_CREATE_FEED_ITEM",
+      "symbol": "apex:System.StatusCode.QA_INVALID_CREATE_FEED_ITEM"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QA_INVALID_SUCCESS_MESSAGE",
+      "symbol": "apex:System.StatusCode.QA_INVALID_SUCCESS_MESSAGE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QUERY_REFINEMENT_VALUE_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.QUERY_REFINEMENT_VALUE_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QUERY_TIMEOUT",
+      "symbol": "apex:System.StatusCode.QUERY_TIMEOUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QUERY_TOKEN_COUNT_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.QUERY_TOKEN_COUNT_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QUICK_ACTION_LIST_ITEM_NOT_ALLOWED",
+      "symbol": "apex:System.StatusCode.QUICK_ACTION_LIST_ITEM_NOT_ALLOWED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QUICK_ACTION_LIST_NOT_ALLOWED",
+      "symbol": "apex:System.StatusCode.QUICK_ACTION_LIST_NOT_ALLOWED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.QUOTE_ITEM_OPERATION_BLOCKED",
+      "symbol": "apex:System.StatusCode.QUOTE_ITEM_OPERATION_BLOCKED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECORD_CREATION_FAILED",
+      "symbol": "apex:System.StatusCode.RECORD_CREATION_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECORD_IN_USE_BY_WORKFLOW",
+      "symbol": "apex:System.StatusCode.RECORD_IN_USE_BY_WORKFLOW"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECORD_LOCKED",
+      "symbol": "apex:System.StatusCode.RECORD_LOCKED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECORD_MISSING_REQUIRED_FIELD",
+      "symbol": "apex:System.StatusCode.RECORD_MISSING_REQUIRED_FIELD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECORD_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.RECORD_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECORD_TYPE_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.RECORD_TYPE_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECORD_UPDATE_FAILED",
+      "symbol": "apex:System.StatusCode.RECORD_UPDATE_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RECOVERABLE_SEARCH_PROVIDER_ERROR",
+      "symbol": "apex:System.StatusCode.RECOVERABLE_SEARCH_PROVIDER_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.REFRESH_FAILED",
+      "symbol": "apex:System.StatusCode.REFRESH_FAILED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.RELATED_ENTITY_FILTER_VALIDATION_EXCEPTION",
+      "symbol": "apex:System.StatusCode.RELATED_ENTITY_FILTER_VALIDATION_EXCEPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.REL_FIELD_BAD_ACCESSIBILITY",
+      "symbol": "apex:System.StatusCode.REL_FIELD_BAD_ACCESSIBILITY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.REPUTATION_MINIMUM_NUMBER_NOT_REACHED",
+      "symbol": "apex:System.StatusCode.REPUTATION_MINIMUM_NUMBER_NOT_REACHED"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-system-status-code-constants-api67-04",
+  "notes": "Exact-candidate executable local-runtime witness for the complete API 67 System.StatusCode enum family. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "statuscode-local-evidence",
+    "selectedRowCount": 100
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "System.StatusCode value = System.StatusCode.NOT_FOUND;\nvalue = System.StatusCode.NOT_RECOVERABLE_SEARCH_PROVIDER_ERROR;\nvalue = System.StatusCode.NO_ACCESS_TOKEN;\nvalue = System.StatusCode.NO_ACCESS_TOKEN_FROM_REFRESH;\nvalue = System.StatusCode.NO_APPLICABLE_PROCESS;\nvalue = System.StatusCode.NO_ATTACHMENT_PERMISSION;\nvalue = System.StatusCode.NO_AUTH_PROVIDER;\nvalue = System.StatusCode.NO_BUSINESS_HOURS_FOUND;\nvalue = System.StatusCode.NO_GUEST_PROFILE_ASSOCIATED_WITH_PRICE_ENGINE;\nvalue = System.StatusCode.NO_INACTIVE_DIVISION_MEMBERS;\nvalue = System.StatusCode.NO_INDEXABLE_PRODUCTS;\nvalue = System.StatusCode.NO_INDEXABLE_PRODUCTS_IN_PARTIAL_BUILD;\nvalue = System.StatusCode.NO_MASS_MAIL_PERMISSION;\nvalue = System.StatusCode.NO_MESSAGE_TYPE_MESSAGES;\nvalue = System.StatusCode.NO_PARTNER_PERMISSION;\nvalue = System.StatusCode.NO_REFRESH_TOKEN;\nvalue = System.StatusCode.NO_SEARCHABLE_PRODUCTS;\nvalue = System.StatusCode.NO_SEARCH_ATTRIBUTES;\nvalue = System.StatusCode.NO_SINGLE_MAIL_PERMISSION;\nvalue = System.StatusCode.NO_SORT_PRICEBOOK_ASSOCIATED_ERROR;\nvalue = System.StatusCode.NO_SUCH_USER_EXISTS;\nvalue = System.StatusCode.NO_TOKEN_ENDPOINT;\nvalue = System.StatusCode.NUMBER_OUTSIDE_VALID_RANGE;\nvalue = System.StatusCode.NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED;\nvalue = System.StatusCode.OCR_INVALID_REQUEST;\nvalue = System.StatusCode.OPERATION_CONFLICT;\nvalue = System.StatusCode.OPERATION_ENQUEUED;\nvalue = System.StatusCode.OPERATION_WITH_CALLBACK_ENQUEUED;\nvalue = System.StatusCode.OPTED_OUT_OF_MASS_MAIL;\nvalue = System.StatusCode.OP_WITH_INVALID_USER_TYPE_EXCEPTION;\nvalue = System.StatusCode.ORCHESTRATION_INVALID;\nvalue = System.StatusCode.ORDER_ALREADY_SUBMITTED;\nvalue = System.StatusCode.ORDER_MANAGEMENT_ACTION_NOT_ALLOWED;\nvalue = System.StatusCode.ORDER_MANAGEMENT_DUPLICATE_ORDER_REFERENCE_NUMBER;\nvalue = System.StatusCode.ORDER_MANAGEMENT_INVALID_RECORD;\nvalue = System.StatusCode.ORDER_MANAGEMENT_RECORD_EXISTS;\nvalue = System.StatusCode.ORDER_MANAGEMENT_RECORD_NOT_FOUND;\nvalue = System.StatusCode.ORG_SETTING_REQUIRED;\nvalue = System.StatusCode.PACKAGE_DISABLED;\nvalue = System.StatusCode.PACKAGE_LICENSE_REQUIRED;\nvalue = System.StatusCode.PACKAGING_API_INSTALL_FAILED;\nvalue = System.StatusCode.PACKAGING_API_UNINSTALL_FAILED;\nvalue = System.StatusCode.PALI_INVALID_ACTION_ID;\nvalue = System.StatusCode.PALI_INVALID_ACTION_NAME;\nvalue = System.StatusCode.PALI_INVALID_ACTION_TYPE;\nvalue = System.StatusCode.PAL_INVALID_ASSISTANT_RECOMMENDATION_TYPE_ID;\nvalue = System.StatusCode.PAL_INVALID_ENTITY_ID;\nvalue = System.StatusCode.PAL_INVALID_FLEXIPAGE_ID;\nvalue = System.StatusCode.PAL_INVALID_LAYOUT_ID;\nvalue = System.StatusCode.PAL_INVALID_PARAMETERS;\nvalue = System.StatusCode.PARAMETER_TOO_LARGE;\nvalue = System.StatusCode.PARTICIPANT_RELATIONSHIP_EXISTS;\nvalue = System.StatusCode.PAYLOAD_SIZE_EXCEEDED;\nvalue = System.StatusCode.PAYMENTS_TOO_MANY_REQUESTS_ERROR;\nvalue = System.StatusCode.PAYMENT_GATEWAY_DEPENDENCY_EXCEPTION;\nvalue = System.StatusCode.PAYMENT_GATEWAY_REQUEST_EXCEPTION;\nvalue = System.StatusCode.PA_API_EXCEPTION;\nvalue = System.StatusCode.PA_AXIS_FAULT;\nvalue = System.StatusCode.PA_INVALID_ID_EXCEPTION;\nvalue = System.StatusCode.PA_NO_ACCESS_EXCEPTION;\nvalue = System.StatusCode.PA_NO_DATA_FOUND_EXCEPTION;\nvalue = System.StatusCode.PA_URI_SYNTAX_EXCEPTION;\nvalue = System.StatusCode.PA_VISIBLE_ACTIONS_FILTER_ORDERING_EXCEPTION;\nvalue = System.StatusCode.PENDING_COMMIT;\nvalue = System.StatusCode.PICKLIST_INACTIVE_VALUES_EXCEEDED;\nvalue = System.StatusCode.PLATFORM_EVENT_ENCRYPTION_ERROR;\nvalue = System.StatusCode.PLATFORM_EVENT_PUBLISHING_UNAVAILABLE;\nvalue = System.StatusCode.PLATFORM_EVENT_PUBLISH_FAILED;\nvalue = System.StatusCode.PORTAL_NO_ACCESS;\nvalue = System.StatusCode.PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT;\nvalue = System.StatusCode.PORTAL_USER_CREATION_RESTRICTED_WITH_ENCRYPTION;\nvalue = System.StatusCode.PRICE_NOT_FOUND;\nvalue = System.StatusCode.PRICING_SERVICE_MISCONFIGURATION;\nvalue = System.StatusCode.PRINCIPAL_NOT_ASSIGNED;\nvalue = System.StatusCode.PRINCIPAL_NOT_CONFIGURED;\nvalue = System.StatusCode.PRINCIPAL_UNAUTHENTICATED;\nvalue = System.StatusCode.PRIVATE_CONTACT_ON_ASSET;\nvalue = System.StatusCode.PROCESSING_HALTED;\nvalue = System.StatusCode.PROGRAM_PROGRESS_NOT_ACTIVE;\nvalue = System.StatusCode.PROMOTION_NOT_FOUND;\nvalue = System.StatusCode.QA_INVALID_CREATE_FEED_ITEM;\nvalue = System.StatusCode.QA_INVALID_SUCCESS_MESSAGE;\nvalue = System.StatusCode.QUERY_REFINEMENT_VALUE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.QUERY_TIMEOUT;\nvalue = System.StatusCode.QUERY_TOKEN_COUNT_LIMIT_EXCEEDED;\nvalue = System.StatusCode.QUICK_ACTION_LIST_ITEM_NOT_ALLOWED;\nvalue = System.StatusCode.QUICK_ACTION_LIST_NOT_ALLOWED;\nvalue = System.StatusCode.QUOTE_ITEM_OPERATION_BLOCKED;\nvalue = System.StatusCode.RECORD_CREATION_FAILED;\nvalue = System.StatusCode.RECORD_IN_USE_BY_WORKFLOW;\nvalue = System.StatusCode.RECORD_LOCKED;\nvalue = System.StatusCode.RECORD_MISSING_REQUIRED_FIELD;\nvalue = System.StatusCode.RECORD_NOT_FOUND;\nvalue = System.StatusCode.RECORD_TYPE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.RECORD_UPDATE_FAILED;\nvalue = System.StatusCode.RECOVERABLE_SEARCH_PROVIDER_ERROR;\nvalue = System.StatusCode.REFRESH_FAILED;\nvalue = System.StatusCode.RELATED_ENTITY_FILTER_VALIDATION_EXCEPTION;\nvalue = System.StatusCode.REL_FIELD_BAD_ACCESSIBILITY;\nvalue = System.StatusCode.REPUTATION_MINIMUM_NUMBER_NOT_REACHED;\n",
+      "path": "anonymous.apex"
+    }
+  ]
+}

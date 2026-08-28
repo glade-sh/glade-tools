@@ -1,0 +1,533 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "System.StatusCode value = System.StatusCode.FUNCTIONALITY_NOT_ENABLED;\nvalue = System.StatusCode.GET_EINSTEIN_TENANT_ERROR;\nvalue = System.StatusCode.GUEST_INSUFFICIENT_ACCESS;\nvalue = System.StatusCode.HAS_PUBLIC_REFERENCES;\nvalue = System.StatusCode.HTML_FILE_UPLOAD_NOT_ALLOWED;\nvalue = System.StatusCode.IAS_AM_AUTH_BAD_REQUEST;\nvalue = System.StatusCode.IAS_AM_AUTH_UNAUTHORIZED;\nvalue = System.StatusCode.IAS_INVALID_AUTH;\nvalue = System.StatusCode.IAS_INVALID_REQUEST_PARAMETER;\nvalue = System.StatusCode.IAS_RECORD_DOES_NOT_EXIST;\nvalue = System.StatusCode.IAS_TENANT_NOT_PROVISIONED;\nvalue = System.StatusCode.IAS_UNCOMMITTED_WORK;\nvalue = System.StatusCode.IMAGE_TOO_LARGE;\nvalue = System.StatusCode.INACTIVE_CONTEXT_DEFINITION;\nvalue = System.StatusCode.INACTIVE_OWNER_OR_USER;\nvalue = System.StatusCode.INACTIVE_RULE_ERROR;\nvalue = System.StatusCode.INDEX_ITEM_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INDEX_PAYLOAD_NOT_FOUND;\nvalue = System.StatusCode.INDEX_SINGLE_PAYLOAD_SIZE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INGESTION_JOB_RECORDS_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INGESTION_TOTAL_FILE_SIZE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INPUTPARAM_INCOMPATIBLE_DATATYPE;\nvalue = System.StatusCode.INSERT_UPDATE_DELETE_NOT_ALLOWED_DURING_MAINTENANCE;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS_OR_READONLY;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS_TO_INSIGHTSEXTERNALDATA;\nvalue = System.StatusCode.INSUFFICIENT_BALANCE;\nvalue = System.StatusCode.INSUFFICIENT_BENEFIT_REMAINING;\nvalue = System.StatusCode.INSUFFICIENT_CREDITS;\nvalue = System.StatusCode.INTEGRATION_CANCELLED;\nvalue = System.StatusCode.INTERNAL_ERROR;\nvalue = System.StatusCode.INVALID_ACCESS_LEVEL;\nvalue = System.StatusCode.INVALID_ACCESS_TOKEN;\nvalue = System.StatusCode.INVALID_ACCOUNT;\nvalue = System.StatusCode.INVALID_ACTION_VERSION;\nvalue = System.StatusCode.INVALID_API_INPUT;\nvalue = System.StatusCode.INVALID_ARGUMENT_TYPE;\nvalue = System.StatusCode.INVALID_ASSIGNEE_TYPE;\nvalue = System.StatusCode.INVALID_ASSIGNMENT_RULE;\nvalue = System.StatusCode.INVALID_AUTH_HEADER;\nvalue = System.StatusCode.INVALID_BATCH_OPERATION;\nvalue = System.StatusCode.INVALID_BUSINESS_HOURS_NAME;\nvalue = System.StatusCode.INVALID_CATEGORY_NETWORK;\nvalue = System.StatusCode.INVALID_CHECKOUT_INPUT;\nvalue = System.StatusCode.INVALID_CONTACT;\nvalue = System.StatusCode.INVALID_CONTENT_TYPE;\nvalue = System.StatusCode.INVALID_CREDIT_CARD_INFO;\nvalue = System.StatusCode.INVALID_CROSS_REFERENCE_KEY;\nvalue = System.StatusCode.INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD;\nvalue = System.StatusCode.INVALID_CURRENCY_CONV_RATE;\nvalue = System.StatusCode.INVALID_CURRENCY_CORP_RATE;\nvalue = System.StatusCode.INVALID_CURRENCY_ISO;\nvalue = System.StatusCode.INVALID_DATASET_REFERENCE_INPUT;\nvalue = System.StatusCode.INVALID_DATA_CATEGORY_GROUP_REFERENCE;\nvalue = System.StatusCode.INVALID_DATA_URI;\nvalue = System.StatusCode.INVALID_EBV_OPERATION;\nvalue = System.StatusCode.INVALID_EMAIL_ADDRESS;\nvalue = System.StatusCode.INVALID_EMPTY_KEY_OWNER;\nvalue = System.StatusCode.INVALID_ENTITY_FOR_MATCH_ENGINE_ERROR;\nvalue = System.StatusCode.INVALID_ENTITY_FOR_MATCH_OPERATION_ERROR;\nvalue = System.StatusCode.INVALID_ENTITY_FOR_UPSERT;\nvalue = System.StatusCode.INVALID_ENVIRONMENT_HUB_MEMBER;\nvalue = System.StatusCode.INVALID_EVENT_DELIVERY;\nvalue = System.StatusCode.INVALID_EVENT_INPUT;\nvalue = System.StatusCode.INVALID_EVENT_SUBSCRIPTION;\nvalue = System.StatusCode.INVALID_EXTENSION_ID;\nvalue = System.StatusCode.INVALID_EXTERNAL_ID_FIELD_NAME;\nvalue = System.StatusCode.INVALID_FIELD;\nvalue = System.StatusCode.INVALID_FIELD_FOR_INSERT_UPDATE;\nvalue = System.StatusCode.INVALID_FIELD_WHEN_USING_TEMPLATE;\nvalue = System.StatusCode.INVALID_FILTER_ACTION;\nvalue = System.StatusCode.INVALID_GOOGLE_DOCS_URL;\nvalue = System.StatusCode.INVALID_ID_FIELD;\nvalue = System.StatusCode.INVALID_INET_ADDRESS;\nvalue = System.StatusCode.INVALID_INPUT;\nvalue = System.StatusCode.INVALID_INPUT_FORMAT;\nvalue = System.StatusCode.INVALID_KEY_FIELD_INPUT;\nvalue = System.StatusCode.INVALID_LINEITEM_CLONE_STATE;\nvalue = System.StatusCode.INVALID_MARKUP;\nvalue = System.StatusCode.INVALID_MASTER_OR_TRANSLATED_SOLUTION;\nvalue = System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE;\nvalue = System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE_OR_STATUS;\nvalue = System.StatusCode.INVALID_MERGE_RECORD;\nvalue = System.StatusCode.INVALID_MESSAGE_ID_REFERENCE;\nvalue = System.StatusCode.INVALID_NAMESPACE_PREFIX;\nvalue = System.StatusCode.INVALID_OAUTH_URL;\nvalue = System.StatusCode.INVALID_OPERATION;\nvalue = System.StatusCode.INVALID_OPERATOR;\nvalue = System.StatusCode.INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST;\nvalue = System.StatusCode.INVALID_OWNER;\nvalue = System.StatusCode.INVALID_PACKAGE_LICENSE;\nvalue = System.StatusCode.INVALID_PACKAGE_VERSION;\nvalue = System.StatusCode.INVALID_PARTNER_NETWORK_STATUS;\nvalue = System.StatusCode.INVALID_PAYLOAD_VERSION;\nvalue = System.StatusCode.INVALID_PERSON_ACCOUNT_OPERATION;\nvalue = System.StatusCode.INVALID_PROFILE;\nvalue = System.StatusCode.INVALID_PROMOTION;\nvalue = System.StatusCode.INVALID_PROVIDER_TYPE;\nvalue = System.StatusCode.INVALID_QUERY_KEY;\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.FUNCTIONALITY_NOT_ENABLED",
+      "symbol": "apex:System.StatusCode.FUNCTIONALITY_NOT_ENABLED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.GET_EINSTEIN_TENANT_ERROR",
+      "symbol": "apex:System.StatusCode.GET_EINSTEIN_TENANT_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.GUEST_INSUFFICIENT_ACCESS",
+      "symbol": "apex:System.StatusCode.GUEST_INSUFFICIENT_ACCESS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.HAS_PUBLIC_REFERENCES",
+      "symbol": "apex:System.StatusCode.HAS_PUBLIC_REFERENCES"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.HTML_FILE_UPLOAD_NOT_ALLOWED",
+      "symbol": "apex:System.StatusCode.HTML_FILE_UPLOAD_NOT_ALLOWED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IAS_AM_AUTH_BAD_REQUEST",
+      "symbol": "apex:System.StatusCode.IAS_AM_AUTH_BAD_REQUEST"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IAS_AM_AUTH_UNAUTHORIZED",
+      "symbol": "apex:System.StatusCode.IAS_AM_AUTH_UNAUTHORIZED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IAS_INVALID_AUTH",
+      "symbol": "apex:System.StatusCode.IAS_INVALID_AUTH"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IAS_INVALID_REQUEST_PARAMETER",
+      "symbol": "apex:System.StatusCode.IAS_INVALID_REQUEST_PARAMETER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IAS_RECORD_DOES_NOT_EXIST",
+      "symbol": "apex:System.StatusCode.IAS_RECORD_DOES_NOT_EXIST"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IAS_TENANT_NOT_PROVISIONED",
+      "symbol": "apex:System.StatusCode.IAS_TENANT_NOT_PROVISIONED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IAS_UNCOMMITTED_WORK",
+      "symbol": "apex:System.StatusCode.IAS_UNCOMMITTED_WORK"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.IMAGE_TOO_LARGE",
+      "symbol": "apex:System.StatusCode.IMAGE_TOO_LARGE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INACTIVE_CONTEXT_DEFINITION",
+      "symbol": "apex:System.StatusCode.INACTIVE_CONTEXT_DEFINITION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INACTIVE_OWNER_OR_USER",
+      "symbol": "apex:System.StatusCode.INACTIVE_OWNER_OR_USER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INACTIVE_RULE_ERROR",
+      "symbol": "apex:System.StatusCode.INACTIVE_RULE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INDEX_ITEM_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.INDEX_ITEM_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INDEX_PAYLOAD_NOT_FOUND",
+      "symbol": "apex:System.StatusCode.INDEX_PAYLOAD_NOT_FOUND"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INDEX_SINGLE_PAYLOAD_SIZE_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.INDEX_SINGLE_PAYLOAD_SIZE_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INGESTION_JOB_RECORDS_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.INGESTION_JOB_RECORDS_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INGESTION_TOTAL_FILE_SIZE_LIMIT_EXCEEDED",
+      "symbol": "apex:System.StatusCode.INGESTION_TOTAL_FILE_SIZE_LIMIT_EXCEEDED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INPUTPARAM_INCOMPATIBLE_DATATYPE",
+      "symbol": "apex:System.StatusCode.INPUTPARAM_INCOMPATIBLE_DATATYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSERT_UPDATE_DELETE_NOT_ALLOWED_DURING_MAINTENANCE",
+      "symbol": "apex:System.StatusCode.INSERT_UPDATE_DELETE_NOT_ALLOWED_DURING_MAINTENANCE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSUFFICIENT_ACCESS",
+      "symbol": "apex:System.StatusCode.INSUFFICIENT_ACCESS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY",
+      "symbol": "apex:System.StatusCode.INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSUFFICIENT_ACCESS_OR_READONLY",
+      "symbol": "apex:System.StatusCode.INSUFFICIENT_ACCESS_OR_READONLY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSUFFICIENT_ACCESS_TO_INSIGHTSEXTERNALDATA",
+      "symbol": "apex:System.StatusCode.INSUFFICIENT_ACCESS_TO_INSIGHTSEXTERNALDATA"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSUFFICIENT_BALANCE",
+      "symbol": "apex:System.StatusCode.INSUFFICIENT_BALANCE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSUFFICIENT_BENEFIT_REMAINING",
+      "symbol": "apex:System.StatusCode.INSUFFICIENT_BENEFIT_REMAINING"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INSUFFICIENT_CREDITS",
+      "symbol": "apex:System.StatusCode.INSUFFICIENT_CREDITS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INTEGRATION_CANCELLED",
+      "symbol": "apex:System.StatusCode.INTEGRATION_CANCELLED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INTERNAL_ERROR",
+      "symbol": "apex:System.StatusCode.INTERNAL_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ACCESS_LEVEL",
+      "symbol": "apex:System.StatusCode.INVALID_ACCESS_LEVEL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ACCESS_TOKEN",
+      "symbol": "apex:System.StatusCode.INVALID_ACCESS_TOKEN"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ACCOUNT",
+      "symbol": "apex:System.StatusCode.INVALID_ACCOUNT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ACTION_VERSION",
+      "symbol": "apex:System.StatusCode.INVALID_ACTION_VERSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_API_INPUT",
+      "symbol": "apex:System.StatusCode.INVALID_API_INPUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ARGUMENT_TYPE",
+      "symbol": "apex:System.StatusCode.INVALID_ARGUMENT_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ASSIGNEE_TYPE",
+      "symbol": "apex:System.StatusCode.INVALID_ASSIGNEE_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ASSIGNMENT_RULE",
+      "symbol": "apex:System.StatusCode.INVALID_ASSIGNMENT_RULE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_AUTH_HEADER",
+      "symbol": "apex:System.StatusCode.INVALID_AUTH_HEADER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_BATCH_OPERATION",
+      "symbol": "apex:System.StatusCode.INVALID_BATCH_OPERATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_BUSINESS_HOURS_NAME",
+      "symbol": "apex:System.StatusCode.INVALID_BUSINESS_HOURS_NAME"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CATEGORY_NETWORK",
+      "symbol": "apex:System.StatusCode.INVALID_CATEGORY_NETWORK"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CHECKOUT_INPUT",
+      "symbol": "apex:System.StatusCode.INVALID_CHECKOUT_INPUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CONTACT",
+      "symbol": "apex:System.StatusCode.INVALID_CONTACT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CONTENT_TYPE",
+      "symbol": "apex:System.StatusCode.INVALID_CONTENT_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CREDIT_CARD_INFO",
+      "symbol": "apex:System.StatusCode.INVALID_CREDIT_CARD_INFO"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CROSS_REFERENCE_KEY",
+      "symbol": "apex:System.StatusCode.INVALID_CROSS_REFERENCE_KEY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD",
+      "symbol": "apex:System.StatusCode.INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CURRENCY_CONV_RATE",
+      "symbol": "apex:System.StatusCode.INVALID_CURRENCY_CONV_RATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CURRENCY_CORP_RATE",
+      "symbol": "apex:System.StatusCode.INVALID_CURRENCY_CORP_RATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_CURRENCY_ISO",
+      "symbol": "apex:System.StatusCode.INVALID_CURRENCY_ISO"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_DATASET_REFERENCE_INPUT",
+      "symbol": "apex:System.StatusCode.INVALID_DATASET_REFERENCE_INPUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_DATA_CATEGORY_GROUP_REFERENCE",
+      "symbol": "apex:System.StatusCode.INVALID_DATA_CATEGORY_GROUP_REFERENCE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_DATA_URI",
+      "symbol": "apex:System.StatusCode.INVALID_DATA_URI"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EBV_OPERATION",
+      "symbol": "apex:System.StatusCode.INVALID_EBV_OPERATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EMAIL_ADDRESS",
+      "symbol": "apex:System.StatusCode.INVALID_EMAIL_ADDRESS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EMPTY_KEY_OWNER",
+      "symbol": "apex:System.StatusCode.INVALID_EMPTY_KEY_OWNER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ENTITY_FOR_MATCH_ENGINE_ERROR",
+      "symbol": "apex:System.StatusCode.INVALID_ENTITY_FOR_MATCH_ENGINE_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ENTITY_FOR_MATCH_OPERATION_ERROR",
+      "symbol": "apex:System.StatusCode.INVALID_ENTITY_FOR_MATCH_OPERATION_ERROR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ENTITY_FOR_UPSERT",
+      "symbol": "apex:System.StatusCode.INVALID_ENTITY_FOR_UPSERT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ENVIRONMENT_HUB_MEMBER",
+      "symbol": "apex:System.StatusCode.INVALID_ENVIRONMENT_HUB_MEMBER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EVENT_DELIVERY",
+      "symbol": "apex:System.StatusCode.INVALID_EVENT_DELIVERY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EVENT_INPUT",
+      "symbol": "apex:System.StatusCode.INVALID_EVENT_INPUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EVENT_SUBSCRIPTION",
+      "symbol": "apex:System.StatusCode.INVALID_EVENT_SUBSCRIPTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EXTENSION_ID",
+      "symbol": "apex:System.StatusCode.INVALID_EXTENSION_ID"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_EXTERNAL_ID_FIELD_NAME",
+      "symbol": "apex:System.StatusCode.INVALID_EXTERNAL_ID_FIELD_NAME"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_FIELD",
+      "symbol": "apex:System.StatusCode.INVALID_FIELD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_FIELD_FOR_INSERT_UPDATE",
+      "symbol": "apex:System.StatusCode.INVALID_FIELD_FOR_INSERT_UPDATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_FIELD_WHEN_USING_TEMPLATE",
+      "symbol": "apex:System.StatusCode.INVALID_FIELD_WHEN_USING_TEMPLATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_FILTER_ACTION",
+      "symbol": "apex:System.StatusCode.INVALID_FILTER_ACTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_GOOGLE_DOCS_URL",
+      "symbol": "apex:System.StatusCode.INVALID_GOOGLE_DOCS_URL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_ID_FIELD",
+      "symbol": "apex:System.StatusCode.INVALID_ID_FIELD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_INET_ADDRESS",
+      "symbol": "apex:System.StatusCode.INVALID_INET_ADDRESS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_INPUT",
+      "symbol": "apex:System.StatusCode.INVALID_INPUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_INPUT_FORMAT",
+      "symbol": "apex:System.StatusCode.INVALID_INPUT_FORMAT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_KEY_FIELD_INPUT",
+      "symbol": "apex:System.StatusCode.INVALID_KEY_FIELD_INPUT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_LINEITEM_CLONE_STATE",
+      "symbol": "apex:System.StatusCode.INVALID_LINEITEM_CLONE_STATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_MARKUP",
+      "symbol": "apex:System.StatusCode.INVALID_MARKUP"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_MASTER_OR_TRANSLATED_SOLUTION",
+      "symbol": "apex:System.StatusCode.INVALID_MASTER_OR_TRANSLATED_SOLUTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE",
+      "symbol": "apex:System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE_OR_STATUS",
+      "symbol": "apex:System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE_OR_STATUS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_MERGE_RECORD",
+      "symbol": "apex:System.StatusCode.INVALID_MERGE_RECORD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_MESSAGE_ID_REFERENCE",
+      "symbol": "apex:System.StatusCode.INVALID_MESSAGE_ID_REFERENCE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_NAMESPACE_PREFIX",
+      "symbol": "apex:System.StatusCode.INVALID_NAMESPACE_PREFIX"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_OAUTH_URL",
+      "symbol": "apex:System.StatusCode.INVALID_OAUTH_URL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_OPERATION",
+      "symbol": "apex:System.StatusCode.INVALID_OPERATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_OPERATOR",
+      "symbol": "apex:System.StatusCode.INVALID_OPERATOR"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST",
+      "symbol": "apex:System.StatusCode.INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_OWNER",
+      "symbol": "apex:System.StatusCode.INVALID_OWNER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PACKAGE_LICENSE",
+      "symbol": "apex:System.StatusCode.INVALID_PACKAGE_LICENSE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PACKAGE_VERSION",
+      "symbol": "apex:System.StatusCode.INVALID_PACKAGE_VERSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PARTNER_NETWORK_STATUS",
+      "symbol": "apex:System.StatusCode.INVALID_PARTNER_NETWORK_STATUS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PAYLOAD_VERSION",
+      "symbol": "apex:System.StatusCode.INVALID_PAYLOAD_VERSION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PERSON_ACCOUNT_OPERATION",
+      "symbol": "apex:System.StatusCode.INVALID_PERSON_ACCOUNT_OPERATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PROFILE",
+      "symbol": "apex:System.StatusCode.INVALID_PROFILE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PROMOTION",
+      "symbol": "apex:System.StatusCode.INVALID_PROMOTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_PROVIDER_TYPE",
+      "symbol": "apex:System.StatusCode.INVALID_PROVIDER_TYPE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.StatusCode.INVALID_QUERY_KEY",
+      "symbol": "apex:System.StatusCode.INVALID_QUERY_KEY"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-system-status-code-constants-api67-02",
+  "notes": "Exact-candidate executable local-runtime witness for the complete API 67 System.StatusCode enum family. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "statuscode-local-evidence",
+    "selectedRowCount": 100
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "System.StatusCode value = System.StatusCode.FUNCTIONALITY_NOT_ENABLED;\nvalue = System.StatusCode.GET_EINSTEIN_TENANT_ERROR;\nvalue = System.StatusCode.GUEST_INSUFFICIENT_ACCESS;\nvalue = System.StatusCode.HAS_PUBLIC_REFERENCES;\nvalue = System.StatusCode.HTML_FILE_UPLOAD_NOT_ALLOWED;\nvalue = System.StatusCode.IAS_AM_AUTH_BAD_REQUEST;\nvalue = System.StatusCode.IAS_AM_AUTH_UNAUTHORIZED;\nvalue = System.StatusCode.IAS_INVALID_AUTH;\nvalue = System.StatusCode.IAS_INVALID_REQUEST_PARAMETER;\nvalue = System.StatusCode.IAS_RECORD_DOES_NOT_EXIST;\nvalue = System.StatusCode.IAS_TENANT_NOT_PROVISIONED;\nvalue = System.StatusCode.IAS_UNCOMMITTED_WORK;\nvalue = System.StatusCode.IMAGE_TOO_LARGE;\nvalue = System.StatusCode.INACTIVE_CONTEXT_DEFINITION;\nvalue = System.StatusCode.INACTIVE_OWNER_OR_USER;\nvalue = System.StatusCode.INACTIVE_RULE_ERROR;\nvalue = System.StatusCode.INDEX_ITEM_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INDEX_PAYLOAD_NOT_FOUND;\nvalue = System.StatusCode.INDEX_SINGLE_PAYLOAD_SIZE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INGESTION_JOB_RECORDS_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INGESTION_TOTAL_FILE_SIZE_LIMIT_EXCEEDED;\nvalue = System.StatusCode.INPUTPARAM_INCOMPATIBLE_DATATYPE;\nvalue = System.StatusCode.INSERT_UPDATE_DELETE_NOT_ALLOWED_DURING_MAINTENANCE;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS_OR_READONLY;\nvalue = System.StatusCode.INSUFFICIENT_ACCESS_TO_INSIGHTSEXTERNALDATA;\nvalue = System.StatusCode.INSUFFICIENT_BALANCE;\nvalue = System.StatusCode.INSUFFICIENT_BENEFIT_REMAINING;\nvalue = System.StatusCode.INSUFFICIENT_CREDITS;\nvalue = System.StatusCode.INTEGRATION_CANCELLED;\nvalue = System.StatusCode.INTERNAL_ERROR;\nvalue = System.StatusCode.INVALID_ACCESS_LEVEL;\nvalue = System.StatusCode.INVALID_ACCESS_TOKEN;\nvalue = System.StatusCode.INVALID_ACCOUNT;\nvalue = System.StatusCode.INVALID_ACTION_VERSION;\nvalue = System.StatusCode.INVALID_API_INPUT;\nvalue = System.StatusCode.INVALID_ARGUMENT_TYPE;\nvalue = System.StatusCode.INVALID_ASSIGNEE_TYPE;\nvalue = System.StatusCode.INVALID_ASSIGNMENT_RULE;\nvalue = System.StatusCode.INVALID_AUTH_HEADER;\nvalue = System.StatusCode.INVALID_BATCH_OPERATION;\nvalue = System.StatusCode.INVALID_BUSINESS_HOURS_NAME;\nvalue = System.StatusCode.INVALID_CATEGORY_NETWORK;\nvalue = System.StatusCode.INVALID_CHECKOUT_INPUT;\nvalue = System.StatusCode.INVALID_CONTACT;\nvalue = System.StatusCode.INVALID_CONTENT_TYPE;\nvalue = System.StatusCode.INVALID_CREDIT_CARD_INFO;\nvalue = System.StatusCode.INVALID_CROSS_REFERENCE_KEY;\nvalue = System.StatusCode.INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD;\nvalue = System.StatusCode.INVALID_CURRENCY_CONV_RATE;\nvalue = System.StatusCode.INVALID_CURRENCY_CORP_RATE;\nvalue = System.StatusCode.INVALID_CURRENCY_ISO;\nvalue = System.StatusCode.INVALID_DATASET_REFERENCE_INPUT;\nvalue = System.StatusCode.INVALID_DATA_CATEGORY_GROUP_REFERENCE;\nvalue = System.StatusCode.INVALID_DATA_URI;\nvalue = System.StatusCode.INVALID_EBV_OPERATION;\nvalue = System.StatusCode.INVALID_EMAIL_ADDRESS;\nvalue = System.StatusCode.INVALID_EMPTY_KEY_OWNER;\nvalue = System.StatusCode.INVALID_ENTITY_FOR_MATCH_ENGINE_ERROR;\nvalue = System.StatusCode.INVALID_ENTITY_FOR_MATCH_OPERATION_ERROR;\nvalue = System.StatusCode.INVALID_ENTITY_FOR_UPSERT;\nvalue = System.StatusCode.INVALID_ENVIRONMENT_HUB_MEMBER;\nvalue = System.StatusCode.INVALID_EVENT_DELIVERY;\nvalue = System.StatusCode.INVALID_EVENT_INPUT;\nvalue = System.StatusCode.INVALID_EVENT_SUBSCRIPTION;\nvalue = System.StatusCode.INVALID_EXTENSION_ID;\nvalue = System.StatusCode.INVALID_EXTERNAL_ID_FIELD_NAME;\nvalue = System.StatusCode.INVALID_FIELD;\nvalue = System.StatusCode.INVALID_FIELD_FOR_INSERT_UPDATE;\nvalue = System.StatusCode.INVALID_FIELD_WHEN_USING_TEMPLATE;\nvalue = System.StatusCode.INVALID_FILTER_ACTION;\nvalue = System.StatusCode.INVALID_GOOGLE_DOCS_URL;\nvalue = System.StatusCode.INVALID_ID_FIELD;\nvalue = System.StatusCode.INVALID_INET_ADDRESS;\nvalue = System.StatusCode.INVALID_INPUT;\nvalue = System.StatusCode.INVALID_INPUT_FORMAT;\nvalue = System.StatusCode.INVALID_KEY_FIELD_INPUT;\nvalue = System.StatusCode.INVALID_LINEITEM_CLONE_STATE;\nvalue = System.StatusCode.INVALID_MARKUP;\nvalue = System.StatusCode.INVALID_MASTER_OR_TRANSLATED_SOLUTION;\nvalue = System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE;\nvalue = System.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE_OR_STATUS;\nvalue = System.StatusCode.INVALID_MERGE_RECORD;\nvalue = System.StatusCode.INVALID_MESSAGE_ID_REFERENCE;\nvalue = System.StatusCode.INVALID_NAMESPACE_PREFIX;\nvalue = System.StatusCode.INVALID_OAUTH_URL;\nvalue = System.StatusCode.INVALID_OPERATION;\nvalue = System.StatusCode.INVALID_OPERATOR;\nvalue = System.StatusCode.INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST;\nvalue = System.StatusCode.INVALID_OWNER;\nvalue = System.StatusCode.INVALID_PACKAGE_LICENSE;\nvalue = System.StatusCode.INVALID_PACKAGE_VERSION;\nvalue = System.StatusCode.INVALID_PARTNER_NETWORK_STATUS;\nvalue = System.StatusCode.INVALID_PAYLOAD_VERSION;\nvalue = System.StatusCode.INVALID_PERSON_ACCOUNT_OPERATION;\nvalue = System.StatusCode.INVALID_PROFILE;\nvalue = System.StatusCode.INVALID_PROMOTION;\nvalue = System.StatusCode.INVALID_PROVIDER_TYPE;\nvalue = System.StatusCode.INVALID_QUERY_KEY;\n",
+      "path": "anonymous.apex"
+    }
+  ]
+}
