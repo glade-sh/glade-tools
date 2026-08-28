@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -228,7 +229,8 @@ func validateLocalProofSurfaceWitnesses(entry LocalProofFixture, fixture compat.
 		}
 	}
 	code := source.String()
-	tokens := localProofCodeIdentifiers(code)
+	codeTokens := localProofCodeTokens(code)
+	tokens := localProofCodeIdentifiers(codeTokens)
 	for _, evidence := range fixture.Evidence {
 		if !stringSet(entry.OwnedSurfaceIDs)[evidence.SurfaceID] {
 			continue
@@ -237,8 +239,9 @@ func validateLocalProofSurfaceWitnesses(entry LocalProofFixture, fixture compat.
 		if strings.Contains(evidence.Symbol, "(") && len(parts) == 2 && parts[0] == parts[1] && !localProofHasConstructorWitness(code, parts[0]) {
 			return fmt.Errorf("fixture %q surface %q lacks a constructor witness for %q", entry.ID, evidence.SurfaceID, evidence.Symbol)
 		}
+		bulkEnumWitness := localProofHasEnumValuesWitness(codeTokens, evidence.Symbol)
 		for _, part := range parts {
-			if !tokens[part] {
+			if !tokens[part] && !bulkEnumWitness {
 				return fmt.Errorf("fixture %q surface %q lacks a source witness for %q", entry.ID, evidence.SurfaceID, evidence.Symbol)
 			}
 		}
@@ -260,11 +263,28 @@ func localProofWitnessIdentifiers(symbol string) []string {
 	return parts
 }
 
-func localProofCodeIdentifiers(source string) map[string]bool {
+func localProofHasEnumValuesWitness(tokens []string, symbol string) bool {
+	if strings.Contains(symbol, "(") {
+		return false
+	}
+	parts := strings.Split(strings.TrimPrefix(symbol, "apex:"), ".")
+	if len(parts) < 3 {
+		return false
+	}
+	want := localProofCodeTokens(strings.Join(parts[:len(parts)-1], ".") + ".values()")
+	for i := 0; i+len(want) <= len(tokens); i++ {
+		if slices.Equal(tokens[i:i+len(want)], want) {
+			return true
+		}
+	}
+	return false
+}
+
+func localProofCodeIdentifiers(tokens []string) map[string]bool {
 	identifiers := make(map[string]bool)
-	for _, token := range localProofCodeTokens(source) {
+	for _, token := range tokens {
 		switch token {
-		case ".", "(", "{", "}", "<", ">":
+		case ".", "(", ")", "{", "}", "<", ">", "<literal>":
 			continue
 		}
 		identifiers[token] = true
@@ -376,15 +396,17 @@ func localProofCodeTokens(source string) []string {
 				state = 2
 			} else if r == '\'' {
 				flush()
+				tokens = append(tokens, "<literal>")
 				state = 3
 			} else if r == '"' {
 				flush()
+				tokens = append(tokens, "<literal>")
 				state = 4
 			} else if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
 				token = append(token, r)
 			} else {
 				flush()
-				if r == '.' || r == '(' || r == '{' || r == '}' || r == '<' || r == '>' {
+				if r == '.' || r == '(' || r == ')' || r == '{' || r == '}' || r == '<' || r == '>' {
 					tokens = append(tokens, string(r))
 				}
 			}
