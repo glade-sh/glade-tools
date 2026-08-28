@@ -727,6 +727,10 @@ func copyOrchestratorWorkerFile(sourceRoot, destinationRoot, relative string) er
 	if err != nil {
 		return err
 	}
+	if err = file.Chmod(snapshot.Mode.Perm()); err != nil {
+		_ = file.Close()
+		return err
+	}
 	if _, err = file.Write(snapshot.Data); err == nil {
 		err = file.Sync()
 	}

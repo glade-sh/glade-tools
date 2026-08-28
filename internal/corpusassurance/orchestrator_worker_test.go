@@ -7,9 +7,37 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 )
+
+func TestCopyOrchestratorWorkerFilePreservesSourceModeUnderRestrictiveUmask(t *testing.T) {
+	root := t.TempDir()
+	sourceRoot, destinationRoot := filepath.Join(root, "source"), filepath.Join(root, "destination")
+	relative := "packet.json"
+	if err := os.Mkdir(sourceRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(sourceRoot, relative), []byte("proof\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chmod(filepath.Join(sourceRoot, relative), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	previous := syscall.Umask(0o077)
+	defer syscall.Umask(previous)
+	if err := copyOrchestratorWorkerFile(sourceRoot, destinationRoot, relative); err != nil {
+		t.Fatal(err)
+	}
+	info, err := os.Lstat(filepath.Join(destinationRoot, relative))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := info.Mode().Perm(); got != 0o644 {
+		t.Fatalf("copied mode = %04o, want 0644", got)
+	}
+}
 
 func TestOrchestratorWorkerCrashRetainsJournalAndNoCredit(t *testing.T) {
 	for _, stage := range []string{"before-scratch-create", "after-scratch-create", "after-salesforce-run", "before-credit"} {
