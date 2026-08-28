@@ -300,6 +300,50 @@ func TestCB198SchemaSoapTypeRowsHaveExactDualEvidence(t *testing.T) {
 	}
 }
 
+func TestCB198SchemaSoapTypeFixtureUsesCompactBulkDigestContract(t *testing.T) {
+	fixturePath := filepath.Join("..", "..", "docs", "fixtures", "current-base-cb198-schema-soaptype-positive-api67.json")
+	fixture, err := compat.LoadFile(fixturePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 {
+		t.Fatalf("fixture command = %#v", fixture.Command)
+	}
+	command := fixture.Command.Args[0]
+	if len(command) > 1024 {
+		t.Fatalf("fixture command = %d bytes, want at most 1024", len(command))
+	}
+	for _, want := range []string{
+		"List<Schema.SoapType> values = Schema.SoapType.values();",
+		"System.assertEquals(1302, values.size());",
+		"for (Integer i = 0; i < values.size(); i++) {",
+		"String joined = String.join(rows, '\\n');",
+		cb198ExpectedDigest,
+		"EncodingUtil.convertToHex(Crypto.generateDigest('SHA-256', Blob.valueOf(joined)))",
+		"System.debug('GLADE_ORACLE_SCHEMA_SOAP_TYPE_ROWS=' + JSON.serialize(rows));",
+	} {
+		if !strings.Contains(command, want) {
+			t.Errorf("fixture command missing %q", want)
+		}
+	}
+	loopStart := strings.Index(command, "for (Integer i = 0; i < values.size(); i++) {")
+	loopEnd := strings.Index(command, "}\nString joined =")
+	if loopStart < 0 || loopEnd <= loopStart {
+		t.Fatalf("fixture command has no bounded per-value loop")
+	}
+	loop := command[loopStart:loopEnd]
+	for _, want := range []string{
+		"Schema.SoapType parsed = Schema.SoapType.valueOf(String.valueOf(value));",
+		"System.assert(value.equals(parsed));",
+		"System.assertEquals(i, value.ordinal());",
+		"value.hashCode()",
+	} {
+		if !strings.Contains(loop, want) {
+			t.Errorf("fixture per-value loop missing %q", want)
+		}
+	}
+}
+
 func cb198AssertCandidate(t *testing.T, candidate cb198Candidate) {
 	t.Helper()
 	if candidate.Commit != cb198CandidateCommit || candidate.SHA256 != cb198CandidateSHA256 {

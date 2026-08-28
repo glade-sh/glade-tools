@@ -435,6 +435,31 @@ func TestLocalProofRejectsFixtureSurfaceWithoutSourceWitness(t *testing.T) {
 	}
 }
 
+func TestLocalProofEnumValuesBulkWitness(t *testing.T) {
+	for _, test := range []struct {
+		name      string
+		command   string
+		symbol    string
+		wantError bool
+	}{
+		{"bulk constant", "Schema.SoapType.values();", "Schema.SoapType.ADDRESS", false},
+		{"literal constant", "System.assertEquals(Schema.SoapType.ADDRESS, Schema.SoapType.ADDRESS);", "Schema.SoapType.ADDRESS", false},
+		{"method remains direct", "Schema.SoapType.values();", "Schema.SoapType.ordinal()", true},
+		{"unrelated values", "Other.SoapType.values();", "Schema.SoapType.ADDRESS", true},
+		{"values with argument", "Schema.SoapType.values('ignored');", "Schema.SoapType.ADDRESS", true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			const surfaceID = "apex:Schema.SoapType.member"
+			entry := LocalProofFixture{ID: "fixture", Name: "fixture", Path: filepath.Join(t.TempDir(), "fixture.json"), OwnedSurfaceIDs: []string{surfaceID}, Disposition: localRuntimeRequired, Operation: "exec"}
+			fixture := compat.Fixture{Name: entry.Name, Command: compat.Invocation{Kind: "exec", Args: []string{test.command}}, Evidence: []compat.FixtureEvidence{{SurfaceID: surfaceID, Kind: "exec", Symbol: test.symbol}}}
+			err := validateLocalProofFixtureIdentity(entry, fixture)
+			if (err != nil) != test.wantError {
+				t.Fatalf("validateLocalProofFixtureIdentity() error = %v, wantError %t", err, test.wantError)
+			}
+		})
+	}
+}
+
 func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
 	for _, test := range []struct {
 		disposition string
