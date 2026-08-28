@@ -1,0 +1,32 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.SaveResult invalid = Database.insert(new Account(), false);\nSystem.assert(!invalid.isSuccess());\nDatabase.Error error = invalid.getErrors().get(0);\nSystem.assertEquals(0, error.getExtendedErrorDetails().size());"
+    ]
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Database.Error.getExtendedErrorDetails()","symbol":"Database.Error.getExtendedErrorDetails()"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-database-error-extended-local-only-api67",
+  "notes": "Exact-candidate executable local-runtime witness for Glade's Database.Error extended-details accessor. The method is not exposed to Salesforce API 67 anonymous Apex and earns zero Salesforce parity.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-database-error-extended-local-only-api67",
+    "selectedRowCount": 1
+  },
+  "project": {"sourceApiVersion":"67.0"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 anonymous Apex does not expose Database.Error.getExtendedErrorDetails(), so this local contract earns zero Salesforce parity.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.SaveResult invalid = Database.insert(new Account(), false);\nSystem.assert(!invalid.isSuccess());\nDatabase.Error error = invalid.getErrors().get(0);\nSystem.assertEquals(0, error.getExtendedErrorDetails().size());"
+    }
+  ]
+}

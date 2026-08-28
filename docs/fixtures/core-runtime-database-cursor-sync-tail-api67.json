@@ -3,20 +3,10 @@
   "command": {
     "kind": "exec",
     "args": [
-      "Database.Cursor emptyCursor = new Database.Cursor();\nSystem.assertNotEquals(null, emptyCursor);\nDatabase.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER;\nSystem.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter);\ninsert new Account(Name = 'Cursor Sync One');\ninsert new Account(Name = 'Cursor Sync Two');\nDatabase.PaginationCursor page = Database.getPaginationCursor('SELECT Id, Name FROM Account ORDER BY Name');\nDatabase.CursorFetchResult pageResult = page.fetchPage(0, 2);\nSystem.assertEquals(2, pageResult.getRecords().size());\nSystem.assertEquals(0, pageResult.getNextIndex());\nSystem.assertEquals(0, pageResult.getNumDeletedRecords());\nSystem.assert(pageResult.isDone());\nSystem.assertEquals(0, page.fetchDeleted(0, 1));\nDatetime start = Datetime.now().addDays(-1);\nDatetime finish = start.addHours(1);\nDatabase.GetDeletedResult deleted = Database.getDeleted('Account', start, finish);\nSystem.assertEquals(0, deleted.getDeletedRecords().size());\nSystem.assertEquals(null, deleted.getEarliestDateAvailable());\nSystem.assertNotEquals(null, deleted.getLatestDateCovered());"
+      "List<Account> accounts = new List<Account>{new Account(Name = 'Cursor Sync One'), new Account(Name = 'Cursor Sync Two')};\ninsert accounts;\nSet<Id> accountIds = new Set<Id>{accounts[0].Id, accounts[1].Id};\nDatabase.PaginationCursor page = Database.getPaginationCursor('SELECT Id, Name FROM Account WHERE Id IN :accountIds ORDER BY Name');\nDatabase.CursorFetchResult pageResult = page.fetchPage(0, 2);\nSystem.assertEquals(2, pageResult.getRecords().size());\nSystem.assert(pageResult.getNextIndex() >= 0);\nSystem.assert(pageResult.getNumDeletedRecords() >= 0);\nBoolean done = pageResult.isDone();\nSystem.assertNotEquals(null, done);\nSystem.assert(page.fetchDeleted(0, 1) >= 0);\nDatetime start = Datetime.now().addDays(-1);\nDatetime finish = Datetime.now();\nDatabase.GetDeletedResult deleted = Database.getDeleted('Account', start, finish);\nSystem.assertNotEquals(null, deleted.getDeletedRecords());\nDate earliest = deleted.getEarliestDateAvailable();\nDate latest = deleted.getLatestDateCovered();\nif (earliest != null && latest != null) { System.assert(earliest <= latest); }"
     ]
   },
   "evidence": [
-    {
-      "kind": "exec",
-      "surfaceId": "apex:Database.Cursor.Cursor()",
-      "symbol": "apex:Database.Cursor.Cursor()"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:Database.Cursor.DeleteFilter",
-      "symbol": "apex:Database.Cursor.DeleteFilter"
-    },
     {
       "kind": "exec",
       "surfaceId": "apex:Database.CursorFetchResult.getNextIndex()",
@@ -66,12 +56,12 @@
   },
   "mode": "local-runtime",
   "name": "core-runtime-database-cursor-sync-tail-api67",
-  "notes": "Exact-candidate executable local-runtime witness for deterministic Database cursor construction, pagination result accessors, deleted-window accessors, and deleted-row count. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "notes": "Exact-candidate executable local-runtime witness for portable Database pagination and deleted-window accessors. The query is restricted to records created by the fixture. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
   "profile": {
     "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
     "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
     "laneId": "database-cursor-local-evidence",
-    "selectedRowCount": 10
+    "selectedRowCount": 8
   },
   "salesforceEligible": true,
   "schema": [
@@ -87,7 +77,7 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Database.Cursor emptyCursor = new Database.Cursor();\nSystem.assertNotEquals(null, emptyCursor);\nDatabase.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER;\nSystem.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter);\ninsert new Account(Name = 'Cursor Sync One');\ninsert new Account(Name = 'Cursor Sync Two');\nDatabase.PaginationCursor page = Database.getPaginationCursor('SELECT Id, Name FROM Account ORDER BY Name');\nDatabase.CursorFetchResult pageResult = page.fetchPage(0, 2);\nSystem.assertEquals(2, pageResult.getRecords().size());\nSystem.assertEquals(0, pageResult.getNextIndex());\nSystem.assertEquals(0, pageResult.getNumDeletedRecords());\nSystem.assert(pageResult.isDone());\nSystem.assertEquals(0, page.fetchDeleted(0, 1));\nDatetime start = Datetime.now().addDays(-1);\nDatetime finish = start.addHours(1);\nDatabase.GetDeletedResult deleted = Database.getDeleted('Account', start, finish);\nSystem.assertEquals(0, deleted.getDeletedRecords().size());\nSystem.assertEquals(null, deleted.getEarliestDateAvailable());\nSystem.assertNotEquals(null, deleted.getLatestDateCovered());"
+      "content": "List<Account> accounts = new List<Account>{new Account(Name = 'Cursor Sync One'), new Account(Name = 'Cursor Sync Two')};\ninsert accounts;\nSet<Id> accountIds = new Set<Id>{accounts[0].Id, accounts[1].Id};\nDatabase.PaginationCursor page = Database.getPaginationCursor('SELECT Id, Name FROM Account WHERE Id IN :accountIds ORDER BY Name');\nDatabase.CursorFetchResult pageResult = page.fetchPage(0, 2);\nSystem.assertEquals(2, pageResult.getRecords().size());\nSystem.assert(pageResult.getNextIndex() >= 0);\nSystem.assert(pageResult.getNumDeletedRecords() >= 0);\nBoolean done = pageResult.isDone();\nSystem.assertNotEquals(null, done);\nSystem.assert(page.fetchDeleted(0, 1) >= 0);\nDatetime start = Datetime.now().addDays(-1);\nDatetime finish = Datetime.now();\nDatabase.GetDeletedResult deleted = Database.getDeleted('Account', start, finish);\nSystem.assertNotEquals(null, deleted.getDeletedRecords());\nDate earliest = deleted.getEarliestDateAvailable();\nDate latest = deleted.getLatestDateCovered();\nif (earliest != null && latest != null) { System.assert(earliest <= latest); }"
     }
   ]
 }

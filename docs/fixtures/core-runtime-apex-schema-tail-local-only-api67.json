@@ -1,0 +1,38 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "DmlException rootCause = new DmlException('root cause');\nApex.EmptyStackException defaultException = new Apex.EmptyStackException();\nApex.EmptyStackException causedException = new Apex.EmptyStackException(rootCause);\nApex.EmptyStackException messageException = new Apex.EmptyStackException('empty stack');\nApex.EmptyStackException wrappedException = new Apex.EmptyStackException('wrapped empty stack', rootCause);\nSystem.assertEquals('Apex.EmptyStackException', defaultException.getTypeName());\nSystem.assertEquals('Script-thrown exception', defaultException.getMessage());\nSystem.assertEquals(null, causedException.getCause());\nSystem.assertEquals('Script-thrown exception', causedException.getMessage());\nSystem.assertEquals('Script-thrown exception', messageException.getMessage());\nSystem.assertEquals('Script-thrown exception', wrappedException.getMessage());\nSystem.assertEquals(null, wrappedException.getCause());\nApex.EmptyStackException clonedException = (Apex.EmptyStackException)wrappedException.clone();\nSystem.assertNotEquals(wrappedException, clonedException);\nSystem.assertEquals(wrappedException.getMessage(), clonedException.getMessage());\nSystem.assertEquals(null, clonedException.getCause());\nSchema.Schema schemaValue = new Schema.Schema();\nSystem.assertNotEquals(null, schemaValue);"
+    ]
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Apex.EmptyStackException","symbol":"Apex.EmptyStackException"},
+    {"kind":"exec","surfaceId":"apex:Apex.EmptyStackException.EmptyStackException()","symbol":"Apex.EmptyStackException.EmptyStackException()"},
+    {"kind":"exec","surfaceId":"apex:Apex.EmptyStackException.EmptyStackException(Exception)","symbol":"Apex.EmptyStackException.EmptyStackException(Exception)"},
+    {"kind":"exec","surfaceId":"apex:Apex.EmptyStackException.EmptyStackException(String)","symbol":"Apex.EmptyStackException.EmptyStackException(String)"},
+    {"kind":"exec","surfaceId":"apex:Apex.EmptyStackException.EmptyStackException(String,Exception)","symbol":"Apex.EmptyStackException.EmptyStackException(String,Exception)"},
+    {"kind":"exec","surfaceId":"apex:Apex.EmptyStackException.clone()","symbol":"Apex.EmptyStackException.clone()"},
+    {"kind":"exec","surfaceId":"apex:Schema.Schema.Schema()","symbol":"Schema.Schema.Schema()"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-apex-schema-tail-local-only-api67",
+  "notes": "Exact-candidate executable local-runtime witness for Glade's Apex.EmptyStackException family and constructible Schema value. These shapes are not portable hosted anonymous Apex probes and earn zero Salesforce parity.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-apex-schema-tail-local-only-api67",
+    "selectedRowCount": 7
+  },
+  "project": {"sourceApiVersion":"67.0"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 anonymous Apex rejects the Apex.EmptyStackException type and direct Schema construction, so this local contract earns zero Salesforce parity.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "DmlException rootCause = new DmlException('root cause');\nApex.EmptyStackException defaultException = new Apex.EmptyStackException();\nApex.EmptyStackException causedException = new Apex.EmptyStackException(rootCause);\nApex.EmptyStackException messageException = new Apex.EmptyStackException('empty stack');\nApex.EmptyStackException wrappedException = new Apex.EmptyStackException('wrapped empty stack', rootCause);\nSystem.assertEquals('Apex.EmptyStackException', defaultException.getTypeName());\nSystem.assertEquals('Script-thrown exception', defaultException.getMessage());\nSystem.assertEquals(null, causedException.getCause());\nSystem.assertEquals('Script-thrown exception', causedException.getMessage());\nSystem.assertEquals('Script-thrown exception', messageException.getMessage());\nSystem.assertEquals('Script-thrown exception', wrappedException.getMessage());\nSystem.assertEquals(null, wrappedException.getCause());\nApex.EmptyStackException clonedException = (Apex.EmptyStackException)wrappedException.clone();\nSystem.assertNotEquals(wrappedException, clonedException);\nSystem.assertEquals(wrappedException.getMessage(), clonedException.getMessage());\nSystem.assertEquals(null, clonedException.getCause());\nSchema.Schema schemaValue = new Schema.Schema();\nSystem.assertNotEquals(null, schemaValue);"
+    }
+  ]
+}
