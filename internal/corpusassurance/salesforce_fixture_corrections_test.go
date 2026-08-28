@@ -147,8 +147,8 @@ func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 		{
 			filename: "core-dml-exception-accessors-runtime.json",
 			rows:     8,
-			require:  []string{"Object dmlField = e.getDmlFields(0).get(0)", "dmlFieldText.endsWith('.Name')"},
-			reject:   []string{"System.assertEquals('Name', e.getDmlFields(0).get(0))"},
+			require:  []string{"System.assertEquals(Account.Name, e.getDmlFields(0).get(0))"},
+			reject:   []string{"String.valueOf(dmlField)"},
 		},
 		{
 			filename: "core-runtime-database-query-locator-api67.json",
