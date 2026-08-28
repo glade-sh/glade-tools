@@ -11,9 +11,33 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 )
+
+func TestCopyProductionFilePreservesSourceModeUnderRestrictiveUmask(t *testing.T) {
+	root := t.TempDir()
+	source, destination := filepath.Join(root, "source"), filepath.Join(root, "destination")
+	if err := os.WriteFile(source, []byte("proof\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chmod(source, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	previous := syscall.Umask(0o077)
+	defer syscall.Umask(previous)
+	if err := copyProductionFile(source, destination); err != nil {
+		t.Fatal(err)
+	}
+	info, err := os.Lstat(destination)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := info.Mode().Perm(); got != 0o644 {
+		t.Fatalf("copied mode = %04o, want 0644", got)
+	}
+}
 
 func TestBuildTransferAndRecordOrchestratorProductionBatch(t *testing.T) {
 	fixture := withOraclePlanCampaignScope(t, newOrchestratorSalesforceReconciliationFixture(t))
