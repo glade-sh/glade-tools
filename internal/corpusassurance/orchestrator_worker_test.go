@@ -287,9 +287,9 @@ func TestOrchestratorWorkerRenewsLeaseDuringLongRunner(t *testing.T) {
 	orchestrator, plan, lease, _, batch, oraclePlan := readyOrchestratorWorker(t)
 	observeReadyHub(t, orchestrator, "hub-a", time.Now().UTC())
 	start := time.Now().UTC()
-	originalUntil := start.Add(90 * time.Millisecond)
+	originalUntil := start.Add(300 * time.Millisecond)
 	lease.LeaseUntil = originalUntil
-	lease.DurationMS = 90
+	lease.DurationMS = 300
 	if _, err := orchestrator.db.Exec(`UPDATE jobs SET lease_until = ? WHERE campaign_id = ? AND id = ? AND generation = ?`, originalUntil.UnixMilli(), plan.CampaignID, lease.JobID, lease.Generation); err != nil {
 		t.Fatal(err)
 	}
@@ -304,7 +304,7 @@ func TestOrchestratorWorkerRenewsLeaseDuringLongRunner(t *testing.T) {
 		AllocationAlias: "scratch-heartbeat", EvidenceRoot: filepath.Join(t.TempDir(), "evidence"), OraclePlanPath: oraclePlan,
 	}
 	if _, err := runOrchestratorWorkerOnce(context.Background(), orchestrator, request, func() time.Time { return time.Now().UTC() }, func(context.Context, OrchestratorWorkerRequest) (OrchestratorWorkerRunResult, error) {
-		time.Sleep(180 * time.Millisecond)
+		time.Sleep(600 * time.Millisecond)
 		return OrchestratorWorkerRunResult{BatchRoot: batch}, nil
 	}, func(string, string, string) error { return nil }, func() error { return nil }); err != nil {
 		t.Fatalf("long worker failed: %v", err)
