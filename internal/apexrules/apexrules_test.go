@@ -748,12 +748,22 @@ esac
 func TestRunSalesforceCleansAcceptedDependenciesAfterCancellation(t *testing.T) {
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "sf.log")
+	probeStartedPath := filepath.Join(dir, "probe-started")
+	probeTimedOutPath := filepath.Join(dir, "probe-timed-out")
 	sf := filepath.Join(dir, "sf")
 	if err := os.WriteFile(sf, []byte(`#!/bin/sh
 set -eu
 printf '%s\n' "$*" >> "$APEX_RULE_SF_LOG"
 case "$*" in
-  *DependentProbe*) sleep 1 ;;
+  *DependentProbe*)
+    : > "$APEX_RULE_PROBE_STARTED"
+    attempts=0
+    while [ "$attempts" -lt 1000 ]; do
+      sleep 0.01
+      attempts=$((attempts + 1))
+    done
+    : > "$APEX_RULE_PROBE_TIMED_OUT"
+    exit 9 ;;
   *delete*) printf '{"status":0}\n' ;;
   *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
 esac
@@ -762,21 +772,24 @@ esac
 	}
 	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
 	t.Setenv("APEX_RULE_SF_LOG", logPath)
+	t.Setenv("APEX_RULE_PROBE_STARTED", probeStartedPath)
+	t.Setenv("APEX_RULE_PROBE_TIMED_OUT", probeTimedOutPath)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	cancelled := make(chan struct{})
+	cancelled := make(chan error, 1)
 	go func() {
-		defer close(cancelled)
 		deadline := time.Now().Add(5 * time.Second)
 		for time.Now().Before(deadline) {
-			log, _ := os.ReadFile(logPath)
-			if strings.Contains(string(log), "DependentProbe") {
+			if _, err := os.Stat(probeStartedPath); err == nil {
 				cancel()
+				cancelled <- nil
 				return
 			}
 			time.Sleep(10 * time.Millisecond)
 		}
+		cancel()
+		cancelled <- fmt.Errorf("fake Salesforce compiler did not start within 5s")
 	}()
 
 	_, err := RunSalesforce(ctx, "scratch", []Rule{{
@@ -789,7 +802,12 @@ esac
 			Content: "public class GoodBase {}",
 		}},
 	}})
-	<-cancelled
+	if cancelErr := <-cancelled; cancelErr != nil {
+		t.Fatal(cancelErr)
+	}
+	if _, statErr := os.Stat(probeTimedOutPath); !os.IsNotExist(statErr) {
+		t.Fatalf("fake Salesforce compiler reached its timeout: %v", statErr)
+	}
 	if err == nil || !strings.Contains(err.Error(), "Salesforce compiler request") {
 		t.Fatalf("RunSalesforce error = %v, want canceled compiler request", err)
 	}
