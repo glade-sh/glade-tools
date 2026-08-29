@@ -93,7 +93,7 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 		if err := json.Unmarshal(data, &metadata); err != nil {
 			t.Fatal(err)
 		}
-		if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || !*metadata.SalesforceEligible || metadata.Profile.CandidateCommit != "dfe2c9891b33c90b31b0893ee79dc2af27d9d91b" || metadata.Profile.CandidateSHA256 != "ef08b4486ee18bca2d006c15936c3442db59fefa755722cce1656de6440324fd" {
+		if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || !*metadata.SalesforceEligible || metadata.Profile.CandidateCommit != "5cbf1f83f63e38f7e45807edcfff652ee376b19d" || metadata.Profile.CandidateSHA256 != "ed5723a300ac35ce4192e457566b719a29f30951dfb543f351119ae1a7b9594c" {
 			t.Fatalf("fixture provenance = %#v", metadata)
 		}
 		if metadata.Profile.SelectedRows != wantFixtureRows[i] {

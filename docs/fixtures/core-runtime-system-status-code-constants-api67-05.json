@@ -518,8 +518,8 @@
   "name": "core-runtime-system-status-code-constants-api67-05",
   "notes": "Exact-candidate bounded local-runtime witness for one shard of the API 67 System.StatusCode enum family. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
   "profile": {
-    "candidateCommit": "dfe2c9891b33c90b31b0893ee79dc2af27d9d91b",
-    "candidateSha256": "ef08b4486ee18bca2d006c15936c3442db59fefa755722cce1656de6440324fd",
+    "candidateCommit": "5cbf1f83f63e38f7e45807edcfff652ee376b19d",
+    "candidateSha256": "ed5723a300ac35ce4192e457566b719a29f30951dfb543f351119ae1a7b9594c",
     "laneId": "statuscode-local-evidence",
     "selectedRowCount": 100
   },
