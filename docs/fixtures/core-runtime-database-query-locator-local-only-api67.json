@@ -69,8 +69,8 @@
   "name": "core-runtime-database-query-locator-local-only-api67",
   "notes": "Exact-candidate executable local-runtime witness for the inline-SOQL List,Object query-locator overload plus Glade-only QueryLocator construction, object helpers, paging, chunk construction, iterator construction, and iterator cloning. This fixture records no hosted Salesforce execution or parity claim.",
   "profile": {
-    "candidateCommit": "d2c3736a3ae80d11995c86615070089e0fd8de34",
-    "candidateSha256": "22c0f921ffc80fb0c16885a4e08c7ef8a80ac27ed19f9d81f044881a7f8775aa",
+    "candidateCommit": "4310b33ff714974ccf454e8324cbd0dbdebaabf8",
+    "candidateSha256": "672951177b7ce4aa91c579e13ccb43d53751771fe1844a7fdbbabe4e14366adc",
     "laneId": "database-query-locator-local-evidence",
     "selectedRowCount": 10
   },
