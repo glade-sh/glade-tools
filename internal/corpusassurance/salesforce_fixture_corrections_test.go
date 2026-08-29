@@ -49,6 +49,13 @@ func TestSalesforceFixtureCorrectionsSeparateThirteenLocalOnlyRows(t *testing.T)
 		if len(fixture.Source) != 1 || len(fixture.Command.Args) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
 			t.Fatalf("%s source and command differ", filename)
 		}
+		if filename == "data-database-deleted-window-local-only-api67.json" {
+			for _, token := range []string{"Datetime deletedAt = deleted.getDeletedDate()", "deletedAt >= windowStart.addMinutes(-1)", "deletedAt <= windowEnd"} {
+				if !strings.Contains(fixture.Source[0].Content, token) {
+					t.Fatalf("%s source missing Datetime witness %q", filename, token)
+				}
+			}
+		}
 		if result, err := compat.Run(fixture); err != nil || !result.OK {
 			t.Fatalf("%s local execution = %#v, error = %v", filename, result, err)
 		}
@@ -124,6 +131,50 @@ func TestSalesforceFixtureCorrectionsSeparateThirteenLocalOnlyRows(t *testing.T)
 	}
 }
 
+func TestDatabaseDeletionFixturesUseDatetime(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	for _, test := range []struct {
+		filename string
+		require  []string
+		reject   []string
+	}{
+		{
+			filename: "data-platform-database-date-return-types.json",
+			require:  []string{"Datetime deletedDate = deletedRecord.getDeletedDate()", "deletedDate >= deletedWindowStart.addMinutes(-1)", "deletedDate <= deletedWindowEnd"},
+			reject:   []string{"Date deletedDate = deletedRecord.getDeletedDate()"},
+		},
+		{
+			filename: "data-platform-database-deleted-sync-window.json",
+			require:  []string{"Datetime deletedDate = deleted.getDeletedDate()", "deletedDate >= startWindow.addMinutes(-1)", "deletedDate <= endWindow"},
+			reject:   []string{"Date deletedDate = deleted.getDeletedDate()", "Datetime.newInstanceGmt(2026, 5, 2"},
+		},
+	} {
+		t.Run(test.filename, func(t *testing.T) {
+			fixture, err := compat.LoadFile(filepath.Join(root, test.filename))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := compat.Validate(fixture); err != nil {
+				t.Fatal(err)
+			}
+			if result, err := compat.Run(fixture); err != nil || !result.OK {
+				t.Fatalf("local execution = %#v, error = %v", result, err)
+			}
+			source := fixture.Source[0].Content
+			for _, token := range test.require {
+				if !strings.Contains(source, token) {
+					t.Fatalf("source missing Datetime witness %q", token)
+				}
+			}
+			for _, token := range test.reject {
+				if strings.Contains(source, token) {
+					t.Fatalf("source retains stale Date witness %q", token)
+				}
+			}
+		})
+	}
+}
+
 func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
 	tests := []struct {
@@ -141,8 +192,8 @@ func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 		{
 			filename: "core-runtime-database-cursor-sync-tail-api67.json",
 			rows:     8,
-			require:  []string{"WHERE Id IN :accountIds", "getEarliestDateAvailable()", "getLatestDateCovered()"},
-			reject:   []string{"new Database.Cursor()", "Database.Cursor.DeleteFilter", "SELECT Id, Name FROM Account ORDER BY Name", "assertEquals(0, deleted.getDeletedRecords().size())", "assertEquals(null, deleted.getEarliestDateAvailable())"},
+			require:  []string{"WHERE Id IN :accountIds", "Datetime start = Datetime.now();", "getEarliestDateAvailable()", "getLatestDateCovered()"},
+			reject:   []string{"new Database.Cursor()", "Database.Cursor.DeleteFilter", "SELECT Id, Name FROM Account ORDER BY Name", "Datetime.now().addDays(-1)", "assertEquals(0, deleted.getDeletedRecords().size())", "assertEquals(null, deleted.getEarliestDateAvailable())"},
 		},
 		{
 			filename: "core-dml-exception-accessors-runtime.json",
@@ -165,8 +216,8 @@ func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 		{
 			filename: "data-database-deleted-window-runtime.json",
 			rows:     3,
-			require:  []string{"Database.GetDeletedResult", "if (candidate.getId() == accountId)"},
-			reject:   []string{"System.Database.GetDeletedResult", "System.Database.DeletedRecord", "getDeletedRecords().size())"},
+			require:  []string{"Database.GetDeletedResult", "if (candidate.getId() == accountId)", "Datetime deletedAt = deleted.getDeletedDate()", "deletedAt >= windowStart.addMinutes(-1)", "deletedAt <= windowEnd"},
+			reject:   []string{"System.Database.GetDeletedResult", "System.Database.DeletedRecord", "getDeletedRecords().size())", "Date.today(), deleted.getDeletedDate()"},
 		},
 		{
 			filename: "core-blob-crypto-stdlib.json",
