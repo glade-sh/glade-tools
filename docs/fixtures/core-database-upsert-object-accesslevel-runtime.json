@@ -21,13 +21,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Object row = new Account(Name = 'Upsert Object Access'); Database.UpsertResult result = Database.upsert(row, AccessLevel.SYSTEM_MODE); System.assert(result.isSuccess()); System.assert(result.isCreated()); System.assertNotEquals(null, result.getId());"
+      "content": "SObject row = new Account(Name = 'Upsert Object Access'); Database.UpsertResult result = Database.upsert(row, AccessLevel.SYSTEM_MODE); System.assert(result.isSuccess()); System.assert(result.isCreated()); System.assertNotEquals(null, result.getId());"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Object row = new Account(Name = 'Upsert Object Access'); Database.UpsertResult result = Database.upsert(row, AccessLevel.SYSTEM_MODE); System.assert(result.isSuccess()); System.assert(result.isCreated()); System.assertNotEquals(null, result.getId());"
+      "SObject row = new Account(Name = 'Upsert Object Access'); Database.UpsertResult result = Database.upsert(row, AccessLevel.SYSTEM_MODE); System.assert(result.isSuccess()); System.assert(result.isCreated()); System.assertNotEquals(null, result.getId());"
     ]
   },
   "expected": {
