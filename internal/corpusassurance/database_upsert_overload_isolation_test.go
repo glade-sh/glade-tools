@@ -12,22 +12,26 @@ import (
 
 func TestDatabaseUpsertOverloadsHaveSingletonSalesforceProofFixtures(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
-	want := map[string]string{
-		"core-database-upsert-object-runtime.json":                          "apex:System.Database.upsert(Object)",
-		"core-database-upsert-object-accesslevel-runtime.json":              "apex:System.Database.upsert(Object,AccessLevel)",
-		"core-database-upsert-object-boolean-runtime.json":                  "apex:System.Database.upsert(Object,Boolean)",
-		"core-database-upsert-object-boolean-accesslevel-runtime.json":      "apex:System.Database.upsert(Object,Boolean,AccessLevel)",
-		"core-database-upsert-list-object-runtime.json":                     "apex:System.Database.upsert(List<Object>)",
-		"core-database-upsert-list-object-accesslevel-runtime.json":         "apex:System.Database.upsert(List<Object>,AccessLevel)",
-		"core-database-upsert-list-object-boolean-runtime.json":             "apex:System.Database.upsert(List<Object>,Boolean)",
-		"core-database-upsert-list-object-boolean-accesslevel-runtime.json": "apex:System.Database.upsert(List<Object>,Boolean,AccessLevel)",
+	type expectedFixture struct {
+		surfaceID    string
+		sourcePrefix string
+	}
+	want := map[string]expectedFixture{
+		"core-database-upsert-object-runtime.json":                          {"apex:System.Database.upsert(Object)", "SObject row = new Account("},
+		"core-database-upsert-object-accesslevel-runtime.json":              {"apex:System.Database.upsert(Object,AccessLevel)", "SObject row = new Account("},
+		"core-database-upsert-object-boolean-runtime.json":                  {"apex:System.Database.upsert(Object,Boolean)", "SObject row = new Account("},
+		"core-database-upsert-object-boolean-accesslevel-runtime.json":      {"apex:System.Database.upsert(Object,Boolean,AccessLevel)", "SObject row = new Account("},
+		"core-database-upsert-list-object-runtime.json":                     {"apex:System.Database.upsert(List<Object>)", "List<SObject> rows = new List<SObject>{"},
+		"core-database-upsert-list-object-accesslevel-runtime.json":         {"apex:System.Database.upsert(List<Object>,AccessLevel)", "List<SObject> rows = new List<SObject>{"},
+		"core-database-upsert-list-object-boolean-runtime.json":             {"apex:System.Database.upsert(List<Object>,Boolean)", "List<SObject> rows = new List<SObject>{"},
+		"core-database-upsert-list-object-boolean-accesslevel-runtime.json": {"apex:System.Database.upsert(List<Object>,Boolean,AccessLevel)", "List<SObject> rows = new List<SObject>{"},
 	}
 	tracked := make(map[string]bool, len(want))
-	for _, id := range want {
-		tracked[id] = true
+	for _, expected := range want {
+		tracked[expected.surfaceID] = true
 	}
 
-	for file, id := range want {
+	for file, expected := range want {
 		path := filepath.Join(root, file)
 		fixture, err := compat.LoadFile(path)
 		if err != nil {
@@ -39,8 +43,11 @@ func TestDatabaseUpsertOverloadsHaveSingletonSalesforceProofFixtures(t *testing.
 		if fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 || len(fixture.Source) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
 			t.Fatalf("%s command/source = %#v/%#v", file, fixture.Command, fixture.Source)
 		}
-		if len(fixture.Evidence) != 1 || fixture.Evidence[0].SurfaceID != id || fixture.Evidence[0].Kind != "exec" {
-			t.Fatalf("%s evidence = %#v, want only %s", file, fixture.Evidence, id)
+		if !strings.HasPrefix(fixture.Source[0].Content, expected.sourcePrefix) {
+			t.Fatalf("%s source = %q, want prefix %q", file, fixture.Source[0].Content, expected.sourcePrefix)
+		}
+		if len(fixture.Evidence) != 1 || fixture.Evidence[0].SurfaceID != expected.surfaceID || fixture.Evidence[0].Kind != "exec" {
+			t.Fatalf("%s evidence = %#v, want only %s", file, fixture.Evidence, expected.surfaceID)
 		}
 		if strings.Count(fixture.Command.Args[0], "Database.upsert(") != 1 {
 			t.Fatalf("%s masks multiple overloads: %q", file, fixture.Command.Args[0])
