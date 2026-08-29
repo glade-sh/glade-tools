@@ -30,8 +30,8 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 	}
 
 	wantIDs := statusCodeIDs(t, sourcePath)
-	if len(wantIDs) != 628 {
-		t.Fatalf("source StatusCode rows = %d, want 628", len(wantIDs))
+	if len(wantIDs) != 629 {
+		t.Fatalf("source StatusCode rows = %d, want 629", len(wantIDs))
 	}
 	wantSet := mapFromIDs(wantIDs)
 	for _, id := range []string{
@@ -46,11 +46,14 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 			t.Fatalf("source StatusCode family missing %s", id)
 		}
 	}
-	if len(wantIDs)-6 != 622 {
-		t.Fatalf("source StatusCode constants = %d, want 622", len(wantIDs)-6)
+	if len(wantIDs)-6 != 623 {
+		t.Fatalf("source StatusCode constants = %d, want 623", len(wantIDs)-6)
+	}
+	if !wantSet["apex:System.StatusCode.CART_OPERATION_IN_PROGRESS"] {
+		t.Fatal("source StatusCode family missing CART_OPERATION_IN_PROGRESS")
 	}
 	selectedRows := 0
-	wantFixtureRows := []int{6, 100, 100, 100, 100, 100, 100, 22}
+	wantFixtureRows := []int{6, 101, 100, 100, 100, 100, 100, 22}
 	for i, fixturePath := range fixturePaths {
 		fixture, err := compat.LoadFile(fixturePath)
 		if err != nil {
@@ -90,7 +93,7 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 		if err := json.Unmarshal(data, &metadata); err != nil {
 			t.Fatal(err)
 		}
-		if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || !*metadata.SalesforceEligible || metadata.Profile.CandidateCommit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || metadata.Profile.CandidateSHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" {
+		if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || !*metadata.SalesforceEligible || metadata.Profile.CandidateCommit != "5cbf1f83f63e38f7e45807edcfff652ee376b19d" || metadata.Profile.CandidateSHA256 != "ed5723a300ac35ce4192e457566b719a29f30951dfb543f351119ae1a7b9594c" {
 			t.Fatalf("fixture provenance = %#v", metadata)
 		}
 		if metadata.Profile.SelectedRows != wantFixtureRows[i] {
@@ -104,8 +107,8 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 			t.Fatalf("fixture execution = %#v, error = %v", result, err)
 		}
 	}
-	if selectedRows != 628 {
-		t.Fatalf("fixture selected rows = %d, want 628", selectedRows)
+	if selectedRows != 629 {
+		t.Fatalf("fixture selected rows = %d, want 629", selectedRows)
 	}
 
 	evidence, err := BuildEvidenceSnapshot(fixturePaths)
@@ -124,10 +127,12 @@ func TestSystemStatusCodeHasExactExecutableLocalEvidence(t *testing.T) {
 	}
 	source := fixture.Source[0].Content
 	for _, assertion := range []string{
-		"System.assertEquals(622, System.StatusCode.values().size())",
+		"System.assertEquals(623, System.StatusCode.values().size())",
+		"System.assertEquals(410, value.ordinal())",
 		"value.equals(value)",
 		"value.hashCode()",
 		"value.ordinal()",
+		"System.StatusCode.valueOf('CART_OPERATION_IN_PROGRESS')",
 		"System.StatusCode.valueOf('ALERT_NOTIFICATION_LIMIT_EXCEEDED')",
 	} {
 		if !strings.Contains(source, assertion) {
@@ -177,7 +182,7 @@ func statusCodeIDs(t *testing.T, path string) []string {
 	if !fixture.EvidenceOnly {
 		t.Fatalf("source fixture %s is not evidenceOnly", path)
 	}
-	ids := make([]string, 0, 628)
+	ids := make([]string, 0, 629)
 	for _, row := range fixture.Evidence {
 		if strings.HasPrefix(row.SurfaceID, "apex:System.StatusCode") {
 			ids = append(ids, row.SurfaceID)
