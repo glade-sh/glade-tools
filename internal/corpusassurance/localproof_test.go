@@ -721,7 +721,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-database-error-extended-local-only-api67.json", 1},
 		{"core-runtime-database-result-error-constructors-local-api67.json", 4},
 		{"core-runtime-database-query-locator-api67.json", 4},
-		{"core-runtime-database-query-locator-local-only-api67.json", 9},
+		{"core-runtime-database-query-locator-local-only-api67.json", 10},
 		{"core-runtime-eventbus-callback-result-tail-api67.json", 8},
 		{"core-runtime-eventbus-test-service-tail-api67.json", 5},
 		{"core-runtime-eventbus-trigger-context-api67.json", 1},

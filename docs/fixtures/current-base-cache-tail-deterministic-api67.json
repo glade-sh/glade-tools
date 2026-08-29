@@ -33,7 +33,7 @@
   "source": [
     {
       "path": "force-app/main/default/classes/CacheContainerConstructorNegative.cls",
-      "content": "public class CacheContainerConstructorNegative { public void probe() { if (false) { new Cache.Org(); new Cache.Session(); } } }"
+      "content": "public class CacheContainerConstructorNegative { public void orgProbe() { if (false) { new Cache.Org(); } } public void sessionProbe() { if (false) { new Cache.Session(); } } }"
     }
   ]
 }
