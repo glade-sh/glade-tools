@@ -385,7 +385,12 @@ func writeProductionSurfaceIndexScope(t *testing.T, root string) string {
 
 func writeRecordedProductionCampaignForSurfaceIndex(t *testing.T, mismatchIndex int, expireFirst ...bool) ([]string, string, string) {
 	t.Helper()
-	inputs := newProductionV3N3Fixture(t)
+	retryFirst := len(expireFirst) != 0 && expireFirst[0]
+	firstGeneration := 1
+	if retryFirst {
+		firstGeneration = 2
+	}
+	inputs := newProductionV3N3Fixture(t, firstGeneration)
 	if mismatchIndex >= 0 {
 		fixture := inputs.fixture
 		fixture.files = inputs.shards[mismatchIndex]
@@ -403,7 +408,7 @@ func writeRecordedProductionCampaignForSurfaceIndex(t *testing.T, mismatchIndex 
 			t.Fatal(err)
 		}
 		operationNow := now
-		if index == 0 && len(expireFirst) != 0 && expireFirst[0] {
+		if index == 0 && retryFirst {
 			operationNow = now.Add(2 * time.Minute)
 			lease, err = orchestrator.Lease(inputs.plan.CampaignID, "surface-index-worker-0-retry", operationNow, time.Minute)
 			if err != nil {

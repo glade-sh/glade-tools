@@ -56,7 +56,7 @@ func TestRunRawSalesforceShardRunsSealedLifecycleInOrder(t *testing.T) {
 				t.Fatal(err)
 			}
 			wantExecutor := filepath.Join(attemptRoot, "executor", fmt.Sprintf("shard-%d", lease.ShardIndex))
-			if value.ExecutorRoot != wantExecutor || value.RunID != "assurance-"+bundle.AttemptSHA256[:16]+fmt.Sprintf("-shard-%d", lease.ShardIndex) || value.ShardCount != 2 || value.ShardIndex != lease.ShardIndex {
+			if value.ExecutorRoot != wantExecutor || value.RunID != "assurance-"+bundle.AttemptSHA256[:16]+fmt.Sprintf("-shard-%d", lease.ShardIndex) || value.ShardCount != 2 || value.ShardIndex != lease.ShardIndex || value.Generation != lease.Generation {
 				t.Fatalf("dispatch request = %#v", value)
 			}
 			return SalesforceDispatch{}, nil

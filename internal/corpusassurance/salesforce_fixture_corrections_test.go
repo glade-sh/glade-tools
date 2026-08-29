@@ -193,7 +193,7 @@ func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 			filename: "core-runtime-database-cursor-sync-tail-api67.json",
 			rows:     8,
 			require:  []string{"WHERE Id IN :accountIds", "Datetime start = Datetime.now();", "getEarliestDateAvailable()", "getLatestDateCovered()"},
-			reject:   []string{"new Database.Cursor()", "Database.Cursor.DeleteFilter", "SELECT Id, Name FROM Account ORDER BY Name", "Datetime.now().addDays(-1)", "assertEquals(0, deleted.getDeletedRecords().size())", "assertEquals(null, deleted.getEarliestDateAvailable())"},
+			reject:   []string{"new Database.Cursor()", "Database.Cursor.DeleteFilter", "SELECT Id, Name FROM Account ORDER BY Name", "Datetime.now().addDays(-1)", "assertEquals(0, deleted.getDeletedRecords().size())", "assertEquals(null, deleted.getEarliestDateAvailable())", "earliest <= latest"},
 		},
 		{
 			filename: "core-dml-exception-accessors-runtime.json",
