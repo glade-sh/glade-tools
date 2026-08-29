@@ -440,6 +440,11 @@ func TestValidateSalesforceShardSemanticsRejectsLifecycleSemanticDrift(t *testin
 			dispatch.OrgAlias = "tampered-alias"
 		})
 	})
+	t.Run("dispatch generation", func(t *testing.T) {
+		validate(t, func(_ *SalesforceShard, dispatch *SalesforceDispatch, _ *SalesforceOrgCreation, _ *SalesforceOrgCleanup) {
+			dispatch.Generation = 2
+		})
+	})
 	t.Run("mutually consistent wrong layout", func(t *testing.T) {
 		validate(t, func(shard *SalesforceShard, dispatch *SalesforceDispatch, _ *SalesforceOrgCreation, _ *SalesforceOrgCleanup) {
 			wrongRoot := filepath.Join(filepath.Dir(shard.ExecutorRoot), "shard-wrong")

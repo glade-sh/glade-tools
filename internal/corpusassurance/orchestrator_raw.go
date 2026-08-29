@@ -251,7 +251,7 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 	if shardCount < 1 {
 		return result, fmt.Errorf("raw Salesforce shard count must be positive")
 	}
-	executorRoot, runID, err := sealedSalesforceDispatchLayout(request.BundlePath, bundle.AttemptSHA256, request.Lease.ShardIndex, shardCount)
+	executorRoot, runID, err := sealedSalesforceDispatchLayout(request.BundlePath, bundle.AttemptSHA256, request.Lease.ShardIndex, shardCount, request.Lease.Generation)
 	if err != nil {
 		return result, err
 	}
@@ -322,7 +322,7 @@ func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() tim
 		return result, err
 	}
 	cleanupRequest.PreflightPath = paths.preflight
-	result.Dispatch, err = dispatch(SalesforceDispatchRequest{BundlePath: request.BundlePath, OrgAlias: request.TargetOrg, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: request.Lease.ShardIndex, ShardCount: shardCount, OutputPath: paths.dispatch, approvedFilterSHA256: approvedSalesforceFilterSHA256})
+	result.Dispatch, err = dispatch(SalesforceDispatchRequest{BundlePath: request.BundlePath, OrgAlias: request.TargetOrg, ExecutorRoot: executorRoot, RunID: runID, Generation: request.Lease.Generation, ShardIndex: request.Lease.ShardIndex, ShardCount: shardCount, OutputPath: paths.dispatch, approvedFilterSHA256: approvedSalesforceFilterSHA256})
 	if err != nil {
 		return result, err
 	}

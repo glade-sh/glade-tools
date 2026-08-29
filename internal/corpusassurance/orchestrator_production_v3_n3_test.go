@@ -27,18 +27,18 @@ func TestSealedSalesforceDispatchLayoutBindsLogicalShardCount(t *testing.T) {
 	}
 	attemptRoot := filepath.Dir(filepath.Dir(filepath.Dir(canonicalBundle)))
 	attempt := strings.Repeat("a", 64)
-	legacyRoot, legacyRun, err := sealedSalesforceDispatchLayout(bundlePath, attempt, 0, 2)
+	legacyRoot, legacyRun, err := sealedSalesforceDispatchLayout(bundlePath, attempt, 0, 2, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
-	logicalRoot, logicalRun, err := salesforceDispatchLayoutAt(canonicalBundle, attempt, 0, 2)
+	logicalRoot, logicalRun, err := salesforceDispatchLayoutAt(canonicalBundle, attempt, 0, 2, 1)
 	if err != nil || logicalRoot != legacyRoot || logicalRun != legacyRun {
 		t.Fatalf("pure dispatch layout = %q, %q, %v; wrapper = %q, %q", logicalRoot, logicalRun, err, legacyRoot, legacyRun)
 	}
 	if want := filepath.Join(attemptRoot, "executor", "shard-0"); legacyRoot != want || legacyRun != "assurance-"+attempt[:16]+"-shard-0" {
 		t.Fatalf("N=2 identity = %q, %q; want %q and legacy run ID", legacyRoot, legacyRun, want)
 	}
-	n3Root, n3Run, err := sealedSalesforceDispatchLayout(bundlePath, attempt, 0, 3)
+	n3Root, n3Run, err := sealedSalesforceDispatchLayout(bundlePath, attempt, 0, 3, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,9 +48,19 @@ func TestSealedSalesforceDispatchLayoutBindsLogicalShardCount(t *testing.T) {
 	if n3Root == legacyRoot || n3Run == legacyRun {
 		t.Fatal("N=2 and N=3 identities collide")
 	}
-	for _, invalid := range [][2]int{{0, 0}, {-1, 3}, {3, 3}} {
-		if _, _, err := sealedSalesforceDispatchLayout(bundlePath, attempt, invalid[0], invalid[1]); err == nil {
-			t.Fatalf("accepted invalid shard index/count %d/%d", invalid[0], invalid[1])
+	retryRoot, retryRun, err := sealedSalesforceDispatchLayout(bundlePath, attempt, 0, 2, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := filepath.Join(attemptRoot, "executor", "shard-0-g2"); retryRoot != want || retryRun != "assurance-"+attempt[:16]+"-shard-0-g2" {
+		t.Fatalf("retry identity = %q, %q; want %q and generation-qualified run ID", retryRoot, retryRun, want)
+	}
+	if retryRoot == legacyRoot || retryRun == legacyRun {
+		t.Fatal("first and retry generation identities collide")
+	}
+	for _, invalid := range [][3]int{{0, 0, 1}, {-1, 3, 1}, {3, 3, 1}, {0, 2, -1}} {
+		if _, _, err := sealedSalesforceDispatchLayout(bundlePath, attempt, invalid[0], invalid[1], invalid[2]); err == nil {
+			t.Fatalf("accepted invalid shard index/count/generation %d/%d/%d", invalid[0], invalid[1], invalid[2])
 		}
 	}
 }
@@ -163,7 +173,7 @@ type productionV3N3Fixture struct {
 	surfaceIDs       []string
 }
 
-func newProductionV3N3Fixture(t *testing.T) productionV3N3Fixture {
+func newProductionV3N3Fixture(t *testing.T, firstGenerations ...int) productionV3N3Fixture {
 	t.Helper()
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	ids := []string{"apex:ProductionV3N3.0", "apex:ProductionV3N3.1", "apex:ProductionV3N3.2"}
@@ -308,13 +318,17 @@ func newProductionV3N3Fixture(t *testing.T) productionV3N3Fixture {
 	}
 	shards := make([]SalesforceShardFiles, len(ids))
 	for index, surfaceID := range ids {
+		generation := 1
+		if index == 0 && len(firstGenerations) != 0 {
+			generation = firstGenerations[0]
+		}
 		root := filepath.Join(t.TempDir(), fmt.Sprintf("shard-%d", index))
 		if err := os.MkdirAll(root, 0o700); err != nil {
 			t.Fatal(err)
 		}
 		bundlePath := filepath.Join(bundleRoot, "bundle", "bundle.json")
 		bundleSHA := surfaceOracleFileSHA256(t, bundlePath)
-		executorRoot, runID, err := sealedSalesforceDispatchLayout(bundlePath, bundle.AttemptSHA256, index, 3)
+		executorRoot, runID, err := sealedSalesforceDispatchLayout(bundlePath, bundle.AttemptSHA256, index, 3, generation)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -356,7 +370,7 @@ func newProductionV3N3Fixture(t *testing.T) productionV3N3Fixture {
 		if err := WriteNewJSON(shardPath, shard); err != nil {
 			t.Fatal(err)
 		}
-		shards[index] = salesforceShardFilesForTest(t, shardPath, bundlePath, bundleSHA, alias, lifecycle.OrgID)
+		shards[index] = salesforceShardFilesForTest(t, shardPath, bundlePath, bundleSHA, alias, lifecycle.OrgID, generation)
 		// salesforceShardFilesForTest seals the complete executor and lifecycle evidence.
 		shardBytes, _, err := readExactJSONBytes[SalesforceShard](shards[index].ShardPath)
 		if err != nil || shardBytes.Results[0].SurfaceID != surfaceID {

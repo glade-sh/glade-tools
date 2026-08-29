@@ -100,6 +100,10 @@ func CreateOrchestratorSalesforceReconciliation(request OrchestratorSalesforceRe
 	if err != nil || !reflect.DeepEqual(binding, wantBinding) {
 		return SalesforceReconciliation{}, fmt.Errorf("orchestrator binding drift")
 	}
+	dispatch, _, err := readExactJSONBytes[SalesforceDispatch](request.ShardFiles.DispatchPath)
+	if err != nil || (dispatch.Generation != request.Lease.Generation && !(dispatch.Generation == 0 && request.Lease.Generation == 1)) {
+		return SalesforceReconciliation{}, fmt.Errorf("Salesforce dispatch generation drift")
+	}
 	orchestratorPlanBytes, err := json.Marshal(request.Plan)
 	if err != nil {
 		return SalesforceReconciliation{}, err
@@ -273,6 +277,11 @@ func loadOrchestratorSalesforceReconciliation(plan OrchestratorCampaignPlan, lea
 		}
 		if bindingErr != nil || wantErr != nil || !reflect.DeepEqual(binding, wantBinding) || files["ORCHESTRATOR_BINDING.json"].Mode.Perm() != 0o400 || replayBytesSHA256(files["ORCHESTRATOR_BINDING.json"].Data) != receipt.OrchestratorBindingSHA256 {
 			return fmt.Errorf("retained orchestrator binding does not bind the receipt")
+		}
+		prefix := fmt.Sprintf("shards/%02d", lease.ShardIndex)
+		dispatch, _, dispatchErr := decodeReconciliationJSON[SalesforceDispatch](files[prefix+"/SALESFORCE_DISPATCH.json"].Data)
+		if dispatchErr != nil || (dispatch.Generation != lease.Generation && !(dispatch.Generation == 0 && lease.Generation == 1)) {
+			return fmt.Errorf("retained Salesforce dispatch generation drift")
 		}
 		if plan.Definition.ControlledInputSHA256["oracle-plan"] != replayBytesSHA256(oraclePlanBytes) || plan.Definition.Candidate.Commit != oraclePlan.Candidate.Commit || plan.Definition.Candidate.SHA256 != oraclePlan.Candidate.SHA256 || plan.Definition.Tools.Commit != oraclePlan.Tools.Commit || plan.Definition.Tools.SHA256 != oraclePlan.Tools.SHA256 {
 			return fmt.Errorf("controlled oracle plan binding drift")

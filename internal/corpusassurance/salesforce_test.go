@@ -1901,8 +1901,12 @@ func salesforceFilterCommandForTest(args []string, bundlePath string, environmen
 	return CommandResult{Command: append([]string{"/usr/bin/python3"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: pythonSHA, ExecutableAfterSHA256: pythonSHA, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA), ExitCode: 0, Passed: true, StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Output: output}
 }
 
-func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA, alias, orgID string) SalesforceShardFiles {
+func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA, alias, orgID string, generations ...int) SalesforceShardFiles {
 	t.Helper()
+	generation := 1
+	if len(generations) != 0 {
+		generation = generations[0]
+	}
 	root := t.TempDir()
 	dispatchPath, creationPath, cleanupPath, preflightPath := filepath.Join(root, "DISPATCH.json"), filepath.Join(root, "ORG_CREATION.json"), filepath.Join(root, "ORG_CLEANUP.json"), filepath.Join(root, "ORG_PREFLIGHT.json")
 	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
@@ -1946,7 +1950,7 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	if err != nil {
 		t.Fatal(err)
 	}
-	dispatch, err := CreateSalesforceDispatch(SalesforceDispatchRequest{BundlePath: bundlePath, OrgAlias: alias, ExecutorRoot: shard.ExecutorRoot, RunID: shard.RunID, ShardIndex: shard.ShardIndex, ShardCount: shard.ShardCount, OutputPath: dispatchPath, approvedFilterSHA256: bundle.FilterSHA256})
+	dispatch, err := CreateSalesforceDispatch(SalesforceDispatchRequest{BundlePath: bundlePath, OrgAlias: alias, ExecutorRoot: shard.ExecutorRoot, RunID: shard.RunID, Generation: generation, ShardIndex: shard.ShardIndex, ShardCount: shard.ShardCount, OutputPath: dispatchPath, approvedFilterSHA256: bundle.FilterSHA256})
 	if err != nil {
 		t.Fatal(err)
 	}
