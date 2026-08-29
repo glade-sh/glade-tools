@@ -117,6 +117,43 @@ func TestWriteOrchestratorReceiptJSONAcceptsOnlyExactReplay(t *testing.T) {
 	}
 }
 
+func TestWriteOrchestratorSemanticMismatchJSONAcceptsOnlyExactReplay(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "SEMANTIC_MISMATCH_TERMINAL.json")
+	receipt := corpusassurance.OrchestratorSemanticMismatchReceipt{
+		SchemaVersion: 1, Status: "terminalized-semantic-mismatch", FailureCode: corpusassurance.OrchestratorSemanticMismatchFailureCode,
+		CampaignID: "campaign-a", JobID: "job-a", Generation: 2, AllocationAlias: "scratch-a",
+		AuthoritySHA256: strings.Repeat("a", 64), ProofCredit: 0, CleanupCreditBlock: 1,
+	}
+	if err := writeOrchestratorSemanticMismatchJSON(path, receipt); err != nil {
+		t.Fatal(err)
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm() != 0o600 {
+		t.Fatalf("semantic mismatch output mode=%v", info.Mode().Perm())
+	}
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := writeOrchestratorSemanticMismatchJSON(path, receipt); err != nil {
+		t.Fatalf("exact semantic mismatch replay: %v", err)
+	}
+	receipt.AuthoritySHA256 = strings.Repeat("b", 64)
+	if err := writeOrchestratorSemanticMismatchJSON(path, receipt); err == nil {
+		t.Fatal("changed semantic mismatch replay succeeded")
+	}
+	after, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(before, after) {
+		t.Fatal("changed semantic mismatch replay replaced immutable output")
+	}
+}
+
 func TestCorpusAssuranceOrchestratorHubObserveRequiresModeProtectedSanitizedJSON(t *testing.T) {
 	root := t.TempDir()
 	database := filepath.Join(root, "orchestrator.db")

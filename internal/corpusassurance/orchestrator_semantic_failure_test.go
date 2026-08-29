@@ -75,7 +75,7 @@ func TestOrchestratorTerminalizesSemanticMismatchWithPermanentZeroCredit(t *test
 	authority := semanticMismatchAuthorityFor(plan, lease, allocation)
 	// The lease may expire before the recovery worker gets to the terminal
 	// decision; its exact identity remains valid until a new generation exists.
-	receipt, err := orchestrator.TerminalizeSemanticMismatch(authority, lease.LeaseUntil.Add(time.Hour))
+	receipt, err := orchestrator.TerminalizeSemanticMismatch(authority)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,11 +113,49 @@ func TestOrchestratorTerminalizesSemanticMismatchWithPermanentZeroCredit(t *test
 	if allocationState != "closed" || cleanupState != "closed" || blocks != 1 || receipts != 0 || credits != 0 {
 		t.Fatalf("terminal accounting allocation=%s cleanup=%s blocks=%d receipts=%d credits=%d", allocationState, cleanupState, blocks, receipts, credits)
 	}
-	if _, err := orchestrator.TerminalizeSemanticMismatch(authority, lease.LeaseUntil.Add(2*time.Hour)); err != nil {
+	if _, err := orchestrator.TerminalizeSemanticMismatch(authority); err != nil {
 		t.Fatal("idempotent terminalization failed: ", err)
+	}
+	changed := authority
+	changed.Evidence.Expected = "621"
+	changed.EvidenceSHA256, _ = canonicalJSONHash(changed.Evidence)
+	if _, err := orchestrator.TerminalizeSemanticMismatch(changed); err == nil {
+		t.Fatal("changed self-consistent semantic evidence replay succeeded")
 	}
 	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks WHERE allocation_alias = ?`, allocation).Scan(&blocks); err != nil || blocks != 1 {
 		t.Fatalf("zero-credit block count after replay=%d err=%v", blocks, err)
+	}
+}
+
+func TestOrchestratorSemanticMismatchReplayRejectsAnotherBlockedAllocation(t *testing.T) {
+	orchestrator, plan, lease, allocation, _ := semanticMismatchFixture(t, true)
+	authority := semanticMismatchAuthorityFor(plan, lease, allocation)
+	if _, err := orchestrator.TerminalizeSemanticMismatch(authority); err != nil {
+		t.Fatal(err)
+	}
+	now := lease.LeaseUntil.Add(2 * time.Hour)
+	otherLease, err := orchestrator.Lease(plan.CampaignID, "worker-b", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-b", 1); err != nil {
+		t.Fatal(err)
+	}
+	observeReadyHub(t, orchestrator, "hub-b", now)
+	if err := orchestrator.Reserve(otherLease, "hub-b", "scratch-other", now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, otherLease.Worker, now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.closeCleanup(claim, now.Add(time.Second), false); err != nil {
+		t.Fatal(err)
+	}
+	changed := authority
+	changed.AllocationAlias = "scratch-other"
+	if _, err := orchestrator.TerminalizeSemanticMismatch(changed); err == nil {
+		t.Fatal("semantic mismatch replay accepted another generation's blocked allocation")
 	}
 }
 
@@ -151,11 +189,11 @@ func TestOrchestratorTerminalSemanticMismatchRejectsInvalidStates(t *testing.T) 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			closed := test.name != "open cleanup"
-			o, p, l, allocation, now := semanticMismatchFixture(t, closed)
+			o, p, l, allocation, _ := semanticMismatchFixture(t, closed)
 			a := semanticMismatchAuthorityFor(p, l, allocation)
 			test.setup(t, o, p, l, allocation)
 			test.mutate(&a)
-			if _, err := o.TerminalizeSemanticMismatch(a, now); err == nil || !strings.Contains(err.Error(), test.want) {
+			if _, err := o.TerminalizeSemanticMismatch(a); err == nil || !strings.Contains(err.Error(), test.want) {
 				t.Fatalf("terminalization error=%v, want %q", err, test.want)
 			}
 			var status string

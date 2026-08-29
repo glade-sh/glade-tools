@@ -80,7 +80,7 @@ type OrchestratorSemanticMismatchReceipt struct {
 	CleanupCreditBlock int    `json:"cleanupCreditBlock"`
 }
 
-func (o *Orchestrator) TerminalizeSemanticMismatch(authority OrchestratorSemanticMismatchAuthority, now time.Time) (OrchestratorSemanticMismatchReceipt, error) {
+func (o *Orchestrator) TerminalizeSemanticMismatch(authority OrchestratorSemanticMismatchAuthority) (OrchestratorSemanticMismatchReceipt, error) {
 	if err := validateSemanticMismatchAuthority(authority); err != nil {
 		return OrchestratorSemanticMismatchReceipt{}, err
 	}
@@ -118,26 +118,29 @@ func (o *Orchestrator) TerminalizeSemanticMismatch(authority OrchestratorSemanti
 	if err := tx.QueryRow(`SELECT duration_ms FROM lease_terms WHERE campaign_id = ? AND job_id = ? AND generation = ?`, authority.CampaignID, authority.JobID, authority.Generation).Scan(&durationMS); err != nil || durationMS != authority.DurationMS {
 		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch lease term does not match current attempt")
 	}
+	if err := validateSemanticMismatchAccounting(tx, authority); err != nil {
+		return OrchestratorSemanticMismatchReceipt{}, err
+	}
+	detail := semanticMismatchAuthorityDetail(authority, authoritySHA)
+	prefix := fmt.Sprintf("job %s generation %d: semantic mismatch authority ", authority.JobID, authority.Generation)
+	var terminalAuthorities, exactAuthorities int
+	if err := tx.QueryRow(`SELECT count(*), count(CASE WHEN detail = ? THEN 1 END) FROM actions WHERE campaign_id = ? AND kind = ? AND substr(detail, 1, ?) = ?`, detail, authority.CampaignID, OrchestratorSemanticMismatchFailureCode, len(prefix), prefix).Scan(&terminalAuthorities, &exactAuthorities); err != nil {
+		return OrchestratorSemanticMismatchReceipt{}, err
+	}
 	if jobStatus != "running" || attemptStatus != "running" {
+		if jobStatus == "failed" && attemptStatus == "failed" && terminalAuthorities == 1 && exactAuthorities == 1 {
+			return semanticMismatchReceipt(authority, authoritySHA), nil
+		}
 		if jobStatus == "failed" && attemptStatus == "failed" {
-			return terminalSemanticMismatchReceipt(authority, authoritySHA, tx)
+			return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch authority differs from terminal record")
 		}
 		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch requires a running current attempt")
 	}
-	var allocationState, cleanupState string
-	if err := tx.QueryRow(`SELECT a.state, c.state FROM scratch_allocations a JOIN cleanup_journal c ON c.allocation_alias = a.allocation_alias WHERE a.allocation_alias = ? AND a.campaign_id = ? AND a.job_id = ? AND a.generation = ?`, authority.AllocationAlias, authority.CampaignID, authority.JobID, authority.Generation).Scan(&allocationState, &cleanupState); err != nil || allocationState != "closed" || cleanupState != "closed" {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch requires closed allocation and cleanup")
+	if terminalAuthorities != 0 {
+		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch authority is already recorded")
 	}
-	var receipts, credits int
-	if err := tx.QueryRow(`SELECT count(*) FROM receipts WHERE campaign_id = ? AND job_id = ?`, authority.CampaignID, authority.JobID).Scan(&receipts); err != nil || receipts != 0 {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch cannot follow a recorded receipt")
-	}
-	if err := tx.QueryRow(`SELECT count(*) FROM proof_credits p JOIN receipts r ON r.id = p.receipt_id WHERE r.campaign_id = ? AND r.job_id = ? AND r.generation = ?`, authority.CampaignID, authority.JobID, authority.Generation).Scan(&credits); err != nil || credits != 0 {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch cannot follow proof credit")
-	}
-	var blocks int
-	if err := tx.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks WHERE allocation_alias = ?`, authority.AllocationAlias).Scan(&blocks); err != nil || blocks != 1 {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch requires exactly one permanent zero-credit block")
+	if _, err := tx.Exec(`INSERT INTO actions (campaign_id, kind, detail, state, created_at) VALUES (?, ?, ?, 'closed', ?)`, authority.CampaignID, OrchestratorSemanticMismatchFailureCode, detail, time.Now().UTC().UnixMilli()); err != nil {
+		return OrchestratorSemanticMismatchReceipt{}, err
 	}
 	result, err := tx.Exec(`UPDATE jobs SET status = 'failed' WHERE campaign_id = ? AND id = ? AND generation = ? AND status = 'running'`, authority.CampaignID, authority.JobID, authority.Generation)
 	if err != nil {
@@ -156,26 +159,33 @@ func (o *Orchestrator) TerminalizeSemanticMismatch(authority OrchestratorSemanti
 	if err := tx.Commit(); err != nil {
 		return OrchestratorSemanticMismatchReceipt{}, err
 	}
-	_ = now
-	return OrchestratorSemanticMismatchReceipt{SchemaVersion: 1, Status: orchestratorSemanticMismatchTerminalized, FailureCode: OrchestratorSemanticMismatchFailureCode, CampaignID: authority.CampaignID, JobID: authority.JobID, Generation: authority.Generation, AllocationAlias: authority.AllocationAlias, AuthoritySHA256: authoritySHA, ProofCredit: 0, CleanupCreditBlock: 1}, nil
+	return semanticMismatchReceipt(authority, authoritySHA), nil
 }
 
-func terminalSemanticMismatchReceipt(authority OrchestratorSemanticMismatchAuthority, authoritySHA string, tx *sql.Tx) (OrchestratorSemanticMismatchReceipt, error) {
-	var blocks, receipts, credits int
-	if err := tx.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks WHERE allocation_alias = ?`, authority.AllocationAlias).Scan(&blocks); err != nil || blocks != 1 {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch requires exactly one permanent zero-credit block")
-	}
-	if err := tx.QueryRow(`SELECT count(*) FROM receipts WHERE campaign_id = ? AND job_id = ?`, authority.CampaignID, authority.JobID).Scan(&receipts); err != nil || receipts != 0 {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch cannot follow a recorded receipt")
-	}
-	if err := tx.QueryRow(`SELECT count(*) FROM proof_credits p JOIN receipts r ON r.id = p.receipt_id WHERE r.campaign_id = ? AND r.job_id = ? AND r.generation = ?`, authority.CampaignID, authority.JobID, authority.Generation).Scan(&credits); err != nil || credits != 0 {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch cannot follow proof credit")
-	}
+func validateSemanticMismatchAccounting(tx *sql.Tx, authority OrchestratorSemanticMismatchAuthority) error {
 	var allocationState, cleanupState string
-	if err := tx.QueryRow(`SELECT a.state, c.state FROM scratch_allocations a JOIN cleanup_journal c ON c.allocation_alias = a.allocation_alias WHERE a.allocation_alias = ?`, authority.AllocationAlias).Scan(&allocationState, &cleanupState); err != nil || allocationState != "closed" || cleanupState != "closed" {
-		return OrchestratorSemanticMismatchReceipt{}, fmt.Errorf("semantic mismatch requires closed allocation and cleanup")
+	if err := tx.QueryRow(`SELECT a.state, c.state FROM scratch_allocations a JOIN cleanup_journal c ON c.allocation_alias = a.allocation_alias AND c.campaign_id = a.campaign_id AND c.job_id = a.job_id AND c.generation = a.generation WHERE a.allocation_alias = ? AND a.campaign_id = ? AND a.job_id = ? AND a.generation = ?`, authority.AllocationAlias, authority.CampaignID, authority.JobID, authority.Generation).Scan(&allocationState, &cleanupState); err != nil || allocationState != "closed" || cleanupState != "closed" {
+		return fmt.Errorf("semantic mismatch requires closed allocation and cleanup")
 	}
-	return OrchestratorSemanticMismatchReceipt{SchemaVersion: 1, Status: orchestratorSemanticMismatchTerminalized, FailureCode: OrchestratorSemanticMismatchFailureCode, CampaignID: authority.CampaignID, JobID: authority.JobID, Generation: authority.Generation, AllocationAlias: authority.AllocationAlias, AuthoritySHA256: authoritySHA, ProofCredit: 0, CleanupCreditBlock: 1}, nil
+	var receipts, credits, blocks int
+	if err := tx.QueryRow(`SELECT count(*) FROM receipts WHERE campaign_id = ? AND job_id = ?`, authority.CampaignID, authority.JobID).Scan(&receipts); err != nil || receipts != 0 {
+		return fmt.Errorf("semantic mismatch cannot follow a recorded receipt")
+	}
+	if err := tx.QueryRow(`SELECT count(*) FROM proof_credits p JOIN receipts r ON r.id = p.receipt_id WHERE r.campaign_id = ? AND r.job_id = ?`, authority.CampaignID, authority.JobID).Scan(&credits); err != nil || credits != 0 {
+		return fmt.Errorf("semantic mismatch cannot follow proof credit")
+	}
+	if err := tx.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks b JOIN cleanup_journal c ON c.allocation_alias = b.allocation_alias WHERE b.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ?`, authority.AllocationAlias, authority.CampaignID, authority.JobID, authority.Generation).Scan(&blocks); err != nil || blocks != 1 {
+		return fmt.Errorf("semantic mismatch requires exactly one permanent zero-credit block")
+	}
+	return nil
+}
+
+func semanticMismatchAuthorityDetail(authority OrchestratorSemanticMismatchAuthority, authoritySHA string) string {
+	return fmt.Sprintf("job %s generation %d: semantic mismatch authority %s evidence %s allocation %s", authority.JobID, authority.Generation, authoritySHA, authority.EvidenceSHA256, authority.AllocationAlias)
+}
+
+func semanticMismatchReceipt(authority OrchestratorSemanticMismatchAuthority, authoritySHA string) OrchestratorSemanticMismatchReceipt {
+	return OrchestratorSemanticMismatchReceipt{SchemaVersion: 1, Status: orchestratorSemanticMismatchTerminalized, FailureCode: OrchestratorSemanticMismatchFailureCode, CampaignID: authority.CampaignID, JobID: authority.JobID, Generation: authority.Generation, AllocationAlias: authority.AllocationAlias, AuthoritySHA256: authoritySHA, ProofCredit: 0, CleanupCreditBlock: 1}
 }
 
 func validateSemanticMismatchAuthority(a OrchestratorSemanticMismatchAuthority) error {

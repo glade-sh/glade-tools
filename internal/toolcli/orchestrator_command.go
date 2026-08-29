@@ -695,7 +695,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			return err
 		}
 		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
-			receipt, err := orchestrator.TerminalizeSemanticMismatch(authority, time.Now().UTC())
+			receipt, err := orchestrator.TerminalizeSemanticMismatch(authority)
 			if err != nil {
 				return err
 			}
