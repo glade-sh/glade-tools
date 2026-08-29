@@ -23,6 +23,7 @@ var databaseQueryLocatorHostableIDs = []string{
 }
 
 var databaseQueryLocatorLocalOnlyIDs = []string{
+	"apex:System.Database.getQueryLocator(List,Object)",
 	"apex:Database.QueryLocator.QueryLocator()",
 	"apex:Database.QueryLocator.equals(Object)",
 	"apex:Database.QueryLocator.hashCode()",
@@ -75,6 +76,8 @@ func TestDatabaseQueryLocatorHasExactExecutableLocalEvidence(t *testing.T) {
 			name: databaseQueryLocatorLocalOnlyFixture,
 			ids:  databaseQueryLocatorLocalOnlyIDs,
 			witness: []string{
+				"Object accessMode = AccessLevel.USER_MODE",
+				"Database.QueryLocator broadAccessLocator = Database.getQueryLocator([SELECT Id, Name FROM Account ORDER BY Name], accessMode)",
 				"new Database.QueryLocator()",
 				"!firstLocator.equals(secondLocator)",
 				"firstLocator.hashCode()",
