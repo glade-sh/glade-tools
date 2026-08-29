@@ -23,7 +23,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|hub-observe|reserve|receipt|worker-once|worker-cleanup|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|production-build|worker-transfer|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|hub-observe|reserve|receipt|worker-once|worker-cleanup|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|production-build|worker-transfer|cleanup-takeover|cleanup-claim|terminalize-semantic-mismatch>")
 		return err
 	}
 	switch args[0] {
@@ -672,6 +672,38 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			}
 			return writeOrchestratorOutput(w, claim)
 		})
+	case "terminalize-semantic-mismatch":
+		flags := orchestratorFlags("terminalize-semantic-mismatch")
+		database, authorityPath, output := flags.String("db", "", ""), flags.String("authority", "", ""), flags.String("output", "", "")
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*database, *authorityPath, *output); err != nil {
+			return err
+		}
+		for _, path := range []string{*database, *authorityPath, *output} {
+			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+				return errors.New("absolute clean semantic mismatch paths are required")
+			}
+		}
+		info, err := os.Lstat(*authorityPath)
+		if err != nil || !info.Mode().IsRegular() || info.Mode().Perm() != 0o600 {
+			return errors.New("semantic mismatch authority must be a mode 0600 regular file")
+		}
+		var authority corpusassurance.OrchestratorSemanticMismatchAuthority
+		if err := readOrchestratorJSON(*authorityPath, &authority); err != nil {
+			return err
+		}
+		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
+			receipt, err := orchestrator.TerminalizeSemanticMismatch(authority, time.Now().UTC())
+			if err != nil {
+				return err
+			}
+			if err := writeOrchestratorSemanticMismatchJSON(*output, receipt); err != nil {
+				return err
+			}
+			return writeOrchestratorOutput(w, receipt)
+		})
 	default:
 		return errors.New("unknown corpus assurance orchestrator operation")
 	}
@@ -799,6 +831,31 @@ func writeOrchestratorReceiptJSON(path string, receipt corpusassurance.Orchestra
 	want = append(want, '\n')
 	if !bytes.Equal(existing, want) {
 		return fmt.Errorf("existing receipt output differs from recorded receipt")
+	}
+	return nil
+}
+
+func writeOrchestratorSemanticMismatchJSON(path string, receipt corpusassurance.OrchestratorSemanticMismatchReceipt) error {
+	if err := corpusassurance.WriteNewJSON(path, receipt); err == nil {
+		return nil
+	} else if !errors.Is(err, os.ErrExist) {
+		return err
+	}
+	info, err := os.Lstat(path)
+	if err != nil || !info.Mode().IsRegular() || info.Mode().Perm() != 0o600 {
+		return fmt.Errorf("existing semantic mismatch output is not a mode-0600 regular file")
+	}
+	existing, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	want, err := json.Marshal(receipt)
+	if err != nil {
+		return err
+	}
+	want = append(want, '\n')
+	if !bytes.Equal(existing, want) {
+		return fmt.Errorf("existing semantic mismatch output differs from recorded receipt")
 	}
 	return nil
 }
