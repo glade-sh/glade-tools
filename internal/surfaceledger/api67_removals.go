@@ -44,6 +44,9 @@ var api67RemovedSurfaceKeys = map[string]struct{}{
 	"apex:database.deletefilter.values":                  {},
 	// The API-67 enum member is InProgress; IN_PROGRESS is a stale alias.
 	"apex:metadata.deploystatus.in_progress": {},
+	// API 67 rejects direct get(String) on the fieldSets token. The historical
+	// removal boundary is unknown, so pre-67 release snapshots retain the row.
+	"apex:schema.sobjecttypefieldsets.get(string)": {},
 }
 
 var api67GatedSurfaceKeys = map[string]struct{}{
@@ -58,6 +61,7 @@ var api67GatedSurfaceKeys = map[string]struct{}{
 	"apex:database.deletefilter.valueof(string)":         {},
 	"apex:database.deletefilter.values":                  {},
 	"apex:metadata.deploystatus.in_progress":             {},
+	"apex:schema.sobjecttypefieldsets.get(string)":       {},
 }
 
 func isAPI67RemovedSurfaceID(id string) bool {

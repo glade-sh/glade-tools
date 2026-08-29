@@ -713,7 +713,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-database-cursor-sync-tail-api67.json", 8},
 		{"core-runtime-database-cursor-sync-tail-local-only-api67.json", 2},
 		{"core-runtime-database-batch-async-tail-api67.json", 8},
-		{"core-runtime-apex-schema-tail-api67.json", 6},
+		{"core-runtime-apex-schema-tail-api67.json", 5},
 		{"core-runtime-apex-schema-tail-local-only-api67.json", 7},
 		{"core-runtime-database-options-request-tail-api67.json", 6},
 		{"core-runtime-database-result-request-tail-local-api67.json", 8},

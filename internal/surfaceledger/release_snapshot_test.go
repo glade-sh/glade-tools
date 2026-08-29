@@ -8,6 +8,7 @@ import (
 func TestMergeReleaseSnapshotAppliesOnlyAPI67Threshold(t *testing.T) {
 	rows := []SurfaceLedgerRow{
 		{SurfaceID: "apex:Database.DeleteFilter", Product: ProductApex, Area: AreaRuntime, Kind: KindType},
+		{SurfaceID: "apex:Schema.SObjectTypeFieldSets.get(String)", Product: ProductApex, Area: AreaRuntime, Kind: KindMethod},
 		{SurfaceID: "apex:System.Site.getPrefix", Product: ProductApex, Area: AreaRuntime, Kind: KindMethod},
 	}
 	if got := Merge(rows, nil, nil, nil).Rows; len(got) != 0 {
@@ -17,7 +18,7 @@ func TestMergeReleaseSnapshotAppliesOnlyAPI67Threshold(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := got66.Rows; len(got) != 1 || CanonicalSurfaceIDKey(got[0].SurfaceID) != "apex:database.deletefilter" {
+	if got := got66.Rows; len(got) != 2 || CanonicalSurfaceIDKey(got[0].SurfaceID) != "apex:database.deletefilter" || CanonicalSurfaceIDKey(got[1].SurfaceID) != "apex:schema.sobjecttypefieldsets.get(string)" {
 		t.Fatalf("66 rows = %#v", got)
 	}
 	got67, err := MergeReleaseSnapshot(rows, "67.0")
