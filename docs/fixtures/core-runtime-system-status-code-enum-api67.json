@@ -2,7 +2,7 @@
   "apiVersion": "67.0",
   "command": {
     "args": [
-      "System.StatusCode value = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assertEquals(622, System.StatusCode.values().size());\nvalue = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assert(value.equals(value));\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('ALERT_NOTIFICATION_LIMIT_EXCEEDED').ordinal());\nSystem.assert(value.ordinal() \u003e= 0);\nSystem.assertEquals(value.hashCode(), value.hashCode());\n"
+      "System.StatusCode value = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assertEquals(623, System.StatusCode.values().size());\nvalue = System.StatusCode.CART_OPERATION_IN_PROGRESS;\nSystem.assertEquals(410, value.ordinal());\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('CART_OPERATION_IN_PROGRESS').ordinal());\nvalue = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assert(value.equals(value));\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('ALERT_NOTIFICATION_LIMIT_EXCEEDED').ordinal());\nSystem.assert(value.ordinal() \u003e= 0);\nSystem.assertEquals(value.hashCode(), value.hashCode());\n"
     ],
     "kind": "exec"
   },
@@ -56,7 +56,7 @@
   "salesforceEligible": true,
   "source": [
     {
-      "content": "System.StatusCode value = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assertEquals(622, System.StatusCode.values().size());\nvalue = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assert(value.equals(value));\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('ALERT_NOTIFICATION_LIMIT_EXCEEDED').ordinal());\nSystem.assert(value.ordinal() \u003e= 0);\nSystem.assertEquals(value.hashCode(), value.hashCode());\n",
+      "content": "System.StatusCode value = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assertEquals(623, System.StatusCode.values().size());\nvalue = System.StatusCode.CART_OPERATION_IN_PROGRESS;\nSystem.assertEquals(410, value.ordinal());\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('CART_OPERATION_IN_PROGRESS').ordinal());\nvalue = System.StatusCode.ALERT_NOTIFICATION_LIMIT_EXCEEDED;\nSystem.assert(value.equals(value));\nSystem.assertEquals(value.ordinal(), System.StatusCode.valueOf('ALERT_NOTIFICATION_LIMIT_EXCEEDED').ordinal());\nSystem.assert(value.ordinal() \u003e= 0);\nSystem.assertEquals(value.hashCode(), value.hashCode());\n",
       "path": "anonymous.apex"
     }
   ]
