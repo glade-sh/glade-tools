@@ -52,7 +52,7 @@ func TestSystemStatusCodeFixturesCloseNativeLocalProofPlan(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if coverage.Total != 628 || coverage.Covered != 628 || coverage.MissingCount != 0 || len(coverage.Missing) != 0 {
+	if coverage.Total != 629 || coverage.Covered != 629 || coverage.MissingCount != 0 || len(coverage.Missing) != 0 {
 		t.Fatalf("coverage = %#v", coverage)
 	}
 	if len(manifest.Fixtures) != 8 || len(manifest.SalesforceFixtures) != 8 {
@@ -80,8 +80,8 @@ func systemStatusCodeSourceIDs(t *testing.T, path string) []string {
 			ids = append(ids, row.SurfaceID)
 		}
 	}
-	if len(ids) != 628 {
-		t.Fatalf("source IDs = %d, want 628", len(ids))
+	if len(ids) != 629 {
+		t.Fatalf("source IDs = %d, want 629", len(ids))
 	}
 	return ids
 }
