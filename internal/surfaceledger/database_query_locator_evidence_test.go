@@ -118,7 +118,7 @@ func TestDatabaseQueryLocatorHasExactExecutableLocalEvidence(t *testing.T) {
 			}
 			candidateCommit, candidateSHA256 := "3409c4c85827b19712e9df83fc8905aa02bd1dc8", "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
 			if tc.name == databaseQueryLocatorLocalOnlyFixture {
-				candidateCommit, candidateSHA256 = "47e9019fc40379a25168e35d5eb24541d309aee2", "22c0f921ffc80fb0c16885a4e08c7ef8a80ac27ed19f9d81f044881a7f8775aa"
+				candidateCommit, candidateSHA256 = "d2c3736a3ae80d11995c86615070089e0fd8de34", "22c0f921ffc80fb0c16885a4e08c7ef8a80ac27ed19f9d81f044881a7f8775aa"
 			}
 			if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible != tc.eligible || metadata.Profile.CandidateCommit != candidateCommit || metadata.Profile.CandidateSHA256 != candidateSHA256 || metadata.Profile.SelectedRows != len(tc.ids) {
 				t.Fatalf("fixture provenance = %#v", metadata)
