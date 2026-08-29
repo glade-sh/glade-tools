@@ -3,12 +3,11 @@
   "command": {
     "kind": "exec",
     "args": [
-      "Schema.SObjectType accountType = Account.SObjectType;\nId accountId = '001000000000001AAA';\nSObject withId = accountType.newSObject(accountId);\nSystem.assertEquals(Account.SObjectType, withId.getSObjectType());\nSystem.assertEquals(accountId, withId.get('Id'));\nSchema.DescribeSObjectResult accountDescribe = accountType.getDescribe();\nSchema.FieldSet maybeFieldSet = accountDescribe.fieldSets.get('GladeAbsentFieldSet');\nSystem.assertEquals(maybeFieldSet, accountDescribe.fieldSets.getMap().get('GladeAbsentFieldSet'));\nSchema.SObjectField nameField = accountDescribe.fields.get('Name');\nSystem.assertEquals(Account.Name, nameField);\nSystem.assertEquals(nameField, accountDescribe.fields.getMap().get('Name'));\nList<Schema.DescribeSObjectResult> deferred = Schema.describeSObjects(new List<String>{'Account'}, Schema.SObjectDescribeOptions.DEFERRED);\nSystem.assertEquals(1, deferred.size());\nSystem.assertEquals('Account', deferred.get(0).getName());"
+      "Schema.SObjectType accountType = Account.SObjectType;\nId accountId = '001000000000001AAA';\nSObject withId = accountType.newSObject(accountId);\nSystem.assertEquals(Account.SObjectType, withId.getSObjectType());\nSystem.assertEquals(accountId, withId.get('Id'));\nSchema.DescribeSObjectResult accountDescribe = accountType.getDescribe();\nSystem.assertEquals(null, accountDescribe.fieldSets.getMap().get('GladeAbsentFieldSet'));\nSchema.SObjectField nameField = accountDescribe.fields.get('Name');\nSystem.assertEquals(Account.Name, nameField);\nSystem.assertEquals(nameField, accountDescribe.fields.getMap().get('Name'));\nList<Schema.DescribeSObjectResult> deferred = Schema.describeSObjects(new List<String>{'Account'}, Schema.SObjectDescribeOptions.DEFERRED);\nSystem.assertEquals(1, deferred.size());\nSystem.assertEquals('Account', deferred.get(0).getName());"
     ]
   },
   "evidence": [
     {"kind":"exec","surfaceId":"apex:Schema.SObjectType.newSObject(Id)","symbol":"Schema.SObjectType.newSObject(Id)"},
-    {"kind":"exec","surfaceId":"apex:Schema.SObjectTypeFieldSets.get(String)","symbol":"accountDescribe.fieldSets.get(String)"},
     {"kind":"exec","surfaceId":"apex:Schema.SObjectTypeFieldSets.getMap()","symbol":"accountDescribe.fieldSets.getMap()"},
     {"kind":"exec","surfaceId":"apex:Schema.SObjectTypeFields.get(String)","symbol":"accountDescribe.fields.get(String)"},
     {"kind":"exec","surfaceId":"apex:Schema.SObjectTypeFields.getMap()","symbol":"accountDescribe.fields.getMap()"},
@@ -22,7 +21,7 @@
     "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
     "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
     "laneId": "runtime-conversion-apex-schema-tail-api67",
-    "selectedRowCount": 6
+    "selectedRowCount": 5
   },
   "project": {
     "sourceApiVersion": "67.0"
@@ -31,7 +30,7 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Schema.SObjectType accountType = Account.SObjectType;\nId accountId = '001000000000001AAA';\nSObject withId = accountType.newSObject(accountId);\nSystem.assertEquals(Account.SObjectType, withId.getSObjectType());\nSystem.assertEquals(accountId, withId.get('Id'));\nSchema.DescribeSObjectResult accountDescribe = accountType.getDescribe();\nSchema.FieldSet maybeFieldSet = accountDescribe.fieldSets.get('GladeAbsentFieldSet');\nSystem.assertEquals(maybeFieldSet, accountDescribe.fieldSets.getMap().get('GladeAbsentFieldSet'));\nSchema.SObjectField nameField = accountDescribe.fields.get('Name');\nSystem.assertEquals(Account.Name, nameField);\nSystem.assertEquals(nameField, accountDescribe.fields.getMap().get('Name'));\nList<Schema.DescribeSObjectResult> deferred = Schema.describeSObjects(new List<String>{'Account'}, Schema.SObjectDescribeOptions.DEFERRED);\nSystem.assertEquals(1, deferred.size());\nSystem.assertEquals('Account', deferred.get(0).getName());"
+      "content": "Schema.SObjectType accountType = Account.SObjectType;\nId accountId = '001000000000001AAA';\nSObject withId = accountType.newSObject(accountId);\nSystem.assertEquals(Account.SObjectType, withId.getSObjectType());\nSystem.assertEquals(accountId, withId.get('Id'));\nSchema.DescribeSObjectResult accountDescribe = accountType.getDescribe();\nSystem.assertEquals(null, accountDescribe.fieldSets.getMap().get('GladeAbsentFieldSet'));\nSchema.SObjectField nameField = accountDescribe.fields.get('Name');\nSystem.assertEquals(Account.Name, nameField);\nSystem.assertEquals(nameField, accountDescribe.fields.getMap().get('Name'));\nList<Schema.DescribeSObjectResult> deferred = Schema.describeSObjects(new List<String>{'Account'}, Schema.SObjectDescribeOptions.DEFERRED);\nSystem.assertEquals(1, deferred.size());\nSystem.assertEquals('Account', deferred.get(0).getName());"
     }
   ]
 }

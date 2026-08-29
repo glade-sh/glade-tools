@@ -14,7 +14,6 @@ const apexSchemaTailFixture = "core-runtime-apex-schema-tail-api67.json"
 
 var apexSchemaTailIDs = []string{
 	"apex:Schema.SObjectType.newSObject(Id)",
-	"apex:Schema.SObjectTypeFieldSets.get(String)",
 	"apex:Schema.SObjectTypeFieldSets.getMap()",
 	"apex:Schema.SObjectTypeFields.get(String)",
 	"apex:Schema.SObjectTypeFields.getMap()",
@@ -78,7 +77,6 @@ func TestApexSchemaTailHasExactExecutableLocalEvidence(t *testing.T) {
 	source := fixture.Source[0].Content
 	for _, witness := range []string{
 		"SObject withId = accountType.newSObject(accountId);",
-		"accountDescribe.fieldSets.get('GladeAbsentFieldSet')",
 		"accountDescribe.fieldSets.getMap()",
 		"accountDescribe.fields.get('Name')",
 		"accountDescribe.fields.getMap()",
@@ -87,6 +85,9 @@ func TestApexSchemaTailHasExactExecutableLocalEvidence(t *testing.T) {
 		if !strings.Contains(source, witness) {
 			t.Fatalf("source missing direct assertion %q", witness)
 		}
+	}
+	if strings.Contains(source, "fieldSets.get('GladeAbsentFieldSet')") {
+		t.Fatal("source retains API-67-absent SObjectTypeFieldSets.get(String) call")
 	}
 
 	owners := make(map[string]int, len(want))

@@ -185,9 +185,9 @@ func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 	}{
 		{
 			filename: "core-runtime-apex-schema-tail-api67.json",
-			rows:     6,
+			rows:     5,
 			require:  []string{"accountType.newSObject(accountId)", "Schema.describeSObjects"},
-			reject:   []string{"Apex.EmptyStackException", "new Schema.Schema()"},
+			reject:   []string{"Apex.EmptyStackException", "new Schema.Schema()", "fieldSets.get('GladeAbsentFieldSet')"},
 		},
 		{
 			filename: "core-runtime-database-cursor-sync-tail-api67.json",
