@@ -30,6 +30,7 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 		{"core-runtime-cache-builder-evidence", "core-runtime-cache-builder-evidence.json", true},
 		{"core-runtime-decimal-extra-accessors", "core-runtime-decimal-extra-accessors.json", true},
 		{"core-runtime-exception-family-accessors", "core-runtime-exception-family-accessors.json", false},
+		{"core-runtime-matcher-end-state-exact-evidence", "core-runtime-matcher-end-state-exact-evidence.json", true},
 		{"core-runtime-matcher-exact-evidence", "core-runtime-matcher-exact-evidence.json", true},
 		{"core-runtime-messaging-mass-email-accessors-evidence", "core-runtime-messaging-mass-email-accessors-evidence.json", true},
 		{"core-runtime-metadata-flow-approval-enum-contracts", "core-runtime-metadata-flow-approval-enum-contracts.json", true},
@@ -50,8 +51,8 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 		{"test-helper-unsupported-fixed-search-results", "test-helper-unsupported-fixed-search-results.json", false},
 	}
 
-	if len(tests) != 35 {
-		t.Fatalf("fixture count = %d, want 35", len(tests))
+	if len(tests) != 36 {
+		t.Fatalf("fixture count = %d, want 36", len(tests))
 	}
 	for _, test := range tests {
 		t.Run(test.id, func(t *testing.T) {

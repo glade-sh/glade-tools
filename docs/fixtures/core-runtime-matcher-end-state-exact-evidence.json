@@ -1,0 +1,26 @@
+{
+  "name": "core-runtime-matcher-end-state-exact-evidence",
+  "salesforceEligible": true,
+  "evidence": [
+    {"surfaceId": "apex:System.Matcher.hitEnd()", "symbol": "Matcher.hitEnd", "kind": "exec"},
+    {"surfaceId": "apex:System.Matcher.requireEnd()", "symbol": "Matcher.requireEnd", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Matcher tail = Pattern.compile('z').matcher('abc');\nSystem.assert(!tail.find());\nSystem.assert(tail.hitEnd());\nSystem.assert(!tail.requireEnd());\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Matcher tail = Pattern.compile('z').matcher('abc');\nSystem.assert(!tail.find());\nSystem.assert(tail.hitEnd());\nSystem.assert(!tail.requireEnd());\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
