@@ -1,5 +1,6 @@
 {
   "name": "current-base-database-dml-object-list-api67-20260803",
+  "evidenceOnly": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Database.insert(Object)",

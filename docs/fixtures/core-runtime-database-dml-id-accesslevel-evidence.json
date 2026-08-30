@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-database-dml-id-accesslevel-evidence",
+  "evidenceOnly": true,
   "evidence": [
     {"surfaceId": "apex:System.Database.delete(Id)", "symbol": "Database.delete(Id)", "kind": "test", "notes": "Generated tooling exposes the Id overload; local DML returns a Database.DeleteResult for an inserted record."},
     {"surfaceId": "apex:System.Database.delete(Id,Boolean)", "symbol": "Database.delete(Id,Boolean)", "kind": "test", "notes": "Generated tooling exposes the allOrNone overload; local DML returns a Database.DeleteResult."},

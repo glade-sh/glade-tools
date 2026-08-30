@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-database-upsert-mode-evidence",
+  "evidenceOnly": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Database.upsert(Object)",
