@@ -20,6 +20,7 @@ func TestSalesforceEligibilityShard3FixturesAreExplicitlyClassified(t *testing.T
 		"core-database-upsert-sobjectfield-runtime.json":            {"core-database-upsert-sobjectfield-runtime", false, "org-configuration-required"},
 		"core-http-request-runtime-depth.json":                      {"core-http-request-runtime-depth", false, "policy-local-only"},
 		"core-json-stdlib.json":                                     {"core-json-stdlib", false, "policy-local-only"},
+		"core-pattern-matcher-replaceall-region-stdlib.json":        {"core-pattern-matcher-replaceall-region-stdlib", true, ""},
 		"core-pattern-matcher-stdlib.json":                          {"core-pattern-matcher-stdlib", true, ""},
 		"core-runtime-accesslevel-permission-set-unsupported.json":  {"core-runtime-accesslevel-permission-set-local", false, "org-configuration-required"},
 		"core-runtime-cb72-frozen-behavior-local-evidence.json":     {"core-runtime-cb72-frozen-behavior-local-evidence", false, "policy-local-only"},
