@@ -175,6 +175,113 @@ func TestDatabaseDeletionFixturesUseDatetime(t *testing.T) {
 	}
 }
 
+func TestDatabaseSystemModeFixturesUseDeployableTests(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	splits := map[string]struct {
+		anonymousRows int
+		testFixture   string
+		testRows      int
+	}{
+		"data-database-batch-boolean-runtime.json":          {2, "data-database-batch-boolean-system-mode-runtime.json", 1},
+		"data-database-cursor-runtime-depth.json":           {2, "data-database-cursor-system-mode-runtime-depth.json", 1},
+		"data-database-delete-undelete-id-runtime.json":     {8, "data-database-delete-undelete-id-system-mode-runtime.json", 8},
+		"data-database-delete-undelete-object-runtime.json": {7, "data-database-delete-undelete-object-system-mode-runtime.json", 6},
+		"data-database-dml-accesslevel-runtime.json":        {4, "data-database-dml-system-mode-runtime.json", 3},
+		"data-database-query-binds-runtime.json":            {1, "data-database-query-binds-system-mode-runtime.json", 1},
+		"data-database-query-locator-access-runtime.json":   {8, "data-database-query-locator-access-system-mode-runtime.json", 3},
+		"data-database-query-locator-modes-runtime.json":    {5, "data-database-query-locator-modes-system-mode-runtime.json", 2},
+	}
+	upserts := []string{
+		"core-database-upsert-list-object-accesslevel-runtime.json",
+		"core-database-upsert-list-object-boolean-accesslevel-runtime.json",
+		"core-database-upsert-object-accesslevel-runtime.json",
+		"core-database-upsert-object-boolean-accesslevel-runtime.json",
+	}
+
+	for anonymousFixture, split := range splits {
+		t.Run(anonymousFixture, func(t *testing.T) {
+			anonymous := loadDatabaseContextFixture(t, root, anonymousFixture, "exec", split.anonymousRows)
+			if strings.Contains(anonymous.Command.Args[0], "AccessLevel.SYSTEM_MODE") {
+				t.Fatal("anonymous Apex retains SYSTEM_MODE")
+			}
+			systemMode := loadDatabaseContextFixture(t, root, split.testFixture, "test", split.testRows)
+			if len(systemMode.Command.Args) != 0 || !deployableSystemModeTest(systemMode) {
+				t.Fatalf("SYSTEM_MODE fixture is not one deployable Apex test class: %#v", systemMode)
+			}
+			owners := map[string]string{}
+			for _, fixture := range []compat.Fixture{anonymous, systemMode} {
+				for _, evidence := range fixture.Evidence {
+					if previous := owners[evidence.SurfaceID]; previous != "" {
+						t.Fatalf("surface %s owned by both %s and %s", evidence.SurfaceID, previous, fixture.Name)
+					}
+					owners[evidence.SurfaceID] = fixture.Name
+				}
+			}
+			if len(owners) != split.anonymousRows+split.testRows {
+				t.Fatalf("combined surface owners = %d, want %d", len(owners), split.anonymousRows+split.testRows)
+			}
+		})
+	}
+
+	for _, filename := range upserts {
+		t.Run(filename, func(t *testing.T) {
+			fixture := loadDatabaseContextFixture(t, root, filename, "test", 1)
+			if !deployableSystemModeTest(fixture) {
+				t.Fatalf("upsert fixture is not one deployable Apex test class: %#v", fixture)
+			}
+		})
+	}
+}
+
+func deployableSystemModeTest(fixture compat.Fixture) bool {
+	classes := 0
+	for _, source := range fixture.Source {
+		if strings.HasSuffix(source.Path, "Test.cls") {
+			classes++
+			if !strings.Contains(source.Content, "@isTest") || !strings.Contains(source.Content, "AccessLevel.SYSTEM_MODE") {
+				return false
+			}
+		}
+	}
+	return classes == 1
+}
+
+func loadDatabaseContextFixture(t *testing.T, root, filename, kind string, rows int) compat.Fixture {
+	t.Helper()
+	fixture, err := compat.LoadFile(filepath.Join(root, filename))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := compat.Validate(fixture); err != nil {
+		t.Fatal(err)
+	}
+	if fixture.Command.Kind != kind || len(fixture.Evidence) != rows {
+		t.Fatalf("fixture contract = %s/%d rows, want %s/%d", fixture.Command.Kind, len(fixture.Evidence), kind, rows)
+	}
+	for _, evidence := range fixture.Evidence {
+		if evidence.Kind != kind {
+			t.Fatalf("surface %s evidence kind = %q, want %q", evidence.SurfaceID, evidence.Kind, kind)
+		}
+		if kind == "test" && !localProofCommandMatchesDisposition(localRuntimeRequired, kind, evidence.SurfaceID) {
+			t.Fatalf("surface %s is not admitted as test-context local proof", evidence.SurfaceID)
+		}
+	}
+	data, err := os.ReadFile(filepath.Join(root, filename))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var metadata struct {
+		Eligible *bool `json:"salesforceEligible"`
+	}
+	if err := json.Unmarshal(data, &metadata); err != nil {
+		t.Fatal(err)
+	}
+	if metadata.Eligible == nil || !*metadata.Eligible {
+		t.Fatalf("salesforceEligible = %v, want true", metadata.Eligible)
+	}
+	return fixture
+}
+
 func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
 	tests := []struct {

@@ -1,0 +1,18 @@
+{
+  "name":"data-database-query-locator-modes-system-mode-runtime",
+  "salesforceEligible":true,
+  "evidence":[
+    {"surfaceId":"apex:System.Database.queryWithBinds(String,Map<String,Object>,AccessLevel)","symbol":"Database.queryWithBinds","kind":"test","notes":"Typed query and binds with SYSTEM_MODE return the matching row in deployable Apex test context."},
+    {"surfaceId":"apex:System.Database.getQueryLocator(List<Object>,AccessLevel)","symbol":"Database.getQueryLocator","kind":"test","notes":"Inline SOQL with SYSTEM_MODE produces an iterable QueryLocator in deployable Apex test context."}
+  ],
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/Rating.field-meta.xml","content":"<CustomField><fullName>Rating</fullName><label>Rating</label><type>Text</type></CustomField>"}
+  ],
+  "source":[
+    {"path":"force-app/main/default/classes/DataDatabaseQueryLocatorModesSystemModeRuntimeTest.cls","content":"@isTest private class DataDatabaseQueryLocatorModesSystemModeRuntimeTest { @isTest static void queriesRunInSystemMode() { insert new List<Account>{new Account(Name = 'Hot Account', Rating = 'Hot'), new Account(Name = 'Warm Account', Rating = 'Warm')}; Map<String,Object> binds = new Map<String,Object>{'rating' => 'Warm'}; List<Account> warmRows = Database.queryWithBinds('SELECT Id, Name, Rating FROM Account WHERE Rating = :rating', binds, AccessLevel.SYSTEM_MODE); System.assertEquals(1, warmRows.size()); Database.QueryLocator locator = Database.getQueryLocator([SELECT Id, Name, Rating FROM Account WHERE Name = 'Hot Account'], AccessLevel.SYSTEM_MODE); Object iterator = locator.iterator(); System.assert(iterator.hasNext()); System.assertEquals('Hot Account', ((Account)iterator.next()).Name); System.assert(!iterator.hasNext()); } }"}
+  ],
+  "command":{"kind":"test"},
+  "expected":{"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}}
+}

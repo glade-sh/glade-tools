@@ -78,18 +78,21 @@ func TestQueryLocatorRuntimeUsesInlineSOQL(t *testing.T) {
 		t.Fatal(err)
 	}
 	source := fixture.Command.Args[0]
-	for _, exact := range []string{
-		"Database.QueryLocator listLocator = Database.getQueryLocator([SELECT Id, Name, Rating FROM Account ORDER BY Name]);",
-		"Database.QueryLocator accessListLocator = Database.getQueryLocator([SELECT Id, Name, Rating FROM Account WHERE Name = 'Hot Account'], AccessLevel.SYSTEM_MODE);",
-	} {
-		if !strings.Contains(source, exact) {
-			t.Fatalf("inline SOQL witness missing: %s", exact)
-		}
+	if exact := "Database.QueryLocator listLocator = Database.getQueryLocator([SELECT Id, Name, Rating FROM Account ORDER BY Name]);"; !strings.Contains(source, exact) {
+		t.Fatalf("inline SOQL witness missing: %s", exact)
 	}
 	for _, invalid := range []string{"Database.getQueryLocator(sourceRows)", "Database.getQueryLocator(accessRows"} {
 		if strings.Contains(source, invalid) {
 			t.Fatalf("query locator uses rejected list variable: %s", invalid)
 		}
+	}
+	systemMode, err := compat.LoadFile(filepath.Join("..", "..", "docs", "fixtures", "data-database-query-locator-modes-system-mode-runtime.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	exact := "Database.QueryLocator locator = Database.getQueryLocator([SELECT Id, Name, Rating FROM Account WHERE Name = 'Hot Account'], AccessLevel.SYSTEM_MODE);"
+	if len(systemMode.Source) != 1 || !strings.Contains(systemMode.Source[0].Content, exact) {
+		t.Fatalf("SYSTEM_MODE inline SOQL test witness missing: %s", exact)
 	}
 }
 

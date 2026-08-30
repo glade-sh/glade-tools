@@ -5,7 +5,7 @@
     {
       "surfaceId": "apex:System.Database.upsert(Object,Boolean,AccessLevel)",
       "symbol": "Database.upsert",
-      "kind": "exec"
+      "kind": "test"
     }
   ],
   "schema": [
@@ -20,20 +20,20 @@
   ],
   "source": [
     {
-      "path": "anonymous.apex",
-      "content": "SObject row = new Account(Name = 'Upsert Object Boolean Access'); Database.UpsertResult result = Database.upsert(row, false, AccessLevel.SYSTEM_MODE); System.assert(result.isSuccess()); System.assert(result.isCreated()); System.assertNotEquals(null, result.getId());"
+      "path": "force-app/main/default/classes/CoreDatabaseUpsertObjectBooleanAccesslevelRuntimeTest.cls",
+      "content": "@isTest private class CoreDatabaseUpsertObjectBooleanAccesslevelRuntimeTest { @isTest static void upsertRunsInSystemMode() { SObject row = new Account(Name = 'Upsert Object Boolean Access'); Database.UpsertResult result = Database.upsert(row, false, AccessLevel.SYSTEM_MODE); System.assert(result.isSuccess()); System.assert(result.isCreated()); System.assertNotEquals(null, result.getId()); } }"
     }
   ],
   "command": {
-    "kind": "exec",
-    "args": [
-      "SObject row = new Account(Name = 'Upsert Object Boolean Access'); Database.UpsertResult result = Database.upsert(row, false, AccessLevel.SYSTEM_MODE); System.assert(result.isSuccess()); System.assert(result.isCreated()); System.assertNotEquals(null, result.getId());"
-    ]
+    "kind": "test"
   },
   "expected": {
     "result": {
-      "debug": null,
-      "ok": true
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
   }
 }
