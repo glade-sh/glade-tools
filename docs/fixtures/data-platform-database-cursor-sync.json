@@ -51,12 +51,6 @@
       "notes": "system-fixture-alias: owned by paired Database.getCursorWithBinds(String,Map,AccessLevel) execution with bound row-count and content assertions."
     },
     {
-      "surfaceId": "apex:System.Database.getCursorWithBinds(String,Map,AccessLevel)",
-      "symbol": "Database.getCursorWithBinds",
-      "kind": "test",
-      "notes": "Bind-map cursor construction accepts the erased Map typed AccessLevel overload."
-    },
-    {
       "surfaceId": "apex:System.Database.getPaginationCursor(String)",
       "symbol": "Database.getPaginationCursor",
       "kind": "test",

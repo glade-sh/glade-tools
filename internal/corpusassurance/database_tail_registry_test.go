@@ -49,15 +49,14 @@ func TestDatabaseTailHasExactExecutableLocalOwners(t *testing.T) {
 	aliases := map[string]aliasWitness{
 		want[3]:  {"data-platform-database-async-immediate-dml", "apex:System.Database.deleteImmediate(List<Object>,AccessLevel)", "Database.deleteImmediate(new List<Account>{new Account(Id = listRows[0].Id), new Account(Id = listRows[1].Id)}, AccessLevel.SYSTEM_MODE)"},
 		want[4]:  {"data-platform-database-async-immediate-dml", "apex:System.Database.deleteImmediate(Object,AccessLevel)", "Database.deleteImmediate(asyncUpdate, AccessLevel.SYSTEM_MODE)"},
-		want[5]:  {"data-platform-database-cursor-sync", "apex:System.Database.getCursorWithBinds(String,Map,AccessLevel)", "Database.getCursorWithBinds('SELECT Id, Name FROM Account WHERE Rating = :rating ORDER BY Name', binds, AccessLevel.SYSTEM_MODE)"},
 		want[6]:  {"data-platform-database-cursor-sync", "apex:System.Database.getPaginationCursorWithBinds(String,Map,AccessLevel)", "Database.getPaginationCursorWithBinds('SELECT Id, Name FROM Account WHERE Rating = :rating ORDER BY Name', binds, AccessLevel.SYSTEM_MODE)"},
 		want[10]: {"data-platform-database-async-immediate-dml", "apex:System.Database.insertImmediate(List<Object>,AccessLevel)", "Database.insertImmediate(new List<Account>{new Account(Name = 'Immediate List A'), new Account(Name = 'Immediate List B')}, AccessLevel.SYSTEM_MODE)"},
 		want[11]: {"data-platform-database-async-immediate-dml", "apex:System.Database.insertImmediate(Object,AccessLevel)", "Database.insertImmediate(immediate, AccessLevel.SYSTEM_MODE)"},
 		want[15]: {"data-platform-database-async-immediate-dml", "apex:System.Database.updateImmediate(List<Object>,AccessLevel)", "Database.updateImmediate(new List<Account>{new Account(Id = listRows[0].Id, Name = 'Immediate List A Updated'), new Account(Id = listRows[1].Id, Name = 'Immediate List B Updated')}, AccessLevel.SYSTEM_MODE)"},
 		want[16]: {"data-platform-database-async-immediate-dml", "apex:System.Database.updateImmediate(Object,AccessLevel)", "Database.updateImmediate(immediateUpdate, AccessLevel.SYSTEM_MODE)"},
 	}
-	if len(aliases) != 8 {
-		t.Fatalf("alias rows = %d, want 8", len(aliases))
+	if len(aliases) != 7 {
+		t.Fatalf("alias rows = %d, want 7", len(aliases))
 	}
 	targets := make(map[string]bool, len(want))
 	for _, surfaceID := range want {
@@ -164,5 +163,28 @@ func TestDatabaseTailHasExactExecutableLocalOwners(t *testing.T) {
 	}
 	if len(missing) != 0 || len(planned) != len(want) {
 		t.Fatalf("fixed-scope planner owned %d rows with missing %v, want exact %d", len(planned), missing, len(want))
+	}
+}
+
+func TestDatabaseCursorWithBindsAccessLevelHasFocusedSalesforceOwner(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	target := "apex:System.Database.getCursorWithBinds(String,Map,AccessLevel)"
+	owners := map[string]bool{}
+	for _, filename := range []string{
+		"data-platform-database-cursor-sync.json",
+		"data-database-cursor-system-mode-runtime-depth.json",
+	} {
+		fixture, err := compat.LoadFile(filepath.Join(root, filename))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, evidence := range fixture.Evidence {
+			if evidence.SurfaceID == target {
+				owners[filename] = true
+			}
+		}
+	}
+	if len(owners) != 1 || !owners["data-database-cursor-system-mode-runtime-depth.json"] {
+		t.Fatalf("%s owners = %v, want focused singleton only", target, owners)
 	}
 }
