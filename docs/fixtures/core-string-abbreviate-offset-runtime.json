@@ -12,13 +12,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "String value = 'abcdefghijklmnopqrstuvwxyz'; System.assertEquals('...mnopq...', value.abbreviate(12, 11));"
+      "content": "String value = 'abcdefghijklmnopqrstuvwxyz'; System.assertEquals('...lmnopq...', value.abbreviate(12, 11));"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "String value = 'abcdefghijklmnopqrstuvwxyz'; System.assertEquals('...mnopq...', value.abbreviate(12, 11));"
+      "String value = 'abcdefghijklmnopqrstuvwxyz'; System.assertEquals('...lmnopq...', value.abbreviate(12, 11));"
     ]
   },
   "expected": {

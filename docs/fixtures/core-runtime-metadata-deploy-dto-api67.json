@@ -1,6 +1,8 @@
 {
   "name": "core-runtime-metadata-deploy-dto-api67",
-  "salesforceEligible": true,
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "All owned rows are governed by compile-only or deterministic-mock action authority; this local exec fixture is policy-local-only and grants zero Salesforce parity credit.",
   "command": {
     "kind": "exec",
     "args": [

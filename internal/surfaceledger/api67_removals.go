@@ -47,6 +47,9 @@ var api67RemovedSurfaceKeys = map[string]struct{}{
 	// API 67 rejects direct get(String) on the fieldSets token. The historical
 	// removal boundary is unknown, so pre-67 release snapshots retain the row.
 	"apex:schema.sobjecttypefieldsets.get(string)": {},
+	// API 67 also rejects direct get(String) on the fields token. Keep the
+	// executable Glade witness local-only rather than admitting this row.
+	"apex:schema.sobjecttypefields.get(string)": {},
 }
 
 var api67GatedSurfaceKeys = map[string]struct{}{
@@ -62,6 +65,7 @@ var api67GatedSurfaceKeys = map[string]struct{}{
 	"apex:database.deletefilter.values":                  {},
 	"apex:metadata.deploystatus.in_progress":             {},
 	"apex:schema.sobjecttypefieldsets.get(string)":       {},
+	"apex:schema.sobjecttypefields.get(string)":          {},
 }
 
 func isAPI67RemovedSurfaceID(id string) bool {

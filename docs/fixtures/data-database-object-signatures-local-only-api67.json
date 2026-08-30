@@ -1,0 +1,27 @@
+{
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "evidenceOnly": false,
+  "name": "data-database-object-signatures-local-only-api67",
+  "evidence": [
+    {"surfaceId":"apex:System.Database.insert(Object,Boolean)","symbol":"Database.insert","kind":"exec","notes":"Glade locally executes the Object-typed insert overload with allOrNone=false."},
+    {"surfaceId":"apex:System.Database.update(Object,Boolean,AccessLevel)","symbol":"Database.update","kind":"exec","notes":"Glade locally executes the Object-typed update overload with allOrNone=false and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.delete(Object,Boolean)","symbol":"Database.delete","kind":"exec","notes":"Glade locally executes the Object-typed delete overload with allOrNone=false."},
+    {"surfaceId":"apex:System.Database.delete(Object,AccessLevel)","symbol":"Database.delete","kind":"exec","notes":"Glade locally executes the Object-typed delete overload with SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(Object,AccessLevel)","symbol":"Database.undelete","kind":"exec","notes":"Glade locally executes the Object-typed undelete overload with SYSTEM_MODE."}
+  ],
+  "schema": [
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
+  ],
+  "source": [
+    {"path":"anonymous.apex","content":"Object insertedObject = new Account(Name = 'Local Object Signatures'); Database.SaveResult inserted = Database.insert(insertedObject, false); System.assert(inserted.isSuccess()); Object updatedObject = new Account(Id = inserted.getId(), Name = 'Local Object Signatures Updated'); Database.SaveResult updated = Database.update(updatedObject, false, AccessLevel.SYSTEM_MODE); System.assert(updated.isSuccess()); Object deletedObject = updatedObject; Database.DeleteResult deleted = Database.delete(deletedObject, false); System.assert(deleted.isSuccess()); Account accessAccount = new Account(Name = 'Local Object Access Signatures'); insert accessAccount; Object accessDeletedObject = accessAccount; Database.DeleteResult accessDeleted = Database.delete(accessDeletedObject, AccessLevel.SYSTEM_MODE); System.assert(accessDeleted.isSuccess()); Object accessRestoredObject = accessDeletedObject; Database.UndeleteResult accessRestored = Database.undelete(accessRestoredObject, AccessLevel.SYSTEM_MODE); System.assert(accessRestored.isSuccess()); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :accessAccount.Id]);"}
+  ],
+  "command": {"kind":"exec","args":["Object insertedObject = new Account(Name = 'Local Object Signatures'); Database.SaveResult inserted = Database.insert(insertedObject, false); System.assert(inserted.isSuccess()); Object updatedObject = new Account(Id = inserted.getId(), Name = 'Local Object Signatures Updated'); Database.SaveResult updated = Database.update(updatedObject, false, AccessLevel.SYSTEM_MODE); System.assert(updated.isSuccess()); Object deletedObject = updatedObject; Database.DeleteResult deleted = Database.delete(deletedObject, false); System.assert(deleted.isSuccess()); Account accessAccount = new Account(Name = 'Local Object Access Signatures'); insert accessAccount; Object accessDeletedObject = accessAccount; Database.DeleteResult accessDeleted = Database.delete(accessDeletedObject, AccessLevel.SYSTEM_MODE); System.assert(accessDeleted.isSuccess()); Object accessRestoredObject = accessDeletedObject; Database.UndeleteResult accessRestored = Database.undelete(accessRestoredObject, AccessLevel.SYSTEM_MODE); System.assert(accessRestored.isSuccess()); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :accessAccount.Id]);"]},
+  "expected": {"result":{"debug":null,"ok":true}},
+  "notes": "Local-runtime witness for five Object-typed Database overloads absent from the Salesforce API 67 signature surface.",
+  "profile": {"laneId":"database-object-signatures-local-only","selectedRowCount":5},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 does not expose these Object-typed overload signatures; this executable local fixture claims zero Salesforce parity."
+}

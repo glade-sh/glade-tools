@@ -91,6 +91,7 @@ func TestMergeExcludesAPI67LegacyDeleteFilterAndStatusAlias(t *testing.T) {
 		"apex:Database.DeleteFilter.values()",
 		"apex:Metadata.DeployStatus.IN_PROGRESS",
 		"apex:Schema.SObjectTypeFieldSets.get(String)",
+		"apex:Schema.SObjectTypeFields.get(String)",
 	}
 	rows := make([]SurfaceLedgerRow, 0, len(ids))
 	for _, id := range ids {
@@ -110,6 +111,21 @@ func TestMergeExcludesAPI67LegacyDeleteFilterAndStatusAlias(t *testing.T) {
 func TestBuildEvidenceSnapshotExcludesAPI67AbsentSObjectTypeFieldSetsGet(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "schema-fieldsets-get.json")
 	data := []byte(`{"name":"schema-fieldsets-get","command":{"kind":"policy-evidence"},"evidence":[{"kind":"unsupported","surfaceId":"apex:Schema.SObjectTypeFieldSets.get(String)","symbol":"Schema.SObjectTypeFieldSets.get(String)"}]}`)
+	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 0 {
+		t.Fatalf("API-67 absent Schema row entered evidence snapshot: %#v", rows)
+	}
+}
+
+func TestBuildEvidenceSnapshotExcludesAPI67AbsentSObjectTypeFieldsGet(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "schema-fields-get.json")
+	data := []byte(`{"name":"schema-fields-get","command":{"kind":"policy-evidence"},"evidence":[{"kind":"unsupported","surfaceId":"apex:Schema.SObjectTypeFields.get(String)","symbol":"Schema.SObjectTypeFields.get(String)"}]}`)
 	if err := os.WriteFile(path, data, 0o600); err != nil {
 		t.Fatal(err)
 	}

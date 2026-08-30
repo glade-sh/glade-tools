@@ -27,7 +27,7 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 		{"core-feature-management", "core-feature-management.json", false},
 		{"core-json-raw-runtime", "core-json-raw-runtime.json", false},
 		{"core-pattern-dialect-flags-stdlib", "core-pattern-dialect-flags-stdlib.json", true},
-		{"core-process-sparkplug-runtime", "core-process-sparkplug-runtime.json", true},
+		{"core-process-sparkplug-runtime", "core-process-sparkplug-runtime.json", false},
 		{"core-runtime-cache-builder-evidence", "core-runtime-cache-builder-evidence.json", true},
 		{"core-runtime-decimal-extra-accessors", "core-runtime-decimal-extra-accessors.json", true},
 		{"core-runtime-exception-family-accessors", "core-runtime-exception-family-accessors.json", false},
@@ -42,7 +42,7 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 		{"core-string-more-stdlib", "core-string-more-stdlib.json", true},
 		{"core-system-enum-types-runtime", "core-system-enum-types-runtime.json", true},
 		{"core-xmlstreamreader-runtime-depth", "core-xmlstreamreader-runtime-depth.json", true},
-		{"current-base-cb206-metadata-messaging-deterministic-api67", "current-base-cb206-metadata-messaging-deterministic-api67.json", true},
+		{"current-base-cb206-metadata-messaging-deterministic-api67", "current-base-cb206-metadata-messaging-deterministic-api67.json", false},
 		{"data-database-delete-undelete-object-runtime", "data-database-delete-undelete-object-runtime.json", true},
 		{"data-database-query-locator-access-runtime", "data-database-query-locator-access-runtime.json", true},
 		{"data-platform-schema-describe-dependent-picklists", "data-platform-schema-describe-dependent-picklists.json", false},
@@ -54,6 +54,10 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 
 	if len(tests) != 36 {
 		t.Fatalf("fixture count = %d, want 36", len(tests))
+	}
+	wantPolicyReasons := map[string]string{
+		"core-process-sparkplug-runtime":                            "All owned rows are governed by compile-only or deterministic-mock action authority; this local exec fixture is policy-local-only and grants zero Salesforce parity credit.",
+		"current-base-cb206-metadata-messaging-deterministic-api67": "All owned rows are governed by compile-only or deterministic-mock action authority; this local exec fixture is policy-local-only and grants zero Salesforce parity credit.",
 	}
 	for _, test := range tests {
 		t.Run(test.id, func(t *testing.T) {
@@ -79,6 +83,9 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 					t.Fatalf("eligible fixture carries exclusion %q: %q", metadata.ExclusionClass, metadata.ExclusionReason)
 				}
 				return
+			}
+			if reason := wantPolicyReasons[test.id]; reason != "" && (metadata.ExclusionClass != "policy-local-only" || metadata.ExclusionReason != reason) {
+				t.Fatalf("local-only exclusion = %q: %q, want exact policy reason %q", metadata.ExclusionClass, metadata.ExclusionReason, reason)
 			}
 			if metadata.ExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.ExclusionReason), "zero salesforce parity") {
 				t.Fatalf("local-only exclusion = %q: %q", metadata.ExclusionClass, metadata.ExclusionReason)
