@@ -1,0 +1,32 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.SObjectField nameField = Account.SObjectType.getDescribe().fields.get('Name');\nSystem.assertEquals(Account.Name, nameField);"
+    ]
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Schema.SObjectTypeFields.get(String)","symbol":"Account.SObjectType.getDescribe().fields.get(String)"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-schema-sobjecttypefields-get-api67",
+  "notes": "Exact-candidate executable local-runtime witness for direct Schema.SObjectTypeFields.get(String). Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-apex-schema-sobjecttypefields-get-api67",
+    "selectedRowCount": 1
+  },
+  "project": {
+    "sourceApiVersion": "67.0"
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.SObjectField nameField = Account.SObjectType.getDescribe().fields.get('Name');\nSystem.assertEquals(Account.Name, nameField);"
+    }
+  ]
+}

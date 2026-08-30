@@ -11,13 +11,49 @@ import (
 )
 
 const apexSchemaTailFixture = "core-runtime-apex-schema-tail-api67.json"
+const apexSchemaFieldsGetFixture = "core-runtime-schema-sobjecttypefields-get-api67.json"
+
+const apexSchemaFieldsGetID = "apex:Schema.SObjectTypeFields.get(String)"
 
 var apexSchemaTailIDs = []string{
 	"apex:Schema.SObjectType.newSObject(Id)",
 	"apex:Schema.SObjectTypeFieldSets.getMap()",
-	"apex:Schema.SObjectTypeFields.get(String)",
 	"apex:Schema.SObjectTypeFields.getMap()",
 	"apex:Schema.Schema.describeSObjects(List<String>,Object)",
+}
+
+func TestApexSchemaFieldsGetIsSingletonForSalesforceFilter(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	owners := 0
+	paths, err := filepath.Glob(filepath.Join(root, "*.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range paths {
+		var fixture struct {
+			Command struct {
+				Kind string `json:"kind"`
+			} `json:"command"`
+			EvidenceOnly       bool                     `json:"evidenceOnly"`
+			Evidence           []compat.FixtureEvidence `json:"evidence"`
+			SalesforceEligible bool                     `json:"salesforceEligible"`
+		}
+		readJSON(t, path, &fixture)
+		if fixture.EvidenceOnly {
+			continue
+		}
+		for _, row := range fixture.Evidence {
+			if row.SurfaceID == apexSchemaFieldsGetID {
+				owners++
+				if filepath.Base(path) != apexSchemaFieldsGetFixture || fixture.Command.Kind != "exec" || len(fixture.Evidence) != 1 || !fixture.SalesforceEligible {
+					t.Fatalf("Salesforce filter fixture = %s %#v", path, fixture)
+				}
+			}
+		}
+	}
+	if owners != 1 {
+		t.Fatalf("fixture ownership for %s = %d, want one singleton owner", apexSchemaFieldsGetID, owners)
+	}
 }
 
 func TestApexSchemaTailHasExactExecutableLocalEvidence(t *testing.T) {
@@ -78,7 +114,6 @@ func TestApexSchemaTailHasExactExecutableLocalEvidence(t *testing.T) {
 	for _, witness := range []string{
 		"SObject withId = accountType.newSObject(accountId);",
 		"accountDescribe.fieldSets.getMap()",
-		"accountDescribe.fields.get('Name')",
 		"accountDescribe.fields.getMap()",
 		"Schema.describeSObjects(new List<String>{'Account'}, Schema.SObjectDescribeOptions.DEFERRED)",
 	} {
@@ -88,6 +123,9 @@ func TestApexSchemaTailHasExactExecutableLocalEvidence(t *testing.T) {
 	}
 	if strings.Contains(source, "fieldSets.get('GladeAbsentFieldSet')") {
 		t.Fatal("source retains API-67-absent SObjectTypeFieldSets.get(String) call")
+	}
+	if strings.Contains(source, "fields.get('Name')") {
+		t.Fatal("source retains Salesforce-absent SObjectTypeFields.get(String) call")
 	}
 
 	owners := make(map[string]int, len(want))
