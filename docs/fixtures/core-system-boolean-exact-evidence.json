@@ -18,13 +18,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Boolean truthy = Boolean.valueOf(' TRUE ');\nObject raw = 'false';\nBoolean falsy = Boolean.valueOf(raw);\nSystem.assert(truthy);\nSystem.assert(!falsy);\n"
+      "content": "Boolean truthy = Boolean.valueOf('true');\nBoolean padded = Boolean.valueOf(' TRUE ');\nObject raw = false;\nBoolean falsy = Boolean.valueOf(raw);\nSystem.assert(truthy);\nSystem.assert(!padded);\nSystem.assert(!falsy);\n"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Boolean truthy = Boolean.valueOf(' TRUE ');\nObject raw = 'false';\nBoolean falsy = Boolean.valueOf(raw);\nSystem.assert(truthy);\nSystem.assert(!falsy);\n"
+      "Boolean truthy = Boolean.valueOf('true');\nBoolean padded = Boolean.valueOf(' TRUE ');\nObject raw = false;\nBoolean falsy = Boolean.valueOf(raw);\nSystem.assert(truthy);\nSystem.assert(!padded);\nSystem.assert(!falsy);\n"
     ]
   },
   "expected": {

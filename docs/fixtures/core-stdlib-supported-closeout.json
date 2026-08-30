@@ -5,128 +5,128 @@
     {
       "surfaceId": "apex:System.Decimal.round()",
       "symbol": "Decimal.round",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers positive and negative half-tie rounding."
     },
     {
       "surfaceId": "apex:System.Decimal.setScale(Integer)",
       "symbol": "Decimal.setScale(Integer)",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers default finite scale reduction."
     },
     {
       "surfaceId": "apex:System.Decimal.setScale(Integer,RoundingMode)",
       "symbol": "Decimal.setScale(Integer,RoundingMode)",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers explicit HALF_UP scale reduction."
     },
     {
       "surfaceId": "apex:System.EncodingUtil.urlEncode(String,String)",
       "symbol": "EncodingUtil.urlEncode",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers UTF-8 form encoding for space, plus, slash, and percent."
     },
     {
       "surfaceId": "apex:System.EncodingUtil.urlDecode(String,String)",
       "symbol": "EncodingUtil.urlDecode",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers UTF-8 form decoding for the encoded URL string."
     },
     {
       "surfaceId": "apex:System.Crypto.generateDigest(String,Blob)",
       "symbol": "Crypto.generateDigest",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers deterministic SHA-256 digest hex output."
     },
     {
       "surfaceId": "apex:System.String.split(String,Integer)",
       "symbol": "String.split",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers negative and positive limit behavior."
     },
     {
       "surfaceId": "apex:System.Pattern.compile(String)",
       "symbol": "Pattern.compile",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers supported regex compilation and matcher creation."
     },
     {
       "surfaceId": "apex:System.Pattern.matches(String,String)",
       "symbol": "Pattern.matches",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers whole-string regex matching."
     },
     {
       "surfaceId": "apex:System.Matcher.find()",
       "symbol": "Matcher.find",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers advancing through multiple matches."
     },
     {
       "surfaceId": "apex:System.Matcher.group()",
       "symbol": "Matcher.group",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers whole-match reads after find."
     },
     {
       "surfaceId": "apex:System.Matcher.group(Integer)",
       "symbol": "Matcher.group(Integer)",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers capture reads and null optional groups."
     },
     {
       "surfaceId": "apex:System.Matcher.matches()",
       "symbol": "Matcher.matches",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Covers whole-region matcher matching."
     },
     {
       "surfaceId": "apex:System.JSON.deserialize(String,Type)",
       "symbol": "JSON.deserialize",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Deserializes a source-backed DTO with String, Integer, Decimal, and List<String> fields."
     },
     {
       "surfaceId": "apex:System.JSON.deserializeStrict(String,Type)",
       "symbol": "JSON.deserializeStrict",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Strict DTO deserialization accepts known fields and rejects an unknown DTO field."
     },
     {
       "surfaceId": "apex:System.JSON.deserializeUntyped(String)",
       "symbol": "JSON.deserializeUntyped",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Untyped deserialization preserves a nested Map/List primitive graph."
     },
     {
       "surfaceId": "apex:System.JSON.serialize(Object)",
       "symbol": "JSON.serialize",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Serializes a source-backed DTO with primitive and list fields."
     },
     {
       "surfaceId": "apex:System.JSON.serializePretty(Object)",
       "symbol": "JSON.serializePretty",
-      "kind": "exec",
+      "kind": "test",
       "notes": "Pretty-serializes the same source-backed DTO."
     }
   ],
   "source": [
     {
-      "path": "force-app/main/default/classes/CoreStdlibSupportedDTO.cls",
-      "content": "public class CoreStdlibSupportedDTO { public String Name; public Integer Count; public Decimal Amount; public List<String> Tags; }"
+      "path": "force-app/main/default/classes/CoreStdlibSupportedCloseoutTest.cls",
+      "content": "@isTest private class CoreStdlibSupportedCloseoutTest {\n  private class DTO { public String Name; public Integer Count; public Decimal Amount; public List<String> Tags; }\n\n  @isTest static void rows() {\n    Decimal roundPositive = Decimal.valueOf('12.5');\n    System.assertEquals(12, roundPositive.round());\n    Decimal roundNegative = Decimal.valueOf('-1.5');\n    System.assertEquals(-2, roundNegative.round());\n    System.assertEquals(12.35, Decimal.valueOf('12.345').setScale(2));\n    System.assertEquals(1.3, Decimal.valueOf('1.25').setScale(1, RoundingMode.HALF_UP));\n    \n    String encoded = EncodingUtil.urlEncode('a b+c/%', 'UTF-8');\n    System.assertEquals('a+b%2Bc%2F%25', encoded);\n    System.assertEquals('a b+c/%', EncodingUtil.urlDecode(encoded, 'UTF-8'));\n    String digestHex = EncodingUtil.convertToHex(Crypto.generateDigest('SHA-256', Blob.valueOf('abc')));\n    System.assertEquals('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad', digestHex);\n    \n    List<String> split = 'alpha,beta,,gamma,'.split(',', -1);\n    System.assertEquals(5, split.size());\n    System.assertEquals('', split.get(2));\n    System.assertEquals('', split.get(4));\n    List<String> limited = 'one:two:three'.split(':', 2);\n    System.assertEquals(2, limited.size());\n    System.assertEquals('two:three', limited.get(1));\n    \n    Pattern p = Pattern.compile('([A-Z]+)([0-9]+)?');\n    Matcher m = p.matcher('abc DEF42 ghi XYZ');\n    System.assert(m.find());\n    System.assertEquals('DEF42', m.group());\n    System.assertEquals('DEF', m.group(1));\n    System.assertEquals('42', m.group(2));\n    System.assert(m.find());\n    System.assertEquals('XYZ', m.group());\n    System.assertEquals(null, m.group(2));\n    System.assert(Pattern.matches('[0-9]+', '12345'));\n    System.assert(Pattern.compile('[a-z]+').matcher('trail').matches());\n    \n    DTO dto = new DTO();\n    dto.Name = 'Cabin';\n    dto.Count = 3;\n    dto.Amount = 12.34;\n    dto.Tags = new List<String>{'spruce', 'lake'};\n    String compact = JSON.serialize(dto);\n    System.assert(compact.contains('\"Name\":\"Cabin\"'));\n    System.assert(compact.contains('\"Count\":3'));\n    System.assert(compact.contains('\"Amount\":12.34'));\n    System.assert(compact.contains('\"Tags\":[\"spruce\",\"lake\"]'));\n    String pretty = JSON.serializePretty(dto);\n    System.assert(pretty.contains('\"Name\" : \"Cabin\"'));\n    System.assert(pretty.contains('\"Count\" : 3'));\n    System.assert(pretty.contains('\"Amount\" : 12.34'));\n    System.assert(pretty.contains('\"Tags\" : [ \"spruce\", \"lake\" ]'));\n    DTO decoded = (DTO) JSON.deserialize(compact, DTO.class);\n    System.assertEquals('Cabin', decoded.Name);\n    System.assertEquals(3, decoded.Count);\n    System.assertEquals(12.34, decoded.Amount);\n    System.assertEquals('lake', decoded.Tags[1]);\n    DTO strictDecoded = (DTO) JSON.deserializeStrict('{\"Name\":\"Strict\",\"Count\":4,\"Amount\":7.50,\"Tags\":[\"tight\",\"fit\"]}', DTO.class);\n    System.assertEquals('Strict', strictDecoded.Name);\n    System.assertEquals(4, strictDecoded.Count);\n    System.assertEquals(7.50, strictDecoded.Amount);\n    System.assertEquals('fit', strictDecoded.Tags[1]);\n    Boolean strictRejected = false;\n    try {\n      JSON.deserializeStrict('{\"Name\":\"Overfull\",\"Count\":1,\"Extra\":\"no\"}', DTO.class);\n    } catch (JSONException e) {\n      strictRejected = e.getMessage().toLowerCase().contains('unknown');\n    }\n    System.assert(strictRejected);\n    Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped('{\"nested\":{\"label\":\"bank\",\"values\":[\"spruce\",\"stone\"],\"meta\":{\"depth\":2}}}');\n    Map<String, Object> nested = (Map<String, Object>) root.get('nested');\n    List<Object> values = (List<Object>) nested.get('values');\n    Map<String, Object> meta = (Map<String, Object>) nested.get('meta');\n    System.assertEquals('bank', nested.get('label'));\n    System.assertEquals('stone', values.get(1));\n    System.assertEquals(2, meta.get('depth'));\n  }\n}"
     }
   ],
   "command": {
-    "kind": "exec",
-    "args": [
-      "Decimal roundPositive = Decimal.valueOf('12.5');\nSystem.assertEquals(12, roundPositive.round());\nDecimal roundNegative = Decimal.valueOf('-1.5');\nSystem.assertEquals(-2, roundNegative.round());\nSystem.assertEquals(12.35, Decimal.valueOf('12.345').setScale(2));\nSystem.assertEquals(1.3, Decimal.valueOf('1.25').setScale(1, RoundingMode.HALF_UP));\n\nString encoded = EncodingUtil.urlEncode('a b+c/%', 'UTF-8');\nSystem.assertEquals('a+b%2Bc%2F%25', encoded);\nSystem.assertEquals('a b+c/%', EncodingUtil.urlDecode(encoded, 'UTF-8'));\nString digestHex = EncodingUtil.convertToHex(Crypto.generateDigest('SHA-256', Blob.valueOf('abc')));\nSystem.assertEquals('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad', digestHex);\n\nList<String> split = 'alpha,beta,,gamma,'.split(',', -1);\nSystem.assertEquals(5, split.size());\nSystem.assertEquals('', split.get(2));\nSystem.assertEquals('', split.get(4));\nList<String> limited = 'one:two:three'.split(':', 2);\nSystem.assertEquals(2, limited.size());\nSystem.assertEquals('two:three', limited.get(1));\n\nPattern p = Pattern.compile('([A-Z]+)([0-9]+)?');\nMatcher m = p.matcher('abc DEF42 ghi XYZ');\nSystem.assert(m.find());\nSystem.assertEquals('DEF42', m.group());\nSystem.assertEquals('DEF', m.group(1));\nSystem.assertEquals('42', m.group(2));\nSystem.assert(m.find());\nSystem.assertEquals('XYZ', m.group());\nSystem.assertEquals(null, m.group(2));\nSystem.assert(Pattern.matches('[0-9]+', '12345'));\nSystem.assert(Pattern.compile('[a-z]+').matcher('trail').matches());\n\nCoreStdlibSupportedDTO dto = new CoreStdlibSupportedDTO();\ndto.Name = 'Cabin';\ndto.Count = 3;\ndto.Amount = 12.34;\ndto.Tags = new List<String>{'spruce', 'lake'};\nString compact = JSON.serialize(dto);\nSystem.assert(compact.contains('\"Name\":\"Cabin\"'));\nSystem.assert(compact.contains('\"Count\":3'));\nSystem.assert(compact.contains('\"Amount\":12.34'));\nSystem.assert(compact.contains('\"Tags\":[\"spruce\",\"lake\"]'));\nString pretty = JSON.serializePretty(dto);\nSystem.assert(pretty.contains('\"Name\" : \"Cabin\"'));\nSystem.assert(pretty.contains('\"Count\" : 3'));\nSystem.assert(pretty.contains('\"Amount\" : 12.34'));\nSystem.assert(pretty.contains('\"Tags\" : [ \"spruce\", \"lake\" ]'));\nCoreStdlibSupportedDTO decoded = (CoreStdlibSupportedDTO) JSON.deserialize(compact, CoreStdlibSupportedDTO.class);\nSystem.assertEquals('Cabin', decoded.Name);\nSystem.assertEquals(3, decoded.Count);\nSystem.assertEquals(12.34, decoded.Amount);\nSystem.assertEquals('lake', decoded.Tags[1]);\nCoreStdlibSupportedDTO strictDecoded = (CoreStdlibSupportedDTO) JSON.deserializeStrict('{\"Name\":\"Strict\",\"Count\":4,\"Amount\":7.50,\"Tags\":[\"tight\",\"fit\"]}', CoreStdlibSupportedDTO.class);\nSystem.assertEquals('Strict', strictDecoded.Name);\nSystem.assertEquals(4, strictDecoded.Count);\nSystem.assertEquals(7.50, strictDecoded.Amount);\nSystem.assertEquals('fit', strictDecoded.Tags[1]);\nBoolean strictRejected = false;\ntry {\n  JSON.deserializeStrict('{\"Name\":\"Overfull\",\"Count\":1,\"Extra\":\"no\"}', CoreStdlibSupportedDTO.class);\n} catch (JSONException e) {\n  strictRejected = e.getMessage().toLowerCase().contains('unknown');\n}\nSystem.assert(strictRejected);\nMap<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped('{\"nested\":{\"label\":\"bank\",\"values\":[\"spruce\",\"stone\"],\"meta\":{\"depth\":2}}}');\nMap<String, Object> nested = (Map<String, Object>) root.get('nested');\nList<Object> values = (List<Object>) nested.get('values');\nMap<String, Object> meta = (Map<String, Object>) nested.get('meta');\nSystem.assertEquals('bank', nested.get('label'));\nSystem.assertEquals('stone', values.get(1));\nSystem.assertEquals(2, meta.get('depth'));\n"
-    ]
+    "kind": "test"
   },
   "expected": {
     "result": {
-      "debug": null,
-      "ok": true
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
   }
 }

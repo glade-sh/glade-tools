@@ -37,6 +37,8 @@ func TestApexSchemaFieldsGetIsSingletonForSalesforceFilter(t *testing.T) {
 			EvidenceOnly       bool                     `json:"evidenceOnly"`
 			Evidence           []compat.FixtureEvidence `json:"evidence"`
 			SalesforceEligible bool                     `json:"salesforceEligible"`
+			ExclusionClass     string                   `json:"salesforceExclusionClass"`
+			ExclusionReason    string                   `json:"salesforceExclusionReason"`
 		}
 		readJSON(t, path, &fixture)
 		if fixture.EvidenceOnly {
@@ -45,7 +47,7 @@ func TestApexSchemaFieldsGetIsSingletonForSalesforceFilter(t *testing.T) {
 		for _, row := range fixture.Evidence {
 			if row.SurfaceID == apexSchemaFieldsGetID {
 				owners++
-				if filepath.Base(path) != apexSchemaFieldsGetFixture || fixture.Command.Kind != "exec" || len(fixture.Evidence) != 1 || !fixture.SalesforceEligible {
+				if filepath.Base(path) != apexSchemaFieldsGetFixture || fixture.Command.Kind != "exec" || len(fixture.Evidence) != 1 || fixture.SalesforceEligible || fixture.ExclusionClass != "policy-local-only" || fixture.ExclusionReason != "Salesforce API 67 rejects direct Schema.SObjectTypeFields.get(String); this local exec witness is policy-local-only and grants zero Salesforce parity credit." {
 					t.Fatalf("Salesforce filter fixture = %s %#v", path, fixture)
 				}
 			}

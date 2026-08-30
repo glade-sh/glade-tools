@@ -182,10 +182,9 @@ func TestDatabaseSystemModeFixturesUseDeployableTests(t *testing.T) {
 		testFixture   string
 		testRows      int
 	}{
-		"data-database-batch-boolean-runtime.json":          {2, "data-database-batch-boolean-system-mode-runtime.json", 1},
 		"data-database-cursor-runtime-depth.json":           {2, "data-database-cursor-system-mode-runtime-depth.json", 1},
 		"data-database-delete-undelete-id-runtime.json":     {8, "data-database-delete-undelete-id-system-mode-runtime.json", 8},
-		"data-database-delete-undelete-object-runtime.json": {7, "data-database-delete-undelete-object-system-mode-runtime.json", 6},
+		"data-database-delete-undelete-object-runtime.json": {6, "data-database-delete-undelete-object-system-mode-runtime.json", 4},
 		"data-database-dml-accesslevel-runtime.json":        {4, "data-database-dml-system-mode-runtime.json", 3},
 		"data-database-query-binds-runtime.json":            {1, "data-database-query-binds-system-mode-runtime.json", 1},
 		"data-database-query-locator-access-runtime.json":   {8, "data-database-query-locator-access-system-mode-runtime.json", 3},
@@ -356,12 +355,18 @@ func TestSalesforceFixtureCorrectionsUsePortableIsolatedProbes(t *testing.T) {
 				t.Fatal(err)
 			}
 			var metadata struct {
-				Eligible *bool `json:"salesforceEligible"`
+				Eligible        *bool  `json:"salesforceEligible"`
+				ExclusionClass  string `json:"salesforceExclusionClass"`
+				ExclusionReason string `json:"salesforceExclusionReason"`
 			}
 			if err := json.Unmarshal(data, &metadata); err != nil {
 				t.Fatal(err)
 			}
-			if metadata.Eligible == nil || !*metadata.Eligible {
+			if test.filename == "core-runtime-schema-sobjecttypefields-get-api67.json" {
+				if metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" || metadata.ExclusionReason != "Salesforce API 67 rejects direct Schema.SObjectTypeFields.get(String); this local exec witness is policy-local-only and grants zero Salesforce parity credit." {
+					t.Fatalf("local-only API-67 rejection policy = %#v", metadata)
+				}
+			} else if metadata.Eligible == nil || !*metadata.Eligible {
 				t.Fatalf("salesforceEligible = %v, want true", metadata.Eligible)
 			}
 			source := fixture.Command.Args[0]

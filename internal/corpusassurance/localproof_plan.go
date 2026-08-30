@@ -317,6 +317,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
 			localRuntimeUserClassTestSurface(surfaceID) ||
 			localRuntimeDatabaseTestSurface(surfaceID) ||
+			localRuntimeCoreStdlibTestSurface(surfaceID) ||
 			localRuntimeLifecycleTestSurface(surfaceID) ||
 			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
 			surfaceID == "apex:System.Queueable" || strings.HasPrefix(surfaceID, "apex:System.Queueable.") ||
@@ -336,6 +337,32 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 		return command == "exec" || command == "test"
 	case compileShapeRequired:
 		return command == "check"
+	default:
+		return false
+	}
+}
+
+func localRuntimeCoreStdlibTestSurface(surfaceID string) bool {
+	switch surfaceID {
+	case "apex:System.Decimal.round()",
+		"apex:System.Decimal.setScale(Integer)",
+		"apex:System.Decimal.setScale(Integer,RoundingMode)",
+		"apex:System.EncodingUtil.urlEncode(String,String)",
+		"apex:System.EncodingUtil.urlDecode(String,String)",
+		"apex:System.Crypto.generateDigest(String,Blob)",
+		"apex:System.String.split(String,Integer)",
+		"apex:System.Pattern.compile(String)",
+		"apex:System.Pattern.matches(String,String)",
+		"apex:System.Matcher.find()",
+		"apex:System.Matcher.group()",
+		"apex:System.Matcher.group(Integer)",
+		"apex:System.Matcher.matches()",
+		"apex:System.JSON.deserialize(String,Type)",
+		"apex:System.JSON.deserializeStrict(String,Type)",
+		"apex:System.JSON.deserializeUntyped(String)",
+		"apex:System.JSON.serialize(Object)",
+		"apex:System.JSON.serializePretty(Object)":
+		return true
 	default:
 		return false
 	}
