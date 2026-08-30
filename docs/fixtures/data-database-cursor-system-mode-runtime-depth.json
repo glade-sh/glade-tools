@@ -1,0 +1,17 @@
+{
+  "name": "data-database-cursor-system-mode-runtime-depth",
+  "salesforceEligible": true,
+  "evidence": [
+    {"surfaceId":"apex:System.Database.getCursorWithBinds(String,Map,AccessLevel)","symbol":"Database.getCursorWithBinds","kind":"test","notes":"A typed String query and Map<String,Object> binds with SYSTEM_MODE produce a cursor in deployable Apex test context."}
+  ],
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/Rating.field-meta.xml","content":"<CustomField><fullName>Rating</fullName><label>Rating</label><type>Text</type></CustomField>"}
+  ],
+  "source":[
+    {"path":"force-app/main/default/classes/DataDatabaseCursorSystemModeRuntimeDepthTest.cls","content":"@isTest private class DataDatabaseCursorSystemModeRuntimeDepthTest { @isTest static void cursorWithBindsRunsInSystemMode() { insert new List<Account>{new Account(Name = 'Cursor First', Rating = 'Hot'), new Account(Name = 'Cursor Second', Rating = 'Warm'), new Account(Name = 'Cursor Third', Rating = 'Warm')}; Map<String,Object> binds = new Map<String,Object>{'rating' => 'Warm'}; Database.Cursor cursor = Database.getCursorWithBinds('SELECT Id, Name FROM Account WHERE Rating = :rating ORDER BY Name', binds, AccessLevel.SYSTEM_MODE); System.assertEquals(2, cursor.getNumRecords()); List<SObject> rows = cursor.fetch(0, 2); System.assertEquals('Cursor Second', ((Account)rows[0]).Name); System.assertEquals('Cursor Third', ((Account)rows[1]).Name); } }"}
+  ],
+  "command":{"kind":"test"},
+  "expected":{"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}}
+}

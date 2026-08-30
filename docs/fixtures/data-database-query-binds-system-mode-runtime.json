@@ -1,0 +1,16 @@
+{
+  "name":"data-database-query-binds-system-mode-runtime",
+  "salesforceEligible":true,
+  "evidence":[
+    {"surfaceId":"apex:System.Database.countQueryWithBinds","symbol":"Database.countQueryWithBinds","kind":"test","notes":"Named Map<String,Object> bind with SYSTEM_MODE returns the exact persisted Account count in deployable Apex test context."}
+  ],
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
+  ],
+  "source":[
+    {"path":"force-app/main/default/classes/DataDatabaseQueryBindsSystemModeRuntimeTest.cls","content":"@isTest private class DataDatabaseQueryBindsSystemModeRuntimeTest { @isTest static void countQueryWithBindsRunsInSystemMode() { insert new List<Account>{new Account(Name = 'Bind Target'), new Account(Name = 'Bind Other')}; Map<String,Object> binds = new Map<String,Object>{'wantedName' => 'Bind Target'}; Integer matching = Database.countQueryWithBinds('SELECT COUNT() FROM Account WHERE Name = :wantedName', binds, AccessLevel.SYSTEM_MODE); System.assertEquals(1, matching); } }"}
+  ],
+  "command":{"kind":"test"},
+  "expected":{"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}}
+}

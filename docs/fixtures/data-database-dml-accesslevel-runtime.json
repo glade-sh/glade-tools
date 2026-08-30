@@ -9,28 +9,10 @@
       "notes": "Single-record insert with allOrNone and AccessLevel returns local SaveResult shape in org-state execution."
     },
     {
-      "surfaceId": "apex:System.Database.insert(Object,AccessLevel)",
-      "symbol": "Database.insert",
-      "kind": "exec",
-      "notes": "Single-record insert with typed AccessLevel returns local SaveResult shape in org-state execution."
-    },
-    {
       "surfaceId": "apex:System.Database.update(Object,AccessLevel)",
       "symbol": "Database.update",
       "kind": "exec",
       "notes": "Single-record update with AccessLevel returns local SaveResult shape in org-state execution."
-    },
-    {
-      "surfaceId": "apex:System.Database.upsert(Object,Schema.SObjectField,Boolean,AccessLevel)",
-      "symbol": "Database.upsert",
-      "kind": "exec",
-      "notes": "External-ID upsert with allOrNone and AccessLevel returns local UpsertResult shape in org-state execution."
-    },
-    {
-      "surfaceId": "apex:System.Database.delete(Object,Boolean,AccessLevel)",
-      "symbol": "Database.delete",
-      "kind": "exec",
-      "notes": "Single-record delete with allOrNone and AccessLevel returns local DeleteResult shape in org-state execution."
     },
     {
       "surfaceId": "apex:System.Database.undelete(Object,Boolean,AccessLevel)",
@@ -62,13 +44,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Account inserted = new Account(Name = 'Acme'); Database.SaveResult insertedResult = Database.insert(inserted, true, AccessLevel.USER_MODE); System.assert(insertedResult.isSuccess()); Account systemInserted = new Account(Name = 'System Acme'); Database.SaveResult systemResult = Database.insert(systemInserted, AccessLevel.SYSTEM_MODE); System.assert(systemResult.isSuccess()); Database.SaveResult updated = Database.update(new Account(Id = systemResult.getId(), Name = 'System Changed'), AccessLevel.USER_MODE); System.assert(updated.isSuccess()); Account upserted = new Account(Name = 'Upserted', Other_Key__c = 'ext-access'); Database.UpsertResult upsertResult = Database.upsert(upserted, Account.Other_Key__c, false, AccessLevel.SYSTEM_MODE); System.assert(upsertResult.isSuccess()); Database.DeleteResult deleted = Database.delete(new Account(Id = insertedResult.getId()), false, AccessLevel.SYSTEM_MODE); System.assert(deleted.isSuccess()); Database.UndeleteResult undeleted = Database.undelete(new Account(Id = insertedResult.getId()), false, AccessLevel.USER_MODE); System.assert(undeleted.isSuccess()); Account mergeMaster = new Account(Name = 'Merge Master'); insert mergeMaster; Account mergeDuplicate = new Account(Name = 'Merge Duplicate'); insert mergeDuplicate; Database.MergeResult merged = Database.merge(new Account(Id = mergeMaster.Id, Name = 'Merged Master'), mergeDuplicate.Id, false, AccessLevel.USER_MODE); System.assert(merged.isSuccess()); System.assertEquals(mergeMaster.Id, merged.getId()); System.assertEquals(mergeDuplicate.Id, merged.getMergedRecordIds().get(0));"
+      "content": "Account inserted = new Account(Name = 'Acme'); Database.SaveResult insertedResult = Database.insert(inserted, true, AccessLevel.USER_MODE); System.assert(insertedResult.isSuccess()); Database.SaveResult updated = Database.update(new Account(Id = insertedResult.getId(), Name = 'Changed'), AccessLevel.USER_MODE); System.assert(updated.isSuccess()); delete inserted; Database.UndeleteResult undeleted = Database.undelete(new Account(Id = insertedResult.getId()), false, AccessLevel.USER_MODE); System.assert(undeleted.isSuccess()); Account mergeMaster = new Account(Name = 'Merge Master'); insert mergeMaster; Account mergeDuplicate = new Account(Name = 'Merge Duplicate'); insert mergeDuplicate; Database.MergeResult merged = Database.merge(new Account(Id = mergeMaster.Id, Name = 'Merged Master'), mergeDuplicate.Id, false, AccessLevel.USER_MODE); System.assert(merged.isSuccess()); System.assertEquals(mergeMaster.Id, merged.getId()); System.assertEquals(mergeDuplicate.Id, merged.getMergedRecordIds().get(0));"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Account inserted = new Account(Name = 'Acme'); Database.SaveResult insertedResult = Database.insert(inserted, true, AccessLevel.USER_MODE); System.assert(insertedResult.isSuccess()); Account systemInserted = new Account(Name = 'System Acme'); Database.SaveResult systemResult = Database.insert(systemInserted, AccessLevel.SYSTEM_MODE); System.assert(systemResult.isSuccess()); Database.SaveResult updated = Database.update(new Account(Id = systemResult.getId(), Name = 'System Changed'), AccessLevel.USER_MODE); System.assert(updated.isSuccess()); Account upserted = new Account(Name = 'Upserted', Other_Key__c = 'ext-access'); Database.UpsertResult upsertResult = Database.upsert(upserted, Account.Other_Key__c, false, AccessLevel.SYSTEM_MODE); System.assert(upsertResult.isSuccess()); Database.DeleteResult deleted = Database.delete(new Account(Id = insertedResult.getId()), false, AccessLevel.SYSTEM_MODE); System.assert(deleted.isSuccess()); Database.UndeleteResult undeleted = Database.undelete(new Account(Id = insertedResult.getId()), false, AccessLevel.USER_MODE); System.assert(undeleted.isSuccess()); Account mergeMaster = new Account(Name = 'Merge Master'); insert mergeMaster; Account mergeDuplicate = new Account(Name = 'Merge Duplicate'); insert mergeDuplicate; Database.MergeResult merged = Database.merge(new Account(Id = mergeMaster.Id, Name = 'Merged Master'), mergeDuplicate.Id, false, AccessLevel.USER_MODE); System.assert(merged.isSuccess()); System.assertEquals(mergeMaster.Id, merged.getId()); System.assertEquals(mergeDuplicate.Id, merged.getMergedRecordIds().get(0));"
+      "Account inserted = new Account(Name = 'Acme'); Database.SaveResult insertedResult = Database.insert(inserted, true, AccessLevel.USER_MODE); System.assert(insertedResult.isSuccess()); Database.SaveResult updated = Database.update(new Account(Id = insertedResult.getId(), Name = 'Changed'), AccessLevel.USER_MODE); System.assert(updated.isSuccess()); delete inserted; Database.UndeleteResult undeleted = Database.undelete(new Account(Id = insertedResult.getId()), false, AccessLevel.USER_MODE); System.assert(undeleted.isSuccess()); Account mergeMaster = new Account(Name = 'Merge Master'); insert mergeMaster; Account mergeDuplicate = new Account(Name = 'Merge Duplicate'); insert mergeDuplicate; Database.MergeResult merged = Database.merge(new Account(Id = mergeMaster.Id, Name = 'Merged Master'), mergeDuplicate.Id, false, AccessLevel.USER_MODE); System.assert(merged.isSuccess()); System.assertEquals(mergeMaster.Id, merged.getId()); System.assertEquals(mergeDuplicate.Id, merged.getMergedRecordIds().get(0));"
     ]
   },
   "expected": {

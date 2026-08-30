@@ -1,0 +1,23 @@
+{
+  "name":"data-database-delete-undelete-id-system-mode-runtime",
+  "salesforceEligible":true,
+  "evidence":[
+    {"surfaceId":"apex:System.Database.delete(Id,AccessLevel)","symbol":"Database.delete","kind":"test","notes":"Deployable Apex test execution returns a successful DeleteResult for an Id and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.delete(Id,Boolean,AccessLevel)","symbol":"Database.delete","kind":"test","notes":"Deployable Apex test execution returns a successful DeleteResult for an Id, allOrNone, and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.delete(List<Id>,AccessLevel)","symbol":"Database.delete","kind":"test","notes":"Deployable Apex test execution returns ordered DeleteResult rows for an Id list and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.delete(List<Id>,Boolean,AccessLevel)","symbol":"Database.delete","kind":"test","notes":"Deployable Apex test execution returns ordered DeleteResult rows for an Id list, allOrNone, and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(Id,AccessLevel)","symbol":"Database.undelete","kind":"test","notes":"Deployable Apex test execution returns a successful UndeleteResult for an Id and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(Id,Boolean,AccessLevel)","symbol":"Database.undelete","kind":"test","notes":"Deployable Apex test execution returns a successful UndeleteResult for an Id, allOrNone, and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(List<Id>,AccessLevel)","symbol":"Database.undelete","kind":"test","notes":"Deployable Apex test execution returns ordered UndeleteResult rows for an Id list and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(List<Id>,Boolean,AccessLevel)","symbol":"Database.undelete","kind":"test","notes":"Deployable Apex test execution returns ordered UndeleteResult rows for an Id list, allOrNone, and SYSTEM_MODE."}
+  ],
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
+  ],
+  "source":[
+    {"path":"force-app/main/default/classes/DataDatabaseDeleteUndeleteIdSystemModeRuntimeTest.cls","content":"@isTest private class DataDatabaseDeleteUndeleteIdSystemModeRuntimeTest { @isTest static void idOverloadsRunInSystemMode() { Account a1 = new Account(Name = 'Delete Id Access'); insert a1; System.assert(Database.delete(a1.Id, AccessLevel.SYSTEM_MODE).isSuccess()); System.assert(Database.undelete(a1.Id, AccessLevel.SYSTEM_MODE).isSuccess()); Account a2 = new Account(Name = 'Delete Id Both'); insert a2; System.assert(Database.delete(a2.Id, false, AccessLevel.SYSTEM_MODE).isSuccess()); System.assert(Database.undelete(a2.Id, false, AccessLevel.SYSTEM_MODE).isSuccess()); Account a3 = new Account(Name = 'Delete List Access'); Account a4 = new Account(Name = 'Delete List Access'); insert new List<Account>{a3, a4}; List<Id> ids1 = new List<Id>{a3.Id, a4.Id}; System.assertEquals(2, Database.delete(ids1, AccessLevel.SYSTEM_MODE).size()); System.assertEquals(2, Database.undelete(ids1, AccessLevel.SYSTEM_MODE).size()); Account a5 = new Account(Name = 'Delete List Both'); Account a6 = new Account(Name = 'Delete List Both'); insert new List<Account>{a5, a6}; List<Id> ids2 = new List<Id>{a5.Id, a6.Id}; System.assertEquals(2, Database.delete(ids2, false, AccessLevel.SYSTEM_MODE).size()); System.assertEquals(2, Database.undelete(ids2, false, AccessLevel.SYSTEM_MODE).size()); } }"}
+  ],
+  "command":{"kind":"test"},
+  "expected":{"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}}
+}

@@ -1,0 +1,21 @@
+{
+  "name":"data-database-delete-undelete-object-system-mode-runtime",
+  "salesforceEligible":true,
+  "evidence":[
+    {"surfaceId":"apex:System.Database.delete(List<Object>,AccessLevel)","symbol":"Database.delete","kind":"test","notes":"Deployable Apex test execution deletes a List<Object> with SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.delete(List<Object>,Boolean,AccessLevel)","symbol":"Database.delete","kind":"test","notes":"Deployable Apex test execution deletes a List<Object> with allOrNone and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.delete(Object,AccessLevel)","symbol":"Database.delete","kind":"test","notes":"Deployable Apex test execution deletes an Object with SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(List<Object>,AccessLevel)","symbol":"Database.undelete","kind":"test","notes":"Deployable Apex test execution restores a List<Object> with SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(List<Object>,Boolean,AccessLevel)","symbol":"Database.undelete","kind":"test","notes":"Deployable Apex test execution restores a List<Object> with allOrNone and SYSTEM_MODE."},
+    {"surfaceId":"apex:System.Database.undelete(Object,AccessLevel)","symbol":"Database.undelete","kind":"test","notes":"Deployable Apex test execution restores an Object with SYSTEM_MODE."}
+  ],
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
+  ],
+  "source":[
+    {"path":"force-app/main/default/classes/DataDatabaseDeleteUndeleteObjectSystemModeRuntimeTest.cls","content":"@isTest private class DataDatabaseDeleteUndeleteObjectSystemModeRuntimeTest { @isTest static void objectOverloadsRunInSystemMode() { Account a1 = new Account(Name = 'Delete List Object Access'); Account a2 = new Account(Name = 'Delete List Object Access'); insert new List<Account>{a1, a2}; List<SObject> list1 = new List<SObject>{a1, a2}; System.assertEquals(2, Database.delete(list1, AccessLevel.SYSTEM_MODE).size()); System.assertEquals(2, Database.undelete(list1, AccessLevel.SYSTEM_MODE).size()); Account a3 = new Account(Name = 'Delete List Object Both'); Account a4 = new Account(Name = 'Delete List Object Both'); insert new List<Account>{a3, a4}; List<SObject> list2 = new List<SObject>{a3, a4}; System.assertEquals(2, Database.delete(list2, false, AccessLevel.SYSTEM_MODE).size()); System.assertEquals(2, Database.undelete(list2, false, AccessLevel.SYSTEM_MODE).size()); Account a5 = new Account(Name = 'Delete Object Access'); insert a5; Object object1 = a5; System.assert(Database.delete(object1, AccessLevel.SYSTEM_MODE).isSuccess()); Account a6 = new Account(Name = 'Undelete Object Access'); insert a6; Object object2 = a6; delete a6; System.assert(Database.undelete(object2, AccessLevel.SYSTEM_MODE).isSuccess()); } }"}
+  ],
+  "command":{"kind":"test"},
+  "expected":{"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}}
+}

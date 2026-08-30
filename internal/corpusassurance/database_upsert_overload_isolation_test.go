@@ -27,8 +27,13 @@ func TestDatabaseUpsertOverloadsHaveSingletonSalesforceProofFixtures(t *testing.
 		"core-database-upsert-list-object-boolean-accesslevel-runtime.json": {"apex:System.Database.upsert(List<Object>,Boolean,AccessLevel)", "List<SObject> rows = new List<SObject>{"},
 	}
 	tracked := make(map[string]bool, len(want))
+	wantKind := make(map[string]string, len(want))
 	for _, expected := range want {
 		tracked[expected.surfaceID] = true
+		wantKind[expected.surfaceID] = "exec"
+		if strings.Contains(expected.surfaceID, "AccessLevel)") {
+			wantKind[expected.surfaceID] = "test"
+		}
 	}
 
 	for file, expected := range want {
@@ -40,17 +45,18 @@ func TestDatabaseUpsertOverloadsHaveSingletonSalesforceProofFixtures(t *testing.
 		if err := compat.Validate(fixture); err != nil {
 			t.Fatal(err)
 		}
-		if fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 || len(fixture.Source) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
+		kind := wantKind[expected.surfaceID]
+		if fixture.Command.Kind != kind || len(fixture.Source) != 1 || kind == "exec" && (len(fixture.Command.Args) != 1 || fixture.Source[0].Content != fixture.Command.Args[0]) || kind == "test" && (len(fixture.Command.Args) != 0 || !strings.HasSuffix(fixture.Source[0].Path, "Test.cls")) {
 			t.Fatalf("%s command/source = %#v/%#v", file, fixture.Command, fixture.Source)
 		}
-		if !strings.HasPrefix(fixture.Source[0].Content, expected.sourcePrefix) {
-			t.Fatalf("%s source = %q, want prefix %q", file, fixture.Source[0].Content, expected.sourcePrefix)
+		if !strings.Contains(fixture.Source[0].Content, expected.sourcePrefix) {
+			t.Fatalf("%s source = %q, want %q", file, fixture.Source[0].Content, expected.sourcePrefix)
 		}
-		if len(fixture.Evidence) != 1 || fixture.Evidence[0].SurfaceID != expected.surfaceID || fixture.Evidence[0].Kind != "exec" {
+		if len(fixture.Evidence) != 1 || fixture.Evidence[0].SurfaceID != expected.surfaceID || fixture.Evidence[0].Kind != kind {
 			t.Fatalf("%s evidence = %#v, want only %s", file, fixture.Evidence, expected.surfaceID)
 		}
-		if strings.Count(fixture.Command.Args[0], "Database.upsert(") != 1 {
-			t.Fatalf("%s masks multiple overloads: %q", file, fixture.Command.Args[0])
+		if strings.Count(fixture.Source[0].Content, "Database.upsert(") != 1 {
+			t.Fatalf("%s masks multiple overloads: %q", file, fixture.Source[0].Content)
 		}
 		var policy struct {
 			SalesforceEligible        *bool  `json:"salesforceEligible"`
@@ -94,7 +100,7 @@ func TestDatabaseUpsertOverloadsHaveSingletonSalesforceProofFixtures(t *testing.
 			continue
 		}
 		for _, row := range header.Evidence {
-			if row.Kind == "exec" && tracked[row.SurfaceID] {
+			if row.Kind == wantKind[row.SurfaceID] && tracked[row.SurfaceID] {
 				owners[row.SurfaceID]++
 			}
 		}

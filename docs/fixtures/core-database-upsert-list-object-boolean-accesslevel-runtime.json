@@ -5,7 +5,7 @@
     {
       "surfaceId": "apex:System.Database.upsert(List<Object>,Boolean,AccessLevel)",
       "symbol": "Database.upsert",
-      "kind": "exec"
+      "kind": "test"
     }
   ],
   "schema": [
@@ -20,20 +20,20 @@
   ],
   "source": [
     {
-      "path": "anonymous.apex",
-      "content": "List<SObject> rows = new List<SObject>{new Account(Name = 'Upsert List Boolean Access One'), new Account(Name = 'Upsert List Boolean Access Two')}; List<Database.UpsertResult> results = Database.upsert(rows, false, AccessLevel.SYSTEM_MODE); System.assertEquals(2, results.size()); System.assert(results[0].isSuccess()); System.assert(results[0].isCreated()); System.assertNotEquals(null, results[0].getId()); System.assert(results[1].isSuccess()); System.assert(results[1].isCreated()); System.assertNotEquals(null, results[1].getId());"
+      "path": "force-app/main/default/classes/CoreDatabaseUpsertListObjectBooleanAccesslevelRuntimeTest.cls",
+      "content": "@isTest private class CoreDatabaseUpsertListObjectBooleanAccesslevelRuntimeTest { @isTest static void upsertRunsInSystemMode() { List<SObject> rows = new List<SObject>{new Account(Name = 'Upsert List Boolean Access One'), new Account(Name = 'Upsert List Boolean Access Two')}; List<Database.UpsertResult> results = Database.upsert(rows, false, AccessLevel.SYSTEM_MODE); System.assertEquals(2, results.size()); System.assert(results[0].isSuccess()); System.assert(results[0].isCreated()); System.assertNotEquals(null, results[0].getId()); System.assert(results[1].isSuccess()); System.assert(results[1].isCreated()); System.assertNotEquals(null, results[1].getId()); } }"
     }
   ],
   "command": {
-    "kind": "exec",
-    "args": [
-      "List<SObject> rows = new List<SObject>{new Account(Name = 'Upsert List Boolean Access One'), new Account(Name = 'Upsert List Boolean Access Two')}; List<Database.UpsertResult> results = Database.upsert(rows, false, AccessLevel.SYSTEM_MODE); System.assertEquals(2, results.size()); System.assert(results[0].isSuccess()); System.assert(results[0].isCreated()); System.assertNotEquals(null, results[0].getId()); System.assert(results[1].isSuccess()); System.assert(results[1].isCreated()); System.assertNotEquals(null, results[1].getId());"
-    ]
+    "kind": "test"
   },
   "expected": {
     "result": {
-      "debug": null,
-      "ok": true
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
   }
 }
