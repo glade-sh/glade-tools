@@ -1,0 +1,30 @@
+{
+  "name": "core-pattern-matcher-replaceall-region-stdlib",
+  "salesforceEligible": true,
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Matcher.replaceAll",
+      "symbol": "Matcher.replaceAll",
+      "kind": "exec",
+      "notes": "Matcher.replaceAll resets the matcher before replacing across the full input sequence."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Pattern regionWords = Pattern.compile('[A-Z]+');\nMatcher regionReplace = regionWords.matcher('aa ABC bb DEF cc');\nregionReplace.region(3, 10);\nSystem.assertEquals('aa x bb x cc', regionReplace.replaceAll('x'));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Pattern regionWords = Pattern.compile('[A-Z]+');\nMatcher regionReplace = regionWords.matcher('aa ABC bb DEF cc');\nregionReplace.region(3, 10);\nSystem.assertEquals('aa x bb x cc', regionReplace.replaceAll('x'));\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
