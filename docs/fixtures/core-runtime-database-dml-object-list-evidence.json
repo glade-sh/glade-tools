@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-database-dml-object-list-evidence",
+  "evidenceOnly": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Database.insert(Object)",

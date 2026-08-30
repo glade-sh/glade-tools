@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -83,5 +84,30 @@ func TestSalesforceEligibilityShard2FixturesAreExplicit(t *testing.T) {
 				t.Fatalf("local-only exclusion = %q: %q", metadata.ExclusionClass, metadata.ExclusionReason)
 			}
 		})
+	}
+}
+
+func TestDatabaseAggregateEvidenceFixturesDoNotCompeteWithFocusedOwners(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	for _, filename := range []string{
+		"core-runtime-database-dml-id-accesslevel-evidence.json",
+		"core-runtime-database-dml-object-list-evidence.json",
+		"core-runtime-database-upsert-mode-evidence.json",
+		"current-base-database-dml-object-list-api67-20260803.json",
+	} {
+		data, err := os.ReadFile(filepath.Join(root, filename))
+		if err != nil {
+			t.Fatal(err)
+		}
+		var header struct {
+			EvidenceOnly       bool  `json:"evidenceOnly"`
+			SalesforceEligible *bool `json:"salesforceEligible"`
+		}
+		if err := json.Unmarshal(data, &header); err != nil {
+			t.Fatal(err)
+		}
+		if !header.EvidenceOnly || header.SalesforceEligible != nil {
+			t.Fatalf("%s metadata = %#v, want evidenceOnly=true without eligibility", filename, header)
+		}
 	}
 }
