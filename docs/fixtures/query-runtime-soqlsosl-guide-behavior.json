@@ -379,7 +379,7 @@
   "salesforceExclusionReason": "API 67 clean-org rejects multiple local or version-specific query and SOQL stub shapes in this composite fixture; retained as local query evidence and excluded from hosted parity.",
   "source": [
     {
-      "content": "public class QueryGuideSoqlStubProvider implements SoqlStubProvider { public List<SObject> handleSoqlQuery(Schema.SObjectType targetType, String query, Map<String,Object> binds) { Map<String,Object> row = new Map<String,Object>{'Id' => '001000000000999', 'Name' => 'Stubbed'}; return Test.createStubQueryRows(targetType, new List<Map<String,Object>>{row}); } public Object clone() { return this; } }",
+      "content": "public class QueryGuideSoqlStubProvider extends SoqlStubProvider { public override List<SObject> handleSoqlQuery(Schema.SObjectType targetType, String query, Map<String,Object> binds) { Map<String,Object> row = new Map<String,Object>{'Id' => '001000000000999', 'Name' => 'Stubbed'}; return Test.createStubQueryRows(targetType, new List<Map<String,Object>>{row}); } public Object clone() { return this; } }",
       "path": "force-app/main/classes/QueryGuideSoqlStubProvider.cls"
     },
     {

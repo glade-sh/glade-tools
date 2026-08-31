@@ -60,10 +60,10 @@
   "name": "test-helper-semantics",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "API 67 clean-org rejects the fixture's local test-helper and SOQL stub shapes; retained as local test-helper evidence and excluded from hosted parity.",
+  "salesforceExclusionReason": "This fixture combines deterministic local test helpers and SOQL stub behavior; hosted lifecycle parity is not established here.",
   "source": [
     {
-      "content": "public class SoqlFixtureProvider implements System.SoqlStubProvider { public List<SObject> handleSoqlQuery(Schema.SObjectType targetType, String query, Map<String,Object> binds) { Map<String,Object> row = new Map<String,Object>{'Id' => '001000000000123', 'Name' => query}; return Test.createStubQueryRows(targetType, new List<Map<String,Object>>{row}); } }",
+      "content": "public class SoqlFixtureProvider extends System.SoqlStubProvider { public override List<SObject> handleSoqlQuery(Schema.SObjectType targetType, String query, Map<String,Object> binds) { Map<String,Object> row = new Map<String,Object>{'Id' => '001000000000123', 'Name' => query}; return Test.createStubQueryRows(targetType, new List<Map<String,Object>>{row}); } }",
       "path": "force-app/main/classes/SoqlFixtureProvider.cls"
     },
     {
