@@ -54,7 +54,7 @@ func TestDatabaseAbsentObjectSignaturesAreLocalOnly(t *testing.T) {
 	}
 	eligible := map[string][]string{
 		"data-database-batch-boolean-runtime.json": {
-			"apex:System.Database.update(Object,Boolean)",
+			"apex:System.Database.update(SObject,Boolean)",
 		},
 		"data-database-delete-undelete-object-runtime.json": {
 			"apex:System.Database.delete(List<Object>)",
@@ -88,6 +88,11 @@ func TestDatabaseAbsentObjectSignaturesAreLocalOnly(t *testing.T) {
 			kind = "test"
 		}
 		assertDatabaseSuccessor47CommandSource(t, fixture, kind)
+		if filename == "data-database-batch-boolean-runtime.json" {
+			if !strings.Contains(fixture.Source[0].Content, "SObject updatedObject") || strings.Contains(fixture.Source[0].Content, "; Object updatedObject") {
+				t.Fatalf("%s does not use the Salesforce SObject overload", filename)
+			}
+		}
 		policy := loadDatabaseSuccessor47Policy(t, path)
 		if policy.SalesforceEligible == nil || !*policy.SalesforceEligible || policy.SalesforceExclusionClass != "" || policy.SalesforceExclusionReason != "" {
 			t.Fatalf("%s Salesforce policy = %#v", filename, policy)

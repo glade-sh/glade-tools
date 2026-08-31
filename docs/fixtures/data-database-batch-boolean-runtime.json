@@ -1,16 +1,16 @@
 {
   "name": "data-database-batch-boolean-runtime",
   "evidence": [
-    {"surfaceId":"apex:System.Database.update(Object,Boolean)","symbol":"Database.update","kind":"exec","notes":"An explicit Object record with allOrNone=false returns a successful SaveResult and persists the updated Account."}
+    {"surfaceId":"apex:System.Database.update(SObject,Boolean)","symbol":"Database.update","kind":"exec","notes":"An explicit SObject record with allOrNone=false returns a successful SaveResult and persists the updated Account."}
   ],
   "schema":[
     {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
     {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
   ],
   "source":[
-    {"path":"anonymous.apex","content":"Account inserted = new Account(Name = 'Boolean Insert'); insert inserted; Object updatedObject = new Account(Id = inserted.Id, Name = 'Boolean Updated'); Database.SaveResult updated = Database.update(updatedObject, false); System.assert(updated.isSuccess()); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :inserted.Id AND Name = 'Boolean Updated']);"}
+    {"path":"anonymous.apex","content":"Account inserted = new Account(Name = 'Boolean Insert'); insert inserted; SObject updatedObject = new Account(Id = inserted.Id, Name = 'Boolean Updated'); Database.SaveResult updated = Database.update(updatedObject, false); System.assert(updated.isSuccess()); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :inserted.Id AND Name = 'Boolean Updated']);"}
   ],
-  "command":{"kind":"exec","args":["Account inserted = new Account(Name = 'Boolean Insert'); insert inserted; Object updatedObject = new Account(Id = inserted.Id, Name = 'Boolean Updated'); Database.SaveResult updated = Database.update(updatedObject, false); System.assert(updated.isSuccess()); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :inserted.Id AND Name = 'Boolean Updated']);"]},
+  "command":{"kind":"exec","args":["Account inserted = new Account(Name = 'Boolean Insert'); insert inserted; SObject updatedObject = new Account(Id = inserted.Id, Name = 'Boolean Updated'); Database.SaveResult updated = Database.update(updatedObject, false); System.assert(updated.isSuccess()); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :inserted.Id AND Name = 'Boolean Updated']);"]},
   "expected":{"result":{"debug":null,"ok":true}},
   "salesforceEligible": true
 }
