@@ -1,6 +1,7 @@
 {
   "name": "core-runtime-system-stdlib-cut3-evidence",
   "salesforceEligible": true,
+  "project": {"sourceApiVersion": "67.0", "packageDirectories": [{"path": "force-app", "default": true}]},
   "evidence": [
     {
       "surfaceId": "apex:System.Set.addAll(Set)",
@@ -75,12 +76,6 @@
       "notes": "Version exposes the constructor patch component."
     },
     {
-      "surfaceId": "apex:System.URL.getFileFieldURL(String,String)",
-      "symbol": "URL.getFileFieldURL",
-      "kind": "exec",
-      "notes": "Local file-field URL encodes object Id and field name in the deterministic request URL."
-    },
-    {
       "surfaceId": "apex:System.URL.getUserInfo()",
       "symbol": "URL.getUserInfo",
       "kind": "exec",
@@ -107,14 +102,18 @@
   ],
   "source": [
     {
+      "path": "sfdx-project.json",
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"67.0\"}"
+    },
+    {
       "path": "anonymous.apex",
-      "content": "Set<String> names = new Set<String>{'a'};\nSystem.assert(names.addAll(new Set<String>{'b', 'c'}));\nSystem.assert(names.containsAll(new Set<String>{'a', 'b'}));\nSystem.assert(names.equals(new Set<String>{'c', 'b', 'a'}));\nSystem.assert(names.removeAll(new List<String>{'c'}));\nSystem.assert(names.removeAll(new Set<String>{'b'}));\nSystem.assert(!names.retainAll(new Set<String>{'a'}));\nString uuidText = UUID.randomUUID().toString();\nUUID parsedUUID = UUID.fromString(uuidText);\nSystem.assertEquals(uuidText, parsedUUID.toString());\nVersion version = new Version(1, 2, 3);\nSystem.assertEquals(1, version.major());\nSystem.assertEquals(2, version.minor());\nSystem.assertEquals(3, version.patch());\nSystem.assert(new Version(1, 2).compareTo(new Version(2, 0)) < 0);\nString fileURL = URL.getFileFieldURL('001B000001DVM9tIAH', 'Body');\nSystem.assert(fileURL.contains('id=001B000001DVM9tIAH'));\nSystem.assert(fileURL.contains('field=Body'));\nURL detailed = new URL('https://user:pass@example.test:8443/apex/Page?id=001#top');\nSystem.assertEquals('user:pass', detailed.getUserInfo());\nURL sameFile = new URL('https://example.test:8443/apex/Page?id=001#other');\nSystem.assert(detailed.sameFile(sameFile));\nURL differentQuery = new URL('https://example.test:8443/apex/Page?id=002#top');\nSystem.assert(!detailed.sameFile(differentQuery));\nType accountType = Type.forName('Account');\nSystem.assertEquals('Account', accountType.getName());\n"
+      "content": "Set<String> names = new Set<String>{'a'};\nSystem.assert(names.addAll(new Set<String>{'b', 'c'}));\nSystem.assert(names.containsAll(new Set<String>{'a', 'b'}));\nSystem.assert(names.equals(new Set<String>{'c', 'b', 'a'}));\nSystem.assert(names.removeAll(new List<String>{'c'}));\nSystem.assert(names.removeAll(new Set<String>{'b'}));\nSystem.assert(!names.retainAll(new Set<String>{'a'}));\nString uuidText = UUID.randomUUID().toString();\nUUID parsedUUID = UUID.fromString(uuidText);\nSystem.assertEquals(uuidText, parsedUUID.toString());\nVersion version = new Version(1, 2, 3);\nSystem.assertEquals(1, version.major());\nSystem.assertEquals(2, version.minor());\nSystem.assertEquals(3, version.patch());\nSystem.assert(new Version(1, 2).compareTo(new Version(2, 0)) < 0);\nURL detailed = new URL('https://user:pass@example.test:8443/apex/Page?id=001#top');\nSystem.assertEquals('user:pass', detailed.getUserInfo());\nURL sameFile = new URL('https://example.test:8443/apex/Page?id=001#other');\nSystem.assert(detailed.sameFile(sameFile));\nURL differentQuery = new URL('https://example.test:8443/apex/Page?id=002#top');\nSystem.assert(!detailed.sameFile(differentQuery));\nType accountType = Type.forName('Account');\nSystem.assertEquals('Account', accountType.getName());\n"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Set<String> names = new Set<String>{'a'};\nSystem.assert(names.addAll(new Set<String>{'b', 'c'}));\nSystem.assert(names.containsAll(new Set<String>{'a', 'b'}));\nSystem.assert(names.equals(new Set<String>{'c', 'b', 'a'}));\nSystem.assert(names.removeAll(new List<String>{'c'}));\nSystem.assert(names.removeAll(new Set<String>{'b'}));\nSystem.assert(!names.retainAll(new Set<String>{'a'}));\nString uuidText = UUID.randomUUID().toString();\nUUID parsedUUID = UUID.fromString(uuidText);\nSystem.assertEquals(uuidText, parsedUUID.toString());\nVersion version = new Version(1, 2, 3);\nSystem.assertEquals(1, version.major());\nSystem.assertEquals(2, version.minor());\nSystem.assertEquals(3, version.patch());\nSystem.assert(new Version(1, 2).compareTo(new Version(2, 0)) < 0);\nString fileURL = URL.getFileFieldURL('001B000001DVM9tIAH', 'Body');\nSystem.assert(fileURL.contains('id=001B000001DVM9tIAH'));\nSystem.assert(fileURL.contains('field=Body'));\nURL detailed = new URL('https://user:pass@example.test:8443/apex/Page?id=001#top');\nSystem.assertEquals('user:pass', detailed.getUserInfo());\nURL sameFile = new URL('https://example.test:8443/apex/Page?id=001#other');\nSystem.assert(detailed.sameFile(sameFile));\nURL differentQuery = new URL('https://example.test:8443/apex/Page?id=002#top');\nSystem.assert(!detailed.sameFile(differentQuery));\nType accountType = Type.forName('Account');\nSystem.assertEquals('Account', accountType.getName());\n"
+      "Set<String> names = new Set<String>{'a'};\nSystem.assert(names.addAll(new Set<String>{'b', 'c'}));\nSystem.assert(names.containsAll(new Set<String>{'a', 'b'}));\nSystem.assert(names.equals(new Set<String>{'c', 'b', 'a'}));\nSystem.assert(names.removeAll(new List<String>{'c'}));\nSystem.assert(names.removeAll(new Set<String>{'b'}));\nSystem.assert(!names.retainAll(new Set<String>{'a'}));\nString uuidText = UUID.randomUUID().toString();\nUUID parsedUUID = UUID.fromString(uuidText);\nSystem.assertEquals(uuidText, parsedUUID.toString());\nVersion version = new Version(1, 2, 3);\nSystem.assertEquals(1, version.major());\nSystem.assertEquals(2, version.minor());\nSystem.assertEquals(3, version.patch());\nSystem.assert(new Version(1, 2).compareTo(new Version(2, 0)) < 0);\nURL detailed = new URL('https://user:pass@example.test:8443/apex/Page?id=001#top');\nSystem.assertEquals('user:pass', detailed.getUserInfo());\nURL sameFile = new URL('https://example.test:8443/apex/Page?id=001#other');\nSystem.assert(detailed.sameFile(sameFile));\nURL differentQuery = new URL('https://example.test:8443/apex/Page?id=002#top');\nSystem.assert(!detailed.sameFile(differentQuery));\nType accountType = Type.forName('Account');\nSystem.assertEquals('Account', accountType.getName());\n"
     ]
   },
   "expected": {

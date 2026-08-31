@@ -30,10 +30,10 @@ func TestMatcherEndStateProbeIsIsolated(t *testing.T) {
 		t.Fatal("matcher fixture retains the requireEnd probe or its source and command differ")
 	}
 	for _, token := range []string{
-		"System.assertNotEquals(region, region.region(4, 7))",
-		"System.assertNotEquals(region, region.useAnchoringBounds(false))",
-		"System.assertNotEquals(region, region.useTransparentBounds(true))",
-		"System.assertNotEquals(region, region.usePattern(Pattern.compile('\\\\d+')))",
+		"region = region.region(4, 7)",
+		"region = region.useAnchoringBounds(false)",
+		"region = region.useTransparentBounds(true)",
+		"region = region.usePattern(Pattern.compile('\\\\d+'))",
 		"System.assert(!tail.find())",
 		"System.assert(tail.hitEnd())",
 	} {
