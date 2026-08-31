@@ -26,8 +26,20 @@ func TestMatcherEndStateProbeIsIsolated(t *testing.T) {
 			t.Fatalf("matcher fixture retains end-state row %s", row.SurfaceID)
 		}
 	}
-	if len(matcher.Source) != 1 || len(matcher.Command.Args) != 1 || matcher.Source[0].Content != matcher.Command.Args[0] || strings.Contains(matcher.Source[0].Content, "tail.hitEnd()") || strings.Contains(matcher.Source[0].Content, "tail.requireEnd()") {
-		t.Fatal("matcher fixture retains the end-state probe or its source and command differ")
+	if len(matcher.Source) != 1 || len(matcher.Command.Args) != 1 || matcher.Source[0].Content != matcher.Command.Args[0] || strings.Contains(matcher.Source[0].Content, "tail.requireEnd()") {
+		t.Fatal("matcher fixture retains the requireEnd probe or its source and command differ")
+	}
+	for _, token := range []string{
+		"System.assertNotEquals(region, region.region(4, 7))",
+		"System.assertNotEquals(region, region.useAnchoringBounds(false))",
+		"System.assertNotEquals(region, region.useTransparentBounds(true))",
+		"System.assertNotEquals(region, region.usePattern(Pattern.compile('\\\\d+')))",
+		"System.assert(!tail.find())",
+		"System.assert(tail.hitEnd())",
+	} {
+		if !strings.Contains(matcher.Source[0].Content, token) {
+			t.Fatalf("matcher source missing Salesforce expectation %q", token)
+		}
 	}
 	want := map[string]bool{
 		"apex:System.Matcher.hitEnd()":     true,
