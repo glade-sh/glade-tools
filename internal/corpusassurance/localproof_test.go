@@ -769,7 +769,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-database-insert-update-list-runtime.json", 8},
 		{"data-database-query-locator-access-runtime.json", 8},
 		{"data-database-query-locator-access-system-mode-runtime.json", 3},
-		{"data-database-empty-recycle-bin-runtime.json", 4},
+		{"data-database-empty-recycle-bin-runtime.json", 3},
 		{"core-xmlstreamreader-runtime-depth.json", 30},
 		{"core-http-request-runtime-depth.json", 21},
 		{"core-http-response-runtime-depth.json", 17},

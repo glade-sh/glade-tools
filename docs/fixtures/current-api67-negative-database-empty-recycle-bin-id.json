@@ -1,0 +1,44 @@
+{
+  "name": "current-api67-negative-database-empty-recycle-bin-id",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "laneId": "current-api67-negative-database-empty-recycle-bin-id",
+    "selectedRowCount": 1
+  },
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/EmptyRecycleBinProbe__c/EmptyRecycleBinProbe__c.object-meta.xml",
+      "content": "<CustomObject><label>Empty Recycle Bin Probe</label><pluralLabel>Empty Recycle Bin Probes</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/DatabaseEmptyRecycleBinIdNegative.cls",
+      "content": "public class DatabaseEmptyRecycleBinIdNegative { public void run(Id recordId) { Database.emptyRecycleBin(recordId); } }"
+    }
+  ],
+  "command": {
+    "kind": "check"
+  },
+  "expected": {
+    "result": {
+      "diagnostics": 1,
+      "files": 1,
+      "ok": false,
+      "schemaObjects": 1,
+      "types": 1
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Database.emptyRecycleBin(Id)",
+      "symbol": "Database.emptyRecycleBin(Id)",
+      "kind": "negative",
+      "notes": "Salesforce API 67 rejects the single-Id overload, and the local compiler preserves the explicit rejection."
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Compile-negative evidence only; no Salesforce runtime parity is claimed."
+}
