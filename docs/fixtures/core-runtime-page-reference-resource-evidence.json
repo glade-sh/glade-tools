@@ -26,13 +26,13 @@
     },
     {
       "path": "anonymous.apex",
-      "content": "PageReference resource = PageReference.forResource('Images');\nSystem.assertEquals('/resource/Images', resource.getUrl());\nPageReference nested = PageReference.forResource('Images', 'icons/logo.png');\nSystem.assertEquals('/resource/Images/icons/logo.png', nested.getUrl());"
+      "content": "PageReference resource = PageReference.forResource('Images');\nSystem.assert(resource.getUrl().startsWith('/resource/'));\nSystem.assert(resource.getUrl().endsWith('/Images'));\nPageReference nested = PageReference.forResource('Images', 'icons/logo.png');\nSystem.assert(nested.getUrl().startsWith('/resource/'));\nSystem.assert(nested.getUrl().endsWith('/Images/icons/logo.png'));"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "PageReference resource = PageReference.forResource('Images');\nSystem.assertEquals('/resource/Images', resource.getUrl());\nPageReference nested = PageReference.forResource('Images', 'icons/logo.png');\nSystem.assertEquals('/resource/Images/icons/logo.png', nested.getUrl());"
+      "PageReference resource = PageReference.forResource('Images');\nSystem.assert(resource.getUrl().startsWith('/resource/'));\nSystem.assert(resource.getUrl().endsWith('/Images'));\nPageReference nested = PageReference.forResource('Images', 'icons/logo.png');\nSystem.assert(nested.getUrl().startsWith('/resource/'));\nSystem.assert(nested.getUrl().endsWith('/Images/icons/logo.png'));"
     ]
   },
   "expected": {

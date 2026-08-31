@@ -39,8 +39,8 @@
       "content": "<StaticResource><contentType>text/csv</contentType><cacheControl>Public</cacheControl></StaticResource>"
     },
     {
-      "path": "force-app/main/classes/TestHelperLoadDataFixedSearchEvidenceTest.cls",
-      "content": "@isTest private class TestHelperLoadDataFixedSearchEvidenceTest { @isTest static void loadDataAndFixedSearchUsePublicOverloads() { List<SObject> loaded = Test.loadData(Account.SObjectType, 'Accounts'); System.assertEquals(2, loaded.size()); System.assertNotEquals(null, loaded[0].Id); System.assertEquals('Acme', loaded[0].get('Name')); Account searchAccount = new Account(Name = 'Search Lodge'); insert searchAccount; Test.setFixedSearchResults(new List<String>{String.valueOf(searchAccount.Id)}); List<Account> rows = (List<Account>)([FIND 'Search*' IN NAME FIELDS RETURNING Account(Id, Name)][0]); System.assertEquals(1, rows.size()); System.assertEquals(searchAccount.Id, rows[0].Id); System.assertEquals(3, [SELECT COUNT() FROM Account]); } }"
+      "path": "force-app/main/classes/TestLoadDataSearchEvidenceTest.cls",
+      "content": "@isTest private class TestLoadDataSearchEvidenceTest { @isTest static void loadDataAndFixedSearchUsePublicOverloads() { List<SObject> loaded = Test.loadData(Account.SObjectType, 'Accounts'); System.assertEquals(2, loaded.size()); System.assertNotEquals(null, loaded[0].Id); System.assertEquals('Acme', loaded[0].get('Name')); Account searchAccount = new Account(Name = 'Search Lodge'); insert searchAccount; Test.setFixedSearchResults(new List<String>{String.valueOf(searchAccount.Id)}); List<Account> rows = (List<Account>)([FIND 'Search*' IN NAME FIELDS RETURNING Account(Id, Name)][0]); System.assertEquals(1, rows.size()); System.assertEquals(searchAccount.Id, rows[0].Id); System.assertEquals(3, [SELECT COUNT() FROM Account]); } }"
     }
   ],
   "command": {

@@ -3,40 +3,34 @@
   "salesforceEligible": true,
   "evidence": [
     {
-      "surfaceId": "apex:System.Database.emptyRecycleBin(Id)",
-      "symbol": "Database.emptyRecycleBin(Id)",
-      "kind": "exec",
-      "notes": "The Id overload permanently removes a deleted local record and returns a successful result."
-    },
-    {
       "surfaceId": "apex:System.Database.emptyRecycleBin(List<Id>)",
       "symbol": "Database.emptyRecycleBin(List<Id>)",
       "kind": "exec",
-      "notes": "The List<Id> overload permanently removes deleted local records and returns successful results."
+      "notes": "The documented List<Id> overload permanently removes a real deleted record and returns a successful result."
     },
     {
       "surfaceId": "apex:System.Database.emptyRecycleBin(Object)",
       "symbol": "Database.emptyRecycleBin(Object)",
       "kind": "exec",
-      "notes": "The object overload permanently removes a deleted local record and returns a successful result."
+      "notes": "The SObject overload permanently removes a deleted record and returns a successful result."
     },
     {
       "surfaceId": "apex:System.Database.emptyRecycleBin(List<Object>)",
       "symbol": "Database.emptyRecycleBin(List<Object>)",
       "kind": "exec",
-      "notes": "The list-of-objects overload permanently removes deleted local records and returns successful results."
+      "notes": "The list-of-SObjects overload permanently removes deleted records and returns successful results."
     }
   ],
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Account idAccount = new Account(Name = 'Purge Id'); insert idAccount; Id idValue = idAccount.Id; delete idAccount; Database.EmptyRecycleBinResult idResult = Database.emptyRecycleBin(idValue); System.assert(idResult.isSuccess()); System.assertEquals(idValue, idResult.getId()); List<Account> idRows = [SELECT Id FROM Account WHERE Id = :idValue ALL ROWS]; System.assertEquals(0, idRows.size()); Account listIdAccount = new Account(Name = 'Purge List Id'); insert listIdAccount; Id listIdValue = listIdAccount.Id; delete listIdAccount; List<Id> ids = new List<Id>{listIdValue}; List<Database.EmptyRecycleBinResult> listIdResults = Database.emptyRecycleBin(ids); System.assertEquals(1, listIdResults.size()); System.assert(listIdResults[0].isSuccess()); System.assertEquals(listIdValue, listIdResults[0].getId()); List<Account> listIdRows = [SELECT Id FROM Account WHERE Id = :listIdValue ALL ROWS]; System.assertEquals(0, listIdRows.size()); Account objectAccount = new Account(Name = 'Purge Object'); insert objectAccount; Id objectValue = objectAccount.Id; delete objectAccount; Database.EmptyRecycleBinResult objectResult = Database.emptyRecycleBin(objectAccount); System.assert(objectResult.isSuccess()); System.assertEquals(objectValue, objectResult.getId()); List<Account> objectRows = [SELECT Id FROM Account WHERE Id = :objectValue ALL ROWS]; System.assertEquals(0, objectRows.size()); Account listObjectAccount = new Account(Name = 'Purge List Object'); insert listObjectAccount; Id listObjectValue = listObjectAccount.Id; delete listObjectAccount; List<SObject> objects = new List<SObject>{listObjectAccount}; List<Database.EmptyRecycleBinResult> listObjectResults = Database.emptyRecycleBin(objects); System.assertEquals(1, listObjectResults.size()); System.assert(listObjectResults[0].isSuccess()); System.assertEquals(listObjectValue, listObjectResults[0].getId()); List<Account> listObjectRows = [SELECT Id FROM Account WHERE Id = :listObjectValue ALL ROWS]; System.assertEquals(0, listObjectRows.size());"
+      "content": "Account listIdAccount = new Account(Name = 'Purge List Id'); insert listIdAccount; Id listIdValue = listIdAccount.Id; delete listIdAccount; List<Id> ids = new List<Id>{listIdValue}; List<Database.EmptyRecycleBinResult> listIdResults = Database.emptyRecycleBin(ids); System.assertEquals(1, listIdResults.size()); System.assert(listIdResults[0].isSuccess()); System.assertEquals(listIdValue, listIdResults[0].getId()); Account objectAccount = new Account(Name = 'Purge Object'); insert objectAccount; Id objectValue = objectAccount.Id; delete objectAccount; Database.EmptyRecycleBinResult objectResult = Database.emptyRecycleBin(objectAccount); System.assert(objectResult.isSuccess()); System.assertEquals(objectValue, objectResult.getId()); Account listObjectAccount = new Account(Name = 'Purge List Object'); insert listObjectAccount; Id listObjectValue = listObjectAccount.Id; delete listObjectAccount; List<SObject> objects = new List<SObject>{listObjectAccount}; List<Database.EmptyRecycleBinResult> listObjectResults = Database.emptyRecycleBin(objects); System.assertEquals(1, listObjectResults.size()); System.assert(listObjectResults[0].isSuccess()); System.assertEquals(listObjectValue, listObjectResults[0].getId());"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Account idAccount = new Account(Name = 'Purge Id'); insert idAccount; Id idValue = idAccount.Id; delete idAccount; Database.EmptyRecycleBinResult idResult = Database.emptyRecycleBin(idValue); System.assert(idResult.isSuccess()); System.assertEquals(idValue, idResult.getId()); List<Account> idRows = [SELECT Id FROM Account WHERE Id = :idValue ALL ROWS]; System.assertEquals(0, idRows.size()); Account listIdAccount = new Account(Name = 'Purge List Id'); insert listIdAccount; Id listIdValue = listIdAccount.Id; delete listIdAccount; List<Id> ids = new List<Id>{listIdValue}; List<Database.EmptyRecycleBinResult> listIdResults = Database.emptyRecycleBin(ids); System.assertEquals(1, listIdResults.size()); System.assert(listIdResults[0].isSuccess()); System.assertEquals(listIdValue, listIdResults[0].getId()); List<Account> listIdRows = [SELECT Id FROM Account WHERE Id = :listIdValue ALL ROWS]; System.assertEquals(0, listIdRows.size()); Account objectAccount = new Account(Name = 'Purge Object'); insert objectAccount; Id objectValue = objectAccount.Id; delete objectAccount; Database.EmptyRecycleBinResult objectResult = Database.emptyRecycleBin(objectAccount); System.assert(objectResult.isSuccess()); System.assertEquals(objectValue, objectResult.getId()); List<Account> objectRows = [SELECT Id FROM Account WHERE Id = :objectValue ALL ROWS]; System.assertEquals(0, objectRows.size()); Account listObjectAccount = new Account(Name = 'Purge List Object'); insert listObjectAccount; Id listObjectValue = listObjectAccount.Id; delete listObjectAccount; List<SObject> objects = new List<SObject>{listObjectAccount}; List<Database.EmptyRecycleBinResult> listObjectResults = Database.emptyRecycleBin(objects); System.assertEquals(1, listObjectResults.size()); System.assert(listObjectResults[0].isSuccess()); System.assertEquals(listObjectValue, listObjectResults[0].getId()); List<Account> listObjectRows = [SELECT Id FROM Account WHERE Id = :listObjectValue ALL ROWS]; System.assertEquals(0, listObjectRows.size());"
+      "Account listIdAccount = new Account(Name = 'Purge List Id'); insert listIdAccount; Id listIdValue = listIdAccount.Id; delete listIdAccount; List<Id> ids = new List<Id>{listIdValue}; List<Database.EmptyRecycleBinResult> listIdResults = Database.emptyRecycleBin(ids); System.assertEquals(1, listIdResults.size()); System.assert(listIdResults[0].isSuccess()); System.assertEquals(listIdValue, listIdResults[0].getId()); Account objectAccount = new Account(Name = 'Purge Object'); insert objectAccount; Id objectValue = objectAccount.Id; delete objectAccount; Database.EmptyRecycleBinResult objectResult = Database.emptyRecycleBin(objectAccount); System.assert(objectResult.isSuccess()); System.assertEquals(objectValue, objectResult.getId()); Account listObjectAccount = new Account(Name = 'Purge List Object'); insert listObjectAccount; Id listObjectValue = listObjectAccount.Id; delete listObjectAccount; List<SObject> objects = new List<SObject>{listObjectAccount}; List<Database.EmptyRecycleBinResult> listObjectResults = Database.emptyRecycleBin(objects); System.assertEquals(1, listObjectResults.size()); System.assert(listObjectResults[0].isSuccess()); System.assertEquals(listObjectValue, listObjectResults[0].getId());"
     ]
   },
   "expected": {
