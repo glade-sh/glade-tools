@@ -9,7 +9,7 @@
   "source": [
     {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
     {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"},
-    {"path":"force-app/main/default/objects/Account/fields/Other_Key__c.field-meta.xml","content":"<CustomField><fullName>Other_Key__c</fullName><label>Other Key</label><type>Text</type><externalId>true</externalId><unique>true</unique></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/Other_Key__c.field-meta.xml","content":"<CustomField><fullName>Other_Key__c</fullName><label>Other Key</label><type>Text</type><length>80</length><externalId>true</externalId><unique>true</unique></CustomField>"},
     {"path":"force-app/main/default/classes/DataDatabaseDmlSystemModeRuntimeTest.cls","content":"@isTest private class DataDatabaseDmlSystemModeRuntimeTest { @isTest static void dmlRunsInSystemMode() { Database.SaveResult inserted = Database.insert(new Account(Name = 'System Acme'), AccessLevel.SYSTEM_MODE); System.assert(inserted.isSuccess()); Account upserted = new Account(Name = 'Upserted', Other_Key__c = 'ext-access'); Database.UpsertResult upsertResult = Database.upsert(upserted, Account.Other_Key__c, false, AccessLevel.SYSTEM_MODE); System.assert(upsertResult.isSuccess()); Database.DeleteResult deleted = Database.delete(new Account(Id = inserted.getId()), false, AccessLevel.SYSTEM_MODE); System.assert(deleted.isSuccess()); } }"}
   ],
   "command":{"kind":"test"},

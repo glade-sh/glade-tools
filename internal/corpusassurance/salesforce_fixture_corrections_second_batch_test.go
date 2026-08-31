@@ -28,7 +28,7 @@ func TestSalesforceFixtureCorrectionsSecondBatch(t *testing.T) {
 	dml := loadSecondBatchFixture(t, root, "data-database-dml-system-mode-runtime.json")
 	assertDeployableClassNames(t, dml)
 	externalID := sourceContent(dml, "force-app/main/default/objects/Account/fields/Other_Key__c.field-meta.xml")
-	if !strings.Contains(externalID, "<externalId>true</externalId>") || !strings.Contains(externalID, "<unique>true</unique>") {
+	if !strings.Contains(externalID, "<externalId>true</externalId>") || !strings.Contains(externalID, "<unique>true</unique>") || !strings.Contains(externalID, "<length>80</length>") {
 		t.Fatal("SYSTEM_MODE DML fixture does not deploy its external-ID field")
 	}
 
@@ -42,6 +42,8 @@ func TestSalesforceFixtureCorrectionsSecondBatch(t *testing.T) {
 	}
 	if source := anonymousSource(t, eligible); strings.Contains(source, "emptyRecycleBin(idValue)") || !strings.Contains(source, "emptyRecycleBin(ids)") {
 		t.Fatalf("eligible emptyRecycleBin source does not isolate supported overloads: %s", source)
+	} else if strings.Contains(source, "Rows =") {
+		t.Fatalf("eligible emptyRecycleBin source asserts engine-specific same-transaction query visibility: %s", source)
 	}
 	negative := loadSecondBatchFixture(t, root, "current-api67-negative-database-empty-recycle-bin-id.json")
 	if negative.APIVersion != "67.0" || negative.Command.Kind != "check" || len(negative.Schema) != 1 || len(negative.Expected.Result) == 0 || !reflect.DeepEqual(secondBatchSurfaceIDs(negative), []string{"apex:System.Database.emptyRecycleBin(Id)"}) {
