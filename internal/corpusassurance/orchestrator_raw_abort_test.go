@@ -2,6 +2,7 @@ package corpusassurance
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -96,10 +97,31 @@ func TestOrchestratorRawPrecreationAbortObserveAndAccept(t *testing.T) {
 	if err := os.WriteFile(remoteScope, scopeBytes, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	planSHA, leaseSHA, err := canonicalPlanLeaseHashes(plan, lease)
+	planBytes, err := json.MarshalIndent(plan, "", "  ")
 	if err != nil {
 		t.Fatal(err)
 	}
+	leaseBytes, err := json.MarshalIndent(lease, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	planBytes, leaseBytes = append(planBytes, '\n'), append(leaseBytes, '\n')
+	for path, data := range map[string][]byte{
+		filepath.Join(root, "plan.json"):  planBytes,
+		filepath.Join(root, "lease.json"): leaseBytes,
+	} {
+		if err := os.WriteFile(path, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if info.Mode().Perm() != 0o600 {
+			t.Fatalf("pretty JSON mode = %v", info.Mode().Perm())
+		}
+	}
+	planSHA, leaseSHA := replayBytesSHA256(planBytes), replayBytesSHA256(leaseBytes)
 	failed := OrchestratorSSHDispatchReceipt{SchemaVersion: 1, CampaignID: lease.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "failed", FailureCode: orchestratorSSHDispatchFailed, CommandSHA256: strings.Repeat("1", 64), StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64), ExitCode: 1, ActionRequired: true, ActionCode: orchestratorSSHActionCode, SpecSHA256: plan.SpecSHA256, PlanSHA256: planSHA, LeaseSHA256: leaseSHA}
 	failedSHA, err := canonicalJSONHash(failed)
 	if err != nil {
@@ -114,7 +136,7 @@ func TestOrchestratorRawPrecreationAbortObserveAndAccept(t *testing.T) {
 			return value
 		}(),
 	} {
-		if validFailedRawAbortSSHReceipt(unsafe, plan, lease) {
+		if validFailedRawAbortSSHReceipt(unsafe, plan, lease, planSHA, leaseSHA) {
 			t.Fatalf("unsafe transport receipt accepted: %#v", unsafe)
 		}
 	}
