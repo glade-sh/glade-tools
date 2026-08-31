@@ -289,6 +289,11 @@ func TestStringCompletionFixtureUsesInstanceLevenshteinDistance(t *testing.T) {
 	if !strings.Contains(source, "kitten.getLevenshteinDistance('sitting')") || strings.Contains(source, "String.getLevenshteinDistance('kitten', 'sitting')") {
 		t.Fatal("Levenshtein fixture must use the documented instance method")
 	}
+	if !strings.Contains(source, "String upperOmega = String.fromCharArray(new List<Integer>{937});") ||
+		!strings.Contains(source, "String lowerOmega = String.fromCharArray(new List<Integer>{969});") ||
+		strings.ContainsAny(source, "Ωω") {
+		t.Fatal("string completion fixture must construct Omega characters without raw non-ASCII Apex literals")
+	}
 }
 
 func TestStringMoreFixtureUsesCaseDistinctLocals(t *testing.T) {
