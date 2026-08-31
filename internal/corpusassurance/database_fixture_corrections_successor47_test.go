@@ -191,6 +191,21 @@ func loadDatabaseSuccessor47Policy(t *testing.T, path string) databaseSuccessor4
 	return policy
 }
 
+func TestDatabaseUpdateObjectBooleanHasAPI67NegativeAuthority(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "current-api67-negative-database-update-object-boolean.json")
+	fixture := loadDatabaseSuccessor47Fixture(t, path)
+	if fixture.APIVersion != "67.0" || fixture.Command.Kind != "check" || len(fixture.Expected.Result) == 0 {
+		t.Fatalf("negative fixture contract = API %q, command %#v, expected %#v", fixture.APIVersion, fixture.Command, fixture.Expected)
+	}
+	if got := databaseSuccessor47SurfaceIDs(fixture); !reflect.DeepEqual(got, []string{"apex:System.Database.update(Object,Boolean)"}) {
+		t.Fatalf("negative fixture evidence = %v", got)
+	}
+	policy := loadDatabaseSuccessor47Policy(t, path)
+	if policy.SalesforceEligible == nil || *policy.SalesforceEligible || policy.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(policy.SalesforceExclusionReason, "no Salesforce runtime parity") {
+		t.Fatalf("negative fixture Salesforce policy = %#v", policy)
+	}
+}
+
 func loadDatabaseSuccessor47Fixture(t *testing.T, path string) compat.Fixture {
 	t.Helper()
 	fixture, err := compat.LoadFile(path)
