@@ -54,7 +54,7 @@ func TestDatabaseAbsentObjectSignaturesAreLocalOnly(t *testing.T) {
 	}
 	eligible := map[string][]string{
 		"data-database-batch-boolean-runtime.json": {
-			"apex:System.Database.update(Object,Boolean)",
+			"apex:System.Database.update(SObject,Boolean)",
 		},
 		"data-database-delete-undelete-object-runtime.json": {
 			"apex:System.Database.delete(List<Object>)",
@@ -88,6 +88,11 @@ func TestDatabaseAbsentObjectSignaturesAreLocalOnly(t *testing.T) {
 			kind = "test"
 		}
 		assertDatabaseSuccessor47CommandSource(t, fixture, kind)
+		if filename == "data-database-batch-boolean-runtime.json" {
+			if !strings.Contains(fixture.Source[0].Content, "SObject updatedObject") || strings.Contains(fixture.Source[0].Content, "; Object updatedObject") {
+				t.Fatalf("%s does not use the Salesforce SObject overload", filename)
+			}
+		}
 		policy := loadDatabaseSuccessor47Policy(t, path)
 		if policy.SalesforceEligible == nil || !*policy.SalesforceEligible || policy.SalesforceExclusionClass != "" || policy.SalesforceExclusionReason != "" {
 			t.Fatalf("%s Salesforce policy = %#v", filename, policy)
@@ -184,6 +189,21 @@ func loadDatabaseSuccessor47Policy(t *testing.T, path string) databaseSuccessor4
 		policy.SelectedRowCount = profile.SelectedRowCount
 	}
 	return policy
+}
+
+func TestDatabaseUpdateObjectBooleanHasAPI67NegativeAuthority(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "current-api67-negative-database-update-object-boolean.json")
+	fixture := loadDatabaseSuccessor47Fixture(t, path)
+	if fixture.APIVersion != "67.0" || fixture.Command.Kind != "check" || len(fixture.Expected.Result) == 0 {
+		t.Fatalf("negative fixture contract = API %q, command %#v, expected %#v", fixture.APIVersion, fixture.Command, fixture.Expected)
+	}
+	if got := databaseSuccessor47SurfaceIDs(fixture); !reflect.DeepEqual(got, []string{"apex:System.Database.update(Object,Boolean)"}) {
+		t.Fatalf("negative fixture evidence = %v", got)
+	}
+	policy := loadDatabaseSuccessor47Policy(t, path)
+	if policy.SalesforceEligible == nil || *policy.SalesforceEligible || policy.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(policy.SalesforceExclusionReason, "no Salesforce runtime parity") {
+		t.Fatalf("negative fixture Salesforce policy = %#v", policy)
+	}
 }
 
 func loadDatabaseSuccessor47Fixture(t *testing.T, path string) compat.Fixture {
