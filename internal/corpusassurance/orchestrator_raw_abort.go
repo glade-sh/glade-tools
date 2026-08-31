@@ -86,12 +86,10 @@ func ObserveOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAb
 	if err := validateOrchestratorWorkerPlanLeaseAtScope(request.Plan, request.Lease, scopePath); err != nil {
 		return OrchestratorRawPrecreationAbortObservation{}, err
 	}
-	planSHA, leaseSHA, err := canonicalPlanLeaseHashes(request.Plan, request.Lease)
-	if err != nil || planSHA != request.PlanSHA256 || leaseSHA != request.LeaseSHA256 {
-		return OrchestratorRawPrecreationAbortObservation{}, fmt.Errorf("raw abort plan and lease bytes do not match typed bindings")
-	}
+	// The failed SSH receipt binds the exact input bytes. Re-marshalling here
+	// would reject equivalent JSON encodings used by recovered leases.
 	sshSHA, err := canonicalJSONHash(request.FailedSSHReceipt)
-	if err != nil || sshSHA != request.FailedSSHReceiptSHA256 || !validFailedRawAbortSSHReceipt(request.FailedSSHReceipt, request.Plan, request.Lease) {
+	if err != nil || sshSHA != request.FailedSSHReceiptSHA256 || !validFailedRawAbortSSHReceipt(request.FailedSSHReceipt, request.Plan, request.Lease, request.PlanSHA256, request.LeaseSHA256) {
 		return OrchestratorRawPrecreationAbortObservation{}, fmt.Errorf("failed SSH receipt is not a valid sanitized abort receipt")
 	}
 	if err := ensureRawAbortRoot(request.RawRoot, request.Plan, request.Lease, scopePath); err != nil {
@@ -171,12 +169,11 @@ func AcceptOrchestratorRawPrecreationAbort(request OrchestratorRawPrecreationAbo
 	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil {
 		return OrchestratorRawPrecreationAbortReceipt{}, err
 	}
-	planSHA, leaseSHA, err := canonicalPlanLeaseHashes(request.Plan, request.Lease)
-	if err != nil || planSHA != request.PlanSHA256 || leaseSHA != request.LeaseSHA256 {
+	if !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) {
 		return OrchestratorRawPrecreationAbortReceipt{}, fmt.Errorf("raw abort plan and lease hashes do not match")
 	}
 	sshSHA, err := canonicalJSONHash(request.FailedSSHReceipt)
-	if err != nil || sshSHA != request.FailedSSHReceiptSHA256 || !validFailedRawAbortSSHReceipt(request.FailedSSHReceipt, request.Plan, request.Lease) {
+	if err != nil || sshSHA != request.FailedSSHReceiptSHA256 || !validFailedRawAbortSSHReceipt(request.FailedSSHReceipt, request.Plan, request.Lease, request.PlanSHA256, request.LeaseSHA256) {
 		return OrchestratorRawPrecreationAbortReceipt{}, fmt.Errorf("raw abort failed SSH receipt does not match")
 	}
 	observation, observationBytes, err := readExactJSONBytes[OrchestratorRawPrecreationAbortObservation](request.ObservationPath)
@@ -323,8 +320,8 @@ func orchestratorBatchBindingValueAtScope(plan OrchestratorCampaignPlan, lease O
 	return OrchestratorBatchBinding{}, fmt.Errorf("lease does not match immutable campaign job")
 }
 
-func validFailedRawAbortSSHReceipt(receipt OrchestratorSSHDispatchReceipt, plan OrchestratorCampaignPlan, lease OrchestratorLease) bool {
-	return receipt.SchemaVersion == 1 && !receipt.Passed && receipt.Status == "failed" && receipt.FailureCode == orchestratorSSHDispatchFailed && !receipt.TimedOut && receipt.ExitCode == 1 && receipt.ActionRequired && receipt.ActionCode == orchestratorSSHActionCode && receipt.OrchestratorBindingSHA256 == "" && receipt.SalesforceShardSHA256 == "" && receipt.OrgCleanupSHA256 == "" && receipt.CampaignID == lease.CampaignID && receipt.JobID == lease.JobID && receipt.ShardIndex == lease.ShardIndex && receipt.Generation == lease.Generation && receipt.SpecSHA256 == plan.SpecSHA256 && receipt.PlanSHA256 == planSHA256For(plan) && receipt.LeaseSHA256 == leaseSHA256For(lease) && sha256Pattern.MatchString(receipt.CommandSHA256) && sha256Pattern.MatchString(receipt.StdoutSHA256) && sha256Pattern.MatchString(receipt.StderrSHA256)
+func validFailedRawAbortSSHReceipt(receipt OrchestratorSSHDispatchReceipt, plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA, leaseSHA string) bool {
+	return receipt.SchemaVersion == 1 && !receipt.Passed && receipt.Status == "failed" && receipt.FailureCode == orchestratorSSHDispatchFailed && !receipt.TimedOut && receipt.ExitCode == 1 && receipt.ActionRequired && receipt.ActionCode == orchestratorSSHActionCode && receipt.OrchestratorBindingSHA256 == "" && receipt.SalesforceShardSHA256 == "" && receipt.OrgCleanupSHA256 == "" && receipt.CampaignID == lease.CampaignID && receipt.JobID == lease.JobID && receipt.ShardIndex == lease.ShardIndex && receipt.Generation == lease.Generation && receipt.SpecSHA256 == plan.SpecSHA256 && receipt.PlanSHA256 == planSHA && receipt.LeaseSHA256 == leaseSHA && sha256Pattern.MatchString(receipt.CommandSHA256) && sha256Pattern.MatchString(receipt.StdoutSHA256) && sha256Pattern.MatchString(receipt.StderrSHA256)
 }
 
 func validateRawAbortObservation(observation OrchestratorRawPrecreationAbortObservation, plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA, leaseSHA, sshSHA, allocation string) error {
