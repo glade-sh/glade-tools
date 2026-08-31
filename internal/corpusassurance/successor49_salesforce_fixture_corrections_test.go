@@ -154,3 +154,137 @@ func TestSuccessor49SalesforceFixtureCorrections(t *testing.T) {
 		t.Fatalf("URL fixture policy = %#v", policy)
 	}
 }
+
+func TestUnicodeUnescapeFixturesPreserveEscapedText(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	want := map[string]string{
+		"core-runtime-string-encoding-rewrite-depth": "System.assertEquals(escapedOmega,escapedOmega.unescapeUnicode());",
+		"core-string-completion-stdlib":               "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());",
+		"core-string-final-families-stdlib":           "System.assertEquals(unicodeEscaped, unicodeEscaped.unescapeUnicode());",
+	}
+	found := map[string]bool{}
+	paths, err := filepath.Glob(filepath.Join(root, "*.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range paths {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var fixture struct {
+			Name     string `json:"name"`
+			Evidence []struct {
+				SurfaceID string `json:"surfaceId"`
+				Symbol    string `json:"symbol"`
+				Notes     string `json:"notes"`
+			} `json:"evidence"`
+			Source []struct {
+				Content string `json:"content"`
+			} `json:"source"`
+		}
+		if err := json.Unmarshal(data, &fixture); err != nil {
+			t.Fatalf("load %s: %v", path, err)
+		}
+		for _, source := range fixture.Source {
+			if !strings.Contains(source.Content, ".unescapeUnicode()") {
+				continue
+			}
+			expectation, ok := want[fixture.Name]
+			if !ok {
+				t.Fatalf("unaccounted executable unescapeUnicode fixture %s", fixture.Name)
+			}
+			found[fixture.Name] = true
+			if !strings.Contains(source.Content, expectation) {
+				t.Errorf("%s does not preserve escaped Unicode text", fixture.Name)
+			}
+			if strings.Contains(source.Content, ".escapeUnicode().unescapeUnicode()") {
+				t.Errorf("%s still assumes Unicode escape round-trip decoding", fixture.Name)
+			}
+		}
+		for _, evidence := range fixture.Evidence {
+			if evidence.Symbol != "String.unescapeUnicode" && !strings.Contains(evidence.SurfaceID, "String.unescapeUnicode") {
+				continue
+			}
+			notes := strings.ToLower(evidence.Notes)
+			if strings.Contains(notes, "decode") || strings.Contains(notes, "round-trip") {
+				t.Errorf("%s retains stale unescapeUnicode notes %q", fixture.Name, evidence.Notes)
+			}
+		}
+	}
+	if !reflect.DeepEqual(found, map[string]bool{
+		"core-runtime-string-encoding-rewrite-depth": true,
+		"core-string-completion-stdlib":               true,
+		"core-string-final-families-stdlib":           true,
+	}) {
+		t.Fatalf("executable unescapeUnicode fixtures = %v", found)
+	}
+}
+
+func TestStringFinalFamiliesExcludesAPIVersionRemovedXmlMethods(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-string-final-families-stdlib.json")
+	fixture, err := compat.LoadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := compat.Validate(fixture); err != nil {
+		t.Fatal(err)
+	}
+	for _, evidence := range fixture.Evidence {
+		if evidence.Symbol == "String.escapeXml10" || evidence.Symbol == "String.escapeXml11" {
+			t.Errorf("fixture retains removed API 67 member %s", evidence.Symbol)
+		}
+	}
+	if len(fixture.Source) != 1 || len(fixture.Command.Args) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
+		t.Fatal("source and command differ")
+	}
+	for _, call := range []string{".escapeXml10()", ".escapeXml11()"} {
+		if strings.Contains(fixture.Source[0].Content, call) {
+			t.Errorf("fixture retains removed API 67 call %s", call)
+		}
+	}
+	required := map[string]string{
+		"apex:System.String.escapeXml10": localRuntimeRequired,
+		"apex:System.String.escapeXml11": localRuntimeRequired,
+	}
+	root, err := filepath.Abs(filepath.Dir(path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifest, missing, err := analyzeLocalProofFixtures(root, required)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(manifest.Fixtures) != 0 || !reflect.DeepEqual(missing, []string{"apex:System.String.escapeXml10", "apex:System.String.escapeXml11"}) {
+		t.Fatalf("legacy XML runtime plan = %#v, missing = %v", manifest.Fixtures, missing)
+	}
+}
+
+func TestStringEntityNegativeAuthorityRuns(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "current-base-string-entity-negative-api67.json")
+	fixture, err := compat.LoadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{
+		`unsupported call "value.escapeXml10"`,
+		`unsupported call "value.escapeXml11"`,
+		`unsupported call "value.unescapeXml10"`,
+		`unsupported call "value.unescapeXml11"`,
+	}
+	if fixture.Expected.Error == nil || fixture.Expected.Error.Type != "UnsupportedFeature" || fixture.Expected.Error.Message != want[0] || len(fixture.Command.Args) != len(want) {
+		t.Fatalf("negative authority contract = %#v", fixture.Expected.Error)
+	}
+	for i, source := range fixture.Command.Args {
+		probe := fixture
+		probe.Command.Args = []string{source}
+		probe.Expected.Error = &compat.ExpectedError{Type: "UnsupportedFeature", Message: want[i]}
+		result, err := compat.Run(probe)
+		if err != nil {
+			t.Fatalf("probe %d: %v", i, err)
+		}
+		if !result.OK || result.Error == nil || result.Error.Type != "UnsupportedFeature" || result.Error.Message != want[i] {
+			t.Fatalf("probe %d result = %#v", i, result)
+		}
+	}
+}

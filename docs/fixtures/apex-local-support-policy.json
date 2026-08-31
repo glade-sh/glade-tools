@@ -2165,6 +2165,30 @@
       "reason": "Salesforce API 67 rejects this Blob signature and the local runtime preserves the explicit rejection"
     },
     {
+      "surfaceId": "apex:System.String.escapeXml10",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this removed String member; the local runtime preserves a typed rejection"
+    },
+    {
+      "surfaceId": "apex:System.String.escapeXml11",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this removed String member; the local runtime preserves a typed rejection"
+    },
+    {
+      "surfaceId": "apex:System.String.unescapeXml10",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this removed String member; the local runtime preserves a typed rejection"
+    },
+    {
+      "surfaceId": "apex:System.String.unescapeXml11",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this removed String member; the local runtime preserves a typed rejection"
+    },
+    {
       "surfaceId": "apex:System.TouchHandledException.TouchHandledException()",
       "disposition": "compile-shape-required",
       "override": true,

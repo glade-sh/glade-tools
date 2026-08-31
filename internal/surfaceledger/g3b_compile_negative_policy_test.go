@@ -10,6 +10,10 @@ var g3bCompileNegativeSurfaceIDs = []string{
 	"apex:Schema.DescribeSObjectResult.getFieldSets()",
 	"apex:Schema.DescribeSObjectResult.getFields()",
 	"apex:System.Crypto.areEqualConstantTime(Blob,Blob)",
+	"apex:System.String.escapeXml10",
+	"apex:System.String.escapeXml11",
+	"apex:System.String.unescapeXml10",
+	"apex:System.String.unescapeXml11",
 	"apex:System.TouchHandledException.TouchHandledException()",
 	"apex:System.TouchHandledException.TouchHandledException(String,Exception)",
 	"apex:workflow.Action.invoke(workflow.Context)",
@@ -54,6 +58,7 @@ func TestG3BCompileNegativeFixtureRowsCloseInSupportProfile(t *testing.T) {
 	evidence, err := BuildEvidenceSnapshot([]string{
 		filepath.Join(fixtureRoot, "apex-tail-supported-shape-evidence.json"),
 		filepath.Join(fixtureRoot, "current-base-apexpages-set-data-category-zero-negative-api67.json"),
+		filepath.Join(fixtureRoot, "current-base-string-entity-negative-api67.json"),
 		filepath.Join(fixtureRoot, "data-platform-schema-describe-edges.json"),
 		filepath.Join(fixtureRoot, "data-platform-schema-describe-fieldsets.json"),
 		filepath.Join(fixtureRoot, "core-blob-crypto-unsupported-constant-time.json"),

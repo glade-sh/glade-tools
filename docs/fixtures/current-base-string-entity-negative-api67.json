@@ -34,13 +34,13 @@
   ],
   "expected": {
     "error": {
-      "message": "GLADESEMA028",
-      "type": "Error"
+      "message": "unsupported call \"value.escapeXml10\"",
+      "type": "UnsupportedFeature"
     }
   },
   "mode": "local-runtime",
   "name": "current-base-string-entity-negative-api67",
-  "notes": "The local compiler must reject the same legacy XML entity method family that Salesforce rejects.",
+  "notes": "The local runtime preserves a typed rejection for the same legacy XML entity method family that Salesforce rejects.",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
   "salesforceExclusionReason": "Salesforce API 67 rejects these legacy XML entity String members; this fixture preserves the local negative contract without claiming hosted execution.",
