@@ -43,14 +43,14 @@
   "name": "test-helper-soql-stub-provider-callback",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "API 67 clean-org rejects the fixture's SoqlStubProvider and queryWithBinds shape; retained as local test-helper evidence and excluded from hosted parity.",
+  "salesforceExclusionReason": "This fixture proves Glade's local SoqlStubProvider callback and queryWithBinds integration; hosted lifecycle parity is not established here.",
   "source": [
     {
-      "content": "public class SoqlStubProviderCallbackProvider implements SoqlStubProvider { public List<SObject> handleSoqlQuery(Schema.SObjectType targetType, String query, Map<String,Object> binds) { Boolean queryOk = query != null && query.length() > 0; String name = String.valueOf(targetType) + ':' + String.valueOf(queryOk) + ':' + String.valueOf(binds.get('name')); return Test.createStubQueryRows(targetType, new List<Map<String,Object>>{new Map<String,Object>{'Name' => name}}); } public Object clone() { return this; } }",
+      "content": "public class SoqlStubProviderCallbackProvider extends SoqlStubProvider { public override List<SObject> handleSoqlQuery(Schema.SObjectType targetType, String query, Map<String,Object> binds) { Boolean queryOk = query != null && query.length() > 0; String name = String.valueOf(targetType) + ':' + String.valueOf(queryOk) + ':' + String.valueOf(binds.get('name')); return Test.createStubQueryRows(targetType, new List<Map<String,Object>>{new Map<String,Object>{'Name' => name}}); } public Object clone() { return this; } }",
       "path": "force-app/main/default/classes/SoqlStubProviderCallbackProvider.cls"
     },
     {
-      "content": "@isTest private class SoqlStubProviderCallbackTest { @isTest static void callbackReceivesQueryShape() { SoqlStubProviderCallbackProvider provider = new SoqlStubProviderCallbackProvider(); System.assertEquals(provider, provider.clone()); Test.createSoqlStub(Account.SObjectType, provider); String name = 'Acme'; List<Account> rows = Database.queryWithBinds('SELECT Id, Name FROM Account WHERE Name = :name', new Map<String,Object>{'name' => name}); System.assertEquals(1, rows.size()); System.assert(rows[0].Name.startsWith('Account:')); System.assert(rows[0].Name.contains(':true:')); System.assert(rows[0].Name.endsWith(':Acme')); } }",
+      "content": "@isTest private class SoqlStubProviderCallbackTest { @isTest static void callbackReceivesQueryShape() { SoqlStubProviderCallbackProvider provider = new SoqlStubProviderCallbackProvider(); System.assertEquals(provider, provider.clone()); Test.createSoqlStub(Account.SObjectType, provider); String name = 'Acme'; List<Account> rows = Database.queryWithBinds('SELECT Id, Name FROM Account WHERE Name = :name', new Map<String,Object>{'name' => name}, AccessLevel.SYSTEM_MODE); System.assertEquals(1, rows.size()); System.assert(rows[0].Name.startsWith('Account:')); System.assert(rows[0].Name.contains(':true:')); System.assert(rows[0].Name.endsWith(':Acme')); } }",
       "path": "force-app/main/default/classes/SoqlStubProviderCallbackTest.cls"
     }
   ]
