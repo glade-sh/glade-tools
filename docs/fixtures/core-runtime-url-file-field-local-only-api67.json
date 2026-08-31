@@ -1,0 +1,31 @@
+{
+  "name": "core-runtime-url-file-field-local-only-api67",
+  "apiVersion": "67.0",
+  "evidenceOnly": false,
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade's local URL.getFileFieldURL behavior. Salesforce API 67 compiles the call shape, but hosted probes rejected Attachment.Body, ContentVersion.VersionData, and fixture-owned Document.Body, so the required hosted field and runtime context remain unestablished and this fixture grants zero Salesforce parity.",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.URL.getFileFieldURL(String,String)",
+      "symbol": "URL.getFileFieldURL",
+      "kind": "exec",
+      "notes": "Executable local-runtime witness for deterministic file-field URL construction; hosted runtime parity remains unestablished."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "String fileURL = URL.getFileFieldURL('001B000001DVM9tIAH', 'Body');\nSystem.assert(fileURL.contains('id=001B000001DVM9t'));\nSystem.assert(fileURL.contains('field=Body'));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "String fileURL = URL.getFileFieldURL('001B000001DVM9tIAH', 'Body');\nSystem.assert(fileURL.contains('id=001B000001DVM9t'));\nSystem.assert(fileURL.contains('field=Body'));\n"
+    ]
+  },
+  "expected": {
+    "stdout": ""
+  }
+}
