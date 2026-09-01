@@ -81,6 +81,35 @@ func TestOracleReleaseValidationAcceptsSealedForeignRuntimeEnvironment(t *testin
 	}
 }
 
+func TestOracleReleaseValidationRejectsMisboundComposedApexGate(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	validation, _, err := readExactJSONBytes[ReleaseValidation](inputs.releasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		name        string
+		command     int
+		environment []string
+	}{
+		{name: "wrong candidate", command: 3, environment: append(fixedReleaseEnvironment(), "GLADE_RELEASE_BIN="+filepath.Join(t.TempDir(), "glade"), "GLADE_SOURCE_ROOT="+validation.GladeRoot)},
+		{name: "bindings on smoke check", command: 2, environment: append(fixedReleaseEnvironment(), "GLADE_RELEASE_BIN="+validation.CandidatePath, "GLADE_SOURCE_ROOT="+validation.GladeRoot)},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			tampered := validation
+			tampered.Commands = append([]ReleaseCommandResult(nil), validation.Commands...)
+			result := tampered.Commands[test.command]
+			result.Environment = test.environment
+			result.CommandSpecSHA256 = releaseCommandSpecSHA256(releaseCommand{Path: result.Command[0], Args: result.Command[1:], WorkingDirectory: result.WorkingDirectory, Environment: result.Environment, Timeout: time.Duration(result.TimeoutMS) * time.Millisecond})
+			tampered.Commands[test.command] = result
+			if err := validateOracleReleaseValidation(tampered, inputs.plan); err == nil {
+				t.Fatal("accepted a misbound composed Apex release gate")
+			}
+		})
+	}
+}
+
 func TestBuildOracleBundleRejectsEmptyAndFabricatedReleaseValidation(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	root := filepath.Dir(inputs.releasePath)

@@ -148,6 +148,8 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 		environment := fixedReleaseEnvironment()
 		if index == 1 {
 			environment = append(environment, "GLADE_LWC_COMPILE=1", "GLADE_ROOT="+gladeRoot)
+		} else if index == 3 {
+			environment = append(environment, "GLADE_RELEASE_BIN="+candidatePath, "GLADE_SOURCE_ROOT="+gladeRoot)
 		}
 		if !command.Passed || command.WorkingDirectory == "" || !equalStrings(command.Environment, environment) || command.TimeoutMS != timeout.Milliseconds() {
 			t.Fatalf("release command = %#v", command)
@@ -290,7 +292,7 @@ func TestRunReleaseValidationCommandReportsSafeFailures(t *testing.T) {
 	}
 }
 
-func TestFixedReleaseCommandsUseCurrentToolsGate(t *testing.T) {
+func TestFixedReleaseCommandsBindCurrentToolsGateToCandidate(t *testing.T) {
 	root := t.TempDir()
 	for _, path := range []string{filepath.Join(root, "glade", "scripts", "smoke.sh"), filepath.Join(root, "tools", "scripts", "release-check.sh")} {
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
@@ -300,12 +302,19 @@ func TestFixedReleaseCommandsUseCurrentToolsGate(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "tools"))
+	gladeRoot, candidatePath := filepath.Join(root, "glade"), filepath.Join(root, "glade-bin")
+	commands, err := fixedReleaseCommands(gladeRoot, candidatePath, filepath.Join(root, "tools"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(commands) != 4 || commands[3].Path != filepath.Join(root, "tools", "scripts", "release-check.sh") {
 		t.Fatalf("tools release commands = %#v", commands)
+	}
+	environment := strings.Join(commands[3].Environment, "\n")
+	for _, want := range []string{"GLADE_RELEASE_BIN=" + candidatePath, "GLADE_SOURCE_ROOT=" + gladeRoot} {
+		if strings.Count(environment, want) != 1 {
+			t.Fatalf("tools release environment does not bind %q exactly once: %#v", want, commands[3].Environment)
+		}
 	}
 }
 
@@ -319,7 +328,7 @@ func TestFixedReleaseCommandsGiveApexTestAuthoritativeBudget(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "tools"))
+	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "glade-bin"), filepath.Join(root, "tools"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -398,7 +407,10 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 	t.Setenv("PATH", "/attacker/bin")
 	t.Setenv("GLADE_ROOT", "/attacker/glade")
 	t.Setenv("GLADE_LWC_COMPILE", "attacker")
-	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "tools"))
+	t.Setenv("GLADE_RELEASE_BIN", "/attacker/glade-bin")
+	t.Setenv("GLADE_SOURCE_ROOT", "/attacker/glade-source")
+	gladeRoot, candidatePath := filepath.Join(root, "glade"), filepath.Join(root, "glade-bin")
+	commands, err := fixedReleaseCommands(gladeRoot, candidatePath, filepath.Join(root, "tools"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -415,6 +427,10 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 		if index == 1 {
 			if strings.Count(environment, "GLADE_ROOT=") != 1 || !strings.Contains(environment, "GLADE_ROOT="+filepath.Join(root, "glade")) || strings.Count(environment, "GLADE_LWC_COMPILE=") != 1 || !strings.Contains(environment, "GLADE_LWC_COMPILE=1") {
 				t.Fatalf("product release environment is not bound to the candidate: %#v", command.Environment)
+			}
+		} else if index == 3 {
+			if strings.Count(environment, "GLADE_RELEASE_BIN=") != 1 || !strings.Contains(environment, "GLADE_RELEASE_BIN="+candidatePath) || strings.Count(environment, "GLADE_SOURCE_ROOT=") != 1 || !strings.Contains(environment, "GLADE_SOURCE_ROOT="+gladeRoot) {
+				t.Fatalf("tools release environment is not bound to the candidate: %#v", command.Environment)
 			}
 		} else if strings.Contains(environment, "GLADE_ROOT=") || strings.Contains(environment, "GLADE_LWC_COMPILE=") {
 			t.Fatalf("non-product release environment contains product-only values: %#v", command.Environment)
@@ -494,7 +510,7 @@ func TestFixedReleaseEnvironmentPrefersSupportedMacTools(t *testing.T) {
 
 func TestFixedReleaseCommandsRejectAmbientGOROOT(t *testing.T) {
 	t.Setenv("GOROOT", t.TempDir())
-	if _, err := fixedReleaseCommands(t.TempDir(), t.TempDir()); err == nil {
+	if _, err := fixedReleaseCommands(t.TempDir(), t.TempDir(), t.TempDir()); err == nil {
 		t.Fatal("accepted ambient GOROOT")
 	}
 }
