@@ -198,6 +198,9 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 }
 
 func deriveCandidateBuildBinding(sourceRoot string) (candidateBuildBinding, error) {
+	if err := validateCandidateLocalReplacements(sourceRoot); err != nil {
+		return candidateBuildBinding{}, fmt.Errorf("candidate local replacements are invalid: %w", err)
+	}
 	return deriveBuildBinding(sourceRoot, "./cmd/glade")
 }
 

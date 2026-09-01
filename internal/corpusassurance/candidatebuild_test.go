@@ -246,3 +246,62 @@ func TestCreateCandidateBuildReceiptRejectsUnboundInputs(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateCandidateBuildReceiptRejectsInvalidCandidateReplacementsBeforeBuild(t *testing.T) {
+	for _, replacement := range []string{"absolute", "external-relative", "symlink-escape", "unexpected", "version-specific"} {
+		t.Run(replacement, func(t *testing.T) {
+			root := t.TempDir()
+			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")
+			rewriteCandidateReplacementForTest(t, candidateRoot, replacement)
+			request := CandidateBuildRequest{
+				CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, CandidateRef: "HEAD", ToolsRef: "HEAD",
+				CandidateOutput: filepath.Join(root, "bin", "glade"), ToolsOutput: filepath.Join(root, "bin", "glade-tools"),
+				ReceiptOutput: filepath.Join(root, "bindings", "CANDIDATE_BUILD_RECEIPT.json"), ReviewOutput: filepath.Join(root, "bindings", "REVIEW.md"), ToolsFreezeOutput: filepath.Join(root, "bindings", "TOOLS_COMMIT"),
+			}
+			if _, err := CreateCandidateBuildReceipt(request); err == nil {
+				t.Fatalf("CreateCandidateBuildReceipt accepted %s candidate replacement", replacement)
+			}
+			for _, path := range []string{request.CandidateOutput, request.ToolsOutput} {
+				if _, err := os.Lstat(path); !os.IsNotExist(err) {
+					t.Fatalf("invalid candidate replacement created build output %s: %v", path, err)
+				}
+			}
+			progress, err := os.ReadFile(candidateBuildProgressPath(request.ReceiptOutput))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if strings.Contains(string(progress), "event=candidate-build-start commit=") {
+				t.Fatalf("invalid candidate replacement reached build execution: %q", progress)
+			}
+		})
+	}
+}
+
+func TestCreateCandidateBuildReceiptRejectsCanonicalOutputCollisions(t *testing.T) {
+	for _, collision := range []string{"symlink-alias", "progress-log"} {
+		t.Run(collision, func(t *testing.T) {
+			root := t.TempDir()
+			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")
+			request := CandidateBuildRequest{
+				CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, CandidateRef: "HEAD", ToolsRef: "HEAD",
+				CandidateOutput: filepath.Join(root, "bin", "glade"), ToolsOutput: filepath.Join(root, "bin", "glade-tools"),
+				ReceiptOutput: filepath.Join(root, "bindings", "CANDIDATE_BUILD_RECEIPT.json"), ReviewOutput: filepath.Join(root, "bindings", "REVIEW.md"), ToolsFreezeOutput: filepath.Join(root, "bindings", "TOOLS_COMMIT"),
+			}
+			if collision == "symlink-alias" {
+				alias := filepath.Join(t.TempDir(), "output-alias")
+				if err := os.Symlink(root, alias); err != nil {
+					t.Fatal(err)
+				}
+				request.ToolsOutput = filepath.Join(alias, "bin", "glade")
+			} else {
+				request.CandidateOutput = candidateBuildProgressPath(request.ReceiptOutput)
+			}
+			if _, err := CreateCandidateBuildReceipt(request); err == nil {
+				t.Fatalf("CreateCandidateBuildReceipt accepted %s output collision", collision)
+			}
+			if _, err := os.Lstat(candidateBuildProgressPath(request.ReceiptOutput)); !os.IsNotExist(err) {
+				t.Fatalf("output collision created progress log: %v", err)
+			}
+		})
+	}
+}

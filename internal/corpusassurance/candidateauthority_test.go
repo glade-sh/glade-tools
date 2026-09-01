@@ -292,6 +292,37 @@ func TestCandidateAuthorityRejectsAbsoluteCandidateReplacementPaths(t *testing.T
 	}
 }
 
+func TestCreateCandidateAuthorityRejectsInvalidCandidateReplacementsBeforeRebuild(t *testing.T) {
+	for _, replacement := range []string{"absolute", "external-relative", "symlink-escape"} {
+		t.Run(replacement, func(t *testing.T) {
+			root := t.TempDir()
+			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
+			rewriteCandidateReplacementForTest(t, candidateRoot, replacement)
+			candidatePath := filepath.Join(root, "glade")
+			writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
+			toolsPath, err := os.Executable()
+			if err != nil {
+				t.Fatal(err)
+			}
+			candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+			tools := candidateToolForTest(t, toolsRoot, toolsPath)
+			receiptPath := filepath.Join(root, "candidate-receipt.json")
+			writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
+			reviewPath := filepath.Join(root, "REVIEW.md")
+			if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			outputPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
+			if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: outputPath}); err == nil {
+				t.Fatalf("CreateCandidateAuthority accepted %s candidate replacement", replacement)
+			}
+			if _, err := os.Lstat(outputPath); !os.IsNotExist(err) {
+				t.Fatalf("invalid candidate replacement created authority: %v", err)
+			}
+		})
+	}
+}
+
 func TestToolsBuildValidatorBindsExactSource(t *testing.T) {
 	root := newInventoryRepository(t, map[string]string{
 		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",
@@ -625,4 +656,42 @@ func newInventoryRepositoryAt(t *testing.T, repository string, files map[string]
 	gitRun(t, repository, "add", ".")
 	gitRun(t, repository, "commit", "--quiet", "-m", "fixture")
 	return repository
+}
+
+func rewriteCandidateReplacementForTest(t *testing.T, candidateRoot, replacement string) {
+	t.Helper()
+	target := "./third_party/glade-apex-parser"
+	old := "github.com/glade-sh/apex-parser"
+	switch replacement {
+	case "absolute":
+		target = filepath.Join(candidateRoot, "third_party", "glade-apex-parser")
+	case "external-relative", "symlink-escape":
+		external := filepath.Join(filepath.Dir(candidateRoot), "external-parser")
+		if err := os.MkdirAll(external, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(external, "go.mod"), []byte("module github.com/glade-sh/apex-parser\n\ngo 1.23.0\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if replacement == "external-relative" {
+			target = "../external-parser"
+		} else {
+			target = "./parser-link"
+			if err := os.Symlink(external, filepath.Join(candidateRoot, "parser-link")); err != nil {
+				t.Fatal(err)
+			}
+		}
+	case "unexpected":
+		old = "example.invalid/parser"
+	case "version-specific":
+		old += " v0.1.0"
+	default:
+		t.Fatalf("unknown candidate replacement %q", replacement)
+	}
+	goMod := "module github.com/glade-sh/glade\n\ngo 1.23.0\n\nrequire github.com/glade-sh/apex-parser v0.1.0\n\nreplace " + old + " => " + target + "\n"
+	if err := os.WriteFile(filepath.Join(candidateRoot, "go.mod"), []byte(goMod), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	gitRun(t, candidateRoot, "add", ".")
+	gitRun(t, candidateRoot, "commit", "--quiet", "-m", "replace parser")
 }

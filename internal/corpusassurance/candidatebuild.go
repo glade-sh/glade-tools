@@ -38,26 +38,28 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (receipt candida
 			returnErr = err
 		}
 	}()
-	paths := []string{request.CandidateRoot, request.ToolsRoot, request.CandidateOutput, request.ToolsOutput, request.ReceiptOutput, request.ReviewOutput, request.ToolsFreezeOutput}
+	outputs := []string{request.CandidateOutput, request.ToolsOutput, request.ReceiptOutput, request.ReviewOutput, request.ToolsFreezeOutput, candidateBuildProgressPath(request.ReceiptOutput)}
+	paths := append([]string{request.CandidateRoot, request.ToolsRoot}, outputs...)
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return candidateBuildReceipt{}, fmt.Errorf("absolute candidate build paths are required")
 		}
 	}
-	for _, path := range paths[2:] {
+	seen := make(map[string]bool, len(outputs))
+	for _, path := range outputs {
+		canonical, err := canonicalCampaignPath(path)
+		if err != nil {
+			return candidateBuildReceipt{}, err
+		}
+		if seen[canonical] {
+			return candidateBuildReceipt{}, fmt.Errorf("candidate build outputs must be distinct")
+		}
+		seen[canonical] = true
 		if _, err := os.Lstat(path); err == nil {
 			return candidateBuildReceipt{}, fmt.Errorf("candidate build output already exists: %s", path)
 		} else if !os.IsNotExist(err) {
 			return candidateBuildReceipt{}, err
 		}
-	}
-	seen := make(map[string]bool, len(paths)-2)
-	for _, path := range paths[2:] {
-		path = filepath.Clean(path)
-		if seen[path] {
-			return candidateBuildReceipt{}, fmt.Errorf("candidate build outputs must be distinct")
-		}
-		seen[path] = true
 	}
 	if request.CandidateRef == "" || request.ToolsRef == "" {
 		return candidateBuildReceipt{}, fmt.Errorf("candidate and tools refs are required")

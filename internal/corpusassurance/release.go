@@ -354,6 +354,38 @@ func validateToolsLocalReplacements(toolsRoot, gladeRoot string) error {
 	return nil
 }
 
+func validateCandidateLocalReplacements(candidateRoot string) error {
+	candidateRoot, err := filepath.EvalSymlinks(candidateRoot)
+	if err != nil {
+		return err
+	}
+	if err := validateToolsLocalReplacements(candidateRoot, candidateRoot); err != nil {
+		return err
+	}
+	data, err := os.ReadFile(filepath.Join(candidateRoot, "go.mod"))
+	if err != nil {
+		return err
+	}
+	parsed, err := modfile.Parse("go.mod", data, nil)
+	if err != nil {
+		return err
+	}
+	expected := filepath.Join(candidateRoot, "third_party", "glade-apex-parser")
+	seenParser := false
+	for _, replacement := range parsed.Replace {
+		if seenParser || replacement.Old.Path != "github.com/glade-sh/apex-parser" || replacement.Old.Version != "" || replacement.New.Version != "" {
+			return fmt.Errorf("candidate replacement is unexpected")
+		}
+		target, err := filepath.EvalSymlinks(filepath.Join(candidateRoot, replacement.New.Path))
+		expectedTarget, expectedErr := filepath.EvalSymlinks(expected)
+		if err != nil || expectedErr != nil || target != expectedTarget || !pathWithin(candidateRoot, target) {
+			return fmt.Errorf("candidate parser replacement is invalid")
+		}
+		seenParser = true
+	}
+	return nil
+}
+
 func pathWithin(root, path string) bool {
 	relative, err := filepath.Rel(root, path)
 	return err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator))
