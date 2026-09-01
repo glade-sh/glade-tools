@@ -452,15 +452,46 @@ func (err *candidateBuildCommandError) Error() string {
 func (err *candidateBuildCommandError) Unwrap() error { return err.Err }
 
 func validateCandidateParser(candidate attemptCandidate, workingDirectory string) error {
-	result, stdout, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"version", "--json"}, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 30 * time.Second})
+	root, err := os.MkdirTemp("", "glade-candidate-authority-")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(root)
+	home, data := filepath.Join(root, "home"), filepath.Join(root, "data")
+	for _, path := range []string{home, data} {
+		if err := os.Mkdir(path, 0o700); err != nil {
+			return err
+		}
+	}
+	environment := []string{"HOME=" + home, "XDG_DATA_HOME=" + data, "GLADE_HOME=" + workingDirectory, "PATH=/usr/bin:/bin", "TMPDIR=" + root}
+	result, stdout, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"version", "--json"}, Env: environment, Timeout: 30 * time.Second})
 	if !validCandidateCommandResult(result, candidate) || !validCandidateVersionJSON(stdout, candidate.Commit) {
 		return fmt.Errorf("candidate embedded version is invalid")
 	}
-	result, stdout, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 30 * time.Second})
-	if !validCandidateCommandResult(result, candidate) || !validCandidateDoctorJSON(stdout) {
-		return fmt.Errorf("candidate Apex parser is unavailable")
+	result, stdout, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: environment, Timeout: 30 * time.Second})
+	var doctor struct {
+		Command     string `json:"command"`
+		ExitCode    int    `json:"exitCode"`
+		ParserOK    bool   `json:"parserOK"`
+		ToolchainOK bool   `json:"toolchainOK"`
 	}
-	fixture, err := os.CreateTemp("", "glade-candidate-authority-*.cls")
+	if validateJSONWithoutDuplicateKeys(stdout) != nil || json.Unmarshal(stdout, &doctor) != nil || doctor.Command != "doctor" {
+		return fmt.Errorf("candidate doctor output is invalid")
+	}
+	if !doctor.ParserOK {
+		return fmt.Errorf("candidate doctor reported parser unavailable")
+	}
+	if !doctor.ToolchainOK {
+		return fmt.Errorf("candidate doctor reported toolchain unavailable")
+	}
+	if !validCandidateCommandResult(result, candidate) || doctor.ExitCode != 0 {
+		exitCode := result.ExitCode
+		if doctor.ExitCode != 0 {
+			exitCode = doctor.ExitCode
+		}
+		return fmt.Errorf("candidate doctor command failed with exit code %d", exitCode)
+	}
+	fixture, err := os.CreateTemp(root, "probe-*.cls")
 	if err != nil {
 		return err
 	}
@@ -473,7 +504,7 @@ func validateCandidateParser(candidate attemptCandidate, workingDirectory string
 	if err := fixture.Close(); err != nil {
 		return err
 	}
-	result, stdout, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"parse", fixturePath, "--json", "--no-progress"}, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 30 * time.Second})
+	result, stdout, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"parse", fixturePath, "--json", "--no-progress"}, Env: environment, Timeout: 30 * time.Second})
 	if !validCandidateCommandResult(result, candidate) || !validCandidateParseJSON(stdout) {
 		return fmt.Errorf("candidate Apex parse check failed")
 	}
@@ -495,15 +526,6 @@ func validCandidateVersionJSON(data []byte, commit string) bool {
 		} `json:"data"`
 	}
 	return validateJSONWithoutDuplicateKeys(data) == nil && json.Unmarshal(data, &version) == nil && version.SchemaVersion == "1.0" && version.Command == "version" && version.Status == "passed" && version.ExitCode == 0 && version.Data.Version == commit
-}
-
-func validCandidateDoctorJSON(data []byte) bool {
-	var doctor struct {
-		Command  string `json:"command"`
-		ExitCode int    `json:"exitCode"`
-		ParserOK bool   `json:"parserOK"`
-	}
-	return validateJSONWithoutDuplicateKeys(data) == nil && json.Unmarshal(data, &doctor) == nil && doctor.Command == "doctor" && doctor.ExitCode == 0 && doctor.ParserOK
 }
 
 func validCandidateParseJSON(data []byte) bool {

@@ -2,6 +2,7 @@ package corpusassurance
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -556,6 +557,42 @@ func TestCreateCandidateAuthorityRejectsWrongEmbeddedVersion(t *testing.T) {
 	}
 }
 
+func TestValidateCandidateParserUsesOwnedHermeticHome(t *testing.T) {
+	root := t.TempDir()
+	commit := strings.Repeat("a", 40)
+	candidatePath := filepath.Join(root, "glade")
+	writeCandidateAuthorityDoctorExecutable(t, candidatePath, commit, true, true, 0, 0, root)
+	candidate := attemptCandidate{Commit: commit, Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+	if err := validateCandidateParser(candidate, root); err != nil {
+		t.Fatalf("validateCandidateParser: %v", err)
+	}
+}
+
+func TestValidateCandidateParserReturnsPreciseDoctorErrors(t *testing.T) {
+	for _, test := range []struct {
+		name        string
+		parserOK    bool
+		toolchainOK bool
+		processExit int
+		want        string
+	}{
+		{name: "command exit", parserOK: true, toolchainOK: true, processExit: 1, want: "candidate doctor command failed with exit code 1"},
+		{name: "parser false", toolchainOK: true, want: "candidate doctor reported parser unavailable"},
+		{name: "toolchain false", parserOK: true, want: "candidate doctor reported toolchain unavailable"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			commit := strings.Repeat("a", 40)
+			candidatePath := filepath.Join(root, "glade")
+			writeCandidateAuthorityDoctorExecutable(t, candidatePath, commit, test.parserOK, test.toolchainOK, 0, test.processExit, "")
+			candidate := attemptCandidate{Commit: commit, Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+			if err := validateCandidateParser(candidate, root); err == nil || err.Error() != test.want {
+				t.Fatalf("validateCandidateParser error = %v, want %q", err, test.want)
+			}
+		})
+	}
+}
+
 func writeCandidateAuthorityJSON(t *testing.T, path string, value any) {
 	t.Helper()
 	data, err := json.Marshal(value)
@@ -585,10 +622,29 @@ func writeCandidateAuthorityExecutableWithVersion(t *testing.T, path string, par
 	}
 	script := "#!/bin/sh\ncase \"$1\" in\n" +
 		"version) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + embeddedVersion + "\",\"go\":\"go-test\"}}' ;;\n" +
-		"doctor) printf '%s\\n' '{\"command\":\"doctor\",\"exitCode\":0,\"parserOK\":" + value + "}' ;;\n" +
+		"doctor) printf '%s\\n' '{\"command\":\"doctor\",\"exitCode\":0,\"parserOK\":" + value + ",\"toolchainOK\":true}' ;;\n" +
 		"parse) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"parse\",\"status\":\"passed\",\"exitCode\":0,\"data\":{}}' ;;\n" +
 		"*) exit 2 ;;\nesac\n" +
 		"if [ \"$1\" = \"" + failingOperation + "\" ]; then exit 1; fi\nexit 0\n"
+	if err := os.WriteFile(path, []byte(script), 0o700); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeCandidateAuthorityDoctorExecutable(t *testing.T, path, commit string, parserOK, toolchainOK bool, jsonExit, processExit int, hermeticRoot string) {
+	t.Helper()
+	requireHermetic := ""
+	if hermeticRoot != "" {
+		requireHermetic = "home_mode=$(stat -f '%Lp' \"$HOME\" 2>/dev/null || stat -c '%a' \"$HOME\")\n" +
+			"data_mode=$(stat -f '%Lp' \"$XDG_DATA_HOME\" 2>/dev/null || stat -c '%a' \"$XDG_DATA_HOME\")\n" +
+			"if [ ! -d \"$HOME\" ] || [ ! -d \"$XDG_DATA_HOME\" ] || [ \"$home_mode\" != 700 ] || [ \"$data_mode\" != 700 ] || [ \"$GLADE_HOME\" != \"" + hermeticRoot + "\" ]; then toolchain_ok=false; json_exit=1; process_exit=1; fi\n"
+	}
+	script := "#!/bin/sh\ncase \"$1\" in\n" +
+		"version) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + commit + "\"}}' ;;\n" +
+		"doctor) parser_ok=" + fmt.Sprint(parserOK) + "; toolchain_ok=" + fmt.Sprint(toolchainOK) + "; json_exit=" + fmt.Sprint(jsonExit) + "; process_exit=" + fmt.Sprint(processExit) + "\n" + requireHermetic +
+		"printf '{\"command\":\"doctor\",\"exitCode\":%s,\"parserOK\":%s,\"toolchainOK\":%s}\\n' \"$json_exit\" \"$parser_ok\" \"$toolchain_ok\"\nexit \"$process_exit\" ;;\n" +
+		"parse) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"parse\",\"status\":\"passed\",\"exitCode\":0}' ;;\n" +
+		"*) exit 2 ;;\nesac\n"
 	if err := os.WriteFile(path, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
 	}
