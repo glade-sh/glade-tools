@@ -15,7 +15,11 @@ func TestSalesforceFixtureCorrectionsSecondBatch(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
 
 	resource := loadSecondBatchFixture(t, root, "core-runtime-page-reference-resource-evidence.json")
-	resourceSource := anonymousSource(t, resource)
+	if resource.Command.Kind != "test" {
+		t.Fatalf("resource command = %q, want test", resource.Command.Kind)
+	}
+	assertDeployableClassNames(t, resource)
+	resourceSource := sourceContent(resource, "force-app/main/default/classes/PageReferenceResourceEvidenceTest.cls")
 	for _, token := range []string{"startsWith('/resource/')", "endsWith('/Images')", "endsWith('/Images/icons/logo.png')"} {
 		if !strings.Contains(resourceSource, token) {
 			t.Fatalf("resource source missing stable URL assertion %q", token)
@@ -27,9 +31,14 @@ func TestSalesforceFixtureCorrectionsSecondBatch(t *testing.T) {
 
 	dml := loadSecondBatchFixture(t, root, "data-database-dml-system-mode-runtime.json")
 	assertDeployableClassNames(t, dml)
-	externalID := sourceContent(dml, "force-app/main/default/objects/Account/fields/Other_Key__c.field-meta.xml")
-	if !strings.Contains(externalID, "<externalId>true</externalId>") || !strings.Contains(externalID, "<unique>true</unique>") || !strings.Contains(externalID, "<length>80</length>") {
-		t.Fatal("SYSTEM_MODE DML fixture does not deploy its external-ID field")
+	dmlSource := sourceContent(dml, "force-app/main/default/classes/DataDatabaseDmlSystemModeRuntimeTest.cls")
+	if !strings.Contains(dmlSource, "Database.upsert(upserted, Account.Id, false, AccessLevel.SYSTEM_MODE)") {
+		t.Fatal("SYSTEM_MODE DML fixture does not exercise the SObjectField overload with Account.Id")
+	}
+	for _, source := range dml.Source {
+		if strings.Contains(source.Path, "/objects/") {
+			t.Fatalf("SYSTEM_MODE DML fixture retains deployable object metadata %q", source.Path)
+		}
 	}
 
 	eligible := loadSecondBatchFixture(t, root, "data-database-empty-recycle-bin-runtime.json")
