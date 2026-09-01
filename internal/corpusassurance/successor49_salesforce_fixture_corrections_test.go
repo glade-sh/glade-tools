@@ -46,8 +46,8 @@ func TestSuccessor49SalesforceFixtureCorrections(t *testing.T) {
 		},
 		{
 			name: "core-string-completion-stdlib", kind: "exec", rows: 31,
-			require: []string{`String htmlValue = '<tag attr=\'x\'>&';`, `System.assertEquals('a\\/b', slash.escapeEcmaScript());`, `String.escapeSingleQuotes('Bob\'s')`, "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());"},
-			reject:  []string{"attr=''x''", "String.escapeSingleQuotes('Bob''s')", "System.assertEquals(omega, escapedOmega.unescapeUnicode());"},
+			require: []string{`String htmlValue = '<tag attr=\'x\'>&';`, `System.assertEquals('a\\/b', slash.escapeEcmaScript());`, `String.escapeSingleQuotes('Bob\'s')`, "String expectedEscapedOmega = 'A' + String.fromCharArray(new List<Integer>{92}) + 'u03A9';", "System.assertEquals(expectedEscapedOmega, omega.escapeUnicode());", "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());"},
+			reject:  []string{"attr=''x''", "String.escapeSingleQuotes('Bob''s')", `System.assertEquals('A\u03A9', omega.escapeUnicode());`, "System.assertEquals(omega, escapedOmega.unescapeUnicode());"},
 		},
 		{
 			name: "core-string-entity-edge-stdlib", kind: "exec", rows: 11,
@@ -159,8 +159,8 @@ func TestUnicodeUnescapeFixturesPreserveEscapedText(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
 	want := map[string]string{
 		"core-runtime-string-encoding-rewrite-depth": "System.assertEquals(escapedOmega,escapedOmega.unescapeUnicode());",
-		"core-string-completion-stdlib":               "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());",
-		"core-string-final-families-stdlib":           "System.assertEquals(unicodeEscaped, unicodeEscaped.unescapeUnicode());",
+		"core-string-completion-stdlib":              "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());",
+		"core-string-final-families-stdlib":          "System.assertEquals(unicodeEscaped, unicodeEscaped.unescapeUnicode());",
 	}
 	found := map[string]bool{}
 	paths, err := filepath.Glob(filepath.Join(root, "*.json"))
@@ -214,8 +214,8 @@ func TestUnicodeUnescapeFixturesPreserveEscapedText(t *testing.T) {
 	}
 	if !reflect.DeepEqual(found, map[string]bool{
 		"core-runtime-string-encoding-rewrite-depth": true,
-		"core-string-completion-stdlib":               true,
-		"core-string-final-families-stdlib":           true,
+		"core-string-completion-stdlib":              true,
+		"core-string-final-families-stdlib":          true,
 	}) {
 		t.Fatalf("executable unescapeUnicode fixtures = %v", found)
 	}

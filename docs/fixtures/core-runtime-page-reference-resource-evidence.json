@@ -5,13 +5,13 @@
     {
       "surfaceId": "apex:System.PageReference.forResource(String)",
       "symbol": "PageReference.forResource",
-      "kind": "exec",
+      "kind": "test",
       "notes": "The static resource helper returns a PageReference URL for the named resource."
     },
     {
       "surfaceId": "apex:System.PageReference.forResource(String,String)",
       "symbol": "PageReference.forResource",
-      "kind": "exec",
+      "kind": "test",
       "notes": "The nested static resource helper appends the path inside the zip resource."
     }
   ],
@@ -25,20 +25,20 @@
       "content": "<StaticResource><contentType>application/octet-stream</contentType><cacheControl>Private</cacheControl></StaticResource>"
     },
     {
-      "path": "anonymous.apex",
-      "content": "PageReference resource = PageReference.forResource('Images');\nSystem.assert(resource.getUrl().startsWith('/resource/'));\nSystem.assert(resource.getUrl().endsWith('/Images'));\nPageReference nested = PageReference.forResource('Images', 'icons/logo.png');\nSystem.assert(nested.getUrl().startsWith('/resource/'));\nSystem.assert(nested.getUrl().endsWith('/Images/icons/logo.png'));"
+      "path": "force-app/main/default/classes/PageReferenceResourceEvidenceTest.cls",
+      "content": "@isTest private class PageReferenceResourceEvidenceTest { @isTest static void resourceUrlsResolve() { PageReference resource = PageReference.forResource('Images'); System.assert(resource.getUrl().startsWith('/resource/')); System.assert(resource.getUrl().endsWith('/Images')); PageReference nested = PageReference.forResource('Images', 'icons/logo.png'); System.assert(nested.getUrl().startsWith('/resource/')); System.assert(nested.getUrl().endsWith('/Images/icons/logo.png')); } }"
     }
   ],
   "command": {
-    "kind": "exec",
-    "args": [
-      "PageReference resource = PageReference.forResource('Images');\nSystem.assert(resource.getUrl().startsWith('/resource/'));\nSystem.assert(resource.getUrl().endsWith('/Images'));\nPageReference nested = PageReference.forResource('Images', 'icons/logo.png');\nSystem.assert(nested.getUrl().startsWith('/resource/'));\nSystem.assert(nested.getUrl().endsWith('/Images/icons/logo.png'));"
-    ]
+    "kind": "test"
   },
   "expected": {
     "result": {
-      "debug": null,
-      "ok": true
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
   }
 }
