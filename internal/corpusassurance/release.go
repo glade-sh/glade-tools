@@ -113,7 +113,7 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	if tools != attempt.Tools {
 		return ReleaseValidation{}, fmt.Errorf("tools do not match sealed attempt")
 	}
-	commands, err := fixedReleaseCommands(request.GladeRoot, request.ToolsRoot)
+	commands, err := fixedReleaseCommands(request.GladeRoot, request.CandidatePath, request.ToolsRoot)
 	if err != nil {
 		return ReleaseValidation{}, err
 	}
@@ -160,7 +160,7 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	return validation, nil
 }
 
-func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error) {
+func fixedReleaseCommands(gladeRoot, candidatePath, toolsRoot string) ([]releaseCommand, error) {
 	if os.Getenv("GOROOT") != "" {
 		return nil, fmt.Errorf("ambient GOROOT is not permitted")
 	}
@@ -174,11 +174,12 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 		return nil, err
 	}
 	productEnv := append(append([]string(nil), env...), "GLADE_LWC_COMPILE=1", "GLADE_ROOT="+gladeRoot)
+	toolsEnv := append(append([]string(nil), env...), "GLADE_RELEASE_BIN="+candidatePath, "GLADE_SOURCE_ROOT="+gladeRoot)
 	commands := []releaseCommand{
 		{Path: npmBin, Args: []string{"ci", "--prefix", filepath.Join(gladeRoot, "third_party", "lwc")}, WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
 		{Path: goBin, Args: []string{"test", "-timeout", "45m", "-count=1", "./..."}, WorkingDirectory: gladeRoot, Environment: productEnv, Timeout: productReleaseValidationTimeout},
 		{Path: filepath.Join(gladeRoot, "scripts", "smoke.sh"), WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
-		{Path: filepath.Join(toolsRoot, "scripts", "release-check.sh"), WorkingDirectory: toolsRoot, Environment: env, Timeout: releaseValidationTimeout},
+		{Path: filepath.Join(toolsRoot, "scripts", "release-check.sh"), WorkingDirectory: toolsRoot, Environment: toolsEnv, Timeout: releaseValidationTimeout},
 	}
 	for _, command := range commands {
 		info, err := os.Stat(command.Path)
@@ -303,7 +304,7 @@ func validateOracleReleaseSources(validation ReleaseValidation, plan OraclePlan)
 	if current, err := releaseExecutingTools(validation.ToolsPath, plan.Tools.Commit); err != nil || current != plan.Tools {
 		return fmt.Errorf("tools executable does not match sealed release validation")
 	}
-	commands, err := fixedReleaseCommands(validation.GladeRoot, validation.ToolsRoot)
+	commands, err := fixedReleaseCommands(validation.GladeRoot, validation.CandidatePath, validation.ToolsRoot)
 	if err != nil || len(commands) != len(validation.Commands) {
 		return fmt.Errorf("fixed release command contract is unavailable")
 	}

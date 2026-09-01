@@ -433,7 +433,7 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != timeout.Milliseconds() || len(result.Command) == 0 || !filepath.IsAbs(result.Command[0]) || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
 		return false
 	}
-	rootEntries, compileEntries := 0, 0
+	rootEntries, compileEntries, releaseBinEntries, sourceRootEntries := 0, 0, 0, 0
 	for _, value := range result.Environment {
 		if strings.HasPrefix(value, "GLADE_ROOT=") {
 			if value != "GLADE_ROOT="+validation.GladeRoot {
@@ -447,12 +447,28 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 			}
 			compileEntries++
 		}
+		if strings.HasPrefix(value, "GLADE_RELEASE_BIN=") {
+			if value != "GLADE_RELEASE_BIN="+validation.CandidatePath {
+				return false
+			}
+			releaseBinEntries++
+		}
+		if strings.HasPrefix(value, "GLADE_SOURCE_ROOT=") {
+			if value != "GLADE_SOURCE_ROOT="+validation.GladeRoot {
+				return false
+			}
+			sourceRootEntries++
+		}
 	}
 	if index == 1 {
-		if rootEntries != 1 || compileEntries != 1 {
+		if rootEntries != 1 || compileEntries != 1 || releaseBinEntries != 0 || sourceRootEntries != 0 {
 			return false
 		}
-	} else if rootEntries != 0 || compileEntries != 0 {
+	} else if index == 3 {
+		if rootEntries != 0 || compileEntries != 0 || releaseBinEntries != 1 || sourceRootEntries != 1 {
+			return false
+		}
+	} else if rootEntries != 0 || compileEntries != 0 || releaseBinEntries != 0 || sourceRootEntries != 0 {
 		return false
 	}
 	switch index {
