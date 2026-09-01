@@ -557,14 +557,44 @@ func TestCreateCandidateAuthorityRejectsWrongEmbeddedVersion(t *testing.T) {
 	}
 }
 
-func TestValidateCandidateParserUsesOwnedHermeticHome(t *testing.T) {
+func TestValidateCandidateParserProvisionsOwnedHermeticToolchain(t *testing.T) {
 	root := t.TempDir()
 	commit := strings.Repeat("a", 40)
 	candidatePath := filepath.Join(root, "glade")
-	writeCandidateAuthorityDoctorExecutable(t, candidatePath, commit, true, true, 0, 0, root)
+	eventsPath := filepath.Join(root, "events")
+	writeCandidateAuthorityProvisioningExecutable(t, candidatePath, commit, eventsPath)
 	candidate := attemptCandidate{Commit: commit, Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	if err := validateCandidateParser(candidate, root); err != nil {
 		t.Fatalf("validateCandidateParser: %v", err)
+	}
+	events, err := os.ReadFile(eventsPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(events) != "npm\ninstall\nversion\ndoctor\nparse\n" {
+		t.Fatalf("candidate authority events = %q", events)
+	}
+}
+
+func TestValidateCandidateParserReturnsToolchainSetupErrors(t *testing.T) {
+	for _, operation := range []string{"npm", "toolchain"} {
+		t.Run(operation, func(t *testing.T) {
+			root := t.TempDir()
+			commit := strings.Repeat("a", 40)
+			candidatePath := filepath.Join(root, "glade")
+			writeCandidateAuthorityExecutableWithVersion(t, candidatePath, true, commit, operation)
+			if operation == "npm" {
+				writeCandidateAuthorityNPM(t, candidatePath, "exit 1\n")
+			}
+			candidate := attemptCandidate{Commit: commit, Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+			want := "candidate " + operation + " setup failed with exit code 1"
+			if operation == "toolchain" {
+				want = "candidate toolchain install failed with exit code 1"
+			}
+			if err := validateCandidateParser(candidate, root); err == nil || err.Error() != want {
+				t.Fatalf("validateCandidateParser error = %v, want %q", err, want)
+			}
+		})
 	}
 }
 
@@ -584,7 +614,7 @@ func TestValidateCandidateParserReturnsPreciseDoctorErrors(t *testing.T) {
 			root := t.TempDir()
 			commit := strings.Repeat("a", 40)
 			candidatePath := filepath.Join(root, "glade")
-			writeCandidateAuthorityDoctorExecutable(t, candidatePath, commit, test.parserOK, test.toolchainOK, 0, test.processExit, "")
+			writeCandidateAuthorityDoctorExecutable(t, candidatePath, commit, test.parserOK, test.toolchainOK, 0, test.processExit)
 			candidate := attemptCandidate{Commit: commit, Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 			if err := validateCandidateParser(candidate, root); err == nil || err.Error() != test.want {
 				t.Fatalf("validateCandidateParser error = %v, want %q", err, test.want)
@@ -624,30 +654,55 @@ func writeCandidateAuthorityExecutableWithVersion(t *testing.T, path string, par
 		"version) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + embeddedVersion + "\",\"go\":\"go-test\"}}' ;;\n" +
 		"doctor) printf '%s\\n' '{\"command\":\"doctor\",\"exitCode\":0,\"parserOK\":" + value + ",\"toolchainOK\":true}' ;;\n" +
 		"parse) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"parse\",\"status\":\"passed\",\"exitCode\":0,\"data\":{}}' ;;\n" +
+		"toolchain) : ;;\n" +
 		"*) exit 2 ;;\nesac\n" +
 		"if [ \"$1\" = \"" + failingOperation + "\" ]; then exit 1; fi\nexit 0\n"
 	if err := os.WriteFile(path, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
 	}
+	writeCandidateAuthorityNPM(t, path, "exit 0\n")
 }
 
-func writeCandidateAuthorityDoctorExecutable(t *testing.T, path, commit string, parserOK, toolchainOK bool, jsonExit, processExit int, hermeticRoot string) {
+func writeCandidateAuthorityDoctorExecutable(t *testing.T, path, commit string, parserOK, toolchainOK bool, jsonExit, processExit int) {
 	t.Helper()
-	requireHermetic := ""
-	if hermeticRoot != "" {
-		requireHermetic = "home_mode=$(stat -f '%Lp' \"$HOME\" 2>/dev/null || stat -c '%a' \"$HOME\")\n" +
-			"data_mode=$(stat -f '%Lp' \"$XDG_DATA_HOME\" 2>/dev/null || stat -c '%a' \"$XDG_DATA_HOME\")\n" +
-			"if [ ! -d \"$HOME\" ] || [ ! -d \"$XDG_DATA_HOME\" ] || [ \"$home_mode\" != 700 ] || [ \"$data_mode\" != 700 ] || [ \"$GLADE_HOME\" != \"" + hermeticRoot + "\" ]; then toolchain_ok=false; json_exit=1; process_exit=1; fi\n"
-	}
 	script := "#!/bin/sh\ncase \"$1\" in\n" +
 		"version) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + commit + "\"}}' ;;\n" +
-		"doctor) parser_ok=" + fmt.Sprint(parserOK) + "; toolchain_ok=" + fmt.Sprint(toolchainOK) + "; json_exit=" + fmt.Sprint(jsonExit) + "; process_exit=" + fmt.Sprint(processExit) + "\n" + requireHermetic +
+		"doctor) parser_ok=" + fmt.Sprint(parserOK) + "; toolchain_ok=" + fmt.Sprint(toolchainOK) + "; json_exit=" + fmt.Sprint(jsonExit) + "; process_exit=" + fmt.Sprint(processExit) + "\n" +
 		"printf '{\"command\":\"doctor\",\"exitCode\":%s,\"parserOK\":%s,\"toolchainOK\":%s}\\n' \"$json_exit\" \"$parser_ok\" \"$toolchain_ok\"\nexit \"$process_exit\" ;;\n" +
 		"parse) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"parse\",\"status\":\"passed\",\"exitCode\":0}' ;;\n" +
+		"toolchain) : ;;\n" +
 		"*) exit 2 ;;\nesac\n"
 	if err := os.WriteFile(path, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
 	}
+	writeCandidateAuthorityNPM(t, path, "exit 0\n")
+}
+
+func writeCandidateAuthorityProvisioningExecutable(t *testing.T, path, commit, eventsPath string) {
+	t.Helper()
+	checks := "home_mode=$(stat -f '%Lp' \"$HOME\" 2>/dev/null || stat -c '%a' \"$HOME\")\n" +
+		"data_mode=$(stat -f '%Lp' \"$XDG_DATA_HOME\" 2>/dev/null || stat -c '%a' \"$XDG_DATA_HOME\")\n" +
+		"[ -d \"$HOME\" ] && [ -d \"$XDG_DATA_HOME\" ] && [ \"$home_mode\" = 700 ] && [ \"$data_mode\" = 700 ] && [ -z \"$GLADE_HOME\" ] || exit 9\n"
+	script := "#!/bin/sh\ncase \"$1\" in\n" +
+		"toolchain) " + checks + "[ \"$2\" = install ] && [ \"$3\" = --from ] && [ \"$4\" = \"" + filepath.Dir(path) + "\" ] || exit 8\nmkdir -p \"$XDG_DATA_HOME/glade\"\ntouch \"$XDG_DATA_HOME/glade/installed\"\nprintf 'install\\n' >> \"" + eventsPath + "\" ;;\n" +
+		"version) [ -f \"$XDG_DATA_HOME/glade/installed\" ] && [ -z \"$GLADE_HOME\" ] || exit 7\nprintf 'version\\n' >> \"" + eventsPath + "\"\nprintf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + commit + "\"}}' ;;\n" +
+		"doctor) printf 'doctor\\n' >> \"" + eventsPath + "\"\nprintf '%s\\n' '{\"command\":\"doctor\",\"exitCode\":0,\"parserOK\":true,\"toolchainOK\":true}' ;;\n" +
+		"parse) printf 'parse\\n' >> \"" + eventsPath + "\"\nprintf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"parse\",\"status\":\"passed\",\"exitCode\":0}' ;;\n" +
+		"*) exit 2 ;;\nesac\n"
+	if err := os.WriteFile(path, []byte(script), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	npmScript := checks + "[ \"$1\" = ci ] && [ \"$2\" = --ignore-scripts ] && [ \"$3\" = --no-audit ] && [ \"$4\" = --no-fund ] && [ \"$5\" = --prefix ] && [ \"$6\" = third_party/lwc ] || exit 8\nprintf 'npm\\n' >> \"" + eventsPath + "\"\n"
+	writeCandidateAuthorityNPM(t, path, npmScript)
+}
+
+func writeCandidateAuthorityNPM(t *testing.T, candidatePath, body string) {
+	t.Helper()
+	npmPath := filepath.Join(filepath.Dir(candidatePath), "npm")
+	if err := os.WriteFile(npmPath, []byte("#!/bin/sh\n"+body), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", filepath.Dir(candidatePath)+string(filepath.ListSeparator)+os.Getenv("PATH"))
 }
 
 func candidateToolForTest(t *testing.T, root, path string) candidateTool {

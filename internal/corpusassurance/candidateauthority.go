@@ -452,6 +452,9 @@ func (err *candidateBuildCommandError) Error() string {
 func (err *candidateBuildCommandError) Unwrap() error { return err.Err }
 
 func validateCandidateParser(candidate attemptCandidate, workingDirectory string) error {
+	if current, err := sha256File(candidate.Path); err != nil || current != candidate.SHA256 {
+		return fmt.Errorf("candidate executable is stale")
+	}
 	root, err := os.MkdirTemp("", "glade-candidate-authority-")
 	if err != nil {
 		return err
@@ -463,7 +466,31 @@ func validateCandidateParser(candidate attemptCandidate, workingDirectory string
 			return err
 		}
 	}
-	environment := []string{"HOME=" + home, "XDG_DATA_HOME=" + data, "GLADE_HOME=" + workingDirectory, "PATH=/usr/bin:/bin", "TMPDIR=" + root}
+	npmPath, err := exec.LookPath("npm")
+	if err != nil {
+		return fmt.Errorf("candidate npm setup is unavailable: %w", err)
+	}
+	if !filepath.IsAbs(npmPath) {
+		npmPath, err = filepath.Abs(npmPath)
+		if err != nil {
+			return err
+		}
+	}
+	environment := []string{"HOME=" + home, "XDG_DATA_HOME=" + data, "PATH=" + filepath.Dir(npmPath) + string(os.PathListSeparator) + "/usr/bin:/bin", "TMPDIR=" + root}
+	result, _, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: npmPath, Args: []string{"ci", "--ignore-scripts", "--no-audit", "--no-fund", "--prefix", filepath.Join("third_party", "lwc")}, Env: environment, Timeout: 15 * time.Minute})
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut {
+		return fmt.Errorf("candidate npm setup failed with exit code %d", result.ExitCode)
+	}
+	if current, err := sha256File(candidate.Path); err != nil || current != candidate.SHA256 {
+		return fmt.Errorf("candidate npm setup changed candidate executable")
+	}
+	result, _, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"toolchain", "install", "--from", workingDirectory}, Env: environment, Timeout: 5 * time.Minute})
+	if result.ExecutableSHA256 != candidate.SHA256 || result.ExecutableAfterSHA256 != candidate.SHA256 {
+		return fmt.Errorf("candidate toolchain install changed candidate executable")
+	}
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut {
+		return fmt.Errorf("candidate toolchain install failed with exit code %d", result.ExitCode)
+	}
 	result, stdout, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"version", "--json"}, Env: environment, Timeout: 30 * time.Second})
 	if !validCandidateCommandResult(result, candidate) || !validCandidateVersionJSON(stdout, candidate.Commit) {
 		return fmt.Errorf("candidate embedded version is invalid")
