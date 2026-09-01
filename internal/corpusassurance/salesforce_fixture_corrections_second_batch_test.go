@@ -15,6 +15,14 @@ func TestSalesforceFixtureCorrectionsSecondBatch(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
 
 	resource := loadSecondBatchFixture(t, root, "core-runtime-page-reference-resource-evidence.json")
+	for _, evidence := range resource.Evidence {
+		if evidence.Kind != "test" || !localProofCommandMatchesDisposition(localRuntimeRequired, resource.Command.Kind, evidence.SurfaceID) {
+			t.Fatalf("resource evidence %s is not locally runnable through test", evidence.SurfaceID)
+		}
+	}
+	if localProofCommandMatchesDisposition(localRuntimeRequired, "test", "apex:System.PageReference.forResource(String,Integer)") {
+		t.Fatal("unowned PageReference.forResource signature is locally runnable through test")
+	}
 	if resource.Command.Kind != "test" {
 		t.Fatalf("resource command = %q, want test", resource.Command.Kind)
 	}
