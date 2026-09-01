@@ -71,6 +71,8 @@ type candidateBuildBinding struct {
 
 var validateSealedCandidateBuild = validateCandidateBuildFromSource
 var validateSealedToolsBuild = validateToolsBuildFromSource
+var resolveCandidateAuthorityBinary = fixedReleaseBinary
+var runCandidateAuthorityCommand = runReplayCommandOutput
 
 type candidateTool struct {
 	RuntimeArtifact
@@ -186,6 +188,9 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 	}
 	if err := validateCandidateParser(receipt.Candidate, candidateRoot); err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+	}
+	if err := validateCleanGitRoot(candidateRoot, receipt.Candidate.Commit); err != nil {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source changed during toolchain validation: %w", err)
 	}
 	reviewBytes, err := os.ReadFile(reviewPath)
 	if err != nil {
@@ -466,36 +471,40 @@ func validateCandidateParser(candidate attemptCandidate, workingDirectory string
 			return err
 		}
 	}
-	npmPath, err := exec.LookPath("npm")
+	releaseEnvironment := fixedReleaseEnvironment()
+	npmPath, err := resolveCandidateAuthorityBinary(releaseEnvironment, "npm")
 	if err != nil {
 		return fmt.Errorf("candidate npm setup is unavailable: %w", err)
 	}
-	if !filepath.IsAbs(npmPath) {
-		npmPath, err = filepath.Abs(npmPath)
-		if err != nil {
-			return err
+	environment := append([]string(nil), releaseEnvironment...)
+	for index, entry := range environment {
+		switch {
+		case strings.HasPrefix(entry, "HOME="):
+			environment[index] = "HOME=" + home
+		case strings.HasPrefix(entry, "TMPDIR="):
+			environment[index] = "TMPDIR=" + root
 		}
 	}
-	environment := []string{"HOME=" + home, "XDG_DATA_HOME=" + data, "PATH=" + filepath.Dir(npmPath) + string(os.PathListSeparator) + "/usr/bin:/bin", "TMPDIR=" + root}
-	result, _, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: npmPath, Args: []string{"ci", "--ignore-scripts", "--no-audit", "--no-fund", "--prefix", filepath.Join("third_party", "lwc")}, Env: environment, Timeout: 15 * time.Minute})
+	environment = append(environment, "XDG_DATA_HOME="+data)
+	result, _, _ := runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: npmPath, Args: []string{"ci", "--ignore-scripts", "--no-audit", "--no-fund", "--prefix", filepath.Join("third_party", "lwc")}, Env: environment, Timeout: 15 * time.Minute})
 	if !result.Passed || result.ExitCode != 0 || result.TimedOut {
 		return fmt.Errorf("candidate npm setup failed with exit code %d", result.ExitCode)
 	}
 	if current, err := sha256File(candidate.Path); err != nil || current != candidate.SHA256 {
 		return fmt.Errorf("candidate npm setup changed candidate executable")
 	}
-	result, _, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"toolchain", "install", "--from", workingDirectory}, Env: environment, Timeout: 5 * time.Minute})
+	result, _, _ = runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"toolchain", "install", "--from", workingDirectory}, Env: environment, Timeout: 5 * time.Minute})
 	if result.ExecutableSHA256 != candidate.SHA256 || result.ExecutableAfterSHA256 != candidate.SHA256 {
 		return fmt.Errorf("candidate toolchain install changed candidate executable")
 	}
 	if !result.Passed || result.ExitCode != 0 || result.TimedOut {
 		return fmt.Errorf("candidate toolchain install failed with exit code %d", result.ExitCode)
 	}
-	result, stdout, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"version", "--json"}, Env: environment, Timeout: 30 * time.Second})
+	result, stdout, _ := runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"version", "--json"}, Env: environment, Timeout: 30 * time.Second})
 	if !validCandidateCommandResult(result, candidate) || !validCandidateVersionJSON(stdout, candidate.Commit) {
 		return fmt.Errorf("candidate embedded version is invalid")
 	}
-	result, stdout, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: environment, Timeout: 30 * time.Second})
+	result, stdout, _ = runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: environment, Timeout: 30 * time.Second})
 	var doctor struct {
 		Command     string `json:"command"`
 		ExitCode    int    `json:"exitCode"`
@@ -531,7 +540,7 @@ func validateCandidateParser(candidate attemptCandidate, workingDirectory string
 	if err := fixture.Close(); err != nil {
 		return err
 	}
-	result, stdout, _ = runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"parse", fixturePath, "--json", "--no-progress"}, Env: environment, Timeout: 30 * time.Second})
+	result, stdout, _ = runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"parse", fixturePath, "--json", "--no-progress"}, Env: environment, Timeout: 30 * time.Second})
 	if !validCandidateCommandResult(result, candidate) || !validCandidateParseJSON(stdout) {
 		return fmt.Errorf("candidate Apex parse check failed")
 	}

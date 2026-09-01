@@ -598,6 +598,75 @@ func TestValidateCandidateParserReturnsToolchainSetupErrors(t *testing.T) {
 	}
 }
 
+func TestValidateCandidateParserUsesFixedReleaseNPM(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("PATH", filepath.Join(root, "ambient-path-must-be-ignored"))
+	commit := strings.Repeat("a", 40)
+	candidatePath := filepath.Join(root, "glade")
+	if err := os.WriteFile(candidatePath, []byte("fixed candidate\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	candidate := attemptCandidate{Commit: commit, Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+	oldResolver, oldRunner := resolveCandidateAuthorityBinary, runCandidateAuthorityCommand
+	t.Cleanup(func() {
+		resolveCandidateAuthorityBinary, runCandidateAuthorityCommand = oldResolver, oldRunner
+	})
+	var resolvedEnvironment []string
+	resolveCandidateAuthorityBinary = func(environment []string, name string) (string, error) {
+		resolvedEnvironment = append([]string(nil), environment...)
+		if name != "npm" {
+			t.Fatalf("resolved binary = %q", name)
+		}
+		return "/fixed/release/npm", nil
+	}
+	var operations []string
+	outputs := map[string]string{
+		"version": `{"schemaVersion":"1.0","command":"version","status":"passed","exitCode":0,"data":{"version":"` + commit + `"}}`,
+		"doctor":  `{"command":"doctor","exitCode":0,"parserOK":true,"toolchainOK":true}`,
+		"parse":   `{"schemaVersion":"1.0","command":"parse","status":"passed","exitCode":0}`,
+	}
+	runCandidateAuthorityCommand = func(workingDirectory string, command ReplayCommand) (CommandResult, []byte, []byte) {
+		if workingDirectory != root {
+			t.Fatalf("working directory = %q", workingDirectory)
+		}
+		operation := command.Args[0]
+		operations = append(operations, operation)
+		result := CommandResult{Passed: true, ExitCode: 0}
+		if operation == "ci" {
+			if command.Path != "/fixed/release/npm" {
+				t.Fatalf("npm path = %q", command.Path)
+			}
+			for _, name := range []string{"HOME", "XDG_DATA_HOME", "TMPDIR"} {
+				info, err := os.Stat(environmentEntry(command.Env, name))
+				if err != nil || !info.IsDir() || info.Mode().Perm() != 0o700 {
+					t.Fatalf("%s is not an owned mode-0700 directory", name)
+				}
+			}
+		} else {
+			result.ExecutableSHA256, result.ExecutableAfterSHA256 = candidate.SHA256, candidate.SHA256
+		}
+		return result, []byte(outputs[operation]), nil
+	}
+	if err := validateCandidateParser(candidate, root); err != nil {
+		t.Fatalf("validateCandidateParser: %v", err)
+	}
+	if !equalStrings(resolvedEnvironment, fixedReleaseEnvironment()) {
+		t.Fatalf("resolver environment = %#v", resolvedEnvironment)
+	}
+	if !equalStrings(operations, []string{"ci", "toolchain", "version", "doctor", "parse"}) {
+		t.Fatalf("operations = %#v", operations)
+	}
+}
+
+func environmentEntry(environment []string, name string) string {
+	for _, entry := range environment {
+		if strings.HasPrefix(entry, name+"=") {
+			return strings.TrimPrefix(entry, name+"=")
+		}
+	}
+	return ""
+}
+
 func TestValidateCandidateParserReturnsPreciseDoctorErrors(t *testing.T) {
 	for _, test := range []struct {
 		name        string
@@ -702,7 +771,9 @@ func writeCandidateAuthorityNPM(t *testing.T, candidatePath, body string) {
 	if err := os.WriteFile(npmPath, []byte("#!/bin/sh\n"+body), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("PATH", filepath.Dir(candidatePath)+string(filepath.ListSeparator)+os.Getenv("PATH"))
+	oldResolver := resolveCandidateAuthorityBinary
+	resolveCandidateAuthorityBinary = func([]string, string) (string, error) { return npmPath, nil }
+	t.Cleanup(func() { resolveCandidateAuthorityBinary = oldResolver })
 }
 
 func candidateToolForTest(t *testing.T, root, path string) candidateTool {
