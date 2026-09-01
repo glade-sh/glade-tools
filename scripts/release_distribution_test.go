@@ -253,6 +253,7 @@ func releaseCheckContractError(checkText string) error {
 		"git diff --check",
 		"node --test scripts/*.test.mjs",
 		`go test "${packages[@]}"`,
+		"go test -count=1 ./internal/corpusassurance",
 	}
 	wantRelease := []string{
 		"git diff --check",
@@ -275,7 +276,7 @@ func releaseCheckContractError(checkText string) error {
 		"-count=1", "./internal/apexdocs", "./internal/apexrules", "./internal/capability", "./internal/compat",
 		"./internal/corpuscheck", "./internal/examplescan", "./internal/lwcparity", "./internal/metadata", "./internal/oracleprobe",
 		"./internal/orgpackage", "./internal/perfscan", "./internal/perftool", "./internal/producttestverify", "./internal/projectscan",
-		"./internal/uicontroller", "./internal/toolcli", "./internal/corpusassurance",
+		"./internal/uicontroller", "./internal/toolcli",
 	}
 	var gotPackages []string
 	inPackages := false

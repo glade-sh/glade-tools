@@ -29,7 +29,6 @@ packages=(
 	./internal/projectscan
 	./internal/uicontroller
 	./internal/toolcli
-	./internal/corpusassurance
 )
 
 case "${1:-all}" in
@@ -37,6 +36,7 @@ case "${1:-all}" in
 		git diff --check
 		node --test scripts/*.test.mjs
 		go test "${packages[@]}"
+		go test -count=1 ./internal/corpusassurance
 		;;
 	release)
 		git diff --check
