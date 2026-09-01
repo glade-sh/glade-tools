@@ -46,8 +46,8 @@ func TestSuccessor49SalesforceFixtureCorrections(t *testing.T) {
 		},
 		{
 			name: "core-string-completion-stdlib", kind: "exec", rows: 31,
-			require: []string{`String htmlValue = '<tag attr=\'x\'>&';`, `System.assertEquals('a\\/b', slash.escapeEcmaScript());`, `String.escapeSingleQuotes('Bob\'s')`, "String expectedEscapedOmega = 'A' + String.fromCharArray(new List<Integer>{92}) + 'u03A9';", "System.assertEquals(expectedEscapedOmega, omega.escapeUnicode());", "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());"},
-			reject:  []string{"attr=''x''", "String.escapeSingleQuotes('Bob''s')", `System.assertEquals('A\u03A9', omega.escapeUnicode());`, "System.assertEquals(omega, escapedOmega.unescapeUnicode());"},
+			require: []string{`String htmlValue = '<tag attr=\'x\'>&';`, `System.assertEquals('a\\/b', slash.escapeEcmaScript());`, `String.escapeSingleQuotes('Bob\'s')`, "String expectedEscapedOmega = 'A' + String.fromCharArray(new List<Integer>{92}) + 'u03A9';", "System.assertEquals(expectedEscapedOmega, omega.escapeUnicode());", "System.assertEquals(omega, escapedOmega.unescapeUnicode());"},
+			reject:  []string{"attr=''x''", "String.escapeSingleQuotes('Bob''s')", `System.assertEquals('A\u03A9', omega.escapeUnicode());`, "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());"},
 		},
 		{
 			name: "core-string-entity-edge-stdlib", kind: "exec", rows: 11,
@@ -155,12 +155,17 @@ func TestSuccessor49SalesforceFixtureCorrections(t *testing.T) {
 	}
 }
 
-func TestUnicodeUnescapeFixturesPreserveEscapedText(t *testing.T) {
+func TestUnicodeUnescapeFixturesMatchSalesforceObservedBehavior(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
 	want := map[string]string{
-		"core-runtime-string-encoding-rewrite-depth": "System.assertEquals(escapedOmega,escapedOmega.unescapeUnicode());",
-		"core-string-completion-stdlib":              "System.assertEquals(escapedOmega, escapedOmega.unescapeUnicode());",
-		"core-string-final-families-stdlib":          "System.assertEquals(unicodeEscaped, unicodeEscaped.unescapeUnicode());",
+		"core-runtime-string-encoding-rewrite-depth": "System.assertEquals(omega,escapedOmega.unescapeUnicode());",
+		"core-string-completion-stdlib":              "System.assertEquals(omega, escapedOmega.unescapeUnicode());",
+		"core-string-final-families-stdlib":          "System.assertEquals(unicodeRaw, unicodeEscaped.unescapeUnicode());",
+	}
+	wantEscapedConstruction := map[string]string{
+		"core-runtime-string-encoding-rewrite-depth": "String expectedEscapedOmega='A'+String.fromCharArray(new List<Integer>{92})+'u03A9';",
+		"core-string-completion-stdlib":              "String expectedEscapedOmega = 'A' + String.fromCharArray(new List<Integer>{92}) + 'u03A9';",
+		"core-string-final-families-stdlib":          "String expectedUnicodeEscaped = String.fromCharArray(new List<Integer>{92,117,48,48,48,56,92,117,48,48,48,57,92,117,48,48,48,65,92,117,48,48,48,67,92,117,48,48,48,68,34,39,47,92,117,48,51,65,57,92,117,68,56,51,68,92,117,68,69,48,48});",
 	}
 	found := map[string]bool{}
 	paths, err := filepath.Glob(filepath.Join(root, "*.json"))
@@ -196,7 +201,10 @@ func TestUnicodeUnescapeFixturesPreserveEscapedText(t *testing.T) {
 			}
 			found[fixture.Name] = true
 			if !strings.Contains(source.Content, expectation) {
-				t.Errorf("%s does not preserve escaped Unicode text", fixture.Name)
+				t.Errorf("%s does not match its Salesforce-observed Unicode expectation", fixture.Name)
+			}
+			if !strings.Contains(source.Content, wantEscapedConstruction[fixture.Name]) {
+				t.Errorf("%s does not construct escaped Unicode text from character codes", fixture.Name)
 			}
 			if strings.Contains(source.Content, ".escapeUnicode().unescapeUnicode()") {
 				t.Errorf("%s still assumes Unicode escape round-trip decoding", fixture.Name)
@@ -207,8 +215,8 @@ func TestUnicodeUnescapeFixturesPreserveEscapedText(t *testing.T) {
 				continue
 			}
 			notes := strings.ToLower(evidence.Notes)
-			if strings.Contains(notes, "decode") || strings.Contains(notes, "round-trip") {
-				t.Errorf("%s retains stale unescapeUnicode notes %q", fixture.Name, evidence.Notes)
+			if _, executableOwner := want[fixture.Name]; executableOwner && !strings.Contains(notes, "decode") {
+				t.Errorf("%s lacks decoded unescapeUnicode notes %q", fixture.Name, evidence.Notes)
 			}
 		}
 	}
