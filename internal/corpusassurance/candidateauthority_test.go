@@ -123,8 +123,9 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 
 func TestCandidateBuildValidatorBindsExactSource(t *testing.T) {
 	root := newInventoryRepository(t, map[string]string{
-		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
-		"cmd/glade/main.go": "package main\nimport \"fmt\"\nfunc main() { fmt.Println(`{\"command\":\"doctor\",\"parserOK\":true}`) }\n",
+		"go.mod":                               "module github.com/glade-sh/glade\n\ngo 1.23.0\n\nrequire github.com/glade-sh/apex-parser v0.1.0\n\nreplace github.com/glade-sh/apex-parser => ./third_party/glade-apex-parser\n",
+		"cmd/glade/main.go":                    "package main\nimport \"fmt\"\nfunc main() { fmt.Println(`{\"command\":\"doctor\",\"parserOK\":true}`) }\n",
+		"third_party/glade-apex-parser/go.mod": "module github.com/glade-sh/apex-parser\n\ngo 1.23.0\n",
 	})
 	binding, err := deriveCandidateBuildBinding(root)
 	if err != nil {
@@ -148,8 +149,9 @@ func TestCandidateBuildValidatorBindsExactSource(t *testing.T) {
 
 func TestCandidateBuildBindingUsesCommitScopedCaches(t *testing.T) {
 	root := newInventoryRepository(t, map[string]string{
-		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
-		"cmd/glade/main.go": "package main\nfunc main() {}\n",
+		"go.mod":                               "module github.com/glade-sh/glade\n\ngo 1.23.0\n\nrequire github.com/glade-sh/apex-parser v0.1.0\n\nreplace github.com/glade-sh/apex-parser => ./third_party/glade-apex-parser\n",
+		"cmd/glade/main.go":                    "package main\nfunc main() {}\n",
+		"third_party/glade-apex-parser/go.mod": "module github.com/glade-sh/apex-parser\n\ngo 1.23.0\n",
 	})
 	commit := testGitOutput(t, root, "rev-parse", "HEAD")
 	binding, err := deriveCandidateBuildBinding(root)
@@ -293,7 +295,7 @@ func TestCandidateAuthorityRejectsAbsoluteCandidateReplacementPaths(t *testing.T
 }
 
 func TestCreateCandidateAuthorityRejectsInvalidCandidateReplacementsBeforeRebuild(t *testing.T) {
-	for _, replacement := range []string{"absolute", "external-relative", "symlink-escape"} {
+	for _, replacement := range []string{"missing", "absolute", "external-relative", "symlink-escape"} {
 		t.Run(replacement, func(t *testing.T) {
 			root := t.TempDir()
 			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
@@ -618,7 +620,7 @@ func newPairedBuildRepositories(t *testing.T, candidateMain, toolsMain string) (
 	toolsRoot := filepath.Join(root, "glade-tools")
 	for path, files := range map[string]map[string]string{
 		candidateRoot: {
-			"go.mod":                               "module github.com/glade-sh/glade\n\ngo 1.23.0\n",
+			"go.mod":                               "module github.com/glade-sh/glade\n\ngo 1.23.0\n\nrequire github.com/glade-sh/apex-parser v0.1.0\n\nreplace github.com/glade-sh/apex-parser => ./third_party/glade-apex-parser\n",
 			"cmd/glade/main.go":                    candidateMain,
 			"third_party/glade-apex-parser/go.mod": "module github.com/glade-sh/apex-parser\n\ngo 1.23.0\n",
 		},
@@ -662,7 +664,10 @@ func rewriteCandidateReplacementForTest(t *testing.T, candidateRoot, replacement
 	t.Helper()
 	target := "./third_party/glade-apex-parser"
 	old := "github.com/glade-sh/apex-parser"
+	includeReplacement := true
 	switch replacement {
+	case "missing":
+		includeReplacement = false
 	case "absolute":
 		target = filepath.Join(candidateRoot, "third_party", "glade-apex-parser")
 	case "external-relative", "symlink-escape":
@@ -688,7 +693,10 @@ func rewriteCandidateReplacementForTest(t *testing.T, candidateRoot, replacement
 	default:
 		t.Fatalf("unknown candidate replacement %q", replacement)
 	}
-	goMod := "module github.com/glade-sh/glade\n\ngo 1.23.0\n\nrequire github.com/glade-sh/apex-parser v0.1.0\n\nreplace " + old + " => " + target + "\n"
+	goMod := "module github.com/glade-sh/glade\n\ngo 1.23.0\n\nrequire github.com/glade-sh/apex-parser v0.1.0\n"
+	if includeReplacement {
+		goMod += "\nreplace " + old + " => " + target + "\n"
+	}
 	if err := os.WriteFile(filepath.Join(candidateRoot, "go.mod"), []byte(goMod), 0o644); err != nil {
 		t.Fatal(err)
 	}

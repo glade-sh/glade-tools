@@ -248,7 +248,7 @@ func TestCreateCandidateBuildReceiptRejectsUnboundInputs(t *testing.T) {
 }
 
 func TestCreateCandidateBuildReceiptRejectsInvalidCandidateReplacementsBeforeBuild(t *testing.T) {
-	for _, replacement := range []string{"absolute", "external-relative", "symlink-escape", "unexpected", "version-specific"} {
+	for _, replacement := range []string{"missing", "absolute", "external-relative", "symlink-escape", "unexpected", "version-specific"} {
 		t.Run(replacement, func(t *testing.T) {
 			root := t.TempDir()
 			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")

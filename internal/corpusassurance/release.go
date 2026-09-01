@@ -383,6 +383,9 @@ func validateCandidateLocalReplacements(candidateRoot string) error {
 		}
 		seenParser = true
 	}
+	if !seenParser {
+		return fmt.Errorf("candidate parser replacement is missing")
+	}
 	return nil
 }
 
