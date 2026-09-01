@@ -198,6 +198,15 @@ scripts/release-check.sh
 scripts/build-plugin-archives.sh X.Y.Z
 ```
 
+Bind a built Glade candidate to the composed local Apex release gate with both
+variables. The gate runs `check` and `test` across five fixtures and writes the
+binary hash, source commits, and exact `9/9` count to
+`${TMPDIR:-/tmp}/release-local-apex-summary.json`.
+
+```bash
+GLADE_RELEASE_BIN=/path/to/glade GLADE_SOURCE_ROOT=/path/to/glade-source scripts/release-check.sh release
+```
+
 The version argument is written into each archive name, archived `plugin.json`,
 binary `manifest --json` response, and registry row.
 Archive entry order and metadata are fixed so clean reruns for the same source,
