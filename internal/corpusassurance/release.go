@@ -339,12 +339,13 @@ func validateToolsLocalReplacements(toolsRoot, gladeRoot string) error {
 	}
 	for _, replacement := range parsed.Replace {
 		target := replacement.New.Path
-		if replacement.New.Version != "" || (!filepath.IsAbs(target) && !strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../")) {
+		if filepath.IsAbs(target) {
+			return fmt.Errorf("local replacement path must be relative")
+		}
+		if replacement.New.Version != "" || (!strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../")) {
 			continue
 		}
-		if !filepath.IsAbs(target) {
-			target = filepath.Join(toolsRoot, target)
-		}
+		target = filepath.Join(toolsRoot, target)
 		target, err = filepath.EvalSymlinks(target)
 		if err != nil || (!pathWithin(gladeRoot, target) && !pathWithin(toolsRoot, target)) {
 			return fmt.Errorf("local replacement is outside sealed roots")

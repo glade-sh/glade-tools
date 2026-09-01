@@ -262,6 +262,36 @@ func TestCandidateAuthorityRejectsVersionSpecificReplacementOverride(t *testing.
 	}
 }
 
+func TestCandidateAuthorityRejectsAbsoluteCandidateReplacementPaths(t *testing.T) {
+	for _, module := range []string{"glade", "parser"} {
+		t.Run(module, func(t *testing.T) {
+			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
+			goModPath := filepath.Join(toolsRoot, "go.mod")
+			goMod, err := os.ReadFile(goModPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if module == "glade" {
+				goMod = []byte(strings.Replace(string(goMod), "github.com/glade-sh/glade => ../glade", "github.com/glade-sh/glade => "+candidateRoot, 1))
+			} else {
+				goMod = []byte(strings.Replace(string(goMod), "github.com/glade-sh/apex-parser => ../glade/third_party/glade-apex-parser", "github.com/glade-sh/apex-parser => "+filepath.Join(candidateRoot, "third_party", "glade-apex-parser"), 1))
+			}
+			if err := os.WriteFile(goModPath, goMod, 0o644); err != nil {
+				t.Fatal(err)
+			}
+			gitRun(t, toolsRoot, "add", "go.mod")
+			gitRun(t, toolsRoot, "commit", "--quiet", "-m", "use absolute replacement")
+			toolsBuild, err := deriveToolsBuildBinding(toolsRoot)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := validateToolsCandidatePair(candidateRoot, toolsBuild); err == nil {
+				t.Fatalf("candidate authority accepted absolute %s replacement", module)
+			}
+		})
+	}
+}
+
 func TestToolsBuildValidatorBindsExactSource(t *testing.T) {
 	root := newInventoryRepository(t, map[string]string{
 		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",
@@ -471,6 +501,28 @@ func TestCreateCandidateAuthorityRejectsNonzeroCandidateChecks(t *testing.T) {
 	}
 }
 
+func TestCreateCandidateAuthorityRejectsWrongEmbeddedVersion(t *testing.T) {
+	root := t.TempDir()
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
+	candidatePath := filepath.Join(root, "glade")
+	writeCandidateAuthorityExecutableWithVersion(t, candidatePath, true, strings.Repeat("f", 40), "")
+	toolsPath, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+	tools := candidateToolForTest(t, toolsRoot, toolsPath)
+	receiptPath := filepath.Join(root, "candidate-receipt.json")
+	writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
+	reviewPath := filepath.Join(root, "REVIEW.md")
+	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: filepath.Join(root, "CANDIDATE_AUTHORITY.json")}); err == nil {
+		t.Fatal("CreateCandidateAuthority accepted the wrong embedded version")
+	}
+}
+
 func writeCandidateAuthorityJSON(t *testing.T, path string, value any) {
 	t.Helper()
 	data, err := json.Marshal(value)
@@ -489,13 +541,17 @@ func writeCandidateAuthorityExecutable(t *testing.T, path, candidateRoot string,
 
 func writeCandidateAuthorityExecutableWithFailure(t *testing.T, path, candidateRoot string, parserOK bool, failingOperation string) {
 	t.Helper()
+	writeCandidateAuthorityExecutableWithVersion(t, path, parserOK, testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), failingOperation)
+}
+
+func writeCandidateAuthorityExecutableWithVersion(t *testing.T, path string, parserOK bool, embeddedVersion, failingOperation string) {
+	t.Helper()
 	value := "false"
 	if parserOK {
 		value = "true"
 	}
-	commit := testGitOutput(t, candidateRoot, "rev-parse", "HEAD")
 	script := "#!/bin/sh\ncase \"$1\" in\n" +
-		"version) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + commit + "\",\"go\":\"go-test\"}}' ;;\n" +
+		"version) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + embeddedVersion + "\",\"go\":\"go-test\"}}' ;;\n" +
 		"doctor) printf '%s\\n' '{\"command\":\"doctor\",\"exitCode\":0,\"parserOK\":" + value + "}' ;;\n" +
 		"parse) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"parse\",\"status\":\"passed\",\"exitCode\":0,\"data\":{}}' ;;\n" +
 		"*) exit 2 ;;\nesac\n" +
