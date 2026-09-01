@@ -246,10 +246,14 @@ func releaseCheckContractError(checkText string) error {
 		!strings.Contains(checkText, `*) echo "usage: $0 [all|core|release]" >&2; exit 2 ;;`) {
 		return fmt.Errorf("release-check.sh must accept only core, release, and their default union")
 	}
+	if !strings.Contains(checkText, `[[ "${GLADE_RELEASE_BIN:+set}" == "${GLADE_SOURCE_ROOT:+set}" ]]`) {
+		return fmt.Errorf("release-check.sh must require both local Apex gate bindings or neither")
+	}
 	wantCore := []string{
 		"git diff --check",
 		"node --test scripts/*.test.mjs",
 		`go test "${packages[@]}"`,
+		"go test -count=1 ./internal/corpusassurance",
 	}
 	wantRelease := []string{
 		"git diff --check",
@@ -258,6 +262,7 @@ func releaseCheckContractError(checkText string) error {
 		"go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json",
 		"go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json",
 		"go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json",
+		`[[ -z "${GLADE_RELEASE_BIN:-}" ]] || "$ROOT/scripts/release-local-apex-check.sh" "$GLADE_RELEASE_BIN" "$GLADE_SOURCE_ROOT"`,
 	}
 	gotCore := releaseCheckActiveLines(checkText, "core")
 	gotRelease := releaseCheckActiveLines(checkText, "release")
@@ -271,7 +276,7 @@ func releaseCheckContractError(checkText string) error {
 		"-count=1", "./internal/apexdocs", "./internal/apexrules", "./internal/capability", "./internal/compat",
 		"./internal/corpuscheck", "./internal/examplescan", "./internal/lwcparity", "./internal/metadata", "./internal/oracleprobe",
 		"./internal/orgpackage", "./internal/perfscan", "./internal/perftool", "./internal/producttestverify", "./internal/projectscan",
-		"./internal/uicontroller", "./internal/toolcli", "./internal/corpusassurance",
+		"./internal/uicontroller", "./internal/toolcli",
 	}
 	var gotPackages []string
 	inPackages := false
