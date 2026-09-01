@@ -516,7 +516,12 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`trap 'rm -f "$AUTH_FILE" "$LOGIN_RESULT" "$LOGIN_ERROR"' EXIT`,
 		`printf '%s' "$AUTH_URL" > "$AUTH_FILE"`, `chmod 600 "$AUTH_FILE"`,
 		`--alias glade-dev-hub \`, `sf org create scratch`, `--target-dev-hub glade-dev-hub`, `--alias "$SF_SCRATCH_ALIAS"`, `--name "$SF_SCRATCH_MARKER"`, "scripts/release-build.sh",
-		"RELEASE_SHARED_PAYLOAD_ARCHIVE", "RELEASE_SHARED_PAYLOAD_SHA256",
+		`payload_dir="$RUNNER_TEMP/glade-shared-payload"`, `mkdir -p "$payload_dir"`,
+		`DIST_DIR="$payload_dir" VERSION="$VERSION" scripts/release-build.sh shared-payload`,
+		`VERSION="$VERSION" \
+            RELEASE_SHARED_PAYLOAD_ARCHIVE="$payload_dir/glade-shared-payload.tar.gz" \
+            RELEASE_SHARED_PAYLOAD_SHA256="$payload_dir/glade-shared-payload.tar.gz.sha256" \
+            scripts/release-build.sh platform`,
 		`glade_${VERSION}_linux_amd64.tar.gz`, "./cmd/glade-tools",
 		`scripts/salesforce-correctness-gate.sh \
             "$TOOLS_BIN" \
@@ -536,7 +541,7 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 	for _, f := range []string{"pull_request:", "push:", "schedule:", "workflow_call:", "continue-on-error"} {
 		forbid(f)
 	}
-	for _, f := range []string{"--developer", "go build ./cmd/glade\n"} {
+	for _, f := range []string{"--developer", "go build ./cmd/glade\n", `RELEASE_SHARED_PAYLOAD_ARCHIVE="$PWD/dist/`} {
 		forbid(f)
 	}
 	pins := map[string]string{
