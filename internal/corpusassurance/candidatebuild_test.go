@@ -1,7 +1,8 @@
 package corpusassurance
 
 import (
-	"encoding/json"
+	"bytes"
+	"debug/buildinfo"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,16 +41,13 @@ func TestCreateCandidateBuildReceiptBuildsAndBindsExactBinaries(t *testing.T) {
 	if info, err := os.Stat(request.ToolsFreezeOutput); err != nil || info.Mode().Perm() != 0o400 {
 		t.Fatalf("tools freeze mode = %v, %v", info.Mode().Perm(), err)
 	}
-	progressPath, failurePath := candidateBuildEvidencePaths(request.ReceiptOutput)
+	progressPath := candidateBuildProgressPath(request.ReceiptOutput)
 	progress, err := os.ReadFile(progressPath)
 	if err != nil {
 		t.Fatalf("candidate build progress: %v", err)
 	}
 	if !strings.Contains(string(progress), "event=candidate-build-start") || !strings.Contains(string(progress), "event=candidate-build-complete") {
 		t.Fatalf("candidate build progress = %q", progress)
-	}
-	if _, err := os.Stat(failurePath); !os.IsNotExist(err) {
-		t.Fatalf("successful candidate build has failure receipt: %v", err)
 	}
 	review, err := os.ReadFile(request.ReviewOutput)
 	if err != nil || !strings.HasPrefix(string(review), "Verdict: PENDING\n") {
@@ -60,7 +58,7 @@ func TestCreateCandidateBuildReceiptBuildsAndBindsExactBinaries(t *testing.T) {
 	}
 }
 
-func TestCreateCandidateBuildReceiptPreservesFailedBuildEvidence(t *testing.T) {
+func TestCreateCandidateBuildReceiptReportsFailedBuild(t *testing.T) {
 	root := t.TempDir()
 	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {\n")
 	request := CandidateBuildRequest{
@@ -79,7 +77,7 @@ func TestCreateCandidateBuildReceiptPreservesFailedBuildEvidence(t *testing.T) {
 	} else if !strings.Contains(err.Error(), "syntax error") {
 		t.Fatalf("CreateCandidateBuildReceipt error = %v, want compiler stderr", err)
 	}
-	progressPath, failurePath := candidateBuildEvidencePaths(request.ReceiptOutput)
+	progressPath := candidateBuildProgressPath(request.ReceiptOutput)
 	progress, err := os.ReadFile(progressPath)
 	if err != nil {
 		t.Fatalf("failed candidate build progress: %v", err)
@@ -87,20 +85,9 @@ func TestCreateCandidateBuildReceiptPreservesFailedBuildEvidence(t *testing.T) {
 	if !strings.Contains(string(progress), "event=candidate-build-failed") || !strings.Contains(string(progress), "event=tools-build-failed") {
 		t.Fatalf("failed candidate build progress = %q", progress)
 	}
-	data, err := os.ReadFile(failurePath)
-	if err != nil {
-		t.Fatalf("failed candidate build receipt: %v", err)
-	}
-	var failure candidateBuildFailure
-	if err := json.Unmarshal(data, &failure); err != nil {
-		t.Fatal(err)
-	}
-	if failure.SchemaVersion != 1 || failure.Status != "candidate-build-failed" || failure.Stage != "tools-build" || !strings.Contains(failure.ToolsStderr, "syntax error") {
-		t.Fatalf("failed candidate build receipt = %#v", failure)
-	}
 }
 
-func TestCreateCandidateBuildReceiptPreservesBothBuildFailures(t *testing.T) {
+func TestCreateCandidateBuildReceiptStopsAfterCandidateFailure(t *testing.T) {
 	root := t.TempDir()
 	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {\n", "package main\nfunc main() {\n")
 	request := CandidateBuildRequest{
@@ -117,17 +104,109 @@ func TestCreateCandidateBuildReceiptPreservesBothBuildFailures(t *testing.T) {
 	if _, err := CreateCandidateBuildReceipt(request); err == nil {
 		t.Fatal("CreateCandidateBuildReceipt accepted two malformed builds")
 	}
-	_, failurePath := candidateBuildEvidencePaths(request.ReceiptOutput)
-	data, err := os.ReadFile(failurePath)
+	progressPath := candidateBuildProgressPath(request.ReceiptOutput)
+	progress, err := os.ReadFile(progressPath)
 	if err != nil {
-		t.Fatalf("failed candidate build receipt: %v", err)
+		t.Fatalf("failed candidate build progress: %v", err)
 	}
-	var failure candidateBuildFailure
-	if err := json.Unmarshal(data, &failure); err != nil {
+	if !strings.Contains(string(progress), "event=candidate-build-failed") || strings.Contains(string(progress), "event=tools-build-start") {
+		t.Fatalf("candidate build did not fail fast before tools: %q", progress)
+	}
+}
+
+func TestCandidateBuildBindingUsesExactReleaseVersion(t *testing.T) {
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")
+	commit := testGitOutput(t, candidateRoot, "rev-parse", "HEAD")
+	binding, err := deriveCandidateBuildBinding(candidateRoot)
+	if err != nil {
 		t.Fatal(err)
 	}
-	if failure.Stage != "builds" || !strings.Contains(failure.CandidateStderr, "syntax error") || !strings.Contains(failure.ToolsStderr, "syntax error") || len(failure.CandidateCommand) == 0 || len(failure.ToolsCommand) == 0 {
-		t.Fatalf("failed candidate build receipt = %#v", failure)
+	want := []string{"build", "-buildvcs=false", "-trimpath", "-ldflags", "-s -w -X github.com/glade-sh/glade/internal/gladecli.Version=" + commit, "-o", "<candidate>", "./cmd/glade"}
+	if !equalStrings(binding.Arguments, want) {
+		t.Fatalf("candidate build arguments = %#v, want %#v", binding.Arguments, want)
+	}
+	toolsBinding, err := deriveToolsBuildBinding(toolsRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !equalStrings(toolsBinding.Arguments, []string{"build", "-buildvcs=false", "-trimpath", "-o", "<candidate>", "./cmd/glade-tools"}) {
+		t.Fatalf("tools build arguments = %#v", toolsBinding.Arguments)
+	}
+}
+
+func TestRunBoundCandidateBuildRequiresExactlyOneOutputPlaceholder(t *testing.T) {
+	for name, arguments := range map[string][]string{
+		"missing":   {"build", "./cmd/glade"},
+		"duplicate": {"build", "-o", "<candidate>", "<candidate>", "./cmd/glade"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			binding := candidateBuildBinding{Arguments: arguments}
+			if err := runBoundCandidateBuild(binding, filepath.Join(t.TempDir(), "glade")); err == nil {
+				t.Fatal("runBoundCandidateBuild accepted an invalid placeholder count")
+			}
+		})
+	}
+}
+
+func TestRunBoundCandidateBuildFindsTheOutputPlaceholderByValue(t *testing.T) {
+	root := t.TempDir()
+	goPath := filepath.Join(root, "go")
+	if err := os.WriteFile(goPath, []byte("#!/bin/sh\nexit 0\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	binding := candidateBuildBinding{
+		SourceRoot: root,
+		Go:         candidateAuthoritySource{Path: goPath, SHA256: fileSHA256(t, goPath)},
+		Arguments:  []string{"build", "./cmd/glade", "<candidate>"},
+	}
+	if err := runBoundCandidateBuild(binding, filepath.Join(root, "glade")); err != nil {
+		t.Fatalf("runBoundCandidateBuild rejected a single non-positional placeholder: %v", err)
+	}
+}
+
+func TestToolsBuildInfoKeepsRelativeCandidateReplacements(t *testing.T) {
+	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\nfunc main() {}\n", "package main\nfunc main() {}\n")
+	writeFixtureFile(t, candidateRoot, "probe/probe.go", "package probe\n")
+	writeFixtureFile(t, candidateRoot, "third_party/glade-apex-parser/probe/probe.go", "package probe\n")
+	writeFixtureFile(t, toolsRoot, "cmd/glade-tools/main.go", "package main\nimport (\n _ \"github.com/glade-sh/glade/probe\"\n _ \"github.com/glade-sh/apex-parser/probe\"\n)\nfunc main() {}\n")
+	gitRun(t, candidateRoot, "add", ".")
+	gitRun(t, candidateRoot, "commit", "--quiet", "-m", "add probes")
+	gitRun(t, toolsRoot, "add", ".")
+	gitRun(t, toolsRoot, "commit", "--quiet", "-m", "use probes")
+	binding, err := deriveToolsBuildBinding(toolsRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(t.TempDir(), "glade-tools")
+	if err := runBoundCandidateBuild(binding, output); err != nil {
+		t.Fatal(err)
+	}
+	info, err := buildinfo.ReadFile(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"github.com/glade-sh/glade":       "../glade",
+		"github.com/glade-sh/apex-parser": "../glade/third_party/glade-apex-parser",
+	}
+	for _, dependency := range info.Deps {
+		if dependency.Replace == nil || want[dependency.Path] == "" {
+			continue
+		}
+		if dependency.Replace.Path != want[dependency.Path] || filepath.IsAbs(dependency.Replace.Path) {
+			t.Fatalf("replacement for %s = %q, want relative %q", dependency.Path, dependency.Replace.Path, want[dependency.Path])
+		}
+		delete(want, dependency.Path)
+	}
+	if len(want) != 0 {
+		t.Fatalf("build info missing relative replacements: %#v", want)
+	}
+	binary, err := os.ReadFile(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bytes.Contains(binary, []byte(candidateRoot)) || bytes.Contains(binary, []byte(toolsRoot)) {
+		t.Fatal("tools binary contains an original absolute source root")
 	}
 }
 

@@ -17,7 +17,7 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
@@ -162,7 +162,7 @@ func TestCandidateBuildBindingUsesCommitScopedCaches(t *testing.T) {
 			t.Fatalf("candidate build environment = %q, missing %q", environment, name)
 		}
 	}
-	if !equalStrings(binding.Arguments, []string{"build", "-buildvcs=false", "-trimpath", "-o", "<candidate>", "./cmd/glade"}) {
+	if !equalStrings(binding.Arguments, []string{"build", "-buildvcs=false", "-trimpath", "-ldflags", "-s -w -X github.com/glade-sh/glade/internal/gladecli.Version=" + commit, "-o", "<candidate>", "./cmd/glade"}) {
 		t.Fatalf("candidate build arguments = %#v", binding.Arguments)
 	}
 }
@@ -180,6 +180,31 @@ func TestCandidateAuthorityRejectsToolsBoundToAnotherCandidateRoot(t *testing.T)
 	}
 	if err := validateToolsCandidatePair(candidateRoot, toolsBuild); err == nil {
 		t.Fatal("candidate authority accepted tools bound to another candidate root")
+	}
+}
+
+func TestCandidateAuthorityRejectsNonSiblingSourceRoots(t *testing.T) {
+	candidateRoot := newInventoryRepository(t, map[string]string{
+		"go.mod":                               "module github.com/glade-sh/glade\n\ngo 1.23.0\n",
+		"cmd/glade/main.go":                    "package main\n",
+		"third_party/glade-apex-parser/go.mod": "module github.com/glade-sh/apex-parser\n\ngo 1.23.0\n",
+	})
+	toolsParent := t.TempDir()
+	toolsRoot := filepath.Join(toolsParent, "glade-tools")
+	candidateRelative, err := filepath.Rel(toolsRoot, candidateRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	toolsRoot = newInventoryRepositoryAt(t, toolsRoot, map[string]string{
+		"go.mod":                  "module github.com/glade-sh/glade/tools\n\ngo 1.23.0\n\nrequire (\n\tgithub.com/glade-sh/glade v0.0.0\n\tgithub.com/glade-sh/apex-parser v0.1.0\n)\n\nreplace github.com/glade-sh/glade => " + candidateRelative + "\n\nreplace github.com/glade-sh/apex-parser => " + filepath.Join(candidateRelative, "third_party", "glade-apex-parser") + "\n",
+		"cmd/glade-tools/main.go": "package main\n",
+	})
+	toolsBuild, err := deriveToolsBuildBinding(toolsRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := validateToolsCandidatePair(candidateRoot, toolsBuild); err == nil {
+		t.Fatal("candidate authority accepted non-sibling source roots")
 	}
 }
 
@@ -267,7 +292,7 @@ func TestCreateCandidateAuthorityRejectsToolsThatAreNotExecuting(t *testing.T) {
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	candidatePath, toolsPath := filepath.Join(root, "glade"), filepath.Join(root, "other-glade-tools")
-	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
 	if err := os.WriteFile(toolsPath, []byte(filepath.Base(toolsPath)), 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -288,7 +313,7 @@ func TestCreateAssuranceAttemptRejectsToolsOutsideCandidateAuthority(t *testing.
 	root := t.TempDir()
 	candidateRoot, sealedToolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
-	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
 	sealedToolsPath, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -375,7 +400,7 @@ func TestCreateCandidateAuthorityRejectsInvalidReviewWithoutOutput(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
@@ -398,7 +423,7 @@ func TestCreateCandidateAuthorityRejectsCandidateWithoutParser(t *testing.T) {
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	candidatePath := filepath.Join(root, "glade")
-	writeCandidateAuthorityExecutable(t, candidatePath, false)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, false)
 	toolsPath, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -420,6 +445,32 @@ func TestCreateCandidateAuthorityRejectsCandidateWithoutParser(t *testing.T) {
 	}
 }
 
+func TestCreateCandidateAuthorityRejectsNonzeroCandidateChecks(t *testing.T) {
+	for _, operation := range []string{"version", "doctor", "parse"} {
+		t.Run(operation, func(t *testing.T) {
+			root := t.TempDir()
+			candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
+			candidatePath := filepath.Join(root, "glade")
+			writeCandidateAuthorityExecutableWithFailure(t, candidatePath, candidateRoot, true, operation)
+			toolsPath, err := os.Executable()
+			if err != nil {
+				t.Fatal(err)
+			}
+			candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+			tools := candidateToolForTest(t, toolsRoot, toolsPath)
+			receiptPath := filepath.Join(root, "candidate-receipt.json")
+			writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
+			reviewPath := filepath.Join(root, "REVIEW.md")
+			if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: filepath.Join(root, "CANDIDATE_AUTHORITY.json")}); err == nil {
+				t.Fatalf("CreateCandidateAuthority accepted nonzero %s", operation)
+			}
+		})
+	}
+}
+
 func writeCandidateAuthorityJSON(t *testing.T, path string, value any) {
 	t.Helper()
 	data, err := json.Marshal(value)
@@ -431,13 +482,25 @@ func writeCandidateAuthorityJSON(t *testing.T, path string, value any) {
 	}
 }
 
-func writeCandidateAuthorityExecutable(t *testing.T, path string, parserOK bool) {
+func writeCandidateAuthorityExecutable(t *testing.T, path, candidateRoot string, parserOK bool) {
+	t.Helper()
+	writeCandidateAuthorityExecutableWithFailure(t, path, candidateRoot, parserOK, "")
+}
+
+func writeCandidateAuthorityExecutableWithFailure(t *testing.T, path, candidateRoot string, parserOK bool, failingOperation string) {
 	t.Helper()
 	value := "false"
 	if parserOK {
 		value = "true"
 	}
-	if err := os.WriteFile(path, []byte("#!/bin/sh\nprintf '%s\\n' '{\"command\":\"doctor\",\"parserOK\":"+value+"}'\nexit 1\n"), 0o700); err != nil {
+	commit := testGitOutput(t, candidateRoot, "rev-parse", "HEAD")
+	script := "#!/bin/sh\ncase \"$1\" in\n" +
+		"version) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"version\",\"status\":\"passed\",\"exitCode\":0,\"data\":{\"version\":\"" + commit + "\",\"go\":\"go-test\"}}' ;;\n" +
+		"doctor) printf '%s\\n' '{\"command\":\"doctor\",\"exitCode\":0,\"parserOK\":" + value + "}' ;;\n" +
+		"parse) printf '%s\\n' '{\"schemaVersion\":\"1.0\",\"command\":\"parse\",\"status\":\"passed\",\"exitCode\":0,\"data\":{}}' ;;\n" +
+		"*) exit 2 ;;\nesac\n" +
+		"if [ \"$1\" = \"" + failingOperation + "\" ]; then exit 1; fi\nexit 0\n"
+	if err := os.WriteFile(path, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -490,4 +553,20 @@ func newPairedBuildRepositories(t *testing.T, candidateMain, toolsMain string) (
 		gitRun(t, path, "commit", "--quiet", "-m", "fixture")
 	}
 	return candidateRoot, toolsRoot
+}
+
+func newInventoryRepositoryAt(t *testing.T, repository string, files map[string]string) string {
+	t.Helper()
+	if err := os.MkdirAll(repository, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	gitRun(t, repository, "init", "--quiet")
+	gitRun(t, repository, "config", "user.email", "inventory@example.test")
+	gitRun(t, repository, "config", "user.name", "Inventory Test")
+	for path, content := range files {
+		writeFixtureFile(t, repository, path, content)
+	}
+	gitRun(t, repository, "add", ".")
+	gitRun(t, repository, "commit", "--quiet", "-m", "fixture")
+	return repository
 }
