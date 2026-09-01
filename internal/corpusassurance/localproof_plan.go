@@ -314,6 +314,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:Database.Batchable") || surfaceID == "apex:System.Database.executeBatch(Object)" || surfaceID == "apex:System.Database.executeBatch(Object,Integer)" || strings.HasPrefix(surfaceID, "apex:System.Test.") ||
 			strings.HasPrefix(surfaceID, "apex:Schema.DescribeDataCategoryGroup") ||
 			surfaceID == "apex:System.ExternalServiceTest.sendCallback(HttpRequest)" || surfaceID == "apex:System.System.attachFinalizer(finalizer)" || surfaceID == "apex:System.System.attachFinalizer(Object)" || surfaceID == "apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)" ||
+			surfaceID == "apex:System.PageReference.forResource(String)" || surfaceID == "apex:System.PageReference.forResource(String,String)" ||
 			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
 			localRuntimeUserClassTestSurface(surfaceID) ||
 			localRuntimeDatabaseTestSurface(surfaceID) ||
