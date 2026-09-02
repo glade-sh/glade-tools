@@ -47,8 +47,8 @@ func TestReleaseWorkflowPinsCatalogGladeCommitAndUsesNotesFile(t *testing.T) {
 	}
 	workflowText := string(workflow)
 	for _, want := range []string{
-		`RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && 'v0.2.12' || github.ref_name }}`,
-		`TOOLS_SHA: ${{ github.event_name == 'workflow_dispatch' && '18dd0e23cb540fdacdaaafa51b69c35d25426436' || github.sha }}`,
+		`RELEASE_TAG: ${{ github.ref_name }}`,
+		`TOOLS_SHA: ${{ github.sha }}`,
 		"Read pinned glade ref",
 		`requested_ref="$(jq -er '.gladeCommit | select(type == "string" and test("^[0-9a-f]{40}$"))' docs/fixtures/apex-language-rules.json)"`,
 		`printf 'ref=%s\n' "$requested_ref" >> "$GITHUB_OUTPUT"`,
@@ -80,7 +80,7 @@ func TestReleaseWorkflowPinsCatalogGladeCommitAndUsesNotesFile(t *testing.T) {
 	}
 }
 
-func TestReleaseWorkflowDispatchRecoveryUsesOnlyV0212AndItsExactTag(t *testing.T) {
+func TestReleaseWorkflowTagPushUsesExactTagAndSHA(t *testing.T) {
 	workflow, err := os.ReadFile(filepath.Join("..", ".github", "workflows", "release.yml"))
 	if err != nil {
 		t.Fatal(err)
@@ -90,7 +90,7 @@ func TestReleaseWorkflowDispatchRecoveryUsesOnlyV0212AndItsExactTag(t *testing.T
 		`ref: ${{ env.TOOLS_SHA }}`,
 		`refs/tags/$RELEASE_TAG^{}`,
 		`test "$tag_sha" = "$TOOLS_SHA"`,
-		`if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')`,
+		`if: startsWith(github.ref, 'refs/tags/')`,
 		`scripts/verify-release-gates.sh "$GITHUB_REPOSITORY" "$TOOLS_SHA" > required-gates.json`,
 		`gh release view "$RELEASE_TAG" --json targetCommitish --jq '.targetCommitish'`,
 		`--target "$TOOLS_SHA"`,
@@ -101,11 +101,16 @@ func TestReleaseWorkflowDispatchRecoveryUsesOnlyV0212AndItsExactTag(t *testing.T
 		`../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$TOOLS_SHA"`,
 	} {
 		if !strings.Contains(workflowText, want) {
-			t.Fatalf("release recovery missing %q", want)
+			t.Fatalf("tag release missing %q", want)
 		}
 	}
 	if strings.Contains(workflowText, `test "$1" = api`) {
 		t.Fatal("public check-runs adapter must replay the frozen response without argv parsing")
+	}
+	for _, retired := range []string{"workflow_dispatch", "v0.2.12", "18dd0e23cb540fdacdaaafa51b69c35d25426436"} {
+		if strings.Contains(workflowText, retired) {
+			t.Fatalf("tag release retains retired recovery value %q", retired)
+		}
 	}
 }
 
