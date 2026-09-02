@@ -18,7 +18,7 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
 	inventoryPath := filepath.Join(root, "IN_SCOPE.json")
 	if err := WriteNewJSON(inventoryPath, InventorySpec{SchemaVersion: 1, Scope: "private-corpus-assurance", Repositories: []InventoryEntry{{ID: "private-corpus-001", CheckoutPath: candidateRoot, ExpectedCommit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD")}}}); err != nil {
 		t.Fatal(err)
@@ -44,7 +44,7 @@ func TestCreateAssuranceAttemptWithAuthorities(t *testing.T) {
 	root := t.TempDir()
 	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
-	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
 	toolsPath, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -105,7 +105,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	root := t.TempDir()
 	candidateRoot, toolsRoot := newPairedBuildRepositories(t, "package main\n", "package main\n")
 	candidatePath := filepath.Join(root, "glade")
-	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	writeCandidateAuthorityExecutable(t, candidatePath, candidateRoot, true)
 	toolsPath, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)

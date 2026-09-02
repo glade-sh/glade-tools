@@ -9,12 +9,15 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
   salesforce-correctness:
     runs-on: ubuntu-latest
     timeout-minutes: 75
+    env:
+      GOMEMLIMIT: "6GiB"
     defaults:
       run:
         working-directory: glade-tools
@@ -79,10 +82,12 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="sf-correctness-${GLADE_SHA:0:12}"
-          VERSION="$VERSION" scripts/release-build.sh shared-payload
+          payload_dir="$RUNNER_TEMP/glade-shared-payload"
+          mkdir -p "$payload_dir"
+          DIST_DIR="$payload_dir" VERSION="$VERSION" scripts/release-build.sh shared-payload
           VERSION="$VERSION" \
-            RELEASE_SHARED_PAYLOAD_ARCHIVE="$PWD/dist/glade-shared-payload.tar.gz" \
-            RELEASE_SHARED_PAYLOAD_SHA256="$PWD/dist/glade-shared-payload.tar.gz.sha256" \
+            RELEASE_SHARED_PAYLOAD_ARCHIVE="$payload_dir/glade-shared-payload.tar.gz" \
+            RELEASE_SHARED_PAYLOAD_SHA256="$payload_dir/glade-shared-payload.tar.gz.sha256" \
             scripts/release-build.sh platform
           archive="dist/glade_${VERSION}_linux_amd64.tar.gz"
           extract_dir="$RUNNER_TEMP/glade-candidate"
@@ -109,6 +114,16 @@ jobs:
             echo "Salesforce authentication failed." >&2
             exit 1
           fi
+      - name: Deactivate stale correctness scratch orgs
+        timeout-minutes: 5
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          scripts/salesforce-stale-scratch-cleanup.sh \
+            glade-dev-hub \
+            "$SF_SCRATCH_MARKER" \
+            "$GITHUB_REPOSITORY" \
+            "$RUNNER_TEMP/salesforce-correctness-evidence/stale-scratch-org-cleanup.json"
       - name: Create scratch org
         run: |
           set -euo pipefail

@@ -245,15 +245,18 @@ consumed by the existing Salesforce executor. `oracle-bundle` requires the
 same `--surface-wave-plan` when staging a wave plan, so it cannot stage a
 caller-selected subset.
 
-`candidate-build` starts the product and tools builds concurrently. Its exact
-commit binding selects reusable commit-scoped Go build and module caches, so a
-retry for the same candidate pair does not pay the full cold-cache cost again.
-The command writes progress to
-`artifacts/logs/candidate-build.log`. If either build or a later binding step
-fails, it also writes the create-only
-`artifacts/logs/candidate-build-failure.json`, including the failing stage,
-command, exit code, and compiler stderr when available. A failed root remains
+`candidate-build` requires clean neutral `glade/` and `glade-tools/` sibling
+roots with the documented relative module replacements. It builds the product
+and then tools serially under the fixed two-core environment, and stops before
+the tools build when the product build fails. The product release arguments
+embed the full 40-character candidate commit in `gladecli.Version`; tools keep
+their relative replacement metadata. Exact commit bindings select reusable
+commit-scoped Go build and module caches. The command writes stage and compiler
+failure details to `artifacts/logs/candidate-build.log`. A failed root remains
 the record of that attempt; the next run still uses a successor root.
+
+`candidate-authority` also requires zero-exit `version --json`, `doctor --json`,
+and real Apex `parse` checks from the sealed candidate before writing authority.
 
 `review-index` creates a compact review aid after the attempt evidence is
 present. Pass each retained raw file with `--artifact`; the index binds the

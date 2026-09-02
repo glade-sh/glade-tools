@@ -814,6 +814,32 @@ printf '{"diagnostics":[{"code":"GLADEPERF001","message":"slow check","file":"A.
 	}
 }
 
+func TestCorpusCheckCommandAcceptsExpectedDiagnostics(t *testing.T) {
+	root := t.TempDir()
+	project := filepath.Join(root, "alpha")
+	if err := os.MkdirAll(project, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(project, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+printf '{"diagnostics":[{"code":"GLADESEMA009","message":"No overload matches call","file":"A.cls","line":7,"column":9,"severity":"warning"}]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	expected := filepath.Join(root, "expected-diagnostics.json")
+	if err := os.WriteFile(expected, []byte(`{"schemaVersion":1,"diagnostics":[{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"A.cls","line":7,"column":9,"severity":"warning","message":"No overload matches call","rootCause":"method-overload-resolution","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"corpus", "check", "--root", root, "--glade", glade, "--out", filepath.Join(root, "out"), "--expected-diagnostics", expected, "--fail-on-unclassified", "--max-unclassified", "0"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+}
+
 func TestCorpusCheckCommandSimulatesSourceAPIUpgrade(t *testing.T) {
 	root := t.TempDir()
 	project := filepath.Join(root, "alpha")

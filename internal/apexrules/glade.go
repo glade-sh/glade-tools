@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -120,7 +121,10 @@ func writeGladeRuleSetup(project string, rule Rule) error {
 	if apiVersion == 0 {
 		apiVersion = 66
 	}
-	projectJSON := "{\n  \"packageDirectories\": [{\"path\": \"force-app\", \"default\": true}],\n  \"sourceApiVersion\": \"" + strconv.FormatFloat(apiVersion, 'f', -1, 64) + "\"\n}\n"
+	if apiVersion != math.Trunc(apiVersion) {
+		return fmt.Errorf("unsupported source API version %.10g", apiVersion)
+	}
+	projectJSON := "{\n  \"packageDirectories\": [{\"path\": \"force-app\", \"default\": true}],\n  \"sourceApiVersion\": \"" + strconv.FormatFloat(apiVersion, 'f', 1, 64) + "\"\n}\n"
 	if err := os.WriteFile(filepath.Join(project, "sfdx-project.json"), []byte(projectJSON), 0o600); err != nil {
 		return err
 	}

@@ -71,6 +71,8 @@ type candidateBuildBinding struct {
 
 var validateSealedCandidateBuild = validateCandidateBuildFromSource
 var validateSealedToolsBuild = validateToolsBuildFromSource
+var resolveCandidateAuthorityBinary = fixedReleaseBinary
+var runCandidateAuthorityCommand = runReplayCommandOutput
 
 type candidateTool struct {
 	RuntimeArtifact
@@ -187,6 +189,9 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 	if err := validateCandidateParser(receipt.Candidate, candidateRoot); err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
+	if err := validateCleanGitRoot(candidateRoot, receipt.Candidate.Commit); err != nil {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source changed during toolchain validation: %w", err)
+	}
 	reviewBytes, err := os.ReadFile(reviewPath)
 	if err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
@@ -198,6 +203,9 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 }
 
 func deriveCandidateBuildBinding(sourceRoot string) (candidateBuildBinding, error) {
+	if err := validateCandidateLocalReplacements(sourceRoot); err != nil {
+		return candidateBuildBinding{}, fmt.Errorf("candidate local replacements are invalid: %w", err)
+	}
 	return deriveBuildBinding(sourceRoot, "./cmd/glade")
 }
 
@@ -235,11 +243,15 @@ func deriveBuildBinding(sourceRoot, target string) (candidateBuildBinding, error
 	if err != nil {
 		return candidateBuildBinding{}, err
 	}
+	arguments := []string{"build", "-buildvcs=false", "-trimpath", "-o", "<candidate>", target}
+	if target == "./cmd/glade" {
+		arguments = []string{"build", "-buildvcs=false", "-trimpath", "-ldflags", "-s -w -X github.com/glade-sh/glade/internal/gladecli.Version=" + commit, "-o", "<candidate>", target}
+	}
 	return candidateBuildBinding{
 		SourceRoot:  canonical,
 		SourceTree:  tree,
 		Go:          candidateAuthoritySource{Path: goPath, SHA256: goSHA256},
-		Arguments:   []string{"build", "-buildvcs=false", "-trimpath", "-o", "<candidate>", target},
+		Arguments:   arguments,
 		Environment: environment,
 	}, nil
 }
@@ -248,6 +260,9 @@ func validateToolsCandidatePair(candidateRoot string, toolsBuild candidateBuildB
 	candidateRoot, err := filepath.EvalSymlinks(candidateRoot)
 	if err != nil || !filepath.IsAbs(candidateRoot) {
 		return fmt.Errorf("candidate source pairing is unavailable")
+	}
+	if filepath.Dir(candidateRoot) != filepath.Dir(toolsBuild.SourceRoot) {
+		return fmt.Errorf("candidate and tools source roots must be siblings")
 	}
 	if err := validateToolsLocalReplacements(toolsBuild.SourceRoot, candidateRoot); err != nil {
 		return fmt.Errorf("tools candidate source pairing is invalid")
@@ -371,7 +386,20 @@ func validateCandidateBuildFromSource(sourceRoot string, candidate attemptCandid
 }
 
 func runBoundCandidateBuild(binding candidateBuildBinding, outputPath string) error {
-	if !filepath.IsAbs(outputPath) || len(binding.Arguments) != 6 || binding.Arguments[4] != "<candidate>" {
+	if !filepath.IsAbs(outputPath) {
+		return fmt.Errorf("candidate build output is invalid")
+	}
+	placeholder := -1
+	for index, argument := range binding.Arguments {
+		if argument != "<candidate>" {
+			continue
+		}
+		if placeholder != -1 {
+			return fmt.Errorf("candidate build output is invalid")
+		}
+		placeholder = index
+	}
+	if placeholder == -1 {
 		return fmt.Errorf("candidate build output is invalid")
 	}
 	before, err := sha256File(binding.Go.Path)
@@ -387,7 +415,7 @@ func runBoundCandidateBuild(binding candidateBuildBinding, outputPath string) er
 		}
 	}
 	arguments := append([]string(nil), binding.Arguments...)
-	arguments[4] = outputPath
+	arguments[placeholder] = outputPath
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 	var stderr bytes.Buffer
@@ -429,19 +457,121 @@ func (err *candidateBuildCommandError) Error() string {
 func (err *candidateBuildCommandError) Unwrap() error { return err.Err }
 
 func validateCandidateParser(candidate attemptCandidate, workingDirectory string) error {
-	result, stdout, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 30 * time.Second})
-	if result.TimedOut || result.ExecutableSHA256 != candidate.SHA256 || result.ExecutableAfterSHA256 != candidate.SHA256 || !validCandidateDoctorJSON(stdout) {
-		return fmt.Errorf("candidate Apex parser is unavailable")
+	if current, err := sha256File(candidate.Path); err != nil || current != candidate.SHA256 {
+		return fmt.Errorf("candidate executable is stale")
+	}
+	root, err := os.MkdirTemp("", "glade-candidate-authority-")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(root)
+	home, data := filepath.Join(root, "home"), filepath.Join(root, "data")
+	for _, path := range []string{home, data} {
+		if err := os.Mkdir(path, 0o700); err != nil {
+			return err
+		}
+	}
+	releaseEnvironment := fixedReleaseEnvironment()
+	npmPath, err := resolveCandidateAuthorityBinary(releaseEnvironment, "npm")
+	if err != nil {
+		return fmt.Errorf("candidate npm setup is unavailable: %w", err)
+	}
+	environment := append([]string(nil), releaseEnvironment...)
+	for index, entry := range environment {
+		switch {
+		case strings.HasPrefix(entry, "HOME="):
+			environment[index] = "HOME=" + home
+		case strings.HasPrefix(entry, "TMPDIR="):
+			environment[index] = "TMPDIR=" + root
+		}
+	}
+	environment = append(environment, "XDG_DATA_HOME="+data)
+	result, _, _ := runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: npmPath, Args: []string{"ci", "--ignore-scripts", "--no-audit", "--no-fund", "--prefix", filepath.Join("third_party", "lwc")}, Env: environment, Timeout: 15 * time.Minute})
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut {
+		return fmt.Errorf("candidate npm setup failed with exit code %d", result.ExitCode)
+	}
+	if current, err := sha256File(candidate.Path); err != nil || current != candidate.SHA256 {
+		return fmt.Errorf("candidate npm setup changed candidate executable")
+	}
+	result, _, _ = runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"toolchain", "install", "--from", workingDirectory}, Env: environment, Timeout: 5 * time.Minute})
+	if result.ExecutableSHA256 != candidate.SHA256 || result.ExecutableAfterSHA256 != candidate.SHA256 {
+		return fmt.Errorf("candidate toolchain install changed candidate executable")
+	}
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut {
+		return fmt.Errorf("candidate toolchain install failed with exit code %d", result.ExitCode)
+	}
+	result, stdout, _ := runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"version", "--json"}, Env: environment, Timeout: 30 * time.Second})
+	if !validCandidateCommandResult(result, candidate) || !validCandidateVersionJSON(stdout, candidate.Commit) {
+		return fmt.Errorf("candidate embedded version is invalid")
+	}
+	result, stdout, _ = runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: environment, Timeout: 30 * time.Second})
+	var doctor struct {
+		Command     string `json:"command"`
+		ExitCode    int    `json:"exitCode"`
+		ParserOK    bool   `json:"parserOK"`
+		ToolchainOK bool   `json:"toolchainOK"`
+	}
+	if validateJSONWithoutDuplicateKeys(stdout) != nil || json.Unmarshal(stdout, &doctor) != nil || doctor.Command != "doctor" {
+		return fmt.Errorf("candidate doctor output is invalid")
+	}
+	if !doctor.ParserOK {
+		return fmt.Errorf("candidate doctor reported parser unavailable")
+	}
+	if !doctor.ToolchainOK {
+		return fmt.Errorf("candidate doctor reported toolchain unavailable")
+	}
+	if !validCandidateCommandResult(result, candidate) || doctor.ExitCode != 0 {
+		exitCode := result.ExitCode
+		if doctor.ExitCode != 0 {
+			exitCode = doctor.ExitCode
+		}
+		return fmt.Errorf("candidate doctor command failed with exit code %d", exitCode)
+	}
+	fixture, err := os.CreateTemp(root, "probe-*.cls")
+	if err != nil {
+		return err
+	}
+	fixturePath := fixture.Name()
+	defer os.Remove(fixturePath)
+	if _, err := fixture.WriteString("public class CandidateAuthorityProbe {}\n"); err != nil {
+		_ = fixture.Close()
+		return err
+	}
+	if err := fixture.Close(); err != nil {
+		return err
+	}
+	result, stdout, _ = runCandidateAuthorityCommand(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"parse", fixturePath, "--json", "--no-progress"}, Env: environment, Timeout: 30 * time.Second})
+	if !validCandidateCommandResult(result, candidate) || !validCandidateParseJSON(stdout) {
+		return fmt.Errorf("candidate Apex parse check failed")
 	}
 	return nil
 }
 
-func validCandidateDoctorJSON(data []byte) bool {
-	var doctor struct {
-		Command  string `json:"command"`
-		ParserOK bool   `json:"parserOK"`
+func validCandidateCommandResult(result CommandResult, candidate attemptCandidate) bool {
+	return result.Passed && result.ExitCode == 0 && !result.TimedOut && result.ExecutableSHA256 == candidate.SHA256 && result.ExecutableAfterSHA256 == candidate.SHA256
+}
+
+func validCandidateVersionJSON(data []byte, commit string) bool {
+	var version struct {
+		SchemaVersion string `json:"schemaVersion"`
+		Command       string `json:"command"`
+		Status        string `json:"status"`
+		ExitCode      int    `json:"exitCode"`
+		Data          struct {
+			Version string `json:"version"`
+		} `json:"data"`
 	}
-	return validateJSONWithoutDuplicateKeys(data) == nil && json.Unmarshal(data, &doctor) == nil && doctor.Command == "doctor" && doctor.ParserOK
+	return validateJSONWithoutDuplicateKeys(data) == nil && json.Unmarshal(data, &version) == nil && version.SchemaVersion == "1.0" && version.Command == "version" && version.Status == "passed" && version.ExitCode == 0 && version.Data.Version == commit
+}
+
+func validCandidateParseJSON(data []byte) bool {
+	var parse struct {
+		SchemaVersion string `json:"schemaVersion"`
+		Command       string `json:"command"`
+		Status        string `json:"status"`
+		ExitCode      int    `json:"exitCode"`
+	}
+	return validateJSONWithoutDuplicateKeys(data) == nil && json.Unmarshal(data, &parse) == nil && parse.SchemaVersion == "1.0" && parse.Command == "parse" && parse.Status == "passed" && parse.ExitCode == 0
 }
 
 func validCandidateBuildReceipt(receipt candidateBuildReceipt, input candidateAuthorityInput) bool {

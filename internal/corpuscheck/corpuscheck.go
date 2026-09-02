@@ -25,6 +25,7 @@ type Options struct {
 	FailOnCheckClosure       bool
 	MaxUnclassified          int
 	SimulateSourceAPIVersion string
+	ExpectedDiagnostics      string
 }
 
 type Report struct {
@@ -82,6 +83,38 @@ type ClassifiedDiagnostic struct {
 	Raw      string
 }
 
+type expectedDiagnosticsManifest struct {
+	SchemaVersion   int                                `json:"schemaVersion"`
+	Diagnostics     []expectedDiagnostic               `json:"diagnostics"`
+	TrackingRecords []expectedDiagnosticTrackingRecord `json:"trackingRecords"`
+}
+
+type expectedDiagnostic struct {
+	Project         string `json:"project"`
+	Class           string `json:"class"`
+	Code            string `json:"code"`
+	File            string `json:"file"`
+	Line            int    `json:"line"`
+	Column          int    `json:"column"`
+	Severity        string `json:"severity"`
+	Message         string `json:"message"`
+	RootCause       string `json:"rootCause"`
+	Tracking        string `json:"tracking"`
+	ExpectedOutcome string `json:"expectedOutcome"`
+}
+
+type expectedDiagnosticTrackingRecord struct {
+	ID                      string   `json:"id"`
+	Class                   string   `json:"class"`
+	RootCause               string   `json:"rootCause"`
+	ExpectedOutcome         string   `json:"expectedOutcome"`
+	Owner                   string   `json:"owner"`
+	EvidenceRefs            []string `json:"evidenceRefs"`
+	MinimalReproducer       string   `json:"minimalReproducer"`
+	FocusedTestPlan         string   `json:"focusedTestPlan"`
+	AcceptancePostcondition string   `json:"acceptancePostcondition"`
+}
+
 func Check(ctx context.Context, options Options) (Report, error) {
 	if strings.TrimSpace(options.Root) == "" {
 		return Report{}, errors.New("--root requires a value")
@@ -99,6 +132,10 @@ func Check(ctx context.Context, options Options) (Report, error) {
 		}
 	}
 	if err := rejectStaleGeneratedReports(options.OutDir); err != nil {
+		return Report{}, err
+	}
+	expected, err := loadExpectedDiagnostics(options.ExpectedDiagnostics)
+	if err != nil {
 		return Report{}, err
 	}
 	if err := os.Remove(filepath.Join(options.OutDir, "upgrade-simulation.json")); err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -163,6 +200,11 @@ func Check(ctx context.Context, options Options) (Report, error) {
 	if err := writeReport(options.OutDir, report); err != nil {
 		return Report{}, err
 	}
+	if options.ExpectedDiagnostics != "" {
+		if err := checkExpectedDiagnostics(report.Diagnostics, expected); err != nil {
+			return report, err
+		}
+	}
 	if options.FailOnUnclassified && report.Summary.UnclassifiedCount > options.MaxUnclassified {
 		return report, fmt.Errorf("unclassified=%d exceeds max %d", report.Summary.UnclassifiedCount, options.MaxUnclassified)
 	}
@@ -172,6 +214,176 @@ func Check(ctx context.Context, options Options) (Report, error) {
 		}
 	}
 	return report, nil
+}
+
+func loadExpectedDiagnostics(path string) ([]expectedDiagnostic, error) {
+	if path == "" {
+		return nil, nil
+	}
+	data, err := os.ReadFile(path) // #nosec G304 -- explicit checked manifest path.
+	if err != nil {
+		return nil, fmt.Errorf("read expected diagnostics: %w", err)
+	}
+	var manifest expectedDiagnosticsManifest
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return nil, fmt.Errorf("parse expected diagnostics: %w", err)
+	}
+	if manifest.SchemaVersion != 1 && manifest.SchemaVersion != 2 {
+		return nil, fmt.Errorf("expected diagnostics schemaVersion must be 1 or 2")
+	}
+	seen := make(map[string]bool, len(manifest.Diagnostics))
+	for i, diagnostic := range manifest.Diagnostics {
+		if strings.TrimSpace(diagnostic.Project) == "" || strings.TrimSpace(diagnostic.Class) == "" || strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.File) == "" || strings.TrimSpace(diagnostic.Message) == "" {
+			return nil, fmt.Errorf("expected diagnostic %d requires project, class, code, file, and message", i+1)
+		}
+		if diagnostic.Class == "unclassified" {
+			return nil, fmt.Errorf("expected diagnostic %d cannot be unclassified", i+1)
+		}
+		for field, value := range map[string]string{"rootCause": diagnostic.RootCause, "tracking": diagnostic.Tracking, "expectedOutcome": diagnostic.ExpectedOutcome} {
+			if strings.TrimSpace(value) == "" {
+				return nil, fmt.Errorf("expected diagnostic %d requires %s", i+1, field)
+			}
+		}
+		if !validExpectedDiagnosticOutcome(diagnostic.ExpectedOutcome) {
+			return nil, fmt.Errorf("expected diagnostic %d has invalid expectedOutcome %q", i+1, diagnostic.ExpectedOutcome)
+		}
+		key := expectedDiagnosticKey(diagnostic)
+		if seen[key] {
+			return nil, fmt.Errorf("duplicate expected diagnostic %d", i+1)
+		}
+		seen[key] = true
+	}
+	if manifest.SchemaVersion == 2 {
+		if err := validateExpectedDiagnosticTrackingRecords(manifest.Diagnostics, manifest.TrackingRecords); err != nil {
+			return nil, err
+		}
+	}
+	return manifest.Diagnostics, nil
+}
+
+func validExpectedDiagnosticOutcome(outcome string) bool {
+	switch outcome {
+	case "fix-glade", "correct-upstream-source", "accepted-platform-limitation":
+		return true
+	default:
+		return false
+	}
+}
+
+func validateExpectedDiagnosticTrackingRecords(diagnostics []expectedDiagnostic, records []expectedDiagnosticTrackingRecord) error {
+	byID := make(map[string]expectedDiagnosticTrackingRecord, len(records))
+	for i, record := range records {
+		for field, value := range map[string]string{
+			"id": record.ID, "class": record.Class, "rootCause": record.RootCause, "expectedOutcome": record.ExpectedOutcome,
+			"owner": record.Owner, "minimalReproducer": record.MinimalReproducer, "focusedTestPlan": record.FocusedTestPlan,
+			"acceptancePostcondition": record.AcceptancePostcondition,
+		} {
+			if strings.TrimSpace(value) == "" {
+				return fmt.Errorf("tracking record %d requires %s", i+1, field)
+			}
+		}
+		if len(record.EvidenceRefs) == 0 {
+			return fmt.Errorf("tracking record %d requires evidenceRefs", i+1)
+		}
+		for _, ref := range record.EvidenceRefs {
+			if strings.TrimSpace(ref) == "" {
+				return fmt.Errorf("tracking record %d requires nonempty evidenceRefs", i+1)
+			}
+		}
+		if !validExpectedDiagnosticOutcome(record.ExpectedOutcome) {
+			return fmt.Errorf("tracking record %d has invalid expectedOutcome %q", i+1, record.ExpectedOutcome)
+		}
+		owners := map[string]string{
+			"fix-glade":                    "glade",
+			"correct-upstream-source":      "upstream-source",
+			"accepted-platform-limitation": "platform",
+		}
+		wantOwner := owners[record.ExpectedOutcome]
+		if record.Owner != "glade" && record.Owner != "upstream-source" && record.Owner != "platform" {
+			return fmt.Errorf("tracking record %d has invalid owner %q", i+1, record.Owner)
+		}
+		if record.Owner != wantOwner {
+			return fmt.Errorf("tracking record %d owner is inconsistent with expectedOutcome %q", i+1, record.ExpectedOutcome)
+		}
+		if _, exists := byID[record.ID]; exists {
+			return fmt.Errorf("duplicate tracking record %q", record.ID)
+		}
+		byID[record.ID] = record
+	}
+
+	referenced := make(map[string]bool, len(records))
+	for i, diagnostic := range diagnostics {
+		record, ok := byID[diagnostic.Tracking]
+		if !ok {
+			return fmt.Errorf("expected diagnostic %d references unknown tracking record %q", i+1, diagnostic.Tracking)
+		}
+		referenced[record.ID] = true
+		for field, values := range map[string][2]string{
+			"class":           {record.Class, diagnostic.Class},
+			"rootCause":       {record.RootCause, diagnostic.RootCause},
+			"expectedOutcome": {record.ExpectedOutcome, diagnostic.ExpectedOutcome},
+		} {
+			if values[0] != values[1] {
+				return fmt.Errorf("tracking record %q %s does not match expected diagnostic %d", record.ID, field, i+1)
+			}
+		}
+	}
+	for _, record := range records {
+		if !referenced[record.ID] {
+			return fmt.Errorf("tracking record %q is not referenced", record.ID)
+		}
+	}
+	return nil
+}
+
+func checkExpectedDiagnostics(observed []ClassifiedDiagnostic, expected []expectedDiagnostic) error {
+	expectedByKey := make(map[string]bool, len(expected))
+	for _, diagnostic := range expected {
+		expectedByKey[expectedDiagnosticKey(diagnostic)] = false
+	}
+	unclassified := 0
+	newDiagnostics := 0
+	for _, diagnostic := range observed {
+		if diagnostic.Class == "unclassified" {
+			unclassified++
+			continue
+		}
+		key := observedDiagnosticKey(diagnostic)
+		matched, ok := expectedByKey[key]
+		if !ok || matched {
+			newDiagnostics++
+			continue
+		}
+		expectedByKey[key] = true
+	}
+	missing := 0
+	for _, matched := range expectedByKey {
+		if !matched {
+			missing++
+		}
+	}
+	var failures []string
+	if unclassified > 0 {
+		failures = append(failures, fmt.Sprintf("unclassified diagnostics=%d", unclassified))
+	}
+	if newDiagnostics > 0 {
+		failures = append(failures, fmt.Sprintf("new diagnostics=%d", newDiagnostics))
+	}
+	if missing > 0 {
+		failures = append(failures, fmt.Sprintf("expected diagnostics not reproduced=%d", missing))
+	}
+	if len(failures) > 0 {
+		return errors.New(strings.Join(failures, "; "))
+	}
+	return nil
+}
+
+func expectedDiagnosticKey(diagnostic expectedDiagnostic) string {
+	return strings.Join([]string{diagnostic.Project, diagnostic.Class, diagnostic.Code, diagnostic.File, strconv.Itoa(diagnostic.Line), strconv.Itoa(diagnostic.Column), diagnostic.Severity, diagnostic.Message}, "\x00")
+}
+
+func observedDiagnosticKey(diagnostic ClassifiedDiagnostic) string {
+	return strings.Join([]string{diagnostic.Project, diagnostic.Class, diagnostic.Code, diagnostic.File, strconv.Itoa(diagnostic.Line), strconv.Itoa(diagnostic.Column), diagnostic.Severity, diagnostic.Message}, "\x00")
 }
 
 func runProjectWithUpgradeSimulation(ctx context.Context, glade, project, projectID, targetVersion string) (result ProjectResult, diagnostics []ClassifiedDiagnostic, changes []UpgradeSimulationChange, retErr error) {

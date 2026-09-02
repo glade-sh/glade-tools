@@ -344,6 +344,256 @@ func TestCheckClassifiesInvalidJSONAsUnclassified(t *testing.T) {
 	}
 }
 
+func TestCheckExpectedDiagnosticsAllowsOnlyTrackedKnownDiagnostics(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+printf '{"diagnostics":[{"code":"GLADESEMA009","message":"No overload matches call","file":"force-app/main/default/classes/A.cls","line":7,"column":9,"severity":"warning"}]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	expected := writeExpectedDiagnostics(t, root, `{
+  "schemaVersion": 1,
+  "diagnostics": [{
+    "project": "alpha",
+    "class": "semantic-contract-gap",
+    "code": "GLADESEMA009",
+    "file": "force-app/main/default/classes/A.cls",
+    "line": 7,
+    "column": 9,
+    "severity": "warning",
+    "message": "No overload matches call",
+    "rootCause": "method-overload-resolution",
+    "tracking": "PUBLIC-CORPUS-001",
+    "expectedOutcome": "fix-glade"
+  }]
+}`)
+
+	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out"), ExpectedDiagnostics: expected}); err != nil {
+		t.Fatalf("tracked known diagnostic rejected: %v", err)
+	}
+}
+
+func TestCheckExpectedDiagnosticsRejectsNewUnclassifiedAndStaleDiagnostics(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	for _, test := range []struct {
+		name     string
+		diagJSON string
+		expected string
+		want     string
+	}{
+		{
+			name:     "new classified",
+			diagJSON: `[{"code":"GLADESEMA010","message":"new gap","file":"A.cls","line":1,"column":1}]`,
+			expected: `[]`,
+			want:     "new diagnostics",
+		},
+		{
+			name:     "duplicate observed identity",
+			diagJSON: `[{"code":"GLADESEMA009","message":"known gap","file":"A.cls","line":1,"column":1},{"code":"GLADESEMA009","message":"known gap","file":"A.cls","line":1,"column":1}]`,
+			expected: `[{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"A.cls","line":1,"column":1,"message":"known gap","rootCause":"method-overload-resolution","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}]`,
+			want:     "new diagnostics=1",
+		},
+		{
+			name:     "unclassified",
+			diagJSON: `[{"code":"UNKNOWN001","message":"unknown gap","file":"A.cls","line":1,"column":1}]`,
+			expected: `[]`,
+			want:     "unclassified diagnostics",
+		},
+		{
+			name:     "stale expected",
+			diagJSON: `[]`,
+			expected: `[{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"A.cls","line":1,"column":1,"message":"missing","rootCause":"method-overload-resolution","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}]`,
+			want:     "expected diagnostics not reproduced",
+		},
+		{
+			name:     "class drift",
+			diagJSON: `[{"code":"GLADESEMA009","message":"known gap","file":"A.cls","line":1,"column":1}]`,
+			expected: `[{"project":"alpha","class":"docs-contract-mismatch","code":"GLADESEMA009","file":"A.cls","line":1,"column":1,"message":"known gap","rootCause":"method-overload-resolution","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}]`,
+			want:     "new diagnostics=1; expected diagnostics not reproduced=1",
+		},
+		{
+			name:     "identity drift",
+			diagJSON: `[{"code":"GLADESEMA009","message":"known gap","file":"A.cls","line":1,"column":1}]`,
+			expected: `[{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"B.cls","line":1,"column":1,"message":"known gap","rootCause":"method-overload-resolution","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}]`,
+			want:     "new diagnostics=1; expected diagnostics not reproduced=1",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			writeProject(t, root, "alpha")
+			glade := filepath.Join(root, "fake-glade.sh")
+			if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":"+test.diagJSON+"}'\n"), 0o755); err != nil {
+				t.Fatal(err)
+			}
+			expected := writeExpectedDiagnostics(t, root, "{\"schemaVersion\":1,\"diagnostics\":"+test.expected+"}")
+			_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out"), ExpectedDiagnostics: expected})
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected %q, got %v", test.want, err)
+			}
+		})
+	}
+}
+
+func TestCheckExpectedDiagnosticsRejectsIncompleteAndDuplicateEntries(t *testing.T) {
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	entry := `{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"A.cls","line":1,"column":1,"message":"missing","rootCause":"method-overload-resolution","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}`
+	for _, test := range []struct {
+		name string
+		body string
+		want string
+	}{
+		{"empty root cause", strings.Replace(entry, `"rootCause":"method-overload-resolution"`, `"rootCause":""`, 1), "rootCause"},
+		{"empty tracking", strings.Replace(entry, `"tracking":"PUBLIC-CORPUS-001"`, `"tracking":""`, 1), "tracking"},
+		{"empty expected outcome", strings.Replace(entry, `"expectedOutcome":"fix-glade"`, `"expectedOutcome":""`, 1), "expectedOutcome"},
+		{"invalid expected outcome", strings.Replace(entry, `"expectedOutcome":"fix-glade"`, `"expectedOutcome":"invented-outcome"`, 1), "expectedOutcome"},
+		{"empty project", strings.Replace(entry, `"project":"alpha"`, `"project":""`, 1), "project, class, code, file, and message"},
+		{"unclassified class", strings.Replace(entry, `"class":"semantic-contract-gap"`, `"class":"unclassified"`, 1), "cannot be unclassified"},
+		{"duplicate", entry + "," + entry, "duplicate expected diagnostic"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			expected := writeExpectedDiagnostics(t, root, "{\"schemaVersion\":1,\"diagnostics\":["+test.body+"]}")
+			_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out-"+strings.ReplaceAll(test.name, " ", "-")), ExpectedDiagnostics: expected})
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected %q, got %v", test.want, err)
+			}
+		})
+	}
+}
+
+func TestLoadExpectedDiagnosticsSchema2ValidatesTrackingRecords(t *testing.T) {
+	root := t.TempDir()
+	diagnostic := `{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"A.cls","line":1,"column":1,"message":"known gap","rootCause":"specific compiler cause","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}`
+	record := `{"id":"PUBLIC-CORPUS-001","class":"semantic-contract-gap","rootCause":"specific compiler cause","expectedOutcome":"fix-glade","owner":"glade","evidenceRefs":["internal/sema/sema.go:10-20"],"minimalReproducer":"A minimal Apex class that triggers the gap.","focusedTestPlan":"Add a focused semantic regression test.","acceptancePostcondition":"The reproducer compiles without GLADESEMA009."}`
+	manifest := func(diagnostics, records string) string {
+		return `{"schemaVersion":2,"diagnostics":[` + diagnostics + `],"trackingRecords":[` + records + `]}`
+	}
+	outcomeMismatchRecord := strings.Replace(record, `fix-glade`, `correct-upstream-source`, 1)
+	outcomeMismatchRecord = strings.Replace(outcomeMismatchRecord, `"owner":"glade"`, `"owner":"upstream-source"`, 1)
+
+	if diagnostics, err := loadExpectedDiagnostics(writeExpectedDiagnostics(t, root, manifest(diagnostic, record))); err != nil || len(diagnostics) != 1 {
+		t.Fatalf("valid schema 2 manifest: diagnostics=%d err=%v", len(diagnostics), err)
+	}
+
+	for _, test := range []struct {
+		name        string
+		diagnostics string
+		records     string
+		want        string
+	}{
+		{"missing record", diagnostic, ``, "unknown tracking record"},
+		{"unknown record", strings.Replace(diagnostic, `PUBLIC-CORPUS-001`, `PUBLIC-CORPUS-UNKNOWN`, 1), record, "unknown tracking record"},
+		{"duplicate record", diagnostic, record + `,` + record, "duplicate tracking record"},
+		{"stale record", diagnostic, record + `,` + strings.Replace(record, `PUBLIC-CORPUS-001`, `PUBLIC-CORPUS-STALE`, 1), "is not referenced"},
+		{"class mismatch", diagnostic, strings.Replace(record, `semantic-contract-gap`, `docs-contract-mismatch`, 1), "class does not match"},
+		{"root cause mismatch", diagnostic, strings.Replace(record, `specific compiler cause`, `different compiler cause`, 1), "rootCause does not match"},
+		{"outcome mismatch", diagnostic, outcomeMismatchRecord, "expectedOutcome does not match"},
+		{"empty id", diagnostic, strings.Replace(record, `PUBLIC-CORPUS-001`, ``, 1), "requires id"},
+		{"empty class", diagnostic, strings.Replace(record, `semantic-contract-gap`, ``, 1), "requires class"},
+		{"empty root cause", diagnostic, strings.Replace(record, `specific compiler cause`, ``, 1), "requires rootCause"},
+		{"empty outcome", diagnostic, strings.Replace(record, `fix-glade`, ``, 1), "requires expectedOutcome"},
+		{"empty owner", diagnostic, strings.Replace(record, `"owner":"glade"`, `"owner":""`, 1), "requires owner"},
+		{"missing evidence refs", diagnostic, strings.Replace(record, `"evidenceRefs":["internal/sema/sema.go:10-20"]`, `"evidenceRefs":[]`, 1), "requires evidenceRefs"},
+		{"empty evidence ref", diagnostic, strings.Replace(record, `internal/sema/sema.go:10-20`, ` `, 1), "requires nonempty evidenceRefs"},
+		{"empty reproducer", diagnostic, strings.Replace(record, `A minimal Apex class that triggers the gap.`, ``, 1), "requires minimalReproducer"},
+		{"empty test plan", diagnostic, strings.Replace(record, `Add a focused semantic regression test.`, ``, 1), "requires focusedTestPlan"},
+		{"empty postcondition", diagnostic, strings.Replace(record, `The reproducer compiles without GLADESEMA009.`, ``, 1), "requires acceptancePostcondition"},
+		{"invalid owner", diagnostic, strings.Replace(record, `"owner":"glade"`, `"owner":"team-a"`, 1), "invalid owner"},
+		{"inconsistent owner", diagnostic, strings.Replace(record, `"owner":"glade"`, `"owner":"upstream-source"`, 1), "owner is inconsistent with expectedOutcome"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := loadExpectedDiagnostics(writeExpectedDiagnostics(t, root, manifest(test.diagnostics, test.records)))
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected %q, got %v", test.want, err)
+			}
+		})
+	}
+}
+
+func TestCheckExpectedDiagnosticsWritesReportsBeforeMismatchFailure(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[{\"code\":\"GLADESEMA010\",\"message\":\"new gap\",\"file\":\"A.cls\",\"line\":1,\"column\":1}]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "out")
+	expected := writeExpectedDiagnostics(t, root, `{"schemaVersion":1,"diagnostics":[]}`)
+	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out, ExpectedDiagnostics: expected}); err == nil || !strings.Contains(err.Error(), "new diagnostics=1") {
+		t.Fatalf("expected mismatch failure, got %v", err)
+	}
+	for name, want := range map[string]string{
+		"summary.tsv":     "alpha\t",
+		"diagnostics.tsv": "GLADESEMA010\tGLADESEMA010\tA.cls",
+	} {
+		data, err := os.ReadFile(filepath.Join(out, name))
+		if err != nil {
+			t.Fatalf("%s missing: %v", name, err)
+		}
+		if !strings.Contains(string(data), want) {
+			t.Fatalf("%s missing rejected diagnostic evidence %q:\n%s", name, want, data)
+		}
+	}
+}
+
+func TestCheckExpectedDiagnosticsDoesNotBypassCheckClosure(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[{\"code\":\"GLADESEMA009\",\"message\":\"known gap\",\"file\":\"A.cls\",\"line\":1,\"column\":1}]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	expected := writeExpectedDiagnostics(t, root, `{"schemaVersion":1,"diagnostics":[{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"A.cls","line":1,"column":1,"message":"known gap","rootCause":"method-overload-resolution","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}]}`)
+	_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out"), ExpectedDiagnostics: expected, FailOnCheckClosure: true})
+	if err == nil || !strings.Contains(err.Error(), "public check closure failed") {
+		t.Fatalf("expected check closure failure, got %v", err)
+	}
+}
+
+func TestPublicCorpusExpectedDiagnosticsFixtureIsCompleteAndRelative(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "public-corpus-expected-diagnostics.json")
+	diagnostics, err := loadExpectedDiagnostics(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(diagnostics) != 40 {
+		t.Fatalf("expected diagnostics = %d, want 40", len(diagnostics))
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest expectedDiagnosticsManifest
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	if manifest.SchemaVersion != 2 || len(manifest.TrackingRecords) != 16 {
+		t.Fatalf("manifest schema/tracking records = %d/%d, want 2/16", manifest.SchemaVersion, len(manifest.TrackingRecords))
+	}
+	for _, diagnostic := range diagnostics {
+		if filepath.IsAbs(diagnostic.File) {
+			t.Fatalf("absolute diagnostic file path: %q", diagnostic.File)
+		}
+	}
+}
+
 func TestReportDisallowedFindingsForPublicCheckClosure(t *testing.T) {
 	report := Report{Counts: map[string]int{
 		"performance-advisory":        3,
@@ -977,4 +1227,13 @@ func writeProject(t *testing.T, root, name string) {
 	if err := os.WriteFile(filepath.Join(dir, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}]}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func writeExpectedDiagnostics(t *testing.T, root, contents string) string {
+	t.Helper()
+	path := filepath.Join(root, "expected-diagnostics.json")
+	if err := os.WriteFile(path, []byte(contents), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return path
 }

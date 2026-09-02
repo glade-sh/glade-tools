@@ -42,29 +42,271 @@ func TestLoadProductTestEvidenceRequiresObservedPassAndExactHash(t *testing.T) {
 	commit := strings.Repeat("a", 40)
 	for _, action := range []string{"pass", "skip", "fail"} {
 		t.Run(action, func(t *testing.T) {
-			dir := t.TempDir()
-			events := []byte(`{"Action":"` + action + `","Package":"example.test/glade/internal/demo","Test":"TestVersion"}` + "\n")
-			eventsPath := filepath.Join(dir, "product-tests.jsonl")
-			if err := os.WriteFile(eventsPath, events, 0o600); err != nil {
-				t.Fatal(err)
-			}
-			digest := sha256.Sum256(events)
-			proof := productVersionProof{SchemaVersion: 1, GladeCommit: commit, Status: "pass", Command: []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + root, "go", "-C", root, "test", "-json", "-count=1", "-p", "1", "-timeout=30m", "./..."}, TestEvents: "product-tests.jsonl", TestEventsSHA256: fmt.Sprintf("%x", digest)}
-			proofPath := writeTempJSON(t, dir, "proof.json", proof)
-			evidence, err := loadProductTestEvidence(proofPath, root, commit)
+			fixture := writeProductTestExecutionFixture(t, root, commit, action)
+			evidence, err := loadProductTestEvidence(fixture.proofPath, root, commit)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if got := evidence.passed("internal/demo/demo_test.go:TestVersion"); got != (action == "pass") {
 				t.Fatalf("passed = %v", got)
 			}
+			proof := fixture.proof
 			proof.TestEventsSHA256 = strings.Repeat("0", 64)
-			proofPath = writeTempJSON(t, dir, "bad-proof.json", proof)
+			proofPath := writeTempJSON(t, fixture.dir, "bad-proof.json", proof)
 			if _, err := loadProductTestEvidence(proofPath, root, commit); err == nil || !strings.Contains(err.Error(), "SHA-256") {
 				t.Fatalf("hash error = %v", err)
 			}
+			proof.TestEventsSHA256 = fixture.proof.TestEventsSHA256
+			proof.ExecutionEvidenceSHA256 = strings.Repeat("0", 64)
+			proofPath = writeTempJSON(t, fixture.dir, "bad-evidence-proof.json", proof)
+			if _, err := loadProductTestEvidence(proofPath, root, commit); err == nil || !strings.Contains(err.Error(), "execution evidence SHA-256") {
+				t.Fatalf("execution evidence hash error = %v", err)
+			}
+			if action != "pass" {
+				return
+			}
+			for _, test := range []struct {
+				name   string
+				mutate func(map[string]any)
+			}{
+				{name: "missing non-Apex binding", mutate: func(value map[string]any) { delete(value, "nonApex") }},
+				{name: "forged discovery count", mutate: func(value map[string]any) { value["apexDiscovery"].(map[string]any)["count"] = float64(15) }},
+				{name: "missing shard summary", mutate: func(value map[string]any) { value["shards"] = value["shards"].([]any)[:15] }},
+				{name: "invalid union", mutate: func(value map[string]any) { value["union"].(map[string]any)["valid"] = false }},
+				{name: "binary not removed", mutate: func(value map[string]any) { value["apexTestBinary"].(map[string]any)["removed"] = false }},
+				{name: "missing artifact binding", mutate: func(value map[string]any) { value["artifacts"] = value["artifacts"].([]any)[1:] }},
+			} {
+				t.Run(test.name, func(t *testing.T) {
+					validation := cloneProductTestValidation(t, fixture.validation)
+					test.mutate(validation)
+					badProofPath := rewriteProductTestExecutionProof(t, fixture, validation, "bad-summary-proof.json")
+					if _, err := loadProductTestEvidence(badProofPath, root, commit); err == nil {
+						t.Fatal("loader accepted incomplete or forged execution evidence")
+					}
+				})
+			}
+			validation := cloneProductTestValidation(t, fixture.validation)
+			shardPath := filepath.Join(fixture.evidenceDir, "shard-00", "events.jsonl")
+			originalShard, err := os.ReadFile(shardPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			duplicateShard := bytes.Replace(originalShard, []byte(`{"Action":"pass","Package":"github.com/glade-sh/glade/internal/apextest"}`), []byte(`{"Action":"pass","Package":"github.com/glade-sh/glade/internal/apextest","Test":"Test00"}`+"\n"+`{"Action":"pass","Package":"github.com/glade-sh/glade/internal/apextest"}`), 1)
+			if err := os.WriteFile(shardPath, duplicateShard, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			shardSHA := fmt.Sprintf("%x", sha256.Sum256(duplicateShard))
+			validation["shards"].([]any)[0].(map[string]any)["eventsSHA256"] = shardSHA
+			for _, raw := range validation["artifacts"].([]any) {
+				artifact := raw.(map[string]any)
+				if artifact["path"] == "product-test-evidence/shard-00/events.jsonl" {
+					artifact["sha256"] = shardSHA
+				}
+			}
+			combinedPath := filepath.Join(fixture.dir, "product-tests.jsonl")
+			combined, err := os.ReadFile(combinedPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			originalCombined := append([]byte(nil), combined...)
+			combined = bytes.Replace(combined, originalShard, duplicateShard, 1)
+			if err := os.WriteFile(combinedPath, combined, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			combinedSHA := fmt.Sprintf("%x", sha256.Sum256(combined))
+			validation["testEvents"].(map[string]any)["sha256"] = combinedSHA
+			fixture.proof.TestEventsSHA256 = combinedSHA
+			badProofPath := rewriteProductTestExecutionProof(t, fixture, validation, "bad-terminal-proof.json")
+			if _, err := loadProductTestEvidence(badProofPath, root, commit); err == nil || !strings.Contains(err.Error(), "terminal") {
+				t.Fatalf("terminal evidence error = %v", err)
+			}
+			if err := os.WriteFile(shardPath, originalShard, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(combinedPath, originalCombined, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			fixture.proof.TestEventsSHA256 = fmt.Sprintf("%x", sha256.Sum256(originalCombined))
+			rewriteProductTestExecutionProof(t, fixture, fixture.validation, "restored-proof.json")
+			duplicateKeyFixture := writeProductTestExecutionFixture(t, root, commit, "pass")
+			duplicateKeyPath := filepath.Join(duplicateKeyFixture.evidenceDir, "shard-00", "events.jsonl")
+			duplicateKeyEvents, err := os.ReadFile(duplicateKeyPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			duplicateKeyEvents = bytes.Replace(duplicateKeyEvents, []byte(`{"Action":"pass"`), []byte(`{"Action":"fail","Action":"pass"`), 1)
+			duplicateKeyProof := rewriteForgedProductTestShard(t, duplicateKeyFixture, duplicateKeyEvents, "duplicate-key-proof.json")
+			if _, err := loadProductTestEvidence(duplicateKeyProof, root, commit); err == nil || !strings.Contains(err.Error(), "duplicate JSON key") {
+				t.Fatalf("duplicate-key evidence error = %v", err)
+			}
+			if err := os.WriteFile(fixture.planPath, []byte("tampered\n"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := loadProductTestEvidence(fixture.proofPath, root, commit); err == nil || !strings.Contains(err.Error(), "SHA-256 mismatch") {
+				t.Fatalf("execution plan hash error = %v", err)
+			}
 		})
 	}
+	t.Run("test skip is not a no-test package", func(t *testing.T) {
+		fixture := writeProductTestExecutionFixture(t, root, commit, "skipped-test")
+		if _, err := loadProductTestEvidence(fixture.proofPath, root, commit); err == nil || !strings.Contains(err.Error(), "package skip contains test events") {
+			t.Fatalf("test-level skip evidence error = %v", err)
+		}
+	})
+}
+
+type productTestExecutionFixture struct {
+	dir, evidenceDir, planPath, proofPath string
+	proof                                 productVersionProof
+	validation                            map[string]any
+}
+
+func writeProductTestExecutionFixture(t *testing.T, root, commit, action string) productTestExecutionFixture {
+	t.Helper()
+	const apexPackage = "github.com/glade-sh/glade/internal/apextest"
+	dir := t.TempDir()
+	evidenceDir := filepath.Join(dir, "product-test-evidence")
+	if err := os.Mkdir(evidenceDir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	artifacts := []map[string]any{}
+	writeArtifact := func(relative string, raw []byte) string {
+		t.Helper()
+		path := filepath.Join(dir, filepath.FromSlash(relative))
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, raw, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		digest := fmt.Sprintf("%x", sha256.Sum256(raw))
+		artifacts = append(artifacts, map[string]any{"path": relative, "sha256": digest})
+		return digest
+	}
+	allPackagesPath := "product-test-evidence/all-packages.txt"
+	packagesPath := "product-test-evidence/non-apextest-packages.txt"
+	nonApexEventsPath := "product-test-evidence/non-apextest.jsonl"
+	allPackagesSHA := writeArtifact(allPackagesPath, []byte("example.test/glade/internal/demo\n"+apexPackage+"\n"))
+	packagesSHA := writeArtifact(packagesPath, []byte("example.test/glade/internal/demo\n"))
+	nonApexEvents := []byte(`{"Action":"` + action + `","Package":"example.test/glade/internal/demo","Test":"TestVersion"}` + "\n" + `{"Action":"pass","Package":"example.test/glade/internal/demo"}` + "\n")
+	if action == "skip" {
+		nonApexEvents = []byte(`{"Action":"skip","Package":"example.test/glade/internal/demo"}` + "\n")
+	} else if action == "skipped-test" {
+		nonApexEvents = []byte(`{"Action":"skip","Package":"example.test/glade/internal/demo","Test":"TestSkipped"}` + "\n" + `{"Action":"skip","Package":"example.test/glade/internal/demo"}` + "\n")
+	}
+	nonApexEventsSHA := writeArtifact(nonApexEventsPath, nonApexEvents)
+
+	names := make([]string, 16)
+	planShards := make([]map[string]any, 16)
+	shardSummaries := make([]map[string]any, 16)
+	combined := append([]byte(nil), nonApexEvents...)
+	for index := range names {
+		name := fmt.Sprintf("Test%02d", index)
+		names[index] = name
+		regex := "^(?:" + name + ")$"
+		shard := map[string]any{"index": index, "tests": []string{name}, "estimatedDurationMillis": 0, "regex": regex}
+		planShards[index] = shard
+		prefix := fmt.Sprintf("product-test-evidence/shard-%02d", index)
+		selectionRaw, err := json.Marshal(shard)
+		if err != nil {
+			t.Fatal(err)
+		}
+		writeArtifact(prefix+"/selection.json", append(selectionRaw, '\n'))
+		writeArtifact(prefix+"/regex.txt", []byte(regex+"\n"))
+		shardEvents := []byte(fmt.Sprintf("{\"Action\":\"pass\",\"Package\":%q,\"Test\":%q}\n{\"Action\":\"pass\",\"Package\":%q}\n", apexPackage, name, apexPackage))
+		shardEventsSHA := writeArtifact(prefix+"/events.jsonl", shardEvents)
+		shardSummaries[index] = map[string]any{"index": index, "testCount": 1, "eventsPath": prefix + "/events.jsonl", "eventsSHA256": shardEventsSHA}
+		combined = append(combined, shardEvents...)
+	}
+	discovery := []byte(strings.Join(names, "\n") + "\n")
+	writeArtifact("product-test-evidence/apextest-discovery-raw.txt", discovery)
+	discoverySHA := writeArtifact("product-test-evidence/apextest-discovery.txt", discovery)
+	plan := map[string]any{"version": 1, "package": apexPackage, "historyUsed": false, "shards": planShards}
+	planRaw, err := json.Marshal(plan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	planPath := filepath.Join(evidenceDir, "apextest-plan.json")
+	planSHA := writeArtifact("product-test-evidence/apextest-plan.json", append(planRaw, '\n'))
+	eventsPath := filepath.Join(dir, "product-tests.jsonl")
+	if err := os.WriteFile(eventsPath, combined, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	eventsSHA := fmt.Sprintf("%x", sha256.Sum256(combined))
+	validation := map[string]any{
+		"schemaVersion": 1, "status": "pass", "shardCount": 16,
+		"nonApex":        map[string]any{"packageCount": 1, "allPackagesPath": allPackagesPath, "allPackagesSHA256": allPackagesSHA, "packagesPath": packagesPath, "packagesSHA256": packagesSHA, "eventsPath": nonApexEventsPath, "eventsSHA256": nonApexEventsSHA},
+		"apexTestBinary": map[string]any{"sha256": strings.Repeat("a", 64), "sizeBytes": 1, "removed": true},
+		"apexDiscovery":  map[string]any{"path": "product-test-evidence/apextest-discovery.txt", "count": 16, "sha256": discoverySHA},
+		"apexPlan":       map[string]any{"path": "product-test-evidence/apextest-plan.json", "sha256": planSHA},
+		"shards":         shardSummaries,
+		"union":          map[string]any{"valid": true, "count": 16, "namesSHA256": discoverySHA},
+		"artifacts":      artifacts,
+		"testEvents":     map[string]any{"path": "product-tests.jsonl", "sha256": eventsSHA},
+	}
+	fixture := productTestExecutionFixture{dir: dir, evidenceDir: evidenceDir, planPath: planPath, validation: validation}
+	fixture.proof = productVersionProof{SchemaVersion: 2, GladeCommit: commit, Status: "pass", Command: []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + root, "scripts/salesforce-product-tests.sh", root, dir}, TestEvents: "product-tests.jsonl", TestEventsSHA256: eventsSHA, ExecutionEvidence: "product-test-evidence/validation.json"}
+	fixture.proofPath = rewriteProductTestExecutionProof(t, fixture, validation, "proof.json")
+	return fixture
+}
+
+func rewriteProductTestExecutionProof(t *testing.T, fixture productTestExecutionFixture, validation map[string]any, name string) string {
+	t.Helper()
+	validationPath := writeTempJSON(t, fixture.evidenceDir, "validation.json", validation)
+	validationRaw, err := os.ReadFile(validationPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	proof := fixture.proof
+	proof.ExecutionEvidenceSHA256 = fmt.Sprintf("%x", sha256.Sum256(validationRaw))
+	return writeTempJSON(t, fixture.dir, name, proof)
+}
+
+func cloneProductTestValidation(t *testing.T, value map[string]any) map[string]any {
+	t.Helper()
+	raw, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var clone map[string]any
+	if err := json.Unmarshal(raw, &clone); err != nil {
+		t.Fatal(err)
+	}
+	return clone
+}
+
+func rewriteForgedProductTestShard(t *testing.T, fixture productTestExecutionFixture, forged []byte, name string) string {
+	t.Helper()
+	validation := cloneProductTestValidation(t, fixture.validation)
+	shardPath := filepath.Join(fixture.evidenceDir, "shard-00", "events.jsonl")
+	original, err := os.ReadFile(shardPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(shardPath, forged, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	shardSHA := fmt.Sprintf("%x", sha256.Sum256(forged))
+	validation["shards"].([]any)[0].(map[string]any)["eventsSHA256"] = shardSHA
+	for _, raw := range validation["artifacts"].([]any) {
+		artifact := raw.(map[string]any)
+		if artifact["path"] == "product-test-evidence/shard-00/events.jsonl" {
+			artifact["sha256"] = shardSHA
+		}
+	}
+	combinedPath := filepath.Join(fixture.dir, "product-tests.jsonl")
+	combined, err := os.ReadFile(combinedPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	combined = bytes.Replace(combined, original, forged, 1)
+	if err := os.WriteFile(combinedPath, combined, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	combinedSHA := fmt.Sprintf("%x", sha256.Sum256(combined))
+	validation["testEvents"].(map[string]any)["sha256"] = combinedSHA
+	fixture.proof.TestEventsSHA256 = combinedSHA
+	return rewriteProductTestExecutionProof(t, fixture, validation, name)
 }
 
 func TestReleaseEvidenceCreditKeepsProofClassesAndDenominatorsSeparate(t *testing.T) {
@@ -786,6 +1028,39 @@ func TestRunCompilerSectionLimitsReleaseModeToSourceWindow(t *testing.T) {
 	}, deps)
 	if section.Status != "pass" || section.Summary.Required != 1 || len(observed) != 1 || observed[0].APIVersion != 67 {
 		t.Fatalf("section=%#v observed=%#v", section, observed)
+	}
+}
+
+func TestRunCompilerSectionPreservesPartialSalesforceResultsWithoutOracleDrift(t *testing.T) {
+	dir := t.TempDir()
+	deps := toRealDeps(allPassDeps())
+	deps.runSFCompiler = func(context.Context, string, []apexrules.Rule) (map[string]apexrules.SalesforceResult, error) {
+		return map[string]apexrules.SalesforceResult{
+				"APEX-RULE-001": {Outcome: apexrules.OutcomeAccept},
+			}, &apexrules.SalesforceOperationalError{Diagnostic: apexrules.SalesforceOperationalDiagnostic{
+				RuleOrdinal: 2, RuleID: "APEX-RULE-002", Stage: "probe-post", APIVersion: 67,
+				FailureKind: "exit", ExitCode: 1, ErrorCodes: []string{"SERVER_UNAVAILABLE"}, ResponseSHA256: strings.Repeat("a", 64),
+			}}
+	}
+	section := runCompilerSection(context.Background(), salesforceVerifyOptions{
+		Catalog:   makeCatalog(t, dir),
+		TargetOrg: "test-org",
+		GladeBin:  makeCandidate(t, dir),
+	}, deps)
+	if section.Status != "inconclusive" || section.OracleDrift {
+		t.Fatalf("status=%q oracleDrift=%t, want inconclusive false", section.Status, section.OracleDrift)
+	}
+	if section.Summary != (verifySummary{Required: 2, Pass: 1, Inconclusive: 1}) {
+		t.Fatalf("summary=%+v", section.Summary)
+	}
+	if section.Cases[0].Status != "pass" || section.Cases[1].Status != "inconclusive" {
+		t.Fatalf("cases=%#v", section.Cases)
+	}
+	if section.Cases[1].Category != "operational/execution-error" {
+		t.Fatalf("missing case category=%q", section.Cases[1].Category)
+	}
+	if section.OperationalFailure == nil || section.OperationalFailure.RuleID != "APEX-RULE-002" {
+		t.Fatalf("operational failure=%#v", section.OperationalFailure)
 	}
 }
 

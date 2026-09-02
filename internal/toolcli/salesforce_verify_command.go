@@ -2,10 +2,12 @@ package toolcli
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -14,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"sort"
 	"strconv"
@@ -170,11 +173,12 @@ type verifyInput struct {
 }
 
 type verifySection struct {
-	Status            string        `json:"status"`
-	OracleDrift       bool          `json:"oracleDrift"`
-	NormalizerChanged bool          `json:"normalizerChanged"`
-	Summary           verifySummary `json:"summary"`
-	Cases             []verifyCase  `json:"cases"`
+	Status             string                                     `json:"status"`
+	OracleDrift        bool                                       `json:"oracleDrift"`
+	NormalizerChanged  bool                                       `json:"normalizerChanged"`
+	OperationalFailure *apexrules.SalesforceOperationalDiagnostic `json:"operationalFailure,omitempty"`
+	Summary            verifySummary                              `json:"summary"`
+	Cases              []verifyCase                               `json:"cases"`
 }
 
 type verifyCase struct {
@@ -195,13 +199,83 @@ type verifySummary struct {
 }
 
 type productVersionProof struct {
-	SchemaVersion    int      `json:"schemaVersion"`
-	GladeCommit      string   `json:"gladeCommit"`
-	Status           string   `json:"status"`
-	Command          []string `json:"command"`
-	TestEvents       string   `json:"testEvents"`
-	TestEventsSHA256 string   `json:"testEventsSHA256"`
+	SchemaVersion           int      `json:"schemaVersion"`
+	GladeCommit             string   `json:"gladeCommit"`
+	Status                  string   `json:"status"`
+	Command                 []string `json:"command"`
+	TestEvents              string   `json:"testEvents"`
+	TestEventsSHA256        string   `json:"testEventsSHA256"`
+	ExecutionEvidence       string   `json:"executionEvidence"`
+	ExecutionEvidenceSHA256 string   `json:"executionEvidenceSHA256"`
 }
+
+type productTestExecutionEvidence struct {
+	SchemaVersion int    `json:"schemaVersion"`
+	Status        string `json:"status"`
+	ShardCount    int    `json:"shardCount"`
+	NonApex       struct {
+		PackageCount      int    `json:"packageCount"`
+		AllPackagesPath   string `json:"allPackagesPath"`
+		AllPackagesSHA256 string `json:"allPackagesSHA256"`
+		PackagesPath      string `json:"packagesPath"`
+		PackagesSHA256    string `json:"packagesSHA256"`
+		EventsPath        string `json:"eventsPath"`
+		EventsSHA256      string `json:"eventsSHA256"`
+	} `json:"nonApex"`
+	ApexTestBinary struct {
+		SHA256    string `json:"sha256"`
+		SizeBytes int64  `json:"sizeBytes"`
+		Removed   bool   `json:"removed"`
+	} `json:"apexTestBinary"`
+	ApexDiscovery productTestCountedFileBinding `json:"apexDiscovery"`
+	ApexPlan      productTestFileBinding        `json:"apexPlan"`
+	Shards        []struct {
+		Index        int    `json:"index"`
+		TestCount    int    `json:"testCount"`
+		EventsPath   string `json:"eventsPath"`
+		EventsSHA256 string `json:"eventsSHA256"`
+	} `json:"shards"`
+	Union struct {
+		Valid       bool   `json:"valid"`
+		Count       int    `json:"count"`
+		NamesSHA256 string `json:"namesSHA256"`
+	} `json:"union"`
+	Artifacts  []productTestFileBinding `json:"artifacts"`
+	TestEvents productTestFileBinding   `json:"testEvents"`
+}
+
+type productTestFileBinding struct {
+	Path   string `json:"path"`
+	SHA256 string `json:"sha256"`
+}
+
+type productTestCountedFileBinding struct {
+	Path   string `json:"path"`
+	Count  int    `json:"count"`
+	SHA256 string `json:"sha256"`
+}
+
+type productTestShardPlan struct {
+	Index                   int      `json:"index"`
+	Tests                   []string `json:"tests"`
+	EstimatedDurationMillis int64    `json:"estimatedDurationMillis"`
+	Regex                   string   `json:"regex"`
+}
+
+type productTestPlan struct {
+	Version     int                    `json:"version"`
+	Package     string                 `json:"package"`
+	HistoryUsed bool                   `json:"historyUsed"`
+	Shards      []productTestShardPlan `json:"shards"`
+}
+
+type productTestEvent struct {
+	Action  string `json:"Action"`
+	Package string `json:"Package"`
+	Test    string `json:"Test"`
+}
+
+var productTestNamePattern = regexp.MustCompile(`^Test[A-Za-z0-9_]*$`)
 
 type productTestEvidence struct {
 	gladeRoot string
@@ -595,16 +669,10 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 	}
 
 	sfResults, sfErr := deps.runSFCompiler(ctx, opts.TargetOrg, catalog.Rules)
-	if sfErr != nil {
-		ids := make([]string, len(catalog.Rules))
-		for i, r := range catalog.Rules {
-			ids[i] = r.ID
-		}
-		section.Cases = errorCases(ids)
-		section.Status = "inconclusive"
-		section.Summary.Required = len(catalog.Rules)
-		section.Summary.Inconclusive = len(catalog.Rules)
-		return section
+	var operationalErr *apexrules.SalesforceOperationalError
+	if errors.As(sfErr, &operationalErr) {
+		diagnostic := operationalErr.Diagnostic
+		section.OperationalFailure = &diagnostic
 	}
 
 	gladeResults, gladeErr := deps.runGladeCompiler(ctx, opts.GladeBin, catalog.Rules)
@@ -648,7 +716,10 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 		sfObs := string(r.Salesforce)
 		glObs := string(r.Glade)
 		cat := r.Status
-		if !r.OracleMatched {
+		if r.ExecStatus == "inconclusive" {
+			cat = "operational/execution-error"
+		}
+		if r.ExecStatus != "inconclusive" && !r.OracleMatched {
 			oracleDrift = true
 		}
 		cases[i] = verifyCase{
@@ -674,7 +745,7 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 	section.Summary = verifySummary{Required: len(catalog.Rules), Pass: pass, Fail: fail, Inconclusive: inconclusive}
 	if fail > 0 || oracleDrift {
 		section.Status = "fail"
-	} else if inconclusive > 0 {
+	} else if inconclusive > 0 || sfErr != nil {
 		section.Status = "inconclusive"
 	}
 	return section
@@ -1140,15 +1211,20 @@ func loadProductTestEvidence(proofPath, gladeRoot, gladeCommit string) (productT
 		return productTestEvidence{}, err
 	}
 	root = filepath.Clean(root)
-	if proof.SchemaVersion != 1 || proof.Status != "pass" || proof.GladeCommit != gladeCommit {
+	if proof.SchemaVersion != 2 || proof.Status != "pass" || proof.GladeCommit != gladeCommit {
 		return productTestEvidence{}, fmt.Errorf("proof identity or status mismatch")
 	}
-	wantCommand := []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + root, "go", "-C", root, "test", "-json", "-count=1", "-p", "1", "-timeout=30m", "./..."}
+	proofDir, err := filepath.Abs(filepath.Dir(proofPath))
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	proofDir = filepath.Clean(proofDir)
+	wantCommand := []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + root, "scripts/salesforce-product-tests.sh", root, proofDir}
 	if !slices.Equal(proof.Command, wantCommand) {
 		return productTestEvidence{}, fmt.Errorf("proof command must be %q", wantCommand)
 	}
-	if filepath.IsAbs(proof.TestEvents) || strings.TrimSpace(proof.TestEvents) == "" {
-		return productTestEvidence{}, fmt.Errorf("testEvents must be a relative path")
+	if proof.TestEvents != "product-tests.jsonl" {
+		return productTestEvidence{}, fmt.Errorf("testEvents must be product-tests.jsonl")
 	}
 	eventsPath, err := pathBelow(filepath.Dir(proofPath), proof.TestEvents)
 	if err != nil {
@@ -1160,6 +1236,27 @@ func loadProductTestEvidence(proofPath, gladeRoot, gladeCommit string) (productT
 	}
 	if digest != proof.TestEventsSHA256 {
 		return productTestEvidence{}, fmt.Errorf("testEvents SHA-256 mismatch")
+	}
+	if proof.ExecutionEvidence != "product-test-evidence/validation.json" {
+		return productTestEvidence{}, fmt.Errorf("executionEvidence must be product-test-evidence/validation.json")
+	}
+	executionEvidencePath, err := pathBelow(filepath.Dir(proofPath), proof.ExecutionEvidence)
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	executionDigest, err := sha256File(executionEvidencePath)
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	if executionDigest != proof.ExecutionEvidenceSHA256 {
+		return productTestEvidence{}, fmt.Errorf("execution evidence SHA-256 mismatch")
+	}
+	var execution productTestExecutionEvidence
+	if err := readExactJSONFile(executionEvidencePath, &execution); err != nil {
+		return productTestEvidence{}, fmt.Errorf("execution evidence: %w", err)
+	}
+	if err := validateProductTestExecutionEvidence(execution, filepath.Dir(proofPath), proof); err != nil {
+		return productTestEvidence{}, err
 	}
 	module, err := goModulePath(root)
 	if err != nil {
@@ -1190,6 +1287,399 @@ func loadProductTestEvidence(proofPath, gladeRoot, gladeCommit string) (productT
 		return productTestEvidence{}, err
 	}
 	return productTestEvidence{gladeRoot: root, module: module, passes: passes, bindings: map[string]productTestBinding{}}, nil
+}
+
+func validateProductTestExecutionEvidence(execution productTestExecutionEvidence, proofDir string, proof productVersionProof) error {
+	const apexPackage = "github.com/glade-sh/glade/internal/apextest"
+	if execution.SchemaVersion != 1 || execution.Status != "pass" || execution.ShardCount != 16 || len(execution.Shards) != 16 {
+		return fmt.Errorf("execution evidence identity or shard count mismatch")
+	}
+	if execution.TestEvents.Path != proof.TestEvents || execution.TestEvents.SHA256 != proof.TestEventsSHA256 {
+		return fmt.Errorf("execution evidence testEvents mismatch")
+	}
+	if execution.NonApex.AllPackagesPath != "product-test-evidence/all-packages.txt" ||
+		execution.NonApex.PackagesPath != "product-test-evidence/non-apextest-packages.txt" ||
+		execution.NonApex.EventsPath != "product-test-evidence/non-apextest.jsonl" ||
+		execution.ApexDiscovery.Path != "product-test-evidence/apextest-discovery.txt" ||
+		execution.ApexPlan.Path != "product-test-evidence/apextest-plan.json" {
+		return fmt.Errorf("execution evidence has unexpected paths")
+	}
+	if !execution.ApexTestBinary.Removed || execution.ApexTestBinary.SizeBytes < 1 || !validProductTestSHA256(execution.ApexTestBinary.SHA256) {
+		return fmt.Errorf("execution evidence binary binding is incomplete")
+	}
+	binaryPath, err := pathBelow(proofDir, "product-test-evidence/apextest.test")
+	if err != nil {
+		return err
+	}
+	if _, err := os.Lstat(binaryPath); !os.IsNotExist(err) {
+		if err == nil {
+			return fmt.Errorf("execution evidence binary was not removed")
+		}
+		return err
+	}
+
+	expectedArtifacts := []string{
+		execution.NonApex.AllPackagesPath,
+		execution.NonApex.PackagesPath,
+		execution.NonApex.EventsPath,
+		"product-test-evidence/apextest-discovery-raw.txt",
+		execution.ApexDiscovery.Path,
+		execution.ApexPlan.Path,
+	}
+	for index := range execution.Shards {
+		prefix := fmt.Sprintf("product-test-evidence/shard-%02d", index)
+		expectedArtifacts = append(expectedArtifacts, prefix+"/selection.json", prefix+"/regex.txt", prefix+"/events.jsonl")
+	}
+	if len(execution.Artifacts) != len(expectedArtifacts) {
+		return fmt.Errorf("execution evidence artifact set is incomplete")
+	}
+	artifacts := make(map[string]string, len(execution.Artifacts))
+	for _, artifact := range execution.Artifacts {
+		if artifacts[artifact.Path] != "" || !validProductTestSHA256(artifact.SHA256) {
+			return fmt.Errorf("execution evidence artifact binding is invalid")
+		}
+		artifacts[artifact.Path] = artifact.SHA256
+	}
+	paths := make(map[string]string, len(expectedArtifacts))
+	for _, relative := range expectedArtifacts {
+		expectedSHA, ok := artifacts[relative]
+		if !ok {
+			return fmt.Errorf("execution evidence artifact %q is missing", relative)
+		}
+		path, err := pathBelow(proofDir, relative)
+		if err != nil {
+			return err
+		}
+		digest, err := sha256File(path)
+		if err != nil {
+			return err
+		}
+		if digest != expectedSHA {
+			return fmt.Errorf("execution evidence artifact %q SHA-256 mismatch", relative)
+		}
+		paths[relative] = path
+	}
+	for _, binding := range []productTestFileBinding{
+		{Path: execution.NonApex.AllPackagesPath, SHA256: execution.NonApex.AllPackagesSHA256},
+		{Path: execution.NonApex.PackagesPath, SHA256: execution.NonApex.PackagesSHA256},
+		{Path: execution.NonApex.EventsPath, SHA256: execution.NonApex.EventsSHA256},
+		{Path: execution.ApexDiscovery.Path, SHA256: execution.ApexDiscovery.SHA256},
+		execution.ApexPlan,
+	} {
+		if artifacts[binding.Path] != binding.SHA256 {
+			return fmt.Errorf("execution evidence summary binding for %q is inconsistent", binding.Path)
+		}
+	}
+
+	readLines := func(path string) ([]string, error) {
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+		if len(raw) == 0 || raw[len(raw)-1] != '\n' {
+			return nil, fmt.Errorf("execution evidence line file is empty or unterminated")
+		}
+		lines := strings.Split(string(raw[:len(raw)-1]), "\n")
+		seen := map[string]bool{}
+		for _, line := range lines {
+			if line == "" || seen[line] {
+				return nil, fmt.Errorf("execution evidence line file is not canonical")
+			}
+			seen[line] = true
+		}
+		return lines, nil
+	}
+	allPackages, err := readLines(paths[execution.NonApex.AllPackagesPath])
+	if err != nil {
+		return err
+	}
+	nonApexPackages, err := readLines(paths[execution.NonApex.PackagesPath])
+	if err != nil {
+		return err
+	}
+	filtered := make([]string, 0, len(allPackages)-1)
+	apexCount := 0
+	for _, packageName := range allPackages {
+		if packageName == apexPackage {
+			apexCount++
+		} else {
+			filtered = append(filtered, packageName)
+		}
+	}
+	if apexCount != 1 || !slices.Equal(filtered, nonApexPackages) || execution.NonApex.PackageCount != len(nonApexPackages) {
+		return fmt.Errorf("execution evidence non-Apex package partition is invalid")
+	}
+	if err := validateProductTestPackageTerminals(paths[execution.NonApex.EventsPath], nonApexPackages); err != nil {
+		return err
+	}
+
+	discovery, err := readLines(paths[execution.ApexDiscovery.Path])
+	if err != nil {
+		return err
+	}
+	if !slices.IsSorted(discovery) || execution.ApexDiscovery.Count != len(discovery) {
+		return fmt.Errorf("execution evidence Apex discovery is invalid")
+	}
+	for _, name := range discovery {
+		if !productTestNamePattern.MatchString(name) {
+			return fmt.Errorf("execution evidence Apex discovery contains an invalid test")
+		}
+	}
+	if !execution.Union.Valid || execution.Union.Count != len(discovery) || execution.Union.NamesSHA256 != execution.ApexDiscovery.SHA256 {
+		return fmt.Errorf("execution evidence union binding is invalid")
+	}
+
+	var plan productTestPlan
+	if err := readExactJSONFile(paths[execution.ApexPlan.Path], &plan); err != nil {
+		return fmt.Errorf("execution evidence plan: %w", err)
+	}
+	if plan.Version != 1 || plan.Package != apexPackage || len(plan.Shards) != 16 {
+		return fmt.Errorf("execution evidence plan identity is invalid")
+	}
+	union := make([]string, 0, len(discovery))
+	eventPaths := []string{paths[execution.NonApex.EventsPath]}
+	for index, shard := range plan.Shards {
+		prefix := fmt.Sprintf("product-test-evidence/shard-%02d", index)
+		eventsRelative := prefix + "/events.jsonl"
+		summary := execution.Shards[index]
+		if shard.Index != index || len(shard.Tests) == 0 || !slices.IsSorted(shard.Tests) || shard.EstimatedDurationMillis < 0 ||
+			shard.Regex != "^(?:"+strings.Join(quotedProductTestNames(shard.Tests), "|")+")$" ||
+			summary.Index != index || summary.TestCount != len(shard.Tests) || summary.EventsPath != eventsRelative || summary.EventsSHA256 != artifacts[eventsRelative] {
+			return fmt.Errorf("execution evidence shard %d binding is invalid", index)
+		}
+		for _, name := range shard.Tests {
+			if !productTestNamePattern.MatchString(name) {
+				return fmt.Errorf("execution evidence shard %d contains an invalid test", index)
+			}
+		}
+		var selection productTestShardPlan
+		if err := readExactJSONFile(paths[prefix+"/selection.json"], &selection); err != nil {
+			return fmt.Errorf("execution evidence shard %d selection: %w", index, err)
+		}
+		if selection.Index != shard.Index || selection.EstimatedDurationMillis != shard.EstimatedDurationMillis || selection.Regex != shard.Regex || !slices.Equal(selection.Tests, shard.Tests) {
+			return fmt.Errorf("execution evidence shard %d selection differs from plan", index)
+		}
+		regexRaw, err := os.ReadFile(paths[prefix+"/regex.txt"])
+		if err != nil {
+			return err
+		}
+		if string(regexRaw) != shard.Regex+"\n" {
+			return fmt.Errorf("execution evidence shard %d regex differs from plan", index)
+		}
+		if err := validateProductTestShardTerminals(paths[eventsRelative], apexPackage, shard.Tests); err != nil {
+			return fmt.Errorf("execution evidence shard %d: %w", index, err)
+		}
+		union = append(union, shard.Tests...)
+		eventPaths = append(eventPaths, paths[eventsRelative])
+	}
+	if len(union) != len(discovery) || !slices.Equal(sortedProductTestNames(union), discovery) {
+		return fmt.Errorf("execution evidence plan union differs from discovery")
+	}
+	h := sha256.New()
+	for _, path := range eventPaths {
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		_, copyErr := io.Copy(h, file)
+		closeErr := file.Close()
+		if copyErr != nil {
+			return copyErr
+		}
+		if closeErr != nil {
+			return closeErr
+		}
+	}
+	if fmt.Sprintf("%x", h.Sum(nil)) != proof.TestEventsSHA256 {
+		return fmt.Errorf("execution evidence event artifacts do not compose product-tests.jsonl")
+	}
+	return nil
+}
+
+func readProductTestEvents(path string) ([]productTestEvent, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	events := []productTestEvent{}
+	scanner := bufio.NewScanner(file)
+	scanner.Buffer(make([]byte, 64*1024), 4*1024*1024)
+	for scanner.Scan() {
+		if len(scanner.Bytes()) == 0 {
+			return nil, fmt.Errorf("execution evidence contains an empty test event")
+		}
+		if err := rejectDuplicateJSONKeys(scanner.Bytes()); err != nil {
+			return nil, fmt.Errorf("execution evidence contains an invalid test event: %w", err)
+		}
+		var event productTestEvent
+		if err := json.Unmarshal(scanner.Bytes(), &event); err != nil {
+			return nil, fmt.Errorf("execution evidence contains an invalid test event: %w", err)
+		}
+		events = append(events, event)
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	if len(events) == 0 {
+		return nil, fmt.Errorf("execution evidence test events are empty")
+	}
+	return events, nil
+}
+
+func rejectDuplicateJSONKeys(raw []byte) error {
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	var visit func() error
+	visit = func() error {
+		token, err := decoder.Token()
+		if err != nil {
+			return err
+		}
+		delim, ok := token.(json.Delim)
+		if !ok {
+			return nil
+		}
+		switch delim {
+		case '{':
+			seen := map[string]bool{}
+			for decoder.More() {
+				keyToken, err := decoder.Token()
+				if err != nil {
+					return err
+				}
+				key, ok := keyToken.(string)
+				if !ok {
+					return fmt.Errorf("expected JSON object key")
+				}
+				if seen[key] {
+					return fmt.Errorf("duplicate JSON key %q", key)
+				}
+				seen[key] = true
+				if err := visit(); err != nil {
+					return err
+				}
+			}
+		case '[':
+			for decoder.More() {
+				if err := visit(); err != nil {
+					return err
+				}
+			}
+		default:
+			return fmt.Errorf("unexpected JSON delimiter")
+		}
+		_, err = decoder.Token()
+		return err
+	}
+	if err := visit(); err != nil {
+		return err
+	}
+	if _, err := decoder.Token(); err != io.EOF {
+		if err == nil {
+			return fmt.Errorf("multiple JSON values")
+		}
+		return err
+	}
+	return nil
+}
+
+func validateProductTestPackageTerminals(path string, packages []string) error {
+	events, err := readProductTestEvents(path)
+	if err != nil {
+		return err
+	}
+	wanted := make(map[string]bool, len(packages))
+	terminals := make(map[string][]string, len(packages))
+	packagesWithTests := make(map[string]bool, len(packages))
+	for _, packageName := range packages {
+		wanted[packageName] = true
+	}
+	for _, event := range events {
+		if !wanted[event.Package] {
+			return fmt.Errorf("execution evidence contains an unexpected non-Apex package")
+		}
+		if event.Test != "" {
+			packagesWithTests[event.Package] = true
+		}
+		if event.Test == "" && (event.Action == "pass" || event.Action == "fail" || event.Action == "skip") {
+			terminals[event.Package] = append(terminals[event.Package], event.Action)
+		}
+	}
+	for _, packageName := range packages {
+		actions := terminals[packageName]
+		if !slices.Equal(actions, []string{"pass"}) && !slices.Equal(actions, []string{"skip"}) {
+			return fmt.Errorf("execution evidence non-Apex package terminal is not one pass or no-test skip")
+		}
+		if slices.Equal(actions, []string{"skip"}) && packagesWithTests[packageName] {
+			return fmt.Errorf("execution evidence non-Apex package skip contains test events")
+		}
+	}
+	return nil
+}
+
+func validateProductTestShardTerminals(path, packageName string, tests []string) error {
+	events, err := readProductTestEvents(path)
+	if err != nil {
+		return err
+	}
+	wanted := make(map[string]bool, len(tests))
+	terminals := make(map[string][]string, len(tests))
+	packageTerminals := []string{}
+	for _, name := range tests {
+		wanted[name] = true
+	}
+	for _, event := range events {
+		if event.Package != packageName {
+			return fmt.Errorf("test event has the wrong package")
+		}
+		if event.Test == "" {
+			if event.Action == "pass" || event.Action == "fail" || event.Action == "skip" {
+				packageTerminals = append(packageTerminals, event.Action)
+			}
+			continue
+		}
+		if !strings.Contains(event.Test, "/") && (event.Action == "pass" || event.Action == "fail" || event.Action == "skip") {
+			if !wanted[event.Test] {
+				return fmt.Errorf("test event has an unexpected top-level test")
+			}
+			terminals[event.Test] = append(terminals[event.Test], event.Action)
+		}
+	}
+	if !slices.Equal(packageTerminals, []string{"pass"}) {
+		return fmt.Errorf("package terminal is not one pass")
+	}
+	for _, name := range tests {
+		if !slices.Equal(terminals[name], []string{"pass"}) {
+			return fmt.Errorf("test terminal for %s is not one pass", name)
+		}
+	}
+	return nil
+}
+
+func validProductTestSHA256(value string) bool {
+	if len(value) != sha256.Size*2 {
+		return false
+	}
+	for _, char := range value {
+		if (char < '0' || char > '9') && (char < 'a' || char > 'f') {
+			return false
+		}
+	}
+	return true
+}
+
+func quotedProductTestNames(names []string) []string {
+	quoted := make([]string, len(names))
+	for index, name := range names {
+		quoted[index] = regexp.QuoteMeta(name)
+	}
+	return quoted
+}
+
+func sortedProductTestNames(names []string) []string {
+	result := slices.Clone(names)
+	sort.Strings(result)
+	return result
 }
 
 func (e *productTestEvidence) binding(raw string) (productTestBinding, error) {

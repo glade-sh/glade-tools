@@ -110,24 +110,30 @@ echo "salesforce release check..." >&2
 echo "installing LWC compiler..." >&2
 npm ci --prefix "${GLADE_ROOT}/third_party/lwc"
 PRODUCT_TEST_EVENTS="${OUT_DIR}/product-tests.jsonl"
+PRODUCT_TEST_EVIDENCE="${OUT_DIR}/product-test-evidence/validation.json"
 echo "Glade product tests..." >&2
 env LC_ALL=C \
   GLADE_LWC_COMPILE=1 \
   GLADE_ROOT="${GLADE_ROOT}" \
-  go -C "${GLADE_ROOT}" test -json -count=1 -p 1 -timeout=30m ./... | tee "${PRODUCT_TEST_EVENTS}"
+  scripts/salesforce-product-tests.sh "${GLADE_ROOT}" "${OUT_DIR}"
 
 PRODUCT_TEST_EVENTS_SHA256="$(shasum -a 256 "${PRODUCT_TEST_EVENTS}" | awk '{print $1}')"
+PRODUCT_TEST_EVIDENCE_SHA256="$(shasum -a 256 "${PRODUCT_TEST_EVIDENCE}" | awk '{print $1}')"
 PRODUCT_VERSION_PROOF="${OUT_DIR}/product-version-proof.json"
 jq -n \
   --arg gladeCommit "${GLADE_HEAD}" \
   --arg gladeRoot "${GLADE_ROOT}" \
+  --arg outDir "${OUT_DIR}" \
   --arg testEventsSHA256 "${PRODUCT_TEST_EVENTS_SHA256}" \
-  '{schemaVersion: 1,
+  --arg executionEvidenceSHA256 "${PRODUCT_TEST_EVIDENCE_SHA256}" \
+  '{schemaVersion: 2,
     gladeCommit: $gladeCommit,
     status: "pass",
-    command: ["env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", ("GLADE_ROOT=" + $gladeRoot), "go", "-C", $gladeRoot, "test", "-json", "-count=1", "-p", "1", "-timeout=30m", "./..."],
+    command: ["env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", ("GLADE_ROOT=" + $gladeRoot), "scripts/salesforce-product-tests.sh", $gladeRoot, $outDir],
     testEvents: "product-tests.jsonl",
-    testEventsSHA256: $testEventsSHA256}' > "${PRODUCT_VERSION_PROOF}"
+    testEventsSHA256: $testEventsSHA256,
+    executionEvidence: "product-test-evidence/validation.json",
+    executionEvidenceSHA256: $executionEvidenceSHA256}' > "${PRODUCT_VERSION_PROOF}"
 
 # --- step 2: salesforce verify ---
 VERIFIER_OUT="${OUT_DIR}/salesforce-verification.json"
@@ -175,8 +181,13 @@ jq -e \
    and .releaseCompleteness.silentFallbacks == 0
    and (.releaseCompleteness.unclassified // [] | length) == 0' \
   "${VERIFIER_OUT}" >/dev/null || { echo "verifier artifact validation failed" >&2; exit 1; }
-jq -e --arg sha256 "${PRODUCT_TEST_EVENTS_SHA256}" \
-  '.schemaVersion == 1 and .status == "pass" and .testEvents == "product-tests.jsonl" and .testEventsSHA256 == $sha256' \
+jq -e --arg eventsSHA256 "${PRODUCT_TEST_EVENTS_SHA256}" --arg evidenceSHA256 "${PRODUCT_TEST_EVIDENCE_SHA256}" \
+  '.schemaVersion == 2
+   and .status == "pass"
+   and .testEvents == "product-tests.jsonl"
+   and .testEventsSHA256 == $eventsSHA256
+   and .executionEvidence == "product-test-evidence/validation.json"
+   and .executionEvidenceSHA256 == $evidenceSHA256' \
   "${PRODUCT_VERSION_PROOF}" >/dev/null || { echo "product-version proof validation failed" >&2; exit 1; }
 
 # --- step 3: corpus check ---
@@ -208,6 +219,7 @@ rm -f "${CHECKSUMS_FILE}"
 cd "${OUT_DIR}"
 shasum -a 256 salesforce-verification.json >> "${CHECKSUMS_FILE}"
 shasum -a 256 product-tests.jsonl >> "${CHECKSUMS_FILE}"
+shasum -a 256 product-test-evidence/validation.json >> "${CHECKSUMS_FILE}"
 shasum -a 256 product-version-proof.json >> "${CHECKSUMS_FILE}"
 shasum -a 256 candidate-provenance.json >> "${CHECKSUMS_FILE}"
 for f in corpus/*.tsv; do

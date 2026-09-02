@@ -339,16 +339,52 @@ func validateToolsLocalReplacements(toolsRoot, gladeRoot string) error {
 	}
 	for _, replacement := range parsed.Replace {
 		target := replacement.New.Path
-		if replacement.New.Version != "" || (!filepath.IsAbs(target) && !strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../")) {
+		if filepath.IsAbs(target) {
+			return fmt.Errorf("local replacement path must be relative")
+		}
+		if replacement.New.Version != "" || (!strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../")) {
 			continue
 		}
-		if !filepath.IsAbs(target) {
-			target = filepath.Join(toolsRoot, target)
-		}
+		target = filepath.Join(toolsRoot, target)
 		target, err = filepath.EvalSymlinks(target)
 		if err != nil || (!pathWithin(gladeRoot, target) && !pathWithin(toolsRoot, target)) {
 			return fmt.Errorf("local replacement is outside sealed roots")
 		}
+	}
+	return nil
+}
+
+func validateCandidateLocalReplacements(candidateRoot string) error {
+	candidateRoot, err := filepath.EvalSymlinks(candidateRoot)
+	if err != nil {
+		return err
+	}
+	if err := validateToolsLocalReplacements(candidateRoot, candidateRoot); err != nil {
+		return err
+	}
+	data, err := os.ReadFile(filepath.Join(candidateRoot, "go.mod"))
+	if err != nil {
+		return err
+	}
+	parsed, err := modfile.Parse("go.mod", data, nil)
+	if err != nil {
+		return err
+	}
+	expected := filepath.Join(candidateRoot, "third_party", "glade-apex-parser")
+	seenParser := false
+	for _, replacement := range parsed.Replace {
+		if seenParser || replacement.Old.Path != "github.com/glade-sh/apex-parser" || replacement.Old.Version != "" || replacement.New.Version != "" {
+			return fmt.Errorf("candidate replacement is unexpected")
+		}
+		target, err := filepath.EvalSymlinks(filepath.Join(candidateRoot, replacement.New.Path))
+		expectedTarget, expectedErr := filepath.EvalSymlinks(expected)
+		if err != nil || expectedErr != nil || target != expectedTarget || !pathWithin(candidateRoot, target) {
+			return fmt.Errorf("candidate parser replacement is invalid")
+		}
+		seenParser = true
+	}
+	if !seenParser {
+		return fmt.Errorf("candidate parser replacement is missing")
 	}
 	return nil
 }

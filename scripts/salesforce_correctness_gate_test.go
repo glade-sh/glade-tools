@@ -193,6 +193,24 @@ type gateFixture struct {
 	tr, sp, gr, gc, tc, gb, sha, fk, vj, cd string
 }
 
+const fakeSalesforceProductTests = `#!/usr/bin/env bash
+set -euo pipefail
+[[ "$#" -eq 2 ]]
+root="$1"
+out="$2"
+[[ "${LC_ALL:-}" == C && "${GLADE_LWC_COMPILE:-}" == 1 && "${GLADE_ROOT:-}" == "$root" ]]
+exit_code="${TEST_PRODUCT_TEST_EXIT:-0}"
+if [[ "$exit_code" -ne 0 ]]; then exit "$exit_code"; fi
+mkdir -p "$out/product-test-evidence"
+printf '%s\n' '{"Action":"pass","Package":"github.com/glade-sh/glade/internal/sema","Test":"TestGeneratedPlatformAvailabilitySurface/apex:system.probe"}' >"$out/product-tests.jsonl"
+printf '%s\n' '{"version":1,"package":"github.com/glade-sh/glade/internal/apextest","historyUsed":false,"shards":[]}' >"$out/product-test-evidence/apextest-plan.json"
+events_sha="$(shasum -a 256 "$out/product-tests.jsonl" | awk '{print $1}')"
+plan_sha="$(shasum -a 256 "$out/product-test-evidence/apextest-plan.json" | awk '{print $1}')"
+jq -S -c -n --arg eventsSHA "$events_sha" --arg planSHA "$plan_sha" \
+  '{schemaVersion:1,status:"pass",shardCount:16,apexPlan:{path:"product-test-evidence/apextest-plan.json",sha256:$planSHA},testEvents:{path:"product-tests.jsonl",sha256:$eventsSHA}}' \
+  >"$out/product-test-evidence/validation.json"
+`
+
 func newGateFixture(t *testing.T) gateFixture {
 	t.Helper()
 	f := gateFixture{}
@@ -209,7 +227,11 @@ func newGateFixture(t *testing.T) gateFixture {
 	if err := os.WriteFile(f.sp, script, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	runCmd(t, f.tr, "git", "add", "scripts/salesforce-correctness-gate.sh")
+	productScript := filepath.Join(f.tr, "scripts", "salesforce-product-tests.sh")
+	if err := os.WriteFile(productScript, []byte(fakeSalesforceProductTests), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	runCmd(t, f.tr, "git", "add", "scripts/salesforce-correctness-gate.sh", "scripts/salesforce-product-tests.sh")
 	runCmd(t, f.tr, "git", "commit", "-m", "add gate")
 	f.gr, f.gc = makeGitRepo(t)
 	f.tc = gitHead(t, f.tr)
@@ -228,13 +250,16 @@ func TestSalesforceCorrectnessGateSuccess(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("exit %d: %s", code, out)
 	}
-	for _, rel := range []string{"candidate-provenance.json", "product-tests.jsonl", "product-version-proof.json", "salesforce-verification.json", "corpus/summary.tsv", "SHA256SUMS.txt"} {
+	for _, rel := range []string{"candidate-provenance.json", "product-tests.jsonl", "product-test-evidence/validation.json", "product-version-proof.json", "salesforce-verification.json", "corpus/summary.tsv", "SHA256SUMS.txt"} {
 		if _, err := os.Stat(filepath.Join(od, rel)); err != nil {
 			t.Fatalf("missing %s: %v", rel, err)
 		}
 	}
 	var proof struct {
-		Command []string `json:"command"`
+		SchemaVersion           int      `json:"schemaVersion"`
+		Command                 []string `json:"command"`
+		ExecutionEvidence       string   `json:"executionEvidence"`
+		ExecutionEvidenceSHA256 string   `json:"executionEvidenceSHA256"`
 	}
 	proofRaw, err := os.ReadFile(filepath.Join(od, "product-version-proof.json"))
 	if err != nil {
@@ -243,9 +268,12 @@ func TestSalesforceCorrectnessGateSuccess(t *testing.T) {
 	if err := json.Unmarshal(proofRaw, &proof); err != nil {
 		t.Fatal(err)
 	}
-	wantCommand := []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + f.gr, "go", "-C", f.gr, "test", "-json", "-count=1", "-p", "1", "-timeout=30m", "./..."}
+	wantCommand := []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + f.gr, "scripts/salesforce-product-tests.sh", f.gr, od}
 	if !slices.Equal(proof.Command, wantCommand) {
 		t.Fatalf("proof command mismatch: got %q, want %q", proof.Command, wantCommand)
+	}
+	if proof.SchemaVersion != 2 || proof.ExecutionEvidence != "product-test-evidence/validation.json" || len(proof.ExecutionEvidenceSHA256) != 64 {
+		t.Fatalf("proof does not bind wrapper validation: %s", proofRaw)
 	}
 	argsRaw, err := os.ReadFile(argsFile)
 	if err != nil {
@@ -285,7 +313,17 @@ func TestSalesforceCorrectnessGateSuccess(t *testing.T) {
 	}
 	s1, _ := os.ReadFile(filepath.Join(od, "SHA256SUMS.txt"))
 	s2, _ := os.ReadFile(filepath.Join(od2, "SHA256SUMS.txt"))
-	if string(s1) != string(s2) {
+	withoutBoundProof := func(raw []byte) string {
+		lines := strings.Split(string(raw), "\n")
+		kept := lines[:0]
+		for _, line := range lines {
+			if !strings.HasSuffix(line, "  product-version-proof.json") {
+				kept = append(kept, line)
+			}
+		}
+		return strings.Join(kept, "\n")
+	}
+	if withoutBoundProof(s1) != withoutBoundProof(s2) {
 		t.Fatalf("checksums not stable:\n%s\n%s", s1, s2)
 	}
 }
@@ -505,9 +543,11 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 	}
 	for _, marker := range []string{
 		"name: Salesforce Correctness", "workflow_dispatch:", "glade_sha:", "required: true",
+		"permissions:\n  actions: read\n  contents: read",
 		`^([0-9a-fA-F]{40})$`, `"${GLADE_SHA,,}"`, `echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"`,
 		`test "$(git -C ../glade rev-parse HEAD)" = "$GLADE_SHA"`,
 		"salesforce-correctness:", "ubuntu-latest", "timeout-minutes: 75", "contents: read",
+		"salesforce-correctness:\n    runs-on: ubuntu-latest\n    timeout-minutes: 75\n    env:\n      GOMEMLIMIT: \"6GiB\"",
 		`repository: glade-sh/glade
           path: glade
           ref: ${{ inputs.glade_sha }}`,
@@ -516,7 +556,12 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`trap 'rm -f "$AUTH_FILE" "$LOGIN_RESULT" "$LOGIN_ERROR"' EXIT`,
 		`printf '%s' "$AUTH_URL" > "$AUTH_FILE"`, `chmod 600 "$AUTH_FILE"`,
 		`--alias glade-dev-hub \`, `sf org create scratch`, `--target-dev-hub glade-dev-hub`, `--alias "$SF_SCRATCH_ALIAS"`, `--name "$SF_SCRATCH_MARKER"`, "scripts/release-build.sh",
-		"RELEASE_SHARED_PAYLOAD_ARCHIVE", "RELEASE_SHARED_PAYLOAD_SHA256",
+		`payload_dir="$RUNNER_TEMP/glade-shared-payload"`, `mkdir -p "$payload_dir"`,
+		`DIST_DIR="$payload_dir" VERSION="$VERSION" scripts/release-build.sh shared-payload`,
+		`VERSION="$VERSION" \
+            RELEASE_SHARED_PAYLOAD_ARCHIVE="$payload_dir/glade-shared-payload.tar.gz" \
+            RELEASE_SHARED_PAYLOAD_SHA256="$payload_dir/glade-shared-payload.tar.gz.sha256" \
+            scripts/release-build.sh platform`,
 		`glade_${VERSION}_linux_amd64.tar.gz`, "./cmd/glade-tools",
 		`scripts/salesforce-correctness-gate.sh \
             "$TOOLS_BIN" \
@@ -530,13 +575,28 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`name: Delete scratch org`, `if: always()`, `sf org delete scratch`,
 		`FROM ScratchOrgInfo WHERE OrgName`, `FROM ActiveScratchOrg WHERE ScratchOrg`,
 		`--sobject ActiveScratchOrg`, `remaining ActiveScratchOrg residue`,
+		`name: Deactivate stale correctness scratch orgs`, `timeout-minutes: 5`,
+		`GH_TOKEN: ${{ github.token }}`, `scripts/salesforce-stale-scratch-cleanup.sh \`,
+		`glade-dev-hub \`, `"$SF_SCRATCH_MARKER" \`, `"$GITHUB_REPOSITORY" \`,
+		`"$RUNNER_TEMP/salesforce-correctness-evidence/stale-scratch-org-cleanup.json"`,
 	} {
 		must(marker)
+	}
+	staleCleanupStart := strings.Index(tx, "      - name: Deactivate stale correctness scratch orgs")
+	createStart := strings.Index(tx, "      - name: Create scratch org")
+	if staleCleanupStart < 0 || createStart < 0 || staleCleanupStart >= createStart {
+		t.Fatal("stale correctness cleanup must run before scratch org creation")
+	}
+	staleCleanup := tx[staleCleanupStart:createStart]
+	for _, forbidden := range []string{"sf org delete scratch", "sf data delete record", "python3 -", "FROM ScratchOrgInfo"} {
+		if strings.Contains(staleCleanup, forbidden) {
+			t.Fatalf("stale correctness cleanup unexpectedly contains %q", forbidden)
+		}
 	}
 	for _, f := range []string{"pull_request:", "push:", "schedule:", "workflow_call:", "continue-on-error"} {
 		forbid(f)
 	}
-	for _, f := range []string{"--developer", "go build ./cmd/glade\n"} {
+	for _, f := range []string{"--developer", "go build ./cmd/glade\n", `RELEASE_SHARED_PAYLOAD_ARCHIVE="$PWD/dist/`} {
 		forbid(f)
 	}
 	pins := map[string]string{
