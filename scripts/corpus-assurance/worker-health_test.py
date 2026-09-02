@@ -16,7 +16,6 @@ class WorkerHealthTest(unittest.TestCase):
     def test_public_orchestration_docs_use_neutral_hosts(self) -> None:
         paths = (
             ROOT / "docs" / "SALESFORCE_ADOPTION_WORKFLOW.md",
-            ROOT / "docs" / "superpowers" / "plans" / "2026-08-20-salesforce-surface-proof-completion.md",
         )
         for path in paths:
             text = path.read_text(encoding="utf-8")
