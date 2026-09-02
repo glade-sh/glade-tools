@@ -505,6 +505,8 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 	}
 	for _, marker := range []string{
 		"name: Salesforce Correctness", "workflow_dispatch:", "glade_sha:", "required: true",
+		"concurrency:\n  group: salesforce-correctness\n  cancel-in-progress: false",
+		"permissions:\n  actions: read\n  contents: read",
 		`^([0-9a-fA-F]{40})$`, `"${GLADE_SHA,,}"`, `echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"`,
 		`test "$(git -C ../glade rev-parse HEAD)" = "$GLADE_SHA"`,
 		"salesforce-correctness:", "ubuntu-latest", "timeout-minutes: 75", "contents: read",
@@ -536,8 +538,23 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`name: Delete scratch org`, `if: always()`, `sf org delete scratch`,
 		`FROM ScratchOrgInfo WHERE OrgName`, `FROM ActiveScratchOrg WHERE ScratchOrg`,
 		`--sobject ActiveScratchOrg`, `remaining ActiveScratchOrg residue`,
+		`name: Deactivate stale correctness scratch orgs`, `timeout-minutes: 5`,
+		`GH_TOKEN: ${{ github.token }}`, `scripts/salesforce-stale-scratch-cleanup.sh \`,
+		`glade-dev-hub \`, `"$SF_SCRATCH_MARKER" \`, `"$GITHUB_REPOSITORY" \`,
+		`"$RUNNER_TEMP/salesforce-correctness-evidence/stale-scratch-org-cleanup.json"`,
 	} {
 		must(marker)
+	}
+	staleCleanupStart := strings.Index(tx, "      - name: Deactivate stale correctness scratch orgs")
+	createStart := strings.Index(tx, "      - name: Create scratch org")
+	if staleCleanupStart < 0 || createStart < 0 || staleCleanupStart >= createStart {
+		t.Fatal("stale correctness cleanup must run before scratch org creation")
+	}
+	staleCleanup := tx[staleCleanupStart:createStart]
+	for _, forbidden := range []string{"sf org delete scratch", "sf data delete record", "python3 -", "FROM ScratchOrgInfo"} {
+		if strings.Contains(staleCleanup, forbidden) {
+			t.Fatalf("stale correctness cleanup unexpectedly contains %q", forbidden)
+		}
 	}
 	for _, f := range []string{"pull_request:", "push:", "schedule:", "workflow_call:", "continue-on-error"} {
 		forbid(f)

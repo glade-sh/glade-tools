@@ -9,7 +9,12 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: read
+
+concurrency:
+  group: salesforce-correctness
+  cancel-in-progress: false
 
 jobs:
   salesforce-correctness:
@@ -113,6 +118,16 @@ jobs:
             echo "Salesforce authentication failed." >&2
             exit 1
           fi
+      - name: Deactivate stale correctness scratch orgs
+        timeout-minutes: 5
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          scripts/salesforce-stale-scratch-cleanup.sh \
+            glade-dev-hub \
+            "$SF_SCRATCH_MARKER" \
+            "$GITHUB_REPOSITORY" \
+            "$RUNNER_TEMP/salesforce-correctness-evidence/stale-scratch-org-cleanup.json"
       - name: Create scratch org
         run: |
           set -euo pipefail
