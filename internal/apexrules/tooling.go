@@ -3,12 +3,14 @@ package apexrules
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 )
@@ -20,9 +22,34 @@ type SalesforceResult struct {
 	Problems []string `json:"problems,omitempty"`
 }
 
+// SalesforceOperationalDiagnostic identifies an inconclusive Salesforce
+// observation without retaining CLI output or environment-specific details.
+type SalesforceOperationalDiagnostic struct {
+	RuleOrdinal    int      `json:"ruleOrdinal"`
+	RuleID         string   `json:"ruleId"`
+	Stage          string   `json:"stage"`
+	APIVersion     float64  `json:"apiVersion"`
+	FailureKind    string   `json:"failureKind"`
+	ExitCode       int      `json:"exitCode"`
+	TimedOut       bool     `json:"timedOut"`
+	ErrorCodes     []string `json:"salesforceCodes,omitempty"`
+	ResponseSHA256 string   `json:"responseSHA256"`
+}
+
+// SalesforceOperationalError carries only the sanitized diagnostic.
+type SalesforceOperationalError struct {
+	Diagnostic SalesforceOperationalDiagnostic `json:"diagnostic"`
+}
+
+func (e *SalesforceOperationalError) Error() string {
+	d := e.Diagnostic
+	return fmt.Sprintf("Salesforce compiler request failed: ruleOrdinal=%d ruleId=%q stage=%s apiVersion=%.1f failureKind=%s exitCode=%d timedOut=%t errorCodes=%v responseSha256=%s", d.RuleOrdinal, d.RuleID, d.Stage, d.APIVersion, d.FailureKind, d.ExitCode, d.TimedOut, d.ErrorCodes, d.ResponseSHA256)
+}
+
 var (
-	classNamePattern   = regexp.MustCompile(`(?i)\b(?:class|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)`)
-	triggerNamePattern = regexp.MustCompile(`(?is)\btrigger\s+([A-Za-z_][A-Za-z0-9_]*)\s+on\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)`)
+	classNamePattern           = regexp.MustCompile(`(?i)\b(?:class|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)`)
+	triggerNamePattern         = regexp.MustCompile(`(?is)\btrigger\s+([A-Za-z_][A-Za-z0-9_]*)\s+on\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)`)
+	salesforceErrorCodePattern = regexp.MustCompile(`^[A-Z][A-Z0-9_]*$`)
 )
 
 const (
@@ -38,27 +65,30 @@ func RunSalesforce(ctx context.Context, targetOrg string, rules []Rule) (map[str
 		return nil, fmt.Errorf("target org is required")
 	}
 	results := make(map[string]SalesforceResult, len(rules))
-	for _, rule := range rules {
-		result, err := runSalesforceRule(ctx, targetOrg, rule)
+	for index, rule := range rules {
+		result, err := runSalesforceRule(ctx, targetOrg, index+1, rule)
 		if err != nil {
-			return nil, err
+			if result.Outcome != "" {
+				results[rule.ID] = result
+			}
+			return results, err
 		}
 		results[rule.ID] = result
 	}
 	return results, nil
 }
 
-func runSalesforceRule(ctx context.Context, targetOrg string, rule Rule) (SalesforceResult, error) {
+func runSalesforceRule(ctx context.Context, targetOrg string, ruleOrdinal int, rule Rule) (SalesforceResult, error) {
 	var created []toolingRecord
 	var primaryErr error
-	result := SalesforceResult{Outcome: OutcomeAccept}
+	result := SalesforceResult{}
 	for _, dependency := range rule.Dependencies {
 		dependencyRule, err := toolingDependencyRule(rule, dependency)
 		if err != nil {
-			primaryErr = fmt.Errorf("prepare Salesforce dependency for %s: %w", rule.ID, err)
+			primaryErr = newSalesforceOperationalError(ctx, ruleOrdinal, rule, "prepare", nil, err, "prepare", -1)
 			break
 		}
-		record, dependencyResult, err := compileToolingRule(ctx, targetOrg, dependencyRule)
+		record, dependencyResult, err := compileToolingRule(ctx, targetOrg, ruleOrdinal, rule, dependencyRule, "dependency-post")
 		if err != nil {
 			primaryErr = err
 			break
@@ -70,7 +100,7 @@ func runSalesforceRule(ctx context.Context, targetOrg string, rule Rule) (Salesf
 		created = append(created, record)
 	}
 	if primaryErr == nil {
-		record, probeResult, err := compileToolingRule(ctx, targetOrg, rule)
+		record, probeResult, err := compileToolingRule(ctx, targetOrg, ruleOrdinal, rule, rule, "probe-post")
 		if err != nil {
 			primaryErr = err
 		} else {
@@ -82,10 +112,7 @@ func runSalesforceRule(ctx context.Context, targetOrg string, rule Rule) (Salesf
 	}
 	cleanupCtx, cancelCleanup := context.WithTimeout(context.WithoutCancel(ctx), acceptedToolingCleanupTimeout)
 	defer cancelCleanup()
-	cleanupErr := deleteToolingRecords(cleanupCtx, targetOrg, rule.APIVersion, created)
-	if cleanupErr != nil {
-		cleanupErr = fmt.Errorf("delete accepted Salesforce probe %s: %w", rule.ID, cleanupErr)
-	}
+	cleanupErr := deleteToolingRecords(cleanupCtx, targetOrg, ruleOrdinal, rule, created)
 	return result, errors.Join(primaryErr, cleanupErr)
 }
 
@@ -107,38 +134,50 @@ func toolingDependencyRule(rule Rule, dependency SourceFile) (Rule, error) {
 	return Rule{ID: rule.ID + " dependency", APIVersion: rule.APIVersion, SourceKind: sourceKind, Source: dependency.Content}, nil
 }
 
-func compileToolingRule(ctx context.Context, targetOrg string, rule Rule) (toolingRecord, SalesforceResult, error) {
+func compileToolingRule(ctx context.Context, targetOrg string, ruleOrdinal int, parentRule, rule Rule, stage string) (toolingRecord, SalesforceResult, error) {
 	object, payload, err := toolingPayload(rule)
 	if err != nil {
-		return toolingRecord{}, SalesforceResult{}, fmt.Errorf("prepare Salesforce probe %s: %w", rule.ID, err)
+		return toolingRecord{}, SalesforceResult{}, newSalesforceOperationalError(ctx, ruleOrdinal, parentRule, "prepare", nil, err, "prepare", -1)
 	}
 	out, err := runSF(ctx, "api", "request", "rest", toolingURL(rule.APIVersion, object), "--method", "POST", "--body", payload, "--target-org", targetOrg)
 	if err != nil {
 		problems := compilerProblems(out)
 		if len(problems) == 0 {
-			return toolingRecord{}, SalesforceResult{}, fmt.Errorf("Salesforce compiler request %s: %w", rule.ID, err)
+			return toolingRecord{}, SalesforceResult{}, newSalesforceOperationalError(ctx, ruleOrdinal, parentRule, stage, out, err, "", -1)
 		}
 		return toolingRecord{}, SalesforceResult{Outcome: OutcomeReject, Problems: problems}, nil
 	}
 	id := toolingID(out)
 	if id == "" {
-		return toolingRecord{}, SalesforceResult{}, fmt.Errorf("Salesforce accepted %s without a Tooling API record id", rule.ID)
+		return toolingRecord{}, SalesforceResult{}, newSalesforceOperationalError(ctx, ruleOrdinal, parentRule, stage, out, nil, "response", 0)
 	}
 	return toolingRecord{object: object, id: id}, SalesforceResult{Outcome: OutcomeAccept}, nil
 }
 
-func deleteToolingRecords(ctx context.Context, targetOrg string, apiVersion float64, records []toolingRecord) error {
-	var cleanupErr error
+func deleteToolingRecords(ctx context.Context, targetOrg string, ruleOrdinal int, rule Rule, records []toolingRecord) error {
+	var firstErr error
 	for index := len(records) - 1; index >= 0; index-- {
 		record := records[index]
-		if err := deleteToolingRecord(ctx, targetOrg, toolingURL(apiVersion, record.object)+"/"+record.id); err != nil {
-			cleanupErr = errors.Join(cleanupErr, fmt.Errorf("delete %s %s: %w", record.object, record.id, err))
+		if failure := deleteToolingRecord(ctx, targetOrg, toolingURL(rule.APIVersion, record.object)+"/"+record.id); failure != nil && firstErr == nil {
+			firstErr = &SalesforceOperationalError{Diagnostic: SalesforceOperationalDiagnostic{
+				RuleOrdinal: ruleOrdinal, RuleID: rule.ID, Stage: "accepted-delete", APIVersion: effectiveAPIVersion(rule.APIVersion),
+				FailureKind: failure.kind, ExitCode: failure.exitCode, TimedOut: failure.timedOut,
+				ErrorCodes: failure.errorCodes, ResponseSHA256: failure.responseSHA256,
+			}}
 		}
 	}
-	return cleanupErr
+	return firstErr
 }
 
-func deleteToolingRecord(ctx context.Context, targetOrg, url string) error {
+type salesforceCommandFailure struct {
+	kind           string
+	exitCode       int
+	timedOut       bool
+	errorCodes     []string
+	responseSHA256 string
+}
+
+func deleteToolingRecord(ctx context.Context, targetOrg, url string) *salesforceCommandFailure {
 	payload, err := json.Marshal(map[string]any{
 		"url":    url,
 		"method": "DELETE",
@@ -148,41 +187,47 @@ func deleteToolingRecord(ctx context.Context, targetOrg, url string) error {
 		},
 	})
 	if err != nil {
-		return err
+		return commandFailure(ctx, nil, err, "prepare", -1)
 	}
 	file, err := os.CreateTemp("", "glade-apex-rule-delete-*.json")
 	if err != nil {
-		return err
+		return commandFailure(ctx, nil, err, "prepare", -1)
 	}
 	path := file.Name()
 	defer os.Remove(path)
 	if _, err := file.Write(payload); err != nil {
 		file.Close()
-		return err
+		return commandFailure(ctx, nil, err, "prepare", -1)
 	}
 	if err := file.Close(); err != nil {
-		return err
+		return commandFailure(ctx, nil, err, "prepare", -1)
 	}
+	var lastFailure *salesforceCommandFailure
 	for attempt := 0; attempt < acceptedToolingDeleteAttempts; attempt++ {
-		_, err = runSF(ctx, "api", "request", "rest", "--file", path, "--target-org", targetOrg)
+		out, err := runSF(ctx, "api", "request", "rest", "--file", path, "--target-org", targetOrg)
 		if err == nil {
 			return nil
 		}
+		lastFailure = commandFailure(ctx, out, err, "", -1)
 		if toolingRecordIsGone(ctx, targetOrg, url) {
 			return nil
 		}
 		if ctx.Err() != nil {
-			return ctx.Err()
+			lastFailure.kind = failureKind(ctx, ctx.Err())
+			lastFailure.timedOut = errors.Is(ctx.Err(), context.DeadlineExceeded)
+			return lastFailure
 		}
 		if attempt+1 < acceptedToolingDeleteAttempts {
 			select {
 			case <-ctx.Done():
-				return ctx.Err()
+				lastFailure.kind = failureKind(ctx, ctx.Err())
+				lastFailure.timedOut = errors.Is(ctx.Err(), context.DeadlineExceeded)
+				return lastFailure
 			case <-time.After(time.Duration(attempt+1) * time.Second):
 			}
 		}
 	}
-	return err
+	return lastFailure
 }
 
 func toolingRecordIsGone(ctx context.Context, targetOrg, url string) bool {
@@ -198,25 +243,60 @@ func runSF(ctx context.Context, args ...string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, "sf", args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		// Do not wrap the output. It can contain environment-specific details,
-		// including an accidentally echoed credential.
-		return out, fmt.Errorf("Salesforce CLI command failed")
+		return out, err
 	}
 	return out, nil
 }
 
-func toolingURL(apiVersion float64, object string) string {
-	if apiVersion == 0 {
-		apiVersion = 66
+func newSalesforceOperationalError(ctx context.Context, ruleOrdinal int, rule Rule, stage string, output []byte, err error, kind string, exitCode int) *SalesforceOperationalError {
+	failure := commandFailure(ctx, output, err, kind, exitCode)
+	return &SalesforceOperationalError{Diagnostic: SalesforceOperationalDiagnostic{
+		RuleOrdinal: ruleOrdinal, RuleID: rule.ID, Stage: stage, APIVersion: effectiveAPIVersion(rule.APIVersion),
+		FailureKind: failure.kind, ExitCode: failure.exitCode, TimedOut: failure.timedOut,
+		ErrorCodes: failure.errorCodes, ResponseSHA256: failure.responseSHA256,
+	}}
+}
+
+func commandFailure(ctx context.Context, output []byte, err error, kind string, exitCode int) *salesforceCommandFailure {
+	if kind == "" {
+		kind = failureKind(ctx, err)
 	}
+	if exitErr := (*exec.ExitError)(nil); errors.As(err, &exitErr) {
+		exitCode = exitErr.ExitCode()
+	}
+	return &salesforceCommandFailure{
+		kind: kind, exitCode: exitCode, timedOut: errors.Is(ctx.Err(), context.DeadlineExceeded),
+		errorCodes: toolingErrorCodes(output), responseSHA256: fmt.Sprintf("%x", sha256.Sum256(output)),
+	}
+}
+
+func failureKind(ctx context.Context, err error) string {
+	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		return "timeout"
+	}
+	if errors.Is(ctx.Err(), context.Canceled) {
+		return "canceled"
+	}
+	if exitErr := (*exec.ExitError)(nil); errors.As(err, &exitErr) {
+		return "exit"
+	}
+	return "execution"
+}
+
+func effectiveAPIVersion(apiVersion float64) float64 {
+	if apiVersion == 0 {
+		return 66
+	}
+	return apiVersion
+}
+
+func toolingURL(apiVersion float64, object string) string {
+	apiVersion = effectiveAPIVersion(apiVersion)
 	return fmt.Sprintf("/services/data/v%.1f/tooling/sobjects/%s", apiVersion, object)
 }
 
 func toolingPayload(rule Rule) (string, string, error) {
-	apiVersion := rule.APIVersion
-	if apiVersion == 0 {
-		apiVersion = 66
-	}
+	apiVersion := effectiveAPIVersion(rule.APIVersion)
 	payload := map[string]any{"Body": rule.Source, "ApiVersion": apiVersion}
 	switch rule.SourceKind {
 	case "class":
@@ -311,6 +391,22 @@ func toolingHasErrorCode(output []byte, expected string) bool {
 		}
 	}
 	return false
+}
+
+func toolingErrorCodes(output []byte) []string {
+	value, ok := toolingJSON(output)
+	if !ok {
+		return nil
+	}
+	var codes []string
+	for _, code := range collectJSONFields(value, map[string]bool{"errorcode": true}) {
+		if salesforceErrorCodePattern.MatchString(code) {
+			codes = append(codes, code)
+		}
+	}
+	codes = uniqueStrings(codes)
+	sort.Strings(codes)
+	return codes
 }
 
 func toolingJSON(output []byte) (any, bool) {

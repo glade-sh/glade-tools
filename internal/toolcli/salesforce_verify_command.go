@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -172,11 +173,12 @@ type verifyInput struct {
 }
 
 type verifySection struct {
-	Status            string        `json:"status"`
-	OracleDrift       bool          `json:"oracleDrift"`
-	NormalizerChanged bool          `json:"normalizerChanged"`
-	Summary           verifySummary `json:"summary"`
-	Cases             []verifyCase  `json:"cases"`
+	Status             string                                     `json:"status"`
+	OracleDrift        bool                                       `json:"oracleDrift"`
+	NormalizerChanged  bool                                       `json:"normalizerChanged"`
+	OperationalFailure *apexrules.SalesforceOperationalDiagnostic `json:"operationalFailure,omitempty"`
+	Summary            verifySummary                              `json:"summary"`
+	Cases              []verifyCase                               `json:"cases"`
 }
 
 type verifyCase struct {
@@ -667,16 +669,10 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 	}
 
 	sfResults, sfErr := deps.runSFCompiler(ctx, opts.TargetOrg, catalog.Rules)
-	if sfErr != nil {
-		ids := make([]string, len(catalog.Rules))
-		for i, r := range catalog.Rules {
-			ids[i] = r.ID
-		}
-		section.Cases = errorCases(ids)
-		section.Status = "inconclusive"
-		section.Summary.Required = len(catalog.Rules)
-		section.Summary.Inconclusive = len(catalog.Rules)
-		return section
+	var operationalErr *apexrules.SalesforceOperationalError
+	if errors.As(sfErr, &operationalErr) {
+		diagnostic := operationalErr.Diagnostic
+		section.OperationalFailure = &diagnostic
 	}
 
 	gladeResults, gladeErr := deps.runGladeCompiler(ctx, opts.GladeBin, catalog.Rules)
@@ -720,7 +716,10 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 		sfObs := string(r.Salesforce)
 		glObs := string(r.Glade)
 		cat := r.Status
-		if !r.OracleMatched {
+		if r.ExecStatus == "inconclusive" {
+			cat = "operational/execution-error"
+		}
+		if r.ExecStatus != "inconclusive" && !r.OracleMatched {
 			oracleDrift = true
 		}
 		cases[i] = verifyCase{
@@ -746,7 +745,7 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 	section.Summary = verifySummary{Required: len(catalog.Rules), Pass: pass, Fail: fail, Inconclusive: inconclusive}
 	if fail > 0 || oracleDrift {
 		section.Status = "fail"
-	} else if inconclusive > 0 {
+	} else if inconclusive > 0 || sfErr != nil {
 		section.Status = "inconclusive"
 	}
 	return section

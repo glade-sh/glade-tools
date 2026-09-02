@@ -1031,6 +1031,39 @@ func TestRunCompilerSectionLimitsReleaseModeToSourceWindow(t *testing.T) {
 	}
 }
 
+func TestRunCompilerSectionPreservesPartialSalesforceResultsWithoutOracleDrift(t *testing.T) {
+	dir := t.TempDir()
+	deps := toRealDeps(allPassDeps())
+	deps.runSFCompiler = func(context.Context, string, []apexrules.Rule) (map[string]apexrules.SalesforceResult, error) {
+		return map[string]apexrules.SalesforceResult{
+				"APEX-RULE-001": {Outcome: apexrules.OutcomeAccept},
+			}, &apexrules.SalesforceOperationalError{Diagnostic: apexrules.SalesforceOperationalDiagnostic{
+				RuleOrdinal: 2, RuleID: "APEX-RULE-002", Stage: "probe-post", APIVersion: 67,
+				FailureKind: "exit", ExitCode: 1, ErrorCodes: []string{"SERVER_UNAVAILABLE"}, ResponseSHA256: strings.Repeat("a", 64),
+			}}
+	}
+	section := runCompilerSection(context.Background(), salesforceVerifyOptions{
+		Catalog:   makeCatalog(t, dir),
+		TargetOrg: "test-org",
+		GladeBin:  makeCandidate(t, dir),
+	}, deps)
+	if section.Status != "inconclusive" || section.OracleDrift {
+		t.Fatalf("status=%q oracleDrift=%t, want inconclusive false", section.Status, section.OracleDrift)
+	}
+	if section.Summary != (verifySummary{Required: 2, Pass: 1, Inconclusive: 1}) {
+		t.Fatalf("summary=%+v", section.Summary)
+	}
+	if section.Cases[0].Status != "pass" || section.Cases[1].Status != "inconclusive" {
+		t.Fatalf("cases=%#v", section.Cases)
+	}
+	if section.Cases[1].Category != "operational/execution-error" {
+		t.Fatalf("missing case category=%q", section.Cases[1].Category)
+	}
+	if section.OperationalFailure == nil || section.OperationalFailure.RuleID != "APEX-RULE-002" {
+		t.Fatalf("operational failure=%#v", section.OperationalFailure)
+	}
+}
+
 func TestSalesforceVerify_RuntimeFailureDoesNotStopLifecycle(t *testing.T) {
 	dir := t.TempDir()
 	releasePath := makeReleaseManifest(t, dir)

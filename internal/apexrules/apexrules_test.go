@@ -2,7 +2,9 @@ package apexrules
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -550,6 +552,30 @@ esac
 	}
 }
 
+func TestRunSalesforceRetainsAcceptedResultWhenCleanupFails(t *testing.T) {
+	dir := t.TempDir()
+	sf := filepath.Join(dir, "sf")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+case "$*" in
+  *glade-apex-rule-delete-*) printf '[{"errorCode":"SERVER_UNAVAILABLE"}]\n' >&2; exit 23 ;;
+  *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
+esac
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	results, err := RunSalesforce(context.Background(), "scratch", []Rule{{
+		ID: "CleanupFailure", SourceKind: "class", Source: "public class CleanupFailure {}", APIVersion: 66,
+	}})
+	if results["CleanupFailure"].Outcome != OutcomeAccept {
+		t.Fatalf("results = %#v, want retained accepted observation", results)
+	}
+	var operational *SalesforceOperationalError
+	if !errors.As(err, &operational) || operational.Diagnostic.Stage != "accepted-delete" {
+		t.Fatalf("error = %T %v", err, err)
+	}
+}
+
 func TestRunSalesforceAcceptsCleanupErrorWhenToolingRecordIsGone(t *testing.T) {
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "sf.log")
@@ -617,6 +643,51 @@ exit 1
 	}})
 	if err == nil || !strings.Contains(err.Error(), "Salesforce compiler request") {
 		t.Fatalf("RunSalesforce error = %v, want transport failure", err)
+	}
+}
+
+func TestRunSalesforceReturnsCompletedResultsAndSanitizedOperationalDiagnostic(t *testing.T) {
+	dir := t.TempDir()
+	sf := filepath.Join(dir, "sf")
+	rawResponse := []byte("[{\"message\":\"secret-token org-00D000000000001\",\"errorCode\":\"Z_CODE\"},{\"errorCode\":\"A_CODE\"},{\"errorCode\":\"Z_CODE\"},{\"errorCode\":\"secret-token org-00D000000000001\"}]\n")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+case "$*" in
+  *LateFailure*) printf '%s' '[{"message":"secret-token org-00D000000000001","errorCode":"Z_CODE"},{"errorCode":"A_CODE"},{"errorCode":"Z_CODE"},{"errorCode":"secret-token org-00D000000000001"}]' >&2; printf '\n' >&2; exit 23 ;;
+  *glade-apex-rule-delete-*) printf '{"status":0}\n' ;;
+  *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
+esac
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	rules := []Rule{
+		{ID: "Completed", SourceKind: "class", Source: "public class Completed {}", APIVersion: 66},
+		{ID: "LateFailure", SourceKind: "class", Source: "public class LateFailure {}", APIVersion: 65},
+	}
+	results, err := RunSalesforce(context.Background(), "secret-org-alias", rules)
+	if results["Completed"].Outcome != OutcomeAccept || len(results) != 1 {
+		t.Fatalf("completed results = %#v, want only first rule", results)
+	}
+	var operational *SalesforceOperationalError
+	if !errors.As(err, &operational) {
+		t.Fatalf("error = %T %v, want *SalesforceOperationalError", err, err)
+	}
+	wantSHA := fmt.Sprintf("%x", sha256.Sum256(rawResponse))
+	got := operational.Diagnostic
+	if got.RuleOrdinal != 2 || got.RuleID != "LateFailure" || got.Stage != "probe-post" || got.APIVersion != 65 || got.FailureKind != "exit" || got.ExitCode != 23 || got.TimedOut || got.ResponseSHA256 != wantSHA {
+		t.Fatalf("diagnostic = %#v", got)
+	}
+	if fmt.Sprint(got.ErrorCodes) != "[A_CODE Z_CODE]" {
+		t.Fatalf("error codes = %#v, want sorted unique codes", got.ErrorCodes)
+	}
+	encoded, marshalErr := json.Marshal(operational)
+	if marshalErr != nil {
+		t.Fatal(marshalErr)
+	}
+	for _, secret := range []string{"secret-token", "00D000000000001", "secret-org-alias", "LateFailure {}", "api request rest"} {
+		if strings.Contains(string(encoded), secret) || strings.Contains(err.Error(), secret) {
+			t.Fatalf("operational diagnostic leaked %q: json=%s error=%q", secret, encoded, err)
+		}
 	}
 }
 
