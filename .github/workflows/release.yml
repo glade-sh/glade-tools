@@ -60,21 +60,23 @@ jobs:
         env:
           GITHUB_REPOSITORY: glade-sh/glade
         run: |
-          requested_ref="$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"
-          public_check_runs_path="repos/glade-sh/glade/commits/$requested_ref/check-runs?per_page=100&filter=latest&check_name=Salesforce%20Correctness"
+          requested_ref="$(jq -er '.gladeCommit | select(type == "string" and test("^[0-9a-f]{40}$"))' docs/fixtures/apex-language-rules.json)"
+          public_check_runs_response="$RUNNER_TEMP/public-check-runs.json"
+          curl --fail --silent --show-error \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            --output "$public_check_runs_response" \
+            "https://api.github.com/repos/glade-sh/glade/commits/$requested_ref/check-runs?per_page=100&filter=latest&check_name=Salesforce%20Correctness"
+          jq -e 'type == "object" and (.total_count | type == "number") and (.check_runs | type == "array")' "$public_check_runs_response" >/dev/null
           mkdir -p "$RUNNER_TEMP/public-gh"
           cat > "$RUNNER_TEMP/public-gh/gh" <<'EOF'
           #!/usr/bin/env bash
           set -euo pipefail
-          test "$1" = api && test "$2" = --method && test "$3" = GET && test "$4" = "$PUBLIC_CHECK_RUNS_PATH"
-          curl --fail --silent --show-error \
-            -H 'Accept: application/vnd.github+json' \
-            -H 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/$PUBLIC_CHECK_RUNS_PATH"
+          cat "$PUBLIC_CHECK_RUNS_RESPONSE"
           EOF
           chmod 500 "$RUNNER_TEMP/public-gh/gh"
-          PUBLIC_CHECK_RUNS_PATH="$public_check_runs_path" \
-            PATH="$RUNNER_TEMP/public-gh:$PATH" \
+          export PUBLIC_CHECK_RUNS_RESPONSE="$public_check_runs_response"
+          PATH="$RUNNER_TEMP/public-gh:$PATH" \
             env -u GH_TOKEN -u GITHUB_TOKEN \
               ../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$TOOLS_SHA" > salesforce-release-authority.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

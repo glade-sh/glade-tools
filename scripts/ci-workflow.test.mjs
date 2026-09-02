@@ -258,14 +258,19 @@ test("release verifies the catalog-pinned Glade Salesforce authority before prep
     "repository: glade-sh/glade",
     "ref: ${{ steps.glade-ref.outputs.ref }}",
     'test "$(git -C ../glade rev-parse HEAD)" = "$requested_ref"',
-    "PUBLIC_CHECK_RUNS_PATH",
+    "PUBLIC_CHECK_RUNS_RESPONSE",
     "curl --fail --silent --show-error",
+    'https://api.github.com/repos/glade-sh/glade/commits/$requested_ref/check-runs?per_page=100&filter=latest&check_name=Salesforce%20Correctness',
+    "public_check_runs_response",
+    'export PUBLIC_CHECK_RUNS_RESPONSE="$public_check_runs_response"',
+    'cat "$PUBLIC_CHECK_RUNS_RESPONSE"',
     "env -u GH_TOKEN -u GITHUB_TOKEN",
     '../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$TOOLS_SHA" > salesforce-release-authority.json',
     "name: salesforce-release-authority",
   ]) {
     assert.ok(authority.includes(marker), `release Salesforce authority missing ${marker}`);
   }
+  assert.doesNotMatch(authority, /test "\$1" = api/);
   assert.match(releaseJob("required-gates"), /needs: salesforce-authority/);
   assert.match(releaseJob("build"), /needs:\n\s+- salesforce-authority\n\s+- required-gates\n\s+- prepare/);
 });

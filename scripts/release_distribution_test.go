@@ -95,11 +95,17 @@ func TestReleaseWorkflowDispatchRecoveryUsesOnlyV0212AndItsExactTag(t *testing.T
 		`gh release view "$RELEASE_TAG" --json targetCommitish --jq '.targetCommitish'`,
 		`--target "$TOOLS_SHA"`,
 		`env -u GH_TOKEN -u GITHUB_TOKEN`,
+		`https://api.github.com/repos/glade-sh/glade/commits/$requested_ref/check-runs?per_page=100&filter=latest&check_name=Salesforce%20Correctness`,
+		`cat "$PUBLIC_CHECK_RUNS_RESPONSE"`,
+		`export PUBLIC_CHECK_RUNS_RESPONSE="$public_check_runs_response"`,
 		`../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$TOOLS_SHA"`,
 	} {
 		if !strings.Contains(workflowText, want) {
 			t.Fatalf("release recovery missing %q", want)
 		}
+	}
+	if strings.Contains(workflowText, `test "$1" = api`) {
+		t.Fatal("public check-runs adapter must replay the frozen response without argv parsing")
 	}
 }
 
