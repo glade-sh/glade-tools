@@ -142,7 +142,7 @@ func compileToolingRule(ctx context.Context, targetOrg string, ruleOrdinal int, 
 	out, err := runSF(ctx, "api", "request", "rest", toolingURL(rule.APIVersion, object), "--method", "POST", "--body", payload, "--target-org", targetOrg)
 	if err != nil {
 		problems := compilerProblems(out)
-		if len(problems) == 0 {
+		if len(problems) == 0 || stage != "probe-post" {
 			return toolingRecord{}, SalesforceResult{}, newSalesforceOperationalError(ctx, ruleOrdinal, parentRule, stage, out, err, "", -1)
 		}
 		return toolingRecord{}, SalesforceResult{Outcome: OutcomeReject, Problems: problems}, nil

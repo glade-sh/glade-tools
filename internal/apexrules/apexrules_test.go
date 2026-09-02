@@ -761,8 +761,9 @@ esac
 			{Path: "force-app/main/default/classes/BadBase.cls", Content: "public class BadBase { INVALID; }"},
 		},
 	}})
-	if err == nil || !strings.Contains(err.Error(), "Salesforce dependency for DependentProbe was rejected") {
-		t.Fatalf("RunSalesforce error = %v, want dependency compiler failure", err)
+	var operational *SalesforceOperationalError
+	if !errors.As(err, &operational) || operational.Diagnostic.Stage != "dependency-post" || fmt.Sprint(operational.Diagnostic.ErrorCodes) != "[INVALID_FIELD_FOR_INSERT_UPDATE]" {
+		t.Fatalf("RunSalesforce error = %T %v, want sanitized dependency compiler failure", err, err)
 	}
 	log, readErr := os.ReadFile(logPath)
 	if readErr != nil {
