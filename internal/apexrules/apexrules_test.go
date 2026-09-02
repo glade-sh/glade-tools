@@ -466,6 +466,28 @@ func TestWriteGladeRuleProjectWritesProjectFilesWithoutToolingDependencies(t *te
 	}
 }
 
+func TestWriteGladeRuleSetupPreservesSalesforceAPIVersionFormat(t *testing.T) {
+	for _, test := range []struct {
+		version float64
+		want    string
+	}{{67, "67.0"}, {0, "66.0"}} {
+		project := t.TempDir()
+		if err := writeGladeRuleSetup(project, Rule{APIVersion: test.version}); err != nil {
+			t.Fatal(err)
+		}
+		content, err := os.ReadFile(filepath.Join(project, "sfdx-project.json"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(string(content), `"sourceApiVersion": "`+test.want+`"`) {
+			t.Fatalf("sfdx-project.json = %s", content)
+		}
+	}
+	if err := writeGladeRuleSetup(t.TempDir(), Rule{APIVersion: 66.25}); err == nil {
+		t.Fatal("fractional source API version unexpectedly accepted")
+	}
+}
+
 func TestRunSalesforceRecordsProblemsAndDeletesAcceptedProbes(t *testing.T) {
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "sf.log")
