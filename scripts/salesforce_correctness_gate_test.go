@@ -505,7 +505,6 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 	}
 	for _, marker := range []string{
 		"name: Salesforce Correctness", "workflow_dispatch:", "glade_sha:", "required: true",
-		"concurrency:\n  group: salesforce-correctness\n  cancel-in-progress: false",
 		"permissions:\n  actions: read\n  contents: read",
 		`^([0-9a-fA-F]{40})$`, `"${GLADE_SHA,,}"`, `echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"`,
 		`test "$(git -C ../glade rev-parse HEAD)" = "$GLADE_SHA"`,

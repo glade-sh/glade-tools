@@ -12,10 +12,6 @@ permissions:
   actions: read
   contents: read
 
-concurrency:
-  group: salesforce-correctness
-  cancel-in-progress: false
-
 jobs:
   salesforce-correctness:
     runs-on: ubuntu-latest
