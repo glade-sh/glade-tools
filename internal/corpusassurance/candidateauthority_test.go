@@ -749,8 +749,8 @@ func writeCandidateAuthorityDoctorExecutable(t *testing.T, path, commit string, 
 
 func writeCandidateAuthorityProvisioningExecutable(t *testing.T, path, commit, eventsPath string) {
 	t.Helper()
-	checks := "home_mode=$(stat -f '%Lp' \"$HOME\" 2>/dev/null || stat -c '%a' \"$HOME\")\n" +
-		"data_mode=$(stat -f '%Lp' \"$XDG_DATA_HOME\" 2>/dev/null || stat -c '%a' \"$XDG_DATA_HOME\")\n" +
+	checks := "home_mode=$(stat -f '%Lp' \"$HOME\" 2>/dev/null) || home_mode=$(stat -c '%a' \"$HOME\")\n" +
+		"data_mode=$(stat -f '%Lp' \"$XDG_DATA_HOME\" 2>/dev/null) || data_mode=$(stat -c '%a' \"$XDG_DATA_HOME\")\n" +
 		"[ -d \"$HOME\" ] && [ -d \"$XDG_DATA_HOME\" ] && [ \"$home_mode\" = 700 ] && [ \"$data_mode\" = 700 ] && [ -z \"$GLADE_HOME\" ] || exit 9\n"
 	script := "#!/bin/sh\ncase \"$1\" in\n" +
 		"toolchain) " + checks + "[ \"$2\" = install ] && [ \"$3\" = --from ] && [ \"$4\" = \"" + filepath.Dir(path) + "\" ] || exit 8\nmkdir -p \"$XDG_DATA_HOME/glade\"\ntouch \"$XDG_DATA_HOME/glade/installed\"\nprintf 'install\\n' >> \"" + eventsPath + "\" ;;\n" +
