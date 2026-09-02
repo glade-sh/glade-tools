@@ -604,6 +604,35 @@ System.assert(!roundtrip.contains('"Missing"'));
 	}
 }
 
+func TestRunTestFixtureDoesNotCreateDiskRuntimeCache(t *testing.T) {
+	apextest.InvalidateRuntimeCaches()
+	t.Cleanup(apextest.InvalidateRuntimeCaches)
+	root := t.TempDir()
+	fixture := Fixture{
+		Name:     "test-fixture-no-disk-cache",
+		Source:   []SourceFile{{Path: "force-app/main/default/classes/FixtureCacheTest.cls", Content: "@IsTest private class FixtureCacheTest { @IsTest static void passes() { System.assert(true); } }"}},
+		Command:  Invocation{Kind: "test"},
+		Expected: ExpectedBehavior{Result: json.RawMessage(`{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}`)},
+	}
+	result, err := runTestFixtureAtRoot(fixture, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.OK {
+		t.Fatalf("result = %#v", result)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".glade", "test", "startup.meta.json")); !os.IsNotExist(err) {
+		t.Fatalf("startup cache header stat error = %v, want not exist", err)
+	}
+	payloads, err := filepath.Glob(filepath.Join(root, ".glade", "test", "startup.payload.*.gob"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(payloads) != 0 {
+		t.Fatalf("startup cache payloads = %v, want none", payloads)
+	}
+}
+
 func TestRunUnsupportedExecFixtureMatchesExpectedError(t *testing.T) {
 	fixture := Fixture{
 		Name:    "unsupported-exec-call",

@@ -389,6 +389,10 @@ func runTestFixture(fixture Fixture) (RunResult, error) {
 		return RunResult{Name: fixture.Name, Kind: fixture.Command.Kind}, err
 	}
 	defer os.RemoveAll(root)
+	return runTestFixtureAtRoot(fixture, root)
+}
+
+func runTestFixtureAtRoot(fixture Fixture, root string) (RunResult, error) {
 	if err := writeSFDXProject(root, fixture.Project); err != nil {
 		return RunResult{Name: fixture.Name, Kind: fixture.Command.Kind}, err
 	}
@@ -403,7 +407,7 @@ func runTestFixture(fixture Fixture) (RunResult, error) {
 	if err != nil {
 		return RunResult{Name: fixture.Name, Kind: fixture.Command.Kind}, err
 	}
-	opts := apextest.Options{}
+	opts := apextest.Options{NoDiskCache: true}
 	if fixture.Command.LimitMode != "" {
 		mode, err := fixtureLimitMode(fixture.Command.LimitMode)
 		if err != nil {
