@@ -47,6 +47,8 @@ func TestReleaseWorkflowPinsCatalogGladeCommitAndUsesNotesFile(t *testing.T) {
 	}
 	workflowText := string(workflow)
 	for _, want := range []string{
+		`RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && 'v0.2.12' || github.ref_name }}`,
+		`TOOLS_SHA: ${{ github.event_name == 'workflow_dispatch' && '18dd0e23cb540fdacdaaafa51b69c35d25426436' || github.sha }}`,
 		"Read pinned glade ref",
 		`requested_ref="$(jq -er '.gladeCommit | select(type == "string" and test("^[0-9a-f]{40}$"))' docs/fixtures/apex-language-rules.json)"`,
 		`printf 'ref=%s\n' "$requested_ref" >> "$GITHUB_OUTPUT"`,
@@ -54,7 +56,7 @@ func TestReleaseWorkflowPinsCatalogGladeCommitAndUsesNotesFile(t *testing.T) {
 		"Verify pinned glade checkout",
 		`test "$(git -C ../glade rev-parse HEAD)" = "$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"`,
 		"Build release notes",
-		`scripts/release-notes.sh "$GITHUB_REF_NAME" > release-notes.md`,
+		`scripts/release-notes.sh "$RELEASE_TAG" > release-notes.md`,
 		"--notes-file release-notes.md",
 	} {
 		if !strings.Contains(workflowText, want) {
@@ -78,6 +80,29 @@ func TestReleaseWorkflowPinsCatalogGladeCommitAndUsesNotesFile(t *testing.T) {
 	}
 }
 
+func TestReleaseWorkflowDispatchRecoveryUsesOnlyV0212AndItsExactTag(t *testing.T) {
+	workflow, err := os.ReadFile(filepath.Join("..", ".github", "workflows", "release.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	workflowText := string(workflow)
+	for _, want := range []string{
+		`ref: ${{ env.TOOLS_SHA }}`,
+		`refs/tags/$RELEASE_TAG^{}`,
+		`test "$tag_sha" = "$TOOLS_SHA"`,
+		`if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')`,
+		`scripts/verify-release-gates.sh "$GITHUB_REPOSITORY" "$TOOLS_SHA" > required-gates.json`,
+		`gh release view "$RELEASE_TAG" --json targetCommitish --jq '.targetCommitish'`,
+		`--target "$TOOLS_SHA"`,
+		`env -u GH_TOKEN -u GITHUB_TOKEN`,
+		`../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$TOOLS_SHA"`,
+	} {
+		if !strings.Contains(workflowText, want) {
+			t.Fatalf("release recovery missing %q", want)
+		}
+	}
+}
+
 func TestReleaseWorkflowDoesNotOverwritePublishedAssets(t *testing.T) {
 	workflowPath := filepath.Join("..", ".github", "workflows", "release.yml")
 	workflow, err := os.ReadFile(workflowPath)
@@ -97,14 +122,14 @@ func TestReleaseWorkflowDoesNotOverwritePublishedAssets(t *testing.T) {
 	}
 
 	prepare := releaseWorkflowJobBlock(t, workflowText, "prepare", "build")
-	if !strings.Contains(prepare, `gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1`) ||
-		!strings.Contains(prepare, `echo "Release $GITHUB_REF_NAME already exists; reusing it without mutation"`) {
+	if !strings.Contains(prepare, `gh release view "$RELEASE_TAG" >/dev/null 2>&1`) ||
+		!strings.Contains(prepare, `echo "Release $RELEASE_TAG already exists; reusing it without mutation"`) {
 		t.Fatal("prepare job must explicitly reuse an existing release without changing it")
 	}
 	if got := strings.Count(prepare, "gh release create"); got != 1 {
 		t.Fatalf("prepare release create count = %d, want 1", got)
 	}
-	for _, want := range []string{`--title "$GITHUB_REF_NAME"`, "--notes-file release-notes.md"} {
+	for _, want := range []string{`--title "$RELEASE_TAG"`, `--target "$TOOLS_SHA"`, "--notes-file release-notes.md"} {
 		if !strings.Contains(prepare, want) {
 			t.Fatalf("new release creation missing checked release metadata %q", want)
 		}

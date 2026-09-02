@@ -206,18 +206,24 @@ test("full fixtures is a single bounded weekly and manual lane", () => {
   assert.doesNotMatch(fixtureJob, /go test \.\/\.\.\//);
 });
 
-test("release requires exact-SHA CI authority before tag publication", () => {
+test("release dispatch recovery pins v0.2.12 to its immutable Tools SHA", () => {
   assert.deepEqual(
     [...releaseJobs.matchAll(/^  (\w[\w-]*):$/gm)].map((match) => match[1]),
     ["salesforce-authority", "required-gates", "prepare", "build", "publish"],
   );
+  for (const marker of [
+    "RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && 'v0.2.12' || github.ref_name }}",
+    "TOOLS_SHA: ${{ github.event_name == 'workflow_dispatch' && '18dd0e23cb540fdacdaaafa51b69c35d25426436' || github.sha }}",
+  ]) {
+    assert.ok(releaseWorkflow.includes(marker), `release recovery missing ${marker}`);
+  }
 
   const gate = releaseJob("required-gates");
   for (const marker of [
-    "if: startsWith(github.ref, 'refs/tags/')",
+    "if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')",
     "permissions:\n      actions: read\n      contents: read",
-    "uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3\n        with:\n          ref: ${{ github.sha }}\n          persist-credentials: false",
-    'scripts/verify-release-gates.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" > required-gates.json',
+    "uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3\n        with:\n          ref: ${{ env.TOOLS_SHA }}\n          fetch-depth: 0\n          persist-credentials: false",
+    'scripts/verify-release-gates.sh "$GITHUB_REPOSITORY" "$TOOLS_SHA" > required-gates.json',
     "name: required-gates",
     "path: required-gates.json",
     "retention-days: 90",
@@ -231,13 +237,16 @@ test("release requires exact-SHA CI authority before tag publication", () => {
 
   const prepare = releaseJob("prepare");
   assert.match(prepare, /needs: required-gates/);
-  assert.match(prepare, /if: startsWith\(github\.ref, 'refs\/tags\/'\) && needs\.required-gates\.result == 'success'/);
+  assert.match(prepare, /github\.event_name == 'workflow_dispatch' \|\| startsWith\(github\.ref, 'refs\/tags\/'\)/);
+  assert.match(prepare, /gh release view "\$RELEASE_TAG" --json targetCommitish --jq '\.targetCommitish'/);
+  assert.match(prepare, /test "\$target_commitish" = "\$TOOLS_SHA"/);
+  assert.match(prepare, /gh release create "\$RELEASE_TAG"[\s\S]*--target "\$TOOLS_SHA"/);
 
   const build = releaseJob("build");
   assert.match(build, /needs:\n\s+- salesforce-authority\n\s+- required-gates\n\s+- prepare/);
-  assert.match(build, /startsWith\(github\.ref, 'refs\/tags\/'\)[\s\S]*needs\.required-gates\.result == 'success'[\s\S]*needs\.prepare\.result == 'success'/);
-  assert.match(build, /github\.event_name == 'workflow_dispatch'[\s\S]*needs\.required-gates\.result == 'skipped'[\s\S]*needs\.prepare\.result == 'skipped'/);
-  assert.doesNotMatch(build, /needs\.prepare\.result == 'success' \|\| needs\.prepare\.result == 'skipped'/);
+  assert.match(build, /needs\.salesforce-authority\.result == 'success'[\s\S]*needs\.required-gates\.result == 'success'[\s\S]*needs\.prepare\.result == 'success'/);
+  assert.doesNotMatch(build, /needs\.required-gates\.result == 'skipped'|needs\.prepare\.result == 'skipped'/);
+  assert.match(build, /github\.event_name == 'workflow_dispatch' \|\| startsWith\(github\.ref, 'refs\/tags\/'\)/);
   assert.match(build, /requested_ref="\$\(jq -er '\.gladeCommit \| select\(type == "string" and test\("\^\[0-9a-f\]\{40\}\$"\)\)' docs\/fixtures\/apex-language-rules\.json\)"/);
   assert.match(build, /printf 'ref=%s\\n' "\$requested_ref" >> "\$GITHUB_OUTPUT"/);
   assert.doesNotMatch(build, /resolve-sibling-ref\.sh|GLADE_REMOTE|REQUESTED_REF/);
@@ -249,7 +258,10 @@ test("release verifies the catalog-pinned Glade Salesforce authority before prep
     "repository: glade-sh/glade",
     "ref: ${{ steps.glade-ref.outputs.ref }}",
     'test "$(git -C ../glade rev-parse HEAD)" = "$requested_ref"',
-    '../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$GITHUB_SHA" > salesforce-release-authority.json',
+    "PUBLIC_CHECK_RUNS_PATH",
+    "curl --fail --silent --show-error",
+    "env -u GH_TOKEN -u GITHUB_TOKEN",
+    '../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$TOOLS_SHA" > salesforce-release-authority.json',
     "name: salesforce-release-authority",
   ]) {
     assert.ok(authority.includes(marker), `release Salesforce authority missing ${marker}`);
