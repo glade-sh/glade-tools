@@ -472,6 +472,55 @@ func TestCheckExpectedDiagnosticsRejectsIncompleteAndDuplicateEntries(t *testing
 	}
 }
 
+func TestLoadExpectedDiagnosticsSchema2ValidatesTrackingRecords(t *testing.T) {
+	root := t.TempDir()
+	diagnostic := `{"project":"alpha","class":"semantic-contract-gap","code":"GLADESEMA009","file":"A.cls","line":1,"column":1,"message":"known gap","rootCause":"specific compiler cause","tracking":"PUBLIC-CORPUS-001","expectedOutcome":"fix-glade"}`
+	record := `{"id":"PUBLIC-CORPUS-001","class":"semantic-contract-gap","rootCause":"specific compiler cause","expectedOutcome":"fix-glade","owner":"glade","evidenceRefs":["internal/sema/sema.go:10-20"],"minimalReproducer":"A minimal Apex class that triggers the gap.","focusedTestPlan":"Add a focused semantic regression test.","acceptancePostcondition":"The reproducer compiles without GLADESEMA009."}`
+	manifest := func(diagnostics, records string) string {
+		return `{"schemaVersion":2,"diagnostics":[` + diagnostics + `],"trackingRecords":[` + records + `]}`
+	}
+	outcomeMismatchRecord := strings.Replace(record, `fix-glade`, `correct-upstream-source`, 1)
+	outcomeMismatchRecord = strings.Replace(outcomeMismatchRecord, `"owner":"glade"`, `"owner":"upstream-source"`, 1)
+
+	if diagnostics, err := loadExpectedDiagnostics(writeExpectedDiagnostics(t, root, manifest(diagnostic, record))); err != nil || len(diagnostics) != 1 {
+		t.Fatalf("valid schema 2 manifest: diagnostics=%d err=%v", len(diagnostics), err)
+	}
+
+	for _, test := range []struct {
+		name        string
+		diagnostics string
+		records     string
+		want        string
+	}{
+		{"missing record", diagnostic, ``, "unknown tracking record"},
+		{"unknown record", strings.Replace(diagnostic, `PUBLIC-CORPUS-001`, `PUBLIC-CORPUS-UNKNOWN`, 1), record, "unknown tracking record"},
+		{"duplicate record", diagnostic, record + `,` + record, "duplicate tracking record"},
+		{"stale record", diagnostic, record + `,` + strings.Replace(record, `PUBLIC-CORPUS-001`, `PUBLIC-CORPUS-STALE`, 1), "is not referenced"},
+		{"class mismatch", diagnostic, strings.Replace(record, `semantic-contract-gap`, `docs-contract-mismatch`, 1), "class does not match"},
+		{"root cause mismatch", diagnostic, strings.Replace(record, `specific compiler cause`, `different compiler cause`, 1), "rootCause does not match"},
+		{"outcome mismatch", diagnostic, outcomeMismatchRecord, "expectedOutcome does not match"},
+		{"empty id", diagnostic, strings.Replace(record, `PUBLIC-CORPUS-001`, ``, 1), "requires id"},
+		{"empty class", diagnostic, strings.Replace(record, `semantic-contract-gap`, ``, 1), "requires class"},
+		{"empty root cause", diagnostic, strings.Replace(record, `specific compiler cause`, ``, 1), "requires rootCause"},
+		{"empty outcome", diagnostic, strings.Replace(record, `fix-glade`, ``, 1), "requires expectedOutcome"},
+		{"empty owner", diagnostic, strings.Replace(record, `"owner":"glade"`, `"owner":""`, 1), "requires owner"},
+		{"missing evidence refs", diagnostic, strings.Replace(record, `"evidenceRefs":["internal/sema/sema.go:10-20"]`, `"evidenceRefs":[]`, 1), "requires evidenceRefs"},
+		{"empty evidence ref", diagnostic, strings.Replace(record, `internal/sema/sema.go:10-20`, ` `, 1), "requires nonempty evidenceRefs"},
+		{"empty reproducer", diagnostic, strings.Replace(record, `A minimal Apex class that triggers the gap.`, ``, 1), "requires minimalReproducer"},
+		{"empty test plan", diagnostic, strings.Replace(record, `Add a focused semantic regression test.`, ``, 1), "requires focusedTestPlan"},
+		{"empty postcondition", diagnostic, strings.Replace(record, `The reproducer compiles without GLADESEMA009.`, ``, 1), "requires acceptancePostcondition"},
+		{"invalid owner", diagnostic, strings.Replace(record, `"owner":"glade"`, `"owner":"team-a"`, 1), "invalid owner"},
+		{"inconsistent owner", diagnostic, strings.Replace(record, `"owner":"glade"`, `"owner":"upstream-source"`, 1), "owner is inconsistent with expectedOutcome"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := loadExpectedDiagnostics(writeExpectedDiagnostics(t, root, manifest(test.diagnostics, test.records)))
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected %q, got %v", test.want, err)
+			}
+		})
+	}
+}
+
 func TestCheckExpectedDiagnosticsWritesReportsBeforeMismatchFailure(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("shell fixture uses sh")
@@ -526,6 +575,17 @@ func TestPublicCorpusExpectedDiagnosticsFixtureIsCompleteAndRelative(t *testing.
 	}
 	if len(diagnostics) != 40 {
 		t.Fatalf("expected diagnostics = %d, want 40", len(diagnostics))
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest expectedDiagnosticsManifest
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	if manifest.SchemaVersion != 2 || len(manifest.TrackingRecords) != 16 {
+		t.Fatalf("manifest schema/tracking records = %d/%d, want 2/16", manifest.SchemaVersion, len(manifest.TrackingRecords))
 	}
 	for _, diagnostic := range diagnostics {
 		if filepath.IsAbs(diagnostic.File) {

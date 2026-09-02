@@ -84,8 +84,9 @@ type ClassifiedDiagnostic struct {
 }
 
 type expectedDiagnosticsManifest struct {
-	SchemaVersion int                  `json:"schemaVersion"`
-	Diagnostics   []expectedDiagnostic `json:"diagnostics"`
+	SchemaVersion   int                                `json:"schemaVersion"`
+	Diagnostics     []expectedDiagnostic               `json:"diagnostics"`
+	TrackingRecords []expectedDiagnosticTrackingRecord `json:"trackingRecords"`
 }
 
 type expectedDiagnostic struct {
@@ -100,6 +101,18 @@ type expectedDiagnostic struct {
 	RootCause       string `json:"rootCause"`
 	Tracking        string `json:"tracking"`
 	ExpectedOutcome string `json:"expectedOutcome"`
+}
+
+type expectedDiagnosticTrackingRecord struct {
+	ID                      string   `json:"id"`
+	Class                   string   `json:"class"`
+	RootCause               string   `json:"rootCause"`
+	ExpectedOutcome         string   `json:"expectedOutcome"`
+	Owner                   string   `json:"owner"`
+	EvidenceRefs            []string `json:"evidenceRefs"`
+	MinimalReproducer       string   `json:"minimalReproducer"`
+	FocusedTestPlan         string   `json:"focusedTestPlan"`
+	AcceptancePostcondition string   `json:"acceptancePostcondition"`
 }
 
 func Check(ctx context.Context, options Options) (Report, error) {
@@ -215,8 +228,8 @@ func loadExpectedDiagnostics(path string) ([]expectedDiagnostic, error) {
 	if err := json.Unmarshal(data, &manifest); err != nil {
 		return nil, fmt.Errorf("parse expected diagnostics: %w", err)
 	}
-	if manifest.SchemaVersion != 1 {
-		return nil, fmt.Errorf("expected diagnostics schemaVersion must be 1")
+	if manifest.SchemaVersion != 1 && manifest.SchemaVersion != 2 {
+		return nil, fmt.Errorf("expected diagnostics schemaVersion must be 1 or 2")
 	}
 	seen := make(map[string]bool, len(manifest.Diagnostics))
 	for i, diagnostic := range manifest.Diagnostics {
@@ -231,9 +244,7 @@ func loadExpectedDiagnostics(path string) ([]expectedDiagnostic, error) {
 				return nil, fmt.Errorf("expected diagnostic %d requires %s", i+1, field)
 			}
 		}
-		switch diagnostic.ExpectedOutcome {
-		case "fix-glade", "correct-upstream-source", "accepted-platform-limitation":
-		default:
+		if !validExpectedDiagnosticOutcome(diagnostic.ExpectedOutcome) {
 			return nil, fmt.Errorf("expected diagnostic %d has invalid expectedOutcome %q", i+1, diagnostic.ExpectedOutcome)
 		}
 		key := expectedDiagnosticKey(diagnostic)
@@ -242,7 +253,87 @@ func loadExpectedDiagnostics(path string) ([]expectedDiagnostic, error) {
 		}
 		seen[key] = true
 	}
+	if manifest.SchemaVersion == 2 {
+		if err := validateExpectedDiagnosticTrackingRecords(manifest.Diagnostics, manifest.TrackingRecords); err != nil {
+			return nil, err
+		}
+	}
 	return manifest.Diagnostics, nil
+}
+
+func validExpectedDiagnosticOutcome(outcome string) bool {
+	switch outcome {
+	case "fix-glade", "correct-upstream-source", "accepted-platform-limitation":
+		return true
+	default:
+		return false
+	}
+}
+
+func validateExpectedDiagnosticTrackingRecords(diagnostics []expectedDiagnostic, records []expectedDiagnosticTrackingRecord) error {
+	byID := make(map[string]expectedDiagnosticTrackingRecord, len(records))
+	for i, record := range records {
+		for field, value := range map[string]string{
+			"id": record.ID, "class": record.Class, "rootCause": record.RootCause, "expectedOutcome": record.ExpectedOutcome,
+			"owner": record.Owner, "minimalReproducer": record.MinimalReproducer, "focusedTestPlan": record.FocusedTestPlan,
+			"acceptancePostcondition": record.AcceptancePostcondition,
+		} {
+			if strings.TrimSpace(value) == "" {
+				return fmt.Errorf("tracking record %d requires %s", i+1, field)
+			}
+		}
+		if len(record.EvidenceRefs) == 0 {
+			return fmt.Errorf("tracking record %d requires evidenceRefs", i+1)
+		}
+		for _, ref := range record.EvidenceRefs {
+			if strings.TrimSpace(ref) == "" {
+				return fmt.Errorf("tracking record %d requires nonempty evidenceRefs", i+1)
+			}
+		}
+		if !validExpectedDiagnosticOutcome(record.ExpectedOutcome) {
+			return fmt.Errorf("tracking record %d has invalid expectedOutcome %q", i+1, record.ExpectedOutcome)
+		}
+		owners := map[string]string{
+			"fix-glade":                    "glade",
+			"correct-upstream-source":      "upstream-source",
+			"accepted-platform-limitation": "platform",
+		}
+		wantOwner := owners[record.ExpectedOutcome]
+		if record.Owner != "glade" && record.Owner != "upstream-source" && record.Owner != "platform" {
+			return fmt.Errorf("tracking record %d has invalid owner %q", i+1, record.Owner)
+		}
+		if record.Owner != wantOwner {
+			return fmt.Errorf("tracking record %d owner is inconsistent with expectedOutcome %q", i+1, record.ExpectedOutcome)
+		}
+		if _, exists := byID[record.ID]; exists {
+			return fmt.Errorf("duplicate tracking record %q", record.ID)
+		}
+		byID[record.ID] = record
+	}
+
+	referenced := make(map[string]bool, len(records))
+	for i, diagnostic := range diagnostics {
+		record, ok := byID[diagnostic.Tracking]
+		if !ok {
+			return fmt.Errorf("expected diagnostic %d references unknown tracking record %q", i+1, diagnostic.Tracking)
+		}
+		referenced[record.ID] = true
+		for field, values := range map[string][2]string{
+			"class":           {record.Class, diagnostic.Class},
+			"rootCause":       {record.RootCause, diagnostic.RootCause},
+			"expectedOutcome": {record.ExpectedOutcome, diagnostic.ExpectedOutcome},
+		} {
+			if values[0] != values[1] {
+				return fmt.Errorf("tracking record %q %s does not match expected diagnostic %d", record.ID, field, i+1)
+			}
+		}
+	}
+	for _, record := range records {
+		if !referenced[record.ID] {
+			return fmt.Errorf("tracking record %q is not referenced", record.ID)
+		}
+	}
+	return nil
 }
 
 func checkExpectedDiagnostics(observed []ClassifiedDiagnostic, expected []expectedDiagnostic) error {
