@@ -1591,6 +1591,7 @@ func validateProductTestPackageTerminals(path string, packages []string) error {
 	}
 	wanted := make(map[string]bool, len(packages))
 	terminals := make(map[string][]string, len(packages))
+	packagesWithTests := make(map[string]bool, len(packages))
 	for _, packageName := range packages {
 		wanted[packageName] = true
 	}
@@ -1598,13 +1599,20 @@ func validateProductTestPackageTerminals(path string, packages []string) error {
 		if !wanted[event.Package] {
 			return fmt.Errorf("execution evidence contains an unexpected non-Apex package")
 		}
+		if event.Test != "" {
+			packagesWithTests[event.Package] = true
+		}
 		if event.Test == "" && (event.Action == "pass" || event.Action == "fail" || event.Action == "skip") {
 			terminals[event.Package] = append(terminals[event.Package], event.Action)
 		}
 	}
 	for _, packageName := range packages {
-		if !slices.Equal(terminals[packageName], []string{"pass"}) {
-			return fmt.Errorf("execution evidence non-Apex package terminal is not one pass")
+		actions := terminals[packageName]
+		if !slices.Equal(actions, []string{"pass"}) && !slices.Equal(actions, []string{"skip"}) {
+			return fmt.Errorf("execution evidence non-Apex package terminal is not one pass or no-test skip")
+		}
+		if slices.Equal(actions, []string{"skip"}) && packagesWithTests[packageName] {
+			return fmt.Errorf("execution evidence non-Apex package skip contains test events")
 		}
 	}
 	return nil

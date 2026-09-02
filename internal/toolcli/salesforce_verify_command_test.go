@@ -147,6 +147,12 @@ func TestLoadProductTestEvidenceRequiresObservedPassAndExactHash(t *testing.T) {
 			}
 		})
 	}
+	t.Run("test skip is not a no-test package", func(t *testing.T) {
+		fixture := writeProductTestExecutionFixture(t, root, commit, "skipped-test")
+		if _, err := loadProductTestEvidence(fixture.proofPath, root, commit); err == nil || !strings.Contains(err.Error(), "package skip contains test events") {
+			t.Fatalf("test-level skip evidence error = %v", err)
+		}
+	})
 }
 
 type productTestExecutionFixture struct {
@@ -183,6 +189,11 @@ func writeProductTestExecutionFixture(t *testing.T, root, commit, action string)
 	allPackagesSHA := writeArtifact(allPackagesPath, []byte("example.test/glade/internal/demo\n"+apexPackage+"\n"))
 	packagesSHA := writeArtifact(packagesPath, []byte("example.test/glade/internal/demo\n"))
 	nonApexEvents := []byte(`{"Action":"` + action + `","Package":"example.test/glade/internal/demo","Test":"TestVersion"}` + "\n" + `{"Action":"pass","Package":"example.test/glade/internal/demo"}` + "\n")
+	if action == "skip" {
+		nonApexEvents = []byte(`{"Action":"skip","Package":"example.test/glade/internal/demo"}` + "\n")
+	} else if action == "skipped-test" {
+		nonApexEvents = []byte(`{"Action":"skip","Package":"example.test/glade/internal/demo","Test":"TestSkipped"}` + "\n" + `{"Action":"skip","Package":"example.test/glade/internal/demo"}` + "\n")
+	}
 	nonApexEventsSHA := writeArtifact(nonApexEventsPath, nonApexEvents)
 
 	names := make([]string, 16)

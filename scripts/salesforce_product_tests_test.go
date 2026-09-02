@@ -27,6 +27,8 @@ func TestSalesforceProductTestsBuildOnceAndShardSerially(t *testing.T) {
 		wantPass bool
 	}{
 		{name: "validated exact union", wantPass: true},
+		{name: "no-test package skip", failMode: "no-tests", wantPass: true},
+		{name: "test skip is not a no-test package", failMode: "skipped-test", wantPass: false},
 		{name: "failed shard leaves no combined proof", failMode: "shard", wantPass: false},
 		{name: "failed test2json leaves no combined proof", failMode: "test2json", wantPass: false},
 		{name: "duplicate top-level pass leaves no combined proof", failMode: "duplicate", wantPass: false},
@@ -205,9 +207,18 @@ case "${1:-}" in
       exit 0
     fi
     printf 'non-apextest %s\n' "$*" >> "$FAKE_GO_CALLS"
-    for package in "$@"; do
-      [[ "$package" == github.com/* ]] || continue
-      printf '{"Action":"pass","Package":"%s","Test":"TestProduct"}\n' "$package"
+	for package in "$@"; do
+	  [[ "$package" == github.com/* ]] || continue
+	  if [[ "${FAKE_FAIL_MODE:-}" == no-tests && "$package" == github.com/glade-sh/glade/cmd/glade ]]; then
+	    printf '{"Action":"skip","Package":"%s"}\n' "$package"
+	    continue
+	  fi
+	  if [[ "${FAKE_FAIL_MODE:-}" == skipped-test && "$package" == github.com/glade-sh/glade/cmd/glade ]]; then
+	    printf '{"Action":"skip","Package":"%s","Test":"TestSkipped"}\n' "$package"
+	    printf '{"Action":"skip","Package":"%s"}\n' "$package"
+	    continue
+	  fi
+	  printf '{"Action":"pass","Package":"%s","Test":"TestProduct"}\n' "$package"
       printf '{"Action":"pass","Package":"%s"}\n' "$package"
     done
     ;;

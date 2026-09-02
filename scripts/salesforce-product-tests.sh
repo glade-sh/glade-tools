@@ -206,6 +206,7 @@ if not packages or len(packages) != len(set(packages)) or apex_package in packag
     raise SystemExit("invalid non-apextest package evidence")
 
 package_terminals = {}
+packages_with_tests = set()
 with open(non_apex_events, encoding="utf-8") as source:
     for number, line in enumerate(source, 1):
         if not line.strip():
@@ -214,10 +215,14 @@ with open(non_apex_events, encoding="utf-8") as source:
         package = event.get("Package")
         if package not in packages:
             raise SystemExit("non-apextest event has unexpected package")
+        if event.get("Test"):
+            packages_with_tests.add(package)
         if not event.get("Test") and event.get("Action") in {"pass", "fail", "skip"}:
             package_terminals.setdefault(package, []).append(event["Action"])
-if set(package_terminals) != set(packages) or any(actions != ["pass"] for actions in package_terminals.values()):
+if set(package_terminals) != set(packages) or any(actions not in (["pass"], ["skip"]) for actions in package_terminals.values()):
     raise SystemExit("non-apextest package terminal set is incomplete")
+if any(package_terminals[package] == ["skip"] and package in packages_with_tests for package in packages):
+    raise SystemExit("non-apextest package skip contains test events")
 
 discovery = open(discovery_path, encoding="utf-8").read().splitlines()
 plan = load_json(plan_path)
