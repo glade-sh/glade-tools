@@ -508,6 +508,7 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`^([0-9a-fA-F]{40})$`, `"${GLADE_SHA,,}"`, `echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"`,
 		`test "$(git -C ../glade rev-parse HEAD)" = "$GLADE_SHA"`,
 		"salesforce-correctness:", "ubuntu-latest", "timeout-minutes: 75", "contents: read",
+		"salesforce-correctness:\n    runs-on: ubuntu-latest\n    timeout-minutes: 75\n    env:\n      GOMEMLIMIT: \"6GiB\"",
 		`repository: glade-sh/glade
           path: glade
           ref: ${{ inputs.glade_sha }}`,

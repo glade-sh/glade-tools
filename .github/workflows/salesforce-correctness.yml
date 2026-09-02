@@ -15,6 +15,8 @@ jobs:
   salesforce-correctness:
     runs-on: ubuntu-latest
     timeout-minutes: 75
+    env:
+      GOMEMLIMIT: "6GiB"
     defaults:
       run:
         working-directory: glade-tools
