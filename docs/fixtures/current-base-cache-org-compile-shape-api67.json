@@ -35,7 +35,7 @@
   "salesforceExclusionReason": "Cache.Org is a static Platform Cache namespace boundary and is not a hosted Platform Cache oracle.",
   "source": [
     {
-      "content": "public class CurrentBaseCacheOrgCompileShapeApi67 { public static Object probe() { if (false) { Cache.Org org = new Cache.Org(); return ((Cache.Org)null).clone(); } return null; } }",
+      "content": "public class CurrentBaseCacheOrgCompileShapeApi67 { public static Object probe() { if (false) { Cache.Org.getPartition('local'); return ((Cache.Org)null).clone(); } return null; } }",
       "path": "force-app/main/default/classes/CurrentBaseCacheOrgCompileShapeApi67.cls"
     }
   ]

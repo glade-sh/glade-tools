@@ -11,7 +11,7 @@
       "symbol": "Schema.describeSObjects",
       "surfaceId": "apex:System.Schema.describeSObjects(List<String>)",
       "kind": "test",
-      "notes": "describeSObjects accepts both object names and SObjectType tokens."
+      "notes": "describeSObjects accepts local object API names."
     },
     {
       "symbol": "Schema.SObjectType.getDescribe",
@@ -41,7 +41,7 @@
     },
     {
       "path": "force-app/main/default/classes/SchemaGlobalDescribeTokensFixtureTest.cls",
-      "content": "@isTest private class SchemaGlobalDescribeTokensFixtureTest { @isTest static void globalDescribeReturnsTokens() { Map<String,Object> describes = Schema.getGlobalDescribe(); System.assert(describes.containsKey('Account')); Object accountType = describes.get('Account'); Object accountDescribe = accountType.getDescribe(); System.assertEquals('Account', accountDescribe.getName()); System.assertEquals('Accounts', accountDescribe.getLabelPlural()); List<Object> byName = Schema.describeSObjects(new List<String>{'Account'}); System.assertEquals('Account', byName.get(0).getName()); List<Object> byToken = Schema.describeSObjects(new List<Object>{accountType}); System.assertEquals('Account', byToken.get(0).getName()); } }"
+      "content": "@isTest private class SchemaGlobalDescribeTokensFixtureTest { @isTest static void globalDescribeReturnsTokens() { Map<String,Schema.SObjectType> describes = Schema.getGlobalDescribe(); System.assert(describes.containsKey('Account')); Schema.SObjectType accountType = describes.get('Account'); Schema.DescribeSObjectResult accountDescribe = accountType.getDescribe(); System.assertEquals('Account', accountDescribe.getName()); System.assertEquals('Accounts', accountDescribe.getLabelPlural()); List<Schema.DescribeSObjectResult> byName = Schema.describeSObjects(new List<String>{'Account'}); System.assertEquals('Account', byName.get(0).getName()); } }"
     }
   ],
   "command": {
