@@ -333,6 +333,25 @@ func TestCoreRuntimeControlFlowCapabilityIsSupported(t *testing.T) {
 	t.Fatal("missing vm.control-flow MVP feature")
 }
 
+func TestStdlibCoreNotesFenceUntextedDecimalDivision(t *testing.T) {
+	for _, feature := range MVPFeatures() {
+		if feature.ID != "stdlib.core" {
+			continue
+		}
+		for _, want := range []string{
+			"non-dividing arithmetic",
+			"exact division for text-backed Decimal values",
+			"untexted Decimal division remains explicitly unsupported",
+		} {
+			if !strings.Contains(feature.Notes, want) {
+				t.Fatalf("stdlib.core notes missing %q: %s", want, feature.Notes)
+			}
+		}
+		return
+	}
+	t.Fatal("missing stdlib.core MVP feature")
+}
+
 func TestDatabaseStdlibRowsAreLocallyPromotedOrFenced(t *testing.T) {
 	for _, entry := range StdlibMatrix() {
 		if entry.Area != "Database" {
