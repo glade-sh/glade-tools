@@ -55,7 +55,7 @@
   "salesforceExclusionReason": "These Cache clone members are local Platform Cache DTO/namespace shape contracts and are not hosted Platform Cache oracles.",
   "source": [
     {
-      "content": "public class CurrentBaseCacheCloneCompileShapeApi67 { public static Object probe() { if (false) { new Cache.Session(); } if (false) { return ((Cache.Session)null).clone(); } if (false) { return ((Cache.OrgPartition)null).clone(); } if (false) { return ((Cache.Partition)null).clone(); } if (false) { return ((Cache.ScanResult)null).clone(); } if (false) { return ((Cache.SecondaryKeyApi)null).clone(); } return null; } }",
+      "content": "public class CurrentBaseCacheCloneCompileShapeApi67 { public static Object probe() { if (false) { Cache.Session.getPartition('local'); } if (false) { return ((Cache.Session)null).clone(); } if (false) { return ((Cache.OrgPartition)null).clone(); } if (false) { return ((Cache.Partition)null).clone(); } if (false) { return ((Cache.ScanResult)null).clone(); } if (false) { return ((Cache.SecondaryKeyApi)null).clone(); } return null; } }",
       "path": "force-app/main/default/classes/CurrentBaseCacheCloneCompileShapeApi67.cls"
     }
   ]

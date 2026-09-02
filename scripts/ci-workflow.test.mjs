@@ -206,7 +206,7 @@ test("full fixtures is a single bounded weekly and manual lane", () => {
   assert.doesNotMatch(fixtureJob, /go test \.\/\.\.\//);
 });
 
-test("release requires exact-SHA CI and manual fixture authorities before tag publication", () => {
+test("release requires exact-SHA CI authority before tag publication", () => {
   assert.deepEqual(
     [...releaseJobs.matchAll(/^  (\w[\w-]*):$/gm)].map((match) => match[1]),
     ["salesforce-authority", "required-gates", "prepare", "build", "publish"],

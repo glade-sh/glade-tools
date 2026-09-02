@@ -86,18 +86,16 @@ authority() {
 }
 
 ci="$(authority ci.yml push test)"
-full_fixtures="$(authority full-fixtures.yml workflow_dispatch full-fixtures)"
 
 jq -n \
 	--arg repository "$repository" \
 	--arg sha "$sha" \
 	--argjson ci "$ci" \
-	--argjson full_fixtures "$full_fixtures" \
 	'{
-		schema_version: 1,
+		schema_version: 2,
 		repository: $repository,
 		sha: $sha,
 		conclusion: "success",
 		ci: $ci,
-		full_fixtures: $full_fixtures
+		full_fixtures: {lane: "diagnostic", evaluated: false}
 	}'
