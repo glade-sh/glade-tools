@@ -87,7 +87,7 @@ func TestReleaseAssetUploadHandlesExistingOptionLikeName(t *testing.T) {
 	}
 }
 
-func TestReleaseAssetUploadUploadsMissingAssetWithoutClobber(t *testing.T) {
+func TestReleaseAssetUploadUploadsMissingAssetOnlyForDraft(t *testing.T) {
 	root := t.TempDir()
 	asset := writeReleaseAssetUploadFile(t, root, "plugin.tar.gz", "new bytes")
 	log := filepath.Join(root, "gh.log")
@@ -102,6 +102,30 @@ func TestReleaseAssetUploadUploadsMissingAssetWithoutClobber(t *testing.T) {
 	}
 	if strings.Contains(contents, "--clobber") {
 		t.Fatalf("asset upload must not permit overwrite:\n%s", contents)
+	}
+}
+
+func TestReleaseAssetUploadRejectsMissingAssetUnlessDraft(t *testing.T) {
+	for _, test := range []struct {
+		name, state, want string
+	}{
+		{name: "published", state: "false", want: "release is published; refusing to add asset"},
+		{name: "unexpected", state: "unknown", want: "unexpected release draft state: unknown"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			asset := writeReleaseAssetUploadFile(t, root, "plugin.tar.gz", "new bytes")
+			log := filepath.Join(root, "gh.log")
+			command := releaseAssetUploadCommand(t, root, asset, filepath.Join(root, "existing"), "", log)
+			command.Env = append(command.Env, "MOCK_GH_IS_DRAFT="+test.state)
+			output, err := command.CombinedOutput()
+			if err == nil || !strings.Contains(string(output), test.want) {
+				t.Fatalf("missing asset must be rejected; err=%v\n%s", err, output)
+			}
+			if strings.Contains(readReleaseAssetUploadFile(t, log), "release upload") {
+				t.Fatalf("non-draft release must not upload a missing asset:\n%s", readReleaseAssetUploadFile(t, log))
+			}
+		})
 	}
 }
 
@@ -152,7 +176,11 @@ set -euo pipefail
 printf '%s\n' "$*" >> "$MOCK_GH_LOG"
 case "$1 $2" in
   "release view")
-    printf '%s\n' "${MOCK_GH_ASSETS:-}"
+    if [[ "$*" == *" --json isDraft "* ]]; then
+      printf '%s\n' "${MOCK_GH_IS_DRAFT:-true}"
+    else
+      printf '%s\n' "${MOCK_GH_ASSETS:-}"
+    fi
     ;;
   "release download")
     pattern=""

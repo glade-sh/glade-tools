@@ -74,5 +74,16 @@ for asset in "$@"; do
     echo "published asset differs for $name (published=$expected candidate=$actual); refusing overwrite" >&2
     exit 1
   fi
-  "$GH_BIN" release upload "$TAG" "$asset"
+  is_draft="$("$GH_BIN" release view "$TAG" --json isDraft --jq '.isDraft')"
+  case "$is_draft" in
+    true) "$GH_BIN" release upload "$TAG" "$asset" ;;
+    false)
+      echo "release is published; refusing to add asset: $name" >&2
+      exit 1
+      ;;
+    *)
+      echo "unexpected release draft state: $is_draft" >&2
+      exit 1
+      ;;
+  esac
 done
