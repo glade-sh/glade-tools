@@ -114,7 +114,7 @@ func TestReleaseWorkflowTagPushUsesExactTagAndSHA(t *testing.T) {
 	}
 }
 
-func TestReleaseWorkflowDoesNotOverwritePublishedAssets(t *testing.T) {
+func TestReleaseWorkflowPublishesOnlyTheVerifiedAssetSet(t *testing.T) {
 	workflowPath := filepath.Join("..", ".github", "workflows", "release.yml")
 	workflow, err := os.ReadFile(workflowPath)
 	if err != nil {
@@ -122,9 +122,6 @@ func TestReleaseWorkflowDoesNotOverwritePublishedAssets(t *testing.T) {
 	}
 	workflowText := string(workflow)
 
-	if strings.Contains(workflowText, "gh release edit") {
-		t.Fatal("release workflow must not mutate an existing release")
-	}
 	if strings.Contains(workflowText, "gh release upload") {
 		t.Fatal("release workflow must route every asset through checksum-aware release-asset-upload.sh")
 	}
@@ -140,7 +137,7 @@ func TestReleaseWorkflowDoesNotOverwritePublishedAssets(t *testing.T) {
 	if got := strings.Count(prepare, "gh release create"); got != 1 {
 		t.Fatalf("prepare release create count = %d, want 1", got)
 	}
-	for _, want := range []string{`--title "$RELEASE_TAG"`, `--target "$TOOLS_SHA"`, "--notes-file release-notes.md"} {
+	for _, want := range []string{`--title "$RELEASE_TAG"`, `--target "$TOOLS_SHA"`, "--notes-file release-notes.md", "--draft"} {
 		if !strings.Contains(prepare, want) {
 			t.Fatalf("new release creation missing checked release metadata %q", want)
 		}
@@ -194,6 +191,44 @@ func TestReleaseWorkflowDoesNotOverwritePublishedAssets(t *testing.T) {
 	}
 	if strings.Contains(publish, "find dist/plugins") {
 		t.Fatal("final publish must name its aggregate assets explicitly")
+	}
+	for _, want := range []string{
+		`gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | LC_ALL=C sort`,
+		`gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft'`,
+		`gh release edit "$RELEASE_TAG" --draft=false`,
+		`if [[ "$is_draft" == true ]]; then`,
+		`elif [[ "$is_draft" != false ]]; then`,
+	} {
+		if !strings.Contains(publish, want) {
+			t.Fatalf("final publish missing immutable-release guard %q", want)
+		}
+	}
+	if strings.Index(publish, `test "$actual_assets" = "$expected_assets"`) > strings.Index(publish, `gh release view "$RELEASE_TAG" --json isDraft`) {
+		t.Fatal("final publish must verify the exact asset set before reading or publishing draft state")
+	}
+	for _, want := range []string{
+		"glade-plugin-compat_${RELEASE_TAG#v}_linux_amd64.tar.gz",
+		"glade-plugin-orgpackage_${RELEASE_TAG#v}_linux_amd64.tar.gz",
+		"glade-plugin-performance_${RELEASE_TAG#v}_linux_amd64.tar.gz",
+		"glade-plugin-compat_${RELEASE_TAG#v}_linux_arm64.tar.gz",
+		"glade-plugin-orgpackage_${RELEASE_TAG#v}_linux_arm64.tar.gz",
+		"glade-plugin-performance_${RELEASE_TAG#v}_linux_arm64.tar.gz",
+		"glade-plugin-compat_${RELEASE_TAG#v}_darwin_amd64.tar.gz",
+		"glade-plugin-orgpackage_${RELEASE_TAG#v}_darwin_amd64.tar.gz",
+		"glade-plugin-performance_${RELEASE_TAG#v}_darwin_amd64.tar.gz",
+		"glade-plugin-compat_${RELEASE_TAG#v}_darwin_arm64.tar.gz",
+		"glade-plugin-orgpackage_${RELEASE_TAG#v}_darwin_arm64.tar.gz",
+		"glade-plugin-performance_${RELEASE_TAG#v}_darwin_arm64.tar.gz",
+		"checksums-linux-amd64.txt",
+		"checksums-linux-arm64.txt",
+		"checksums-darwin-amd64.txt",
+		"checksums-darwin-arm64.txt",
+		"checksums.txt",
+		"index.json",
+	} {
+		if !strings.Contains(publish, want) {
+			t.Fatalf("final publish expected asset missing %q", want)
+		}
 	}
 }
 

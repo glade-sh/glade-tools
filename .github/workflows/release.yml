@@ -148,7 +148,8 @@ jobs:
             gh release create "$RELEASE_TAG" \
               --target "$TOOLS_SHA" \
               --title "$RELEASE_TAG" \
-              --notes-file release-notes.md
+              --notes-file release-notes.md \
+              --draft
           fi
 
   build:
@@ -289,7 +290,7 @@ jobs:
             --archive-dir dist/plugins \
             --checksums dist/plugins/checksums.txt \
             --output dist/plugins/index.json
-      - name: Publish GitHub Release
+      - name: Verify and publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -297,3 +298,33 @@ jobs:
           scripts/release-asset-upload.sh "$RELEASE_TAG" \
             dist/plugins/checksums.txt \
             dist/plugins/index.json
+          expected_assets="$(
+            printf '%s\n' \
+              "glade-plugin-compat_${RELEASE_TAG#v}_linux_amd64.tar.gz" \
+              "glade-plugin-orgpackage_${RELEASE_TAG#v}_linux_amd64.tar.gz" \
+              "glade-plugin-performance_${RELEASE_TAG#v}_linux_amd64.tar.gz" \
+              "glade-plugin-compat_${RELEASE_TAG#v}_linux_arm64.tar.gz" \
+              "glade-plugin-orgpackage_${RELEASE_TAG#v}_linux_arm64.tar.gz" \
+              "glade-plugin-performance_${RELEASE_TAG#v}_linux_arm64.tar.gz" \
+              "glade-plugin-compat_${RELEASE_TAG#v}_darwin_amd64.tar.gz" \
+              "glade-plugin-orgpackage_${RELEASE_TAG#v}_darwin_amd64.tar.gz" \
+              "glade-plugin-performance_${RELEASE_TAG#v}_darwin_amd64.tar.gz" \
+              "glade-plugin-compat_${RELEASE_TAG#v}_darwin_arm64.tar.gz" \
+              "glade-plugin-orgpackage_${RELEASE_TAG#v}_darwin_arm64.tar.gz" \
+              "glade-plugin-performance_${RELEASE_TAG#v}_darwin_arm64.tar.gz" \
+              "checksums-linux-amd64.txt" \
+              "checksums-linux-arm64.txt" \
+              "checksums-darwin-amd64.txt" \
+              "checksums-darwin-arm64.txt" \
+              "checksums.txt" \
+              "index.json" | LC_ALL=C sort
+          )"
+          actual_assets="$(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | LC_ALL=C sort)"
+          test "$actual_assets" = "$expected_assets"
+          is_draft="$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')"
+          if [[ "$is_draft" == true ]]; then
+            gh release edit "$RELEASE_TAG" --draft=false
+          elif [[ "$is_draft" != false ]]; then
+            echo "unexpected release draft state: $is_draft" >&2
+            exit 1
+          fi

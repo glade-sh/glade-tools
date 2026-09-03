@@ -242,6 +242,7 @@ test("release requires exact-SHA CI authority before tag publication", () => {
   assert.match(prepare, /gh release view "\$RELEASE_TAG" --json targetCommitish --jq '\.targetCommitish'/);
   assert.match(prepare, /test "\$target_commitish" = "\$TOOLS_SHA"/);
   assert.match(prepare, /gh release create "\$RELEASE_TAG"[\s\S]*--target "\$TOOLS_SHA"/);
+  assert.match(prepare, /gh release create "\$RELEASE_TAG"[\s\S]*--draft/);
 
   const build = releaseJob("build");
   assert.match(build, /needs:\n\s+- salesforce-authority\n\s+- required-gates\n\s+- prepare/);
@@ -252,6 +253,14 @@ test("release requires exact-SHA CI authority before tag publication", () => {
   assert.match(build, /requested_ref="\$\(jq -er '\.gladeCommit \| select\(type == "string" and test\("\^\[0-9a-f\]\{40\}\$"\)\)' docs\/fixtures\/apex-language-rules\.json\)"/);
   assert.match(build, /printf 'ref=%s\\n' "\$requested_ref" >> "\$GITHUB_OUTPUT"/);
   assert.doesNotMatch(build, /resolve-sibling-ref\.sh|GLADE_REMOTE|REQUESTED_REF/);
+
+  const publish = releaseJob("publish");
+  assert.ok(
+    publish.indexOf('test "$actual_assets" = "$expected_assets"') <
+      publish.indexOf('gh release view "$RELEASE_TAG" --json isDraft --jq \'.isDraft\''),
+    "release must verify all expected assets before checking draft state",
+  );
+  assert.match(publish, /gh release edit "\$RELEASE_TAG" --draft=false/);
 });
 
 test("release verifies the catalog-pinned Glade Salesforce authority before prepare and build", () => {
