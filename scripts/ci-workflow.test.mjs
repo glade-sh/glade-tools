@@ -256,6 +256,10 @@ test("release requires exact-SHA CI authority before tag publication", () => {
 
   const publish = releaseJob("publish");
   assert.ok(
+    publish.includes('test "$actual_assets" = "$expected_assets"'),
+    "release must compare the exact actual and expected asset sets",
+  );
+  assert.ok(
     publish.indexOf('test "$actual_assets" = "$expected_assets"') <
       publish.indexOf('gh release view "$RELEASE_TAG" --json isDraft --jq \'.isDraft\''),
     "release must verify all expected assets before checking draft state",

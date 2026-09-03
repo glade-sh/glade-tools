@@ -203,6 +203,9 @@ func TestReleaseWorkflowPublishesOnlyTheVerifiedAssetSet(t *testing.T) {
 			t.Fatalf("final publish missing immutable-release guard %q", want)
 		}
 	}
+	if !strings.Contains(publish, `test "$actual_assets" = "$expected_assets"`) {
+		t.Fatal("final publish must compare the exact actual and expected asset sets")
+	}
 	if strings.Index(publish, `test "$actual_assets" = "$expected_assets"`) > strings.Index(publish, `gh release view "$RELEASE_TAG" --json isDraft`) {
 		t.Fatal("final publish must verify the exact asset set before reading or publishing draft state")
 	}
