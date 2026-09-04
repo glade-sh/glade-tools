@@ -127,7 +127,10 @@ func WriteMarkdown(w io.Writer, report Report) error {
 	if _, err := fmt.Fprintf(w, "No post-MVP lane may stay `partial`. Each lane must be split into a complete local `supported` row plus exact hosted-service `unsupported` rows where needed. Local supported rows must cite deterministic tests, fixture evidence, or generated docs.\n\n"); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprintf(w, "## MVP Gate\n\n"); err != nil {
+	if _, err := fmt.Fprintf(w, "## Tracked local capability checks\n\n"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "This internal checklist does not establish complete Salesforce parity.\n\n"); err != nil {
 		return err
 	}
 	if _, err := fmt.Fprintf(w, "- Target: %s\n", report.Target); err != nil {
@@ -209,18 +212,10 @@ func WriteKnownGapsMarkdown(w io.Writer, report Report) error {
 	if _, err := fmt.Fprintf(w, "Generated from the first-party compat plugin capability catalog.\n\n"); err != nil {
 		return err
 	}
-	if report.Ready {
-		if _, err := fmt.Fprintf(w, "All locally supported rows are tracked in `STDLIB_COVERAGE.md` and the public support map. All required local capability rows are currently `supported`.\n\n"); err != nil {
-			return err
-		}
-		_, err := fmt.Fprintf(w, "No required local support gaps are currently tracked.\n")
+	if _, err := fmt.Fprintf(w, "## Known limits of the local runtime\n\n"); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprintf(w, "This document lists required local capabilities that are not yet `supported`.\n\n"); err != nil {
-		return err
-	}
-
-	if _, err := fmt.Fprintf(w, "## Summary\n\n"); err != nil {
+	if _, err := fmt.Fprintf(w, "This internal checklist does not establish complete Salesforce parity.\n\n"); err != nil {
 		return err
 	}
 	if _, err := fmt.Fprintf(w, "- Required complete: %d/%d\n", report.Complete, report.Required); err != nil {
@@ -229,12 +224,26 @@ func WriteKnownGapsMarkdown(w io.Writer, report Report) error {
 	if _, err := fmt.Fprintf(w, "- Required incomplete: %d\n\n", report.Incomplete); err != nil {
 		return err
 	}
-
-	currentArea := ""
-	for _, feature := range report.Features {
-		if !feature.Required || feature.Status == StatusSupported {
-			continue
+	if report.Ready {
+		if _, err := fmt.Fprintln(w, "All required local capability rows are currently `supported`."); err != nil {
+			return err
 		}
+		if _, err := fmt.Fprintln(w, "No required local support gaps are currently tracked."); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintln(w); err != nil {
+			return err
+		}
+	}
+
+	limits := make([]Feature, 0, len(report.Features))
+	for _, feature := range report.Features {
+		if feature.Status != StatusSupported {
+			limits = append(limits, feature)
+		}
+	}
+	currentArea := ""
+	for i, feature := range limits {
 		if feature.Area != currentArea {
 			currentArea = feature.Area
 			if _, err := fmt.Fprintf(w, "## %s\n\n", currentArea); err != nil {
@@ -257,8 +266,10 @@ func WriteKnownGapsMarkdown(w io.Writer, report Report) error {
 				return err
 			}
 		}
-		if _, err := fmt.Fprintf(w, "\n"); err != nil {
-			return err
+		if i+1 < len(limits) {
+			if _, err := fmt.Fprintf(w, "\n"); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
