@@ -1,13 +1,47 @@
 # Glade Tools
 
-Maintenance commands for the sibling `glade` project.
+First-party plugins and maintenance commands for [Glade](https://glade.sh).
 
-Source is hosted in the private `glade-sh/glade-tools` repository. The module
+Source is hosted in the public `glade-sh/glade-tools` repository. The module
 path remains `github.com/glade-sh/glade/tools` so this repo can import
 `github.com/glade-sh/glade/internal/...` packages while it is built beside
 `../glade`.
 
-This project owns the shop work:
+## Choose a plugin
+
+| Plugin | Purpose |
+| --- | --- |
+| `@glade/performance` | Advisory source and trace-based performance scans |
+| `@glade/orgpackage` | Package-contract workflows for projects with package dependencies |
+| `@glade/compat` | Maintainer-facing compatibility fixtures, scanners, and evidence reports |
+
+Start with the [product quickstart](https://glade.sh/guide/quickstart). These
+plugins are optional; base Glade runs local Apex checks and tests without them.
+
+```bash
+glade plugins available
+glade plugins install @glade/performance
+glade plugins list --json
+```
+
+See [installation and trust](https://glade.sh/guide/plugins/install-manage)
+and [registry/distribution details](docs/plugin-registry.md). Product and plugin
+versions are independent. The public-readiness review exercised performance
+0.2.12 with product v0.2.13 on a basic fixture; that does not certify every plugin
+workflow or platform. Pin the pairing your team actually validates.
+
+Glade Tools is licensed under the [Apache License 2.0](LICENSE). Unless a path
+says otherwise, that license covers this project's source, documentation,
+fixtures, generated reports, and first-party plugin binaries. Third-party
+material retains its own terms and is not relicensed by this project.
+
+Glade Tools is an independent open-source project. It is not affiliated with,
+sponsored by, or endorsed by Salesforce. Salesforce and Apex are trademarks of
+Salesforce, Inc.
+
+## Maintenance ownership
+
+This project owns:
 
 - compatibility fixtures and fixture runners
 - capability catalogs, dashboards, known-gap reports, and stdlib ledgers
@@ -210,7 +244,9 @@ GLADE_RELEASE_BIN=/path/to/glade GLADE_SOURCE_ROOT=/path/to/glade-source scripts
 The version argument is written into each archive name, archived `plugin.json`,
 binary `manifest --json` response, and registry row.
 Archive entry order and metadata are fixed so clean reruns for the same source,
-version, and target produce identical bytes.
+version, and target produce identical bytes. Every archive includes this
+project's `LICENSE` and `NOTICE`, plus a manifest and license/notice files for
+the Go components linked into that plugin binary.
 
 Set `PLUGIN_ASSET_BASE_URL` to write a registry `index.json` next to the
 archives. The index uses canonical `@glade/*` names, first-party trust metadata,

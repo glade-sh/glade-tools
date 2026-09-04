@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/sha256"
+	"debug/buildinfo"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -208,6 +210,27 @@ func TestReleaseWorkflowPublishesOnlyTheVerifiedAssetSet(t *testing.T) {
 	}
 	if strings.Index(publish, `test "$actual_assets" = "$expected_assets"`) > strings.Index(publish, `gh release view "$RELEASE_TAG" --json isDraft`) {
 		t.Fatal("final publish must verify the exact asset set before reading or publishing draft state")
+	}
+	for _, want := range []string{
+		`CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}`,
+		`CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}`,
+		`npm ci --prefix scripts --ignore-scripts`,
+		`node scripts/plugin-release-publish.mjs dist/plugins "$RELEASE_TAG" "$TOOLS_SHA"`,
+		`https://plugins.glade.sh/index.json`,
+		`cmp dist/plugins/index.json "$RUNNER_TEMP/plugins-index.json"`,
+	} {
+		if !strings.Contains(publish, want) {
+			t.Fatalf("final publish missing static plugin publication guard %q", want)
+		}
+	}
+	if strings.Contains(publish, "wrangler r2 object put") {
+		t.Fatal("final publish must not use unconditional R2 upload commands")
+	}
+	staticPublishAt := strings.Index(publish, "node scripts/plugin-release-publish.mjs")
+	publicReadbackAt := strings.Index(publish, `cmp dist/plugins/index.json "$RUNNER_TEMP/plugins-index.json"`)
+	githubPublishAt := strings.Index(publish, `gh release edit "$RELEASE_TAG" --draft=false`)
+	if staticPublishAt < 0 || publicReadbackAt < staticPublishAt || githubPublishAt < publicReadbackAt {
+		t.Fatal("versioned publication, public registry readback, and GitHub draft publication are out of order")
 	}
 	for _, want := range []string{
 		"glade-plugin-compat_${RELEASE_TAG#v}_linux_amd64.tar.gz",
@@ -454,12 +477,21 @@ func validateDeterministicPluginArchive(t *testing.T, archivePath, plugin, binar
 			files[header.Name] = contents
 		}
 	}
-	wantNames := []string{"bin/", "bin/" + binary, "plugin.json", "checksums.txt"}
-	if strings.Join(names, "\n") != strings.Join(wantNames, "\n") {
-		t.Fatalf("archive members = %v, want %v", names, wantNames)
+	wantPrefix := []string{"bin/", "bin/" + binary, "plugin.json", "LICENSE", "NOTICE", "THIRD_PARTY_NOTICES/"}
+	if len(names) < len(wantPrefix)+2 || strings.Join(names[:len(wantPrefix)], "\n") != strings.Join(wantPrefix, "\n") || names[len(names)-1] != "checksums.txt" {
+		t.Fatalf("archive members = %v, want prefix %v and checksums.txt last", names, wantPrefix)
 	}
 	if len(files["bin/"+binary]) == 0 {
 		t.Fatalf("archive binary %s is empty", binary)
+	}
+	for _, projectFile := range []string{"LICENSE", "NOTICE"} {
+		want, err := os.ReadFile(filepath.Join("..", projectFile))
+		if err != nil {
+			t.Fatalf("read project %s: %v", projectFile, err)
+		}
+		if !bytes.Equal(files[projectFile], want) {
+			t.Fatalf("archive %s does not match the project file", projectFile)
+		}
 	}
 	var manifest struct {
 		Name    string `json:"name"`
@@ -471,10 +503,233 @@ func validateDeterministicPluginArchive(t *testing.T, archivePath, plugin, binar
 	if manifest.Name != plugin || manifest.Version != version {
 		t.Fatalf("manifest = %#v, want name=%q version=%q", manifest, plugin, version)
 	}
-	wantChecksums := fmt.Sprintf("%x  bin/%s\n%x  plugin.json\n", sha256.Sum256(files["bin/"+binary]), binary, sha256.Sum256(files["plugin.json"]))
+	var checkedNames []string
+	for name := range files {
+		if name != "checksums.txt" {
+			checkedNames = append(checkedNames, name)
+		}
+	}
+	slices.Sort(checkedNames)
+	var checksumRows []string
+	for _, name := range checkedNames {
+		checksumRows = append(checksumRows, fmt.Sprintf("%x  %s", sha256.Sum256(files[name]), name))
+	}
+	wantChecksums := strings.Join(checksumRows, "\n") + "\n"
 	if string(files["checksums.txt"]) != wantChecksums {
 		t.Fatalf("archive checksums = %q, want %q", files["checksums.txt"], wantChecksums)
 	}
+
+	var notices struct {
+		BinarySHA256 string `json:"binarySHA256"`
+		GoLicense    string `json:"goLicense"`
+		Components   []struct {
+			Module      string   `json:"module"`
+			NoticeFiles []string `json:"noticeFiles"`
+		} `json:"components"`
+	}
+	if err := json.Unmarshal(files["THIRD_PARTY_NOTICES/NOTICE-MANIFEST.json"], &notices); err != nil {
+		t.Fatalf("read third-party notice manifest: %v", err)
+	}
+	if notices.BinarySHA256 != fmt.Sprintf("%x", sha256.Sum256(files["bin/"+binary])) || notices.GoLicense == "" || len(notices.Components) == 0 {
+		t.Fatalf("third-party notice manifest does not describe the packaged binary: %#v", notices)
+	}
+	for _, notice := range append([]string{notices.GoLicense}, noticeManifestFiles(notices.Components)...) {
+		if len(files["THIRD_PARTY_NOTICES/"+notice]) == 0 {
+			t.Fatalf("third-party notice manifest references missing or empty %q", notice)
+		}
+	}
+	if plugin == "compat" {
+		for module, requiredFile := range map[string]string{
+			"github.com/dlclark/regexp2": "ATTRIB",
+			"golang.org/x/net":           "PATENTS",
+			"modernc.org/libc":           "LICENSE-3RD-PARTY.md",
+			"modernc.org/sqlite":         "SQLITE-LICENSE",
+		} {
+			var found bool
+			for _, component := range notices.Components {
+				if component.Module == module {
+					for _, name := range component.NoticeFiles {
+						found = found || strings.HasSuffix(name, "/"+requiredFile)
+					}
+				}
+			}
+			if !found {
+				t.Fatalf("third-party notice manifest does not retain %s for %s", requiredFile, module)
+			}
+		}
+	}
+}
+
+func noticeManifestFiles(components []struct {
+	Module      string   `json:"module"`
+	NoticeFiles []string `json:"noticeFiles"`
+}) (files []string) {
+	for _, component := range components {
+		files = append(files, component.NoticeFiles...)
+	}
+	return files
+}
+
+func TestPluginArchiveValidatorRejectsMissingEmptyAndUnsafeNotices(t *testing.T) {
+	tests := []struct {
+		name   string
+		mutate func(map[string][]byte, map[string]any)
+		want   string
+	}{
+		{name: "valid", want: ""},
+		{name: "missing linked component", mutate: func(files map[string][]byte, manifest map[string]any) {
+			components := manifest["components"].([]map[string]any)
+			notice := components[0]["noticeFiles"].([]string)[0]
+			manifest["components"] = components[1:]
+			delete(files, "THIRD_PARTY_NOTICES/"+notice)
+		}, want: "linked component set mismatch"},
+		{name: "missing project license", mutate: func(files map[string][]byte, _ map[string]any) { delete(files, "LICENSE") }, want: "missing LICENSE"},
+		{name: "empty project notice", mutate: func(files map[string][]byte, _ map[string]any) { files["NOTICE"] = nil }, want: "empty NOTICE"},
+		{name: "missing referenced notice", mutate: func(files map[string][]byte, manifest map[string]any) {
+			components := manifest["components"].([]map[string]any)
+			notice := components[0]["noticeFiles"].([]string)[0]
+			delete(files, "THIRD_PARTY_NOTICES/"+notice)
+		}, want: "missing referenced notice"},
+		{name: "empty referenced notice", mutate: func(files map[string][]byte, manifest map[string]any) {
+			components := manifest["components"].([]map[string]any)
+			notice := components[0]["noticeFiles"].([]string)[0]
+			files["THIRD_PARTY_NOTICES/"+notice] = nil
+		}, want: "empty referenced notice"},
+		{name: "unsafe reference", mutate: func(_ map[string][]byte, manifest map[string]any) {
+			manifest["goLicense"] = "../LICENSE"
+		}, want: "unsafe notice reference"},
+		{name: "unsafe member", mutate: func(files map[string][]byte, _ map[string]any) { files["../outside"] = []byte("unsafe\n") }, want: "unsafe archive member"},
+		{name: "backslash member", mutate: func(files map[string][]byte, _ map[string]any) { files[`..\outside`] = []byte("unsafe\n") }, want: "unsafe archive member"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			archive := writeValidatorArchive(t, test.mutate)
+			cmd := exec.Command("python3", "validate-plugin-archive.py", archive, "glade-plugin-compat")
+			cmd.Dir = "."
+			out, err := cmd.CombinedOutput()
+			if test.want == "" {
+				if err != nil {
+					t.Fatalf("validator rejected valid archive: %v\n%s", err, out)
+				}
+				return
+			}
+			if err == nil || !strings.Contains(string(out), test.want) {
+				t.Fatalf("validator should reject %s with %q; err=%v\n%s", test.name, test.want, err, out)
+			}
+		})
+	}
+}
+
+func writeValidatorArchive(t *testing.T, mutate func(map[string][]byte, map[string]any)) string {
+	t.Helper()
+	binary := buildValidatorBinary(t)
+	info, err := buildinfo.Read(bytes.NewReader(binary))
+	if err != nil {
+		t.Fatalf("read fixture build info: %v", err)
+	}
+	var components []map[string]any
+	files := map[string][]byte{
+		"bin/glade-plugin-compat":        binary,
+		"plugin.json":                    []byte(`{"name":"compat","version":"9.9.9"}`),
+		"LICENSE":                        []byte("project license\n"),
+		"NOTICE":                         []byte("project notice\n"),
+		"THIRD_PARTY_NOTICES/go/LICENSE": []byte("Go license\n"),
+	}
+	for _, dependency := range info.Deps {
+		notice := "modules/" + dependency.Path + "/@" + dependency.Version + "/LICENSE"
+		components = append(components, map[string]any{
+			"module":      dependency.Path,
+			"version":     dependency.Version,
+			"noticeFiles": []string{notice},
+		})
+		files["THIRD_PARTY_NOTICES/"+notice] = []byte("linked license\n")
+	}
+	if len(components) < 2 {
+		t.Fatalf("fixture binary linked %d modules, want at least 2", len(components))
+	}
+	manifest := map[string]any{
+		"schemaVersion": 1,
+		"binarySHA256":  fmt.Sprintf("%x", sha256.Sum256(binary)),
+		"goLicense":     "go/LICENSE",
+		"components":    components,
+	}
+	if mutate != nil {
+		mutate(files, manifest)
+	}
+	manifestBytes, err := json.Marshal(manifest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	files["THIRD_PARTY_NOTICES/NOTICE-MANIFEST.json"] = append(manifestBytes, '\n')
+	var checkedNames []string
+	for name := range files {
+		checkedNames = append(checkedNames, name)
+	}
+	slices.Sort(checkedNames)
+	var checksumRows []string
+	for _, name := range checkedNames {
+		checksumRows = append(checksumRows, fmt.Sprintf("%x  %s", sha256.Sum256(files[name]), name))
+	}
+	files["checksums.txt"] = []byte(strings.Join(checksumRows, "\n") + "\n")
+
+	archivePath := filepath.Join(t.TempDir(), "plugin.tar.gz")
+	archiveFile, err := os.Create(archivePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gzipWriter := gzip.NewWriter(archiveFile)
+	tarWriter := tar.NewWriter(gzipWriter)
+	var names []string
+	for name := range files {
+		names = append(names, name)
+	}
+	slices.Sort(names)
+	for _, name := range names {
+		contents := files[name]
+		if err := tarWriter.WriteHeader(&tar.Header{Name: name, Mode: 0o644, Size: int64(len(contents))}); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tarWriter.Write(contents); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tarWriter.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gzipWriter.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := archiveFile.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return archivePath
+}
+
+func buildValidatorBinary(t *testing.T) []byte {
+	t.Helper()
+	dir := t.TempDir()
+	source := filepath.Join(dir, "main.go")
+	if err := os.WriteFile(source, []byte(`package main
+import (
+    "fmt"
+    "github.com/dlclark/regexp2"
+    "github.com/google/uuid"
+)
+func main() { fmt.Print(regexp2.None, uuid.Nil) }
+`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	binary := filepath.Join(dir, "fixture")
+	cmd := exec.Command("go", "build", "-trimpath", "-o", binary, source)
+	cmd.Dir = ".."
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("build validator fixture: %v\n%s", err, out)
+	}
+	contents, err := os.ReadFile(binary)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return contents
 }
 
 func TestReleaseWorkflowHelpersAreExecutable(t *testing.T) {
@@ -871,6 +1126,7 @@ func TestReleaseNotesScriptProducesRealLineBreaks(t *testing.T) {
 		"Glade tools v9.9.9 ships first-party Glade plugin archives.",
 		"Release artifacts include",
 		"macOS and Linux",
+		"Apache-2.0 license and linked-component notices",
 	} {
 		if !strings.Contains(notes, want) {
 			t.Fatalf("release notes missing %q\n%s", want, notes)

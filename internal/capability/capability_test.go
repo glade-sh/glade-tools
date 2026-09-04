@@ -158,6 +158,68 @@ func TestStdlibCatalogHasNoPartialRows(t *testing.T) {
 	}
 }
 
+func TestPublicCapabilityWordingKeepsLocalChecksAndHostedLimitsDistinct(t *testing.T) {
+	var dashboard, gaps bytes.Buffer
+	report := MVPReport()
+	if err := WriteMarkdown(&dashboard, report); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteKnownGapsMarkdown(&gaps, report); err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		"Tracked local capability checks",
+		"does not establish complete Salesforce parity",
+	} {
+		if !strings.Contains(dashboard.String(), want) {
+			t.Fatalf("dashboard missing %q:\n%s", want, dashboard.String())
+		}
+	}
+	if !strings.Contains(gaps.String(), "Known limits of the local runtime") {
+		t.Fatalf("gaps do not name local-runtime limits:\n%s", gaps.String())
+	}
+	if strings.HasSuffix(gaps.String(), "\n\n") {
+		t.Fatalf("gaps output ends with a blank line")
+	}
+}
+
+func TestStdlibRowsDescribeActualDecimalAndStringIndexingBehavior(t *testing.T) {
+	watched := map[string]struct {
+		status Status
+		notes  []string
+	}{
+		"Decimal.divide(Decimal,Integer,RoundingMode)":   {StatusUnsupported, []string{"Text-backed", "untexted", "unsupported"}},
+		"Decimal.doubleValue":                            {StatusSupported, []string{"explicitly Double-backed"}},
+		"String.indexOf":                                 {StatusSupported, []string{"Rune-indexed"}},
+		"String.lastIndexOf":                             {StatusSupported, []string{"Rune-indexed"}},
+		"String.substring":                               {StatusSupported, []string{"UTF-16 code units"}},
+		"BusinessHours.diff(String, Datetime, Datetime)": {StatusSupported, []string{"deterministic local business milliseconds"}},
+		"BusinessHours.isWithin(String, Datetime)":       {StatusSupported, []string{"seeded local week schedules"}},
+		"Crypto.decryptWithManagedIV":                    {StatusSupported, []string{"Managed-IV AES-GCM decryption"}},
+		"Crypto.encryptWithManagedIV":                    {StatusSupported, []string{"Managed-IV AES-GCM encryption"}},
+		"Messaging.SendEmailOptions":                     {StatusSupported, []string{"local captured email records"}},
+		"Type.newInstance":                               {StatusSupported, []string{"zero-argument constructor dispatch"}},
+	}
+	for _, entry := range StdlibMatrix() {
+		want, ok := watched[entry.API]
+		if !ok {
+			continue
+		}
+		delete(watched, entry.API)
+		if entry.Status != want.status {
+			t.Fatalf("%s status = %s, want %s", entry.API, entry.Status, want.status)
+		}
+		for _, fragment := range want.notes {
+			if !strings.Contains(entry.Notes, fragment) {
+				t.Fatalf("%s notes missing %q: %s", entry.API, fragment, entry.Notes)
+			}
+		}
+	}
+	if len(watched) != 0 {
+		t.Fatalf("missing stdlib rows: %#v", watched)
+	}
+}
+
 func TestCapabilityDashboardHasNoPartialRows(t *testing.T) {
 	for _, feature := range MVPFeatures() {
 		if feature.Status == StatusPartial {

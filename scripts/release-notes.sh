@@ -14,7 +14,8 @@ Glade tools ${version} ships first-party Glade plugin archives.
 
 Release artifacts include compat, orgpackage, and performance plugin archives
 for macOS and Linux on amd64 and arm64, checksums, index.json, and the GitHub
-release manifests used before publishing to plugins.glade.sh.
+release manifests used before publishing to plugins.glade.sh. Each plugin
+archive includes the Apache-2.0 license and linked-component notices.
 EOF
 )"
 

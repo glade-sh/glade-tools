@@ -4,6 +4,7 @@
 /.wrangler/
 /bin/
 /dist/
+/scripts/node_modules/
 /coverage.out
 /glade-plugin-*
 /glade-tools

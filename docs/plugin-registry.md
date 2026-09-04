@@ -1,6 +1,6 @@
 # Plugin Registry Setup
 
-`glade-tools` is the private source repo for the first-party Glade plugins.
+`glade-tools` is the public source repo for the first-party Glade plugins.
 `glade` is still the product front door. It reads a registry JSON endpoint,
 downloads one platform archive, checks SHA-256, checks the archive manifest, and
 then records the installed plugin.
@@ -36,7 +36,7 @@ glade plugins link --exec ./glade-plugin-compat
 
 ## Source Repo
 
-The source repo is private:
+The first-party source repo is public:
 
 ```text
 https://github.com/glade-sh/glade-tools
@@ -77,7 +77,7 @@ to the source repo.
 
 ## Endpoint Choices
 
-The source can stay private while the endpoint is public or signed. Current
+For third-party deployments, source may be private while an endpoint is public or signed. Current
 `glade` sends ordinary HTTP requests to the registry and asset URLs. It does not
 send GitHub tokens or custom authorization headers.
 
@@ -103,8 +103,27 @@ The `index.json` asset URLs must match their hosted paths and SHA-256 values.
 Create versioned objects only when absent, verify their bytes, and update the
 mutable root `index.json` last.
 
+The release workflow uses the pinned Wrangler dependency in `scripts/` to
+publish to the `glade-plugins` R2 bucket. It requires the repository variable
+`CLOUDFLARE_ACCOUNT_ID` and secret `CLOUDFLARE_API_TOKEN`. The publisher
+validates the complete local archive and checksum inventory before contacting
+R2, uses conditional create for versioned files, reads every write back, and
+uses an ETag compare-and-swap for the root index. A conflicting immutable file,
+newer live index, changed same-version index, failed readback, or index race
+stops the release. After a failure, inspect the reported key and rerun the same
+tag only when existing versioned bytes match; otherwise cut a new version.
+
+The workflow verifies the public root index after R2 publication and only then
+makes the already-verified GitHub draft public. Do not replace this path with
+bare `wrangler r2 object put` commands because they bypass the conditional and
+readback guards.
+
 Plugin archives use fixed member order and metadata. A clean rerun for the same
 source, version, and target must produce byte-identical archive assets.
+Each archive contains the project `LICENSE` and `NOTICE`, a
+`THIRD_PARTY_NOTICES/NOTICE-MANIFEST.json` bound to the binary SHA-256, and the
+license or notice files referenced by that manifest. Archive validation rejects
+missing, empty, unreferenced, or unsafe notice material.
 
 GitHub plugin release metadata, notes, and asset names are immutable. A workflow
 rerun reuses an existing release, skips an existing asset only when its bytes
