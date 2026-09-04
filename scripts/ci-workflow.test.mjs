@@ -264,6 +264,24 @@ test("release requires exact-SHA CI authority before tag publication", () => {
       publish.indexOf('gh release view "$RELEASE_TAG" --json isDraft --jq \'.isDraft\''),
     "release must verify all expected assets before checking draft state",
   );
+  for (const marker of [
+    "CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}",
+    "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}",
+    "npm ci --prefix scripts --ignore-scripts",
+    'node scripts/plugin-release-publish.mjs dist/plugins "$RELEASE_TAG" "$TOOLS_SHA"',
+    "https://plugins.glade.sh/index.json",
+    'cmp dist/plugins/index.json "$RUNNER_TEMP/plugins-index.json"',
+  ]) {
+    assert.ok(publish.includes(marker), `static plugin publication missing ${marker}`);
+  }
+  assert.doesNotMatch(publish, /wrangler r2 object put/, "static publication must reject bare uploads");
+  const staticPublishAt = publish.indexOf("node scripts/plugin-release-publish.mjs");
+  const publicReadbackAt = publish.indexOf("https://plugins.glade.sh/index.json");
+  const githubPublishAt = publish.indexOf('gh release edit "$RELEASE_TAG" --draft=false');
+  assert.ok(
+    staticPublishAt >= 0 && publicReadbackAt > staticPublishAt && githubPublishAt > publicReadbackAt,
+    "static publication and public readback must precede GitHub draft publication",
+  );
   assert.match(publish, /gh release edit "\$RELEASE_TAG" --draft=false/);
 });
 

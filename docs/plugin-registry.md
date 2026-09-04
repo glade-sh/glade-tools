@@ -103,6 +103,21 @@ The `index.json` asset URLs must match their hosted paths and SHA-256 values.
 Create versioned objects only when absent, verify their bytes, and update the
 mutable root `index.json` last.
 
+The release workflow uses the pinned Wrangler dependency in `scripts/` to
+publish to the `glade-plugins` R2 bucket. It requires the repository variable
+`CLOUDFLARE_ACCOUNT_ID` and secret `CLOUDFLARE_API_TOKEN`. The publisher
+validates the complete local archive and checksum inventory before contacting
+R2, uses conditional create for versioned files, reads every write back, and
+uses an ETag compare-and-swap for the root index. A conflicting immutable file,
+newer live index, changed same-version index, failed readback, or index race
+stops the release. After a failure, inspect the reported key and rerun the same
+tag only when existing versioned bytes match; otherwise cut a new version.
+
+The workflow verifies the public root index after R2 publication and only then
+makes the already-verified GitHub draft public. Do not replace this path with
+bare `wrangler r2 object put` commands because they bypass the conditional and
+readback guards.
+
 Plugin archives use fixed member order and metadata. A clean rerun for the same
 source, version, and target must produce byte-identical archive assets.
 Each archive contains the project `LICENSE` and `NOTICE`, a

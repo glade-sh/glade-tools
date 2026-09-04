@@ -212,6 +212,27 @@ func TestReleaseWorkflowPublishesOnlyTheVerifiedAssetSet(t *testing.T) {
 		t.Fatal("final publish must verify the exact asset set before reading or publishing draft state")
 	}
 	for _, want := range []string{
+		`CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}`,
+		`CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}`,
+		`npm ci --prefix scripts --ignore-scripts`,
+		`node scripts/plugin-release-publish.mjs dist/plugins "$RELEASE_TAG" "$TOOLS_SHA"`,
+		`https://plugins.glade.sh/index.json`,
+		`cmp dist/plugins/index.json "$RUNNER_TEMP/plugins-index.json"`,
+	} {
+		if !strings.Contains(publish, want) {
+			t.Fatalf("final publish missing static plugin publication guard %q", want)
+		}
+	}
+	if strings.Contains(publish, "wrangler r2 object put") {
+		t.Fatal("final publish must not use unconditional R2 upload commands")
+	}
+	staticPublishAt := strings.Index(publish, "node scripts/plugin-release-publish.mjs")
+	publicReadbackAt := strings.Index(publish, `cmp dist/plugins/index.json "$RUNNER_TEMP/plugins-index.json"`)
+	githubPublishAt := strings.Index(publish, `gh release edit "$RELEASE_TAG" --draft=false`)
+	if staticPublishAt < 0 || publicReadbackAt < staticPublishAt || githubPublishAt < publicReadbackAt {
+		t.Fatal("versioned publication, public registry readback, and GitHub draft publication are out of order")
+	}
+	for _, want := range []string{
 		"glade-plugin-compat_${RELEASE_TAG#v}_linux_amd64.tar.gz",
 		"glade-plugin-orgpackage_${RELEASE_TAG#v}_linux_amd64.tar.gz",
 		"glade-plugin-performance_${RELEASE_TAG#v}_linux_amd64.tar.gz",

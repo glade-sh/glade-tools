@@ -290,7 +290,7 @@ jobs:
             --archive-dir dist/plugins \
             --checksums dist/plugins/checksums.txt \
             --output dist/plugins/index.json
-      - name: Verify and publish GitHub Release
+      - name: Verify GitHub Release asset set
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -321,6 +321,35 @@ jobs:
           )"
           actual_assets="$(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | LC_ALL=C sort)"
           test "$actual_assets" = "$expected_assets"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: scripts/package-lock.json
+      - name: Install pinned static publisher
+        run: npm ci --prefix scripts --ignore-scripts
+      - name: Publish static plugin registry
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          WRANGLER_MODULE: ${{ github.workspace }}/scripts/node_modules/wrangler
+        run: node scripts/plugin-release-publish.mjs dist/plugins "$RELEASE_TAG" "$TOOLS_SHA"
+      - name: Verify public plugin registry
+        run: |
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-all-errors --retry-delay 2 \
+            https://plugins.glade.sh/index.json \
+            --output "$RUNNER_TEMP/plugins-index.json"
+          cmp dist/plugins/index.json "$RUNNER_TEMP/plugins-index.json"
+          jq -er '.plugins[].assets[].url' dist/plugins/index.json | while IFS= read -r url; do
+            curl --fail --silent --show-error --head --location \
+              --retry 5 --retry-all-errors --retry-delay 2 "$url" >/dev/null
+          done
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
           is_draft="$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')"
           if [[ "$is_draft" == true ]]; then
             gh release edit "$RELEASE_TAG" --draft=false
