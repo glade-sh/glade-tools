@@ -129,7 +129,7 @@ test("manual Salesforce correctness uses attempt-unique server cleanup authority
 });
 
 test("Salesforce correctness publishes one exact cross-repository authority", () => {
-  assert.equal(apexLanguageRules.gladeCommit, "3a454dee3cb35c604cb1bf25e6a8972b63dd7c81");
+  assert.equal(apexLanguageRules.gladeCommit, "b974901a3e0ad48d6c517cff894601fa5e242000");
   for (const marker of [
     'TOOLS_SHA="$(git rev-parse HEAD)"',
     'test "$TOOLS_SHA" = "$GITHUB_SHA"',
