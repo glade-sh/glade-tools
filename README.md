@@ -1,13 +1,42 @@
 # Glade Tools
 
-Maintenance commands for the sibling `glade` project.
+First-party plugins and maintenance commands for [Glade](https://glade.sh).
 
-Source is hosted in the private `glade-sh/glade-tools` repository. The module
+Source is hosted in the public `glade-sh/glade-tools` repository. The module
 path remains `github.com/glade-sh/glade/tools` so this repo can import
 `github.com/glade-sh/glade/internal/...` packages while it is built beside
 `../glade`.
 
-This project owns the shop work:
+## Choose a plugin
+
+| Plugin | Purpose |
+| --- | --- |
+| `@glade/performance` | Advisory source and trace-based performance scans |
+| `@glade/orgpackage` | Package-contract workflows for projects with package dependencies |
+| `@glade/compat` | Maintainer-facing compatibility fixtures, scanners, and evidence reports |
+
+Start with the [product quickstart](https://glade.sh/guide/quickstart). These
+plugins are optional; base Glade runs local Apex checks and tests without them.
+
+```bash
+glade plugins available
+glade plugins install @glade/performance
+glade plugins list --json
+```
+
+See [installation and trust](https://glade.sh/guide/plugins/install-manage)
+and [registry/distribution details](docs/plugin-registry.md). Product and plugin
+versions are independent. The public-readiness review exercised performance
+0.2.12 with product v0.2.13 on a basic fixture; that does not certify every plugin
+workflow or platform. Pin the pairing your team actually validates.
+
+**Licensing:** the intended source/binary license and distributed notices are
+being clarified. Public source visibility is not a substitute for a license;
+do not assume Glade's product license applies to this repository.
+
+## Maintenance ownership
+
+This project owns:
 
 - compatibility fixtures and fixture runners
 - capability catalogs, dashboards, known-gap reports, and stdlib ledgers

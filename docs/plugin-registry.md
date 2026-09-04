@@ -1,6 +1,6 @@
 # Plugin Registry Setup
 
-`glade-tools` is the private source repo for the first-party Glade plugins.
+`glade-tools` is the public source repo for the first-party Glade plugins.
 `glade` is still the product front door. It reads a registry JSON endpoint,
 downloads one platform archive, checks SHA-256, checks the archive manifest, and
 then records the installed plugin.
@@ -36,7 +36,7 @@ glade plugins link --exec ./glade-plugin-compat
 
 ## Source Repo
 
-The source repo is private:
+The first-party source repo is public:
 
 ```text
 https://github.com/glade-sh/glade-tools
@@ -77,7 +77,7 @@ to the source repo.
 
 ## Endpoint Choices
 
-The source can stay private while the endpoint is public or signed. Current
+For third-party deployments, source may be private while an endpoint is public or signed. Current
 `glade` sends ordinary HTTP requests to the registry and asset URLs. It does not
 send GitHub tokens or custom authorization headers.
 
