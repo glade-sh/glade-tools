@@ -37,14 +37,7 @@ sha256_file() {
 validate_archive() {
   local archive="$1"
   local binary="$2"
-  local listing
-  listing="$(tar -tzf "$archive")"
-  for required in "bin/$binary" "plugin.json" "checksums.txt"; do
-    if [[ "$listing" != *"$required"* ]]; then
-      echo "archive $archive missing $required" >&2
-      exit 1
-    fi
-  done
+  python3 "$ROOT/scripts/validate-plugin-archive.py" "$archive" "$binary"
 }
 
 write_plugin_manifest() {
@@ -94,16 +87,19 @@ build_archive() {
   )
 
   write_plugin_manifest "$name" "$stage/plugin.json"
+  cp "$ROOT/LICENSE" "$ROOT/NOTICE" "$stage/"
+  python3 "$ROOT/scripts/release-go-notices.py" "$stage/bin/$binary" "$ROOT" "$stage/THIRD_PARTY_NOTICES"
   (
     cd "$stage"
-    {
-      printf "%s  %s\n" "$(sha256_file "bin/$binary")" "bin/$binary"
-      printf "%s  %s\n" "$(sha256_file "plugin.json")" "plugin.json"
-    } > checksums.txt
-    TZ=UTC touch -t 197001010000 "bin" "bin/$binary" plugin.json checksums.txt
+    find . -type f ! -name checksums.txt -print \
+      | sed 's#^./##' \
+      | LC_ALL=C sort \
+      | while IFS= read -r file; do
+          printf "%s  %s\n" "$(sha256_file "$file")" "$file"
+        done > checksums.txt
     COPYFILE_DISABLE=1 python3 - "$archive" "$binary" <<'PY'
 import gzip
-import os
+from pathlib import Path
 import sys
 import tarfile
 
@@ -116,13 +112,36 @@ with open(archive_path, "wb") as raw:
             directory.mode = 0o755
             directory.uid = directory.gid = directory.mtime = 0
             archive.addfile(directory)
-            for name in (f"bin/{binary}", "plugin.json", "checksums.txt"):
+            for name in (f"bin/{binary}", "plugin.json", "LICENSE", "NOTICE"):
                 info = archive.gettarinfo(name, arcname=name)
                 info.uid = info.gid = info.mtime = 0
                 info.uname = info.gname = ""
                 info.pax_headers = {}
                 with open(name, "rb") as source:
                     archive.addfile(info, source)
+            notices = tarfile.TarInfo("THIRD_PARTY_NOTICES/")
+            notices.type = tarfile.DIRTYPE
+            notices.mode = 0o755
+            notices.uid = notices.gid = notices.mtime = 0
+            archive.addfile(notices)
+            for path in sorted(Path("THIRD_PARTY_NOTICES").rglob("*"), key=lambda item: item.as_posix()):
+                name = path.as_posix() + ("/" if path.is_dir() else "")
+                info = archive.gettarinfo(path, arcname=name)
+                info.uid = info.gid = info.mtime = 0
+                info.uname = info.gname = ""
+                info.pax_headers = {}
+                if path.is_dir():
+                    archive.addfile(info)
+                else:
+                    with path.open("rb") as source:
+                        archive.addfile(info, source)
+            name = "checksums.txt"
+            info = archive.gettarinfo(name, arcname=name)
+            info.uid = info.gid = info.mtime = 0
+            info.uname = info.gname = ""
+            info.pax_headers = {}
+            with open(name, "rb") as source:
+                archive.addfile(info, source)
 PY
   )
   validate_archive "$archive" "$binary"

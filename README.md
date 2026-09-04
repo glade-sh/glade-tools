@@ -30,9 +30,14 @@ versions are independent. The public-readiness review exercised performance
 0.2.12 with product v0.2.13 on a basic fixture; that does not certify every plugin
 workflow or platform. Pin the pairing your team actually validates.
 
-**Licensing:** the intended source/binary license and distributed notices are
-being clarified. Public source visibility is not a substitute for a license;
-do not assume Glade's product license applies to this repository.
+Glade Tools is licensed under the [Apache License 2.0](LICENSE). Unless a path
+says otherwise, that license covers this project's source, documentation,
+fixtures, generated reports, and first-party plugin binaries. Third-party
+material retains its own terms and is not relicensed by this project.
+
+Glade Tools is an independent open-source project. It is not affiliated with,
+sponsored by, or endorsed by Salesforce. Salesforce and Apex are trademarks of
+Salesforce, Inc.
 
 ## Maintenance ownership
 
@@ -239,7 +244,9 @@ GLADE_RELEASE_BIN=/path/to/glade GLADE_SOURCE_ROOT=/path/to/glade-source scripts
 The version argument is written into each archive name, archived `plugin.json`,
 binary `manifest --json` response, and registry row.
 Archive entry order and metadata are fixed so clean reruns for the same source,
-version, and target produce identical bytes.
+version, and target produce identical bytes. Every archive includes this
+project's `LICENSE` and `NOTICE`, plus a manifest and license/notice files for
+the Go components linked into that plugin binary.
 
 Set `PLUGIN_ASSET_BASE_URL` to write a registry `index.json` next to the
 archives. The index uses canonical `@glade/*` names, first-party trust metadata,

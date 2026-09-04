@@ -105,6 +105,10 @@ mutable root `index.json` last.
 
 Plugin archives use fixed member order and metadata. A clean rerun for the same
 source, version, and target must produce byte-identical archive assets.
+Each archive contains the project `LICENSE` and `NOTICE`, a
+`THIRD_PARTY_NOTICES/NOTICE-MANIFEST.json` bound to the binary SHA-256, and the
+license or notice files referenced by that manifest. Archive validation rejects
+missing, empty, unreferenced, or unsafe notice material.
 
 GitHub plugin release metadata, notes, and asset names are immutable. A workflow
 rerun reuses an existing release, skips an existing asset only when its bytes
