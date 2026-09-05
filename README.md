@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/glade-sh/glade/main/site/docs-src/public/logo-mark-topo.svg">
+    <img src="https://raw.githubusercontent.com/glade-sh/glade/main/site/docs-src/public/logo-mark-topo-light.svg" alt="Glade logo" width="96" height="96">
+  </picture>
+</p>
+
 # Glade Tools
 
 First-party plugins and maintenance commands for [Glade](https://glade.sh).
