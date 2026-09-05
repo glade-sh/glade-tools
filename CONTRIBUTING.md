@@ -6,8 +6,6 @@ for security issues. Never include proprietary source, private package names,
 credentials, customer records, or unredacted support bundles.
 
 Send private conduct concerns to [conduct@glade.sh](mailto:conduct@glade.sh).
-This designated launch alias must be verified before these instructions are
-published.
 
 Follow [Glade's contribution and evidence rules](https://github.com/glade-sh/glade/blob/main/CONTRIBUTING.md).
 This repository owns compatibility fixtures/scanners, catalogs, reports, and

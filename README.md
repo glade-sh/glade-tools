@@ -27,7 +27,7 @@ glade plugins list --json
 See [installation and trust](https://glade.sh/guide/plugins/install-manage)
 and [registry/distribution details](docs/plugin-registry.md). Product and plugin
 versions are independent. The public-readiness review exercised performance
-0.2.12 with product v0.2.13 on a basic fixture; that does not certify every plugin
+0.2.13 with product v0.2.14 on a basic fixture; that does not certify every plugin
 workflow or platform. Pin the pairing your team actually validates.
 
 Glade Tools is licensed under the [Apache License 2.0](LICENSE). Unless a path
