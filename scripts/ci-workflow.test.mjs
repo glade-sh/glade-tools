@@ -105,10 +105,10 @@ test("release and correctness workflows remain non-cancelling", () => {
   }
 });
 
-test("CI keeps macOS release upload coverage unchanged", () => {
+test("CI gives macOS assurance more time than its test timeout", () => {
   assert.match(
     workflow,
-    /macos-release-upload:[\s\S]*?go test \.\/internal\/corpusassurance/,
+    /macos-release-upload:[\s\S]*?timeout-minutes: 25[\s\S]*?go test \.\/internal\/corpusassurance -timeout 20m/,
   );
 });
 
