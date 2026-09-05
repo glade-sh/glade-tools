@@ -551,7 +551,7 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`repository: glade-sh/glade
           path: glade
           ref: ${{ inputs.glade_sha }}`,
-		`node-version: "22"`, "1.26.5", "@salesforce/cli@2.145.6",
+		`node-version: "22"`, "1.26.6", "@salesforce/cli@2.145.6",
 		`AUTH_URL: ${{ secrets.SF_SFDX_AUTH_URL }}`, `AUTH_FILE="$RUNNER_TEMP/sfdx-auth-url.txt"`,
 		`trap 'rm -f "$AUTH_FILE" "$LOGIN_RESULT" "$LOGIN_ERROR"' EXIT`,
 		`printf '%s' "$AUTH_URL" > "$AUTH_FILE"`, `chmod 600 "$AUTH_FILE"`,

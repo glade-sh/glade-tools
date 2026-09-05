@@ -10,8 +10,7 @@ your team has pinned and reviewed another version.
 Use [GitHub private vulnerability reporting](https://github.com/glade-sh/glade-tools/security/advisories/new).
 Do not post vulnerability details in a public issue or discussion.
 
-The designated launch fallback is [security@glade.sh](mailto:security@glade.sh).
-Verify that alias before publishing this policy.
+The monitored fallback is [security@glade.sh](mailto:security@glade.sh).
 
 Include the plugin and Glade versions, operating system and architecture,
 command, minimal reproduction, and impact. Remove proprietary source, private
