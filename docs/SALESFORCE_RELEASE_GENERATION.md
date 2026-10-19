@@ -94,3 +94,32 @@ comparison with the earlier 1,701-article candidate found 142 added paths and
 nine removed paths. Individual routes require review against these current
 articles. Reference-family snapshots and a source receipt remain separate
 required contract inputs before release admission.
+
+## Per-item classification review
+
+Export the exact delta, including checked surface corrections, before reviewing
+product support. Keep one explicit decision for each canonical surface ID; the
+exporter rejects missing, duplicate, stale and wildcard decisions. The review
+records the exact public declaration and URL, product implementation or absence
+evidence, decision reason and product test bindings. The generated schema-2
+classification retains all this evidence in `reasonRef`; it is not proof that
+the bound tests ran or that Salesforce parity was observed.
+
+```bash
+go run ./scripts/salesforce-release/classify_delta \
+  --contract docs/fixtures/salesforce-release-contract.json \
+  --release "Winter '27" --delta-output "$DELTA_OUTPUT"
+go run ./scripts/salesforce-release/classify_delta \
+  --contract docs/fixtures/salesforce-release-contract.json \
+  --release "Winter '27" --review "$REVIEW_INPUT" \
+  --output "$CLASSIFICATIONS_OUTPUT"
+```
+
+For an inventory pair before contract assembly, use `--previous-inventory`,
+`--current-inventory`, `--previous-api`, `--current-api`, `--previous-release`
+and `--release` instead of `--contract`. Recheck against the assembled contract
+before committing, because standalone pairs do not apply surface corrections.
+The review object has schema version 1, `previousRelease`, `currentRelease` and
+`decisions`. Each decision has `surfaceId`, `scope`, `disposition`, `declaration`,
+`sourceURL`, `productEvidence`, `reason` and `productTests`. There are no inferred
+support decisions or default classification rules.

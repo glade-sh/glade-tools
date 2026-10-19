@@ -31,6 +31,7 @@ packages=(
 	./internal/uicontroller
 	./internal/toolcli
 	./scripts/salesforce-release/compose_inventory
+	./scripts/salesforce-release/classify_delta
 )
 
 case "${1:-all}" in
