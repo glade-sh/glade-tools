@@ -268,6 +268,11 @@ func Analyze(contractPath string) (Analysis, error) {
 		return a, err
 	}
 
+	type documentationGap struct {
+		key, previous, current      string
+		firstMissingAPI, currentAPI int
+	}
+	var gaps []documentationGap
 	presence := make(map[string][]bool)
 	for i, release := range releases {
 		for _, row := range release.rows {
@@ -290,12 +295,16 @@ func Analyze(contractPath string) (Analysis, error) {
 			continue
 		}
 		r := Range{Since: apiInt(releases[first].release.APIVersion)}
+		gapStart := 0
 		for i := first + 1; i < len(seen); i++ {
 			if !seen[i] && r.Until == 0 {
 				r.Until = apiInt(releases[i].release.APIVersion)
 			}
-			if seen[i] && r.Until != 0 && i > first+1 {
-				a.Report.Unclassified = append(a.Report.Unclassified, fmt.Sprintf("%s -> %s: %s (reappeared)", releases[i-1].release.Name, releases[i].release.Name, key))
+			if !seen[i] && seen[i-1] {
+				gapStart = i
+			}
+			if seen[i] && !seen[i-1] && gapStart > first {
+				gaps = append(gaps, documentationGap{key: key, previous: releases[i-1].release.Name, current: releases[i].release.Name, firstMissingAPI: apiInt(releases[gapStart].release.APIVersion), currentAPI: apiInt(releases[i].release.APIVersion)})
 			}
 		}
 		a.Report.Ranges[key] = r
@@ -427,9 +436,49 @@ func Analyze(contractPath string) (Analysis, error) {
 	if len(releases) > 1 {
 		a.Report.PreviousRelease, a.Report.CurrentRelease = releases[len(releases)-2].release.Name, releases[len(releases)-1].release.Name
 	}
+	for _, gap := range gaps {
+		if !reviewedDocumentationGap(a, gap.key, gap.firstMissingAPI, gap.currentAPI) {
+			a.Report.Unclassified = append(a.Report.Unclassified, fmt.Sprintf("%s -> %s: %s (reappeared)", gap.previous, gap.current, gap.key))
+		}
+	}
 	sort.Strings(a.Report.Unclassified)
 	sort.Slice(a.ChangeRoutes, func(i, j int) bool { return a.ChangeRoutes[i].SourcePath < a.ChangeRoutes[j].SourcePath })
 	return a, nil
+}
+
+// reviewedDocumentationGap requires an explicit decision on both sides of an
+// acquisition gap. It never infers a declaration or relaxes runtime non-parity.
+func reviewedDocumentationGap(a Analysis, key string, firstMissingAPI, currentAPI int) bool {
+	apis := map[string]int{}
+	for _, r := range a.Contract.Releases {
+		apis[r.Name] = apiInt(r.APIVersion)
+	}
+	for _, b := range a.Contract.Behaviors {
+		if b.Outcome == "explicit-non-parity" {
+			for _, id := range b.SurfaceIDs {
+				if surfaceledger.CanonicalSurfaceIDKey(id) == key {
+					return false
+				}
+			}
+		}
+	}
+	removed, added := false, false
+	for _, change := range a.SurfaceChanges {
+		api := apis[change.CurrentRelease]
+		if surfaceledger.CanonicalSurfaceIDKey(change.Entry.SurfaceID) != key || api < firstMissingAPI || api > currentAPI {
+			continue
+		}
+		if change.Entry.Kind != surfaceledger.DeltaAdded && change.Entry.Kind != surfaceledger.DeltaRemoved {
+			continue
+		}
+		c := change.Classification
+		if c == nil || !(c.PreserveAvailability || c.Scope == surfaceledger.ScopeOutsideClaim && c.Disposition == surfaceledger.DispoExplicitUnsupported) {
+			return false
+		}
+		removed = removed || change.Entry.Kind == surfaceledger.DeltaRemoved
+		added = added || change.Entry.Kind == surfaceledger.DeltaAdded
+	}
+	return removed && added
 }
 
 type loadedRelease struct {

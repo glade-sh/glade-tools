@@ -112,6 +112,14 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 		}
 		changes = append(changes, change)
 	}
+	independentIntroduction := map[string]bool{}
+	for _, change := range changes {
+		c := change.Classification
+		if change.Entry.Kind == surfaceledger.DeltaAdded && c != nil && !c.PreserveAvailability && c.Scope != surfaceledger.ScopeOutsideClaim && c.Disposition != surfaceledger.DispoExplicitUnsupported {
+			independentIntroduction[surfaceledger.CanonicalSurfaceIDKey(change.Entry.SurfaceID)] = true
+		}
+	}
+	changedShape := map[string]bool{}
 	manual := map[string]bool{}
 	preservedDeclarations := map[string]bool{}
 	removed := map[string]bool{}
@@ -134,6 +142,13 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 			// inventing an introduction boundary from its first captured page.
 			manual[key] = true
 			preservedDeclarations[key] = true
+			if change.Entry.Kind == surfaceledger.DeltaRemoved && releaseAPI[change.CurrentRelease] > 0 {
+				rng := ranges[key]
+				if rng.Until == releaseAPI[change.CurrentRelease] {
+					rng.Until = 0
+					ranges[key] = rng
+				}
+			}
 		}
 		if change.Classification != nil && change.Classification.Disposition == surfaceledger.DispoExplicitUnsupported {
 			unsupported[key] = true
@@ -141,12 +156,20 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 		switch change.Entry.Kind {
 		case surfaceledger.DeltaChanged:
 			manual[key] = true
+			changedShape[key] = true
 		case surfaceledger.DeltaRemoved:
 			removed[key] = true
 		case surfaceledger.DeltaAdded:
 			if removed[key] {
 				manual[key] = true
 			}
+		}
+	}
+	for key := range preservedDeclarations {
+		// A later publication gap must not erase an earlier reviewed source
+		// introduction. Its normal availability entry also binds exact shape.
+		if independentIntroduction[key] && !changedShape[key] {
+			delete(manual, key)
 		}
 	}
 	for key := range manual {

@@ -255,3 +255,24 @@ func TestExistingDeclarationCapturePreservesAvailabilityAndBindsExactShape(t *te
 		})
 	}
 }
+
+func TestPreservedDocumentationGapKeepsAnIndependentlyReviewedIntroduction(t *testing.T) {
+	id := "apex:Archive.Existing"
+	row := surfaceledger.SurfaceLedgerRow{SurfaceID: id, Product: surfaceledger.ProductApex, Kind: surfaceledger.KindType, Namespace: "Archive", TypeName: "Existing"}
+	intro := surfaceledger.ReleaseClassification{SurfaceID: id, Scope: surfaceledger.ScopeT2, Disposition: surfaceledger.DispoExistingCase, ReasonRef: "Real API66 introduction", ProductTests: []string{"x_test.go:TestShape"}}
+	preserve := intro
+	preserve.PreserveAvailability = true
+	preserve.ReasonRef = "Exact declaration preserved across reviewed publication gaps"
+	a := Analysis{Contract: Contract{Defaults: Defaults{Source: "65.0", Endpoint: "65.0"}, Windows: Windows{Source: []VersionProof{{Version: "65.0"}, {Version: "66.0"}, {Version: "67.0"}, {Version: "68.0"}}, Endpoint: []VersionProof{{Version: "65.0"}}}, Releases: []Release{{Name: "r66", APIVersion: "66.0"}, {Name: "r67", APIVersion: "67.0"}, {Name: "r68", APIVersion: "68.0"}}}, Report: Report{Ranges: map[string]Range{"apex:archive.existing": {Since: 66, Until: 67}}}, SurfaceChanges: []SurfaceChange{
+		{CurrentRelease: "r66", Entry: surfaceledger.DeltaEntry{SurfaceID: id, Kind: surfaceledger.DeltaAdded, New: &row}, Classification: &intro},
+		{CurrentRelease: "r67", Entry: surfaceledger.DeltaEntry{SurfaceID: id, Kind: surfaceledger.DeltaRemoved, Old: &row}, Classification: &preserve},
+		{CurrentRelease: "r68", Entry: surfaceledger.DeltaEntry{SurfaceID: id, Kind: surfaceledger.DeltaAdded, New: &row}, Classification: &preserve}}}
+	sources, err := renderGeneratedVersionSources(a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := string(sources[generatedVersionPaths[1]])
+	if !strings.Contains(got, `"archive.existing": {Since: 66}`) || strings.Contains(got, "Until: 67") || strings.Contains(got, `[]string{"apex:archive.existing"}`) {
+		t.Fatalf("introduction lost or gap treated as retirement: %s", got)
+	}
+}
