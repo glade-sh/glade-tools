@@ -30,7 +30,7 @@ func TestAtlasCarryPublicationRecheck(t *testing.T) {
 		status     int
 		body, want string
 	}{
-		{"not published", 404, "", ""},
+		{"current publication unavailable", 404, "", "unavailable"},
 		{"prior fallback", 200, `{"version":"262.0","toc":[]}`, ""},
 		{"prior null TOC", 200, `{"version":"262.0","toc":null}`, "does not prove"},
 		{"prior invalid TOC", 200, `{"version":"262.0","toc":"not a TOC"}`, "does not prove"},
@@ -90,7 +90,7 @@ func TestNormalRecheckCoversCarriedAtlasAndLWC(t *testing.T) {
 	if len(client.urls) != 4 {
 		t.Fatalf("requests = %v", client.urls)
 	}
-	for _, target := range []string{"264.0.lightning.meta", "264.0.api_rest.meta", "264.0.pages.meta", "reference-configuration-tags.html"} {
+	for _, target := range []string{"atlas.en-us.lightning.meta", "atlas.en-us.api_rest.meta", "atlas.en-us.pages.meta", "reference-configuration-tags.html"} {
 		found := false
 		for _, url := range client.urls {
 			found = found || strings.Contains(url, target)

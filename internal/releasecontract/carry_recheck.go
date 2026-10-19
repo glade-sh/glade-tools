@@ -42,7 +42,10 @@ func recheckCarriedSources(ctx context.Context, contractPath string, client docs
 			if docset == "" {
 				return fmt.Errorf("cannot recheck carried family %q", family.Name)
 			}
-			url := "https://developer.salesforce.com/docs/get_document/atlas.en-us." + receipt.Snapshot.AtlasVersion + "." + docset + ".meta"
+			// The unversioned publication endpoint identifies the actual current
+			// guide. An unpublished numbered URL can return an empty HTTP 200;
+			// neither that response nor the absence of a guide proves freshness.
+			url := "https://developer.salesforce.com/docs/get_document/atlas.en-us." + docset + ".meta"
 			if err := checkAtlasPublication(ctx, client, url, receipt.Snapshot.AtlasVersion, family.CarriedFrom); err != nil {
 				return fmt.Errorf("%s %s carry recheck: %w", release.Name, family.Name, err)
 			}
@@ -66,9 +69,6 @@ func checkAtlasPublication(ctx context.Context, client docsClient, url, target, 
 		return fmt.Errorf("publication unavailable: %w", err)
 	}
 	defer response.Body.Close()
-	if response.StatusCode == http.StatusNotFound {
-		return nil
-	}
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf("publication unavailable: HTTP %d", response.StatusCode)
 	}
