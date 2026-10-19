@@ -66,3 +66,16 @@ func TestComposeInventoryIsDeterministic(t *testing.T) {
 		t.Fatal("digest depends on input order")
 	}
 }
+
+func TestComposeInventoryKeepsDeclaredReferenceFamilyDenominator(t *testing.T) {
+	current := apexdocs.Inventory{Documents: []apexdocs.Document{
+		{SourcePath: "apex/a.md", Name: "A"},
+		{SourcePath: "apex-guide/narrative.md", Name: "Narrative"},
+		{SourcePath: "metadata-api/deploy.md", Name: "Deploy"},
+		{SourcePath: "object-reference/account.md", Name: "Account"},
+	}}
+	got, _ := composeInventory(current, apexdocs.Inventory{})
+	if len(got.Documents) != 1 || got.Documents[0].SourcePath != "apex/a.md" {
+		t.Fatalf("supplementary sources changed the six-family contract denominator: %#v", got.Documents)
+	}
+}

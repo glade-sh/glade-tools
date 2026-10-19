@@ -118,6 +118,12 @@ func composeInventory(inv, prior apexdocs.Inventory) (apexdocs.Inventory, []stri
 			}
 		}
 		d.Members = ms
+		// Supplementary guides remain provenance context. The public contract
+		// declares the same six reference families as its previous snapshots.
+		family := strings.Split(d.SourcePath, "/")[0]
+		if family != "apex" && family != "tooling-api" && family != "lightning-aura" && family != "rest-api" && family != "visualforce" && family != "lwc" {
+			continue
+		}
 		filtered = append(filtered, d)
 	}
 	inv.Documents = filtered

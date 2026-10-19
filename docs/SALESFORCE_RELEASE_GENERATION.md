@@ -56,7 +56,10 @@ python3 scripts/salesforce-release/compose_winter27.py \
 
 The composition binds the physical Atlas source, additional reference families,
 release notes and exact previous inventory/receipt. It records exclusions for
-declarations whose documented API is later than the target. Its snapshot hash
+declarations whose documented API is later than the target. Supplementary Apex
+guide, Metadata API and object-reference sources remain acquisition context;
+normalized surface inventory covers the six families declared by every checked
+release manifest, matching the API 65-67 denominator. Its snapshot hash
 identifies that composition, rather than a reconstructed historical source tree.
 
 Review each new surface classification and release-note route before updating
