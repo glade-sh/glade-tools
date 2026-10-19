@@ -65,3 +65,32 @@ rejection gates; runtime rejection requires an explicit non-parity behavior
 binding. A changed declaration still requires a behavior binding. Then run
 `salesforce release --check` against the exact product checkout. Generation and
 classification alone supply no executed correctness credit.
+
+## Winter '27 release-note acquisition, 2026-10-19 UTC
+
+Source: [Salesforce Winter '27 Release Notes](https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm&language=en_US&release=264&type=5).
+The existing exporter completed at `2026-10-19T04:55:39Z` with
+1,834 seasonal articles, 1,834 successful exports and zero failures. Every
+exported record identifies release `264.0.0`; every recorded Markdown hash
+was checked before inventory generation.
+
+```bash
+python3 scripts/salesforce-release/export_release_notes.py \
+  --release 264 --output "$NOTES_OUTPUT" \
+  --concurrency 2 --request-delay 0.1
+glade-tools docs-inventory --source "$NOTES_OUTPUT" \
+  --output docs/fixtures/salesforce-release-notes-inventory-winter-27.json
+glade-tools docs-inventory --source "$NOTES_OUTPUT" \
+  --check docs/fixtures/salesforce-release-notes-inventory-winter-27.json
+```
+
+- Exporter SHA-256: `2778601e07f0b717c07d4c424710f62b9d56328a96a824457763c846dbe4fadf`.
+- Retained export metadata SHA-256: `8542b327b9ce0622b5be69cfb496da7f57c663c40ec952ddea9100069364e5dc`.
+- Generated inventory SHA-256: `8b56f1c1ab9b819d789ada6b826749d7fd32f51e3e7832835cbf68c7a71f0102`.
+- Export dependencies: beautifulsoup4 4.15.0, lxml 6.1.3, markdownify 1.2.3, playwright 1.64.0.
+
+The inventory contains 1,834 documents and 195 extracted members. A fresh TOC
+comparison with the earlier 1,701-article candidate found 142 added paths and
+nine removed paths. Individual routes require review against these current
+articles. Reference-family snapshots and a source receipt remain separate
+required contract inputs before release admission.
