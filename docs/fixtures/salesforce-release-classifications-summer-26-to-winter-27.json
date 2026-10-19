@@ -4321,103 +4321,93 @@
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityId",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String EntityId {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityId() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String EntityId {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityId() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entityid"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityIdValue",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String EntityIdValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityIdValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String EntityIdValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityIdValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entityidvalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityName",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String EntityName {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityName() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String EntityName {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityName() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entityname"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityNameValue",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String EntityNameValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityNameValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String EntityNameValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property EntityNameValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entitynamevalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.Label",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String Label {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property Label() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String Label {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property Label() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.label"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.LabelValue",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String LabelValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property LabelValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String LabelValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property LabelValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.labelvalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormula",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String SummaryTextWithFormula {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property SummaryTextWithFormula() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String SummaryTextWithFormula {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property SummaryTextWithFormula() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.summarytextwithformula"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormulaValue",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String SummaryTextWithFormulaValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property SummaryTextWithFormulaValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public String SummaryTextWithFormulaValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property SummaryTextWithFormulaValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.summarytextwithformulavalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.sortByDate",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public Date sortByDate {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property sortByDate() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public Date sortByDate {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property sortByDate() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is Date, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented Date declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.sortbydate"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "preserveAvailability": true,
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.sortByDateValue",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public Date sortByDateValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property sortByDateValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product.. Decision: Supported declaration shape already implemented in the product. Documentation appearance/disappearance or corrected underscore namespaces do not establish a new introduction or retirement. Preserve existing availability. This row claims compilation shape; it does not claim hosted service behavior or new runtime parity.",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public Date sortByDateValue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/264.0). Product evidence: candidate product 37e145cc4aa7987d28c4e4e76af0ab17d1ff98bb StandardPlatformSymbolView contains this exact qualified declaration and parameter shape: property sortByDateValue() Object. The stripped product symbol-view receipt SHA-256 is f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. Exact generated shape subtest below rechecks this row in the regenerated product. Typed declaration audit: the exact public return/property type is Date, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.. Decision: Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented Date declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.sortbydatevalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {

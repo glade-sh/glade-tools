@@ -92,7 +92,7 @@ func TestSalesforceReleaseFixtures(t *testing.T) {
 	if analysis.Report.Status != "fail" {
 		t.Fatalf("static release status = %s, want fail before evidence execution", analysis.Report.Status)
 	}
-	if got := analysis.Report.SurfaceDelta; got.Total != 1724 || got.Classified != 1724 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 828 {
+	if got := analysis.Report.SurfaceDelta; got.Total != 1724 || got.Classified != 1724 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 861 {
 		t.Errorf("surface delta = %#v", got)
 	}
 	if got := analysis.Report.BehaviorDelta; got.Total != 28 || got.Classified != 28 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 5 {

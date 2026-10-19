@@ -1979,12 +1979,12 @@
       "declaration": "global commercetax.CalculateTaxType shouldVoidTax {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_CalculateTaxRequest.htm/en-us/258.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.calculatetaxrequest.shouldvoidtax"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"shouldVoidTax\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"shouldVoidTax\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is commercetax.CalculateTaxType, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented commercetax.CalculateTaxType declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:commercetax.CustomTaxAttributesResponse",
@@ -2100,12 +2100,12 @@
       "declaration": "global commercetax.TaxLineItemRequest customTaxAttributes {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxLineItemRequest.htm/en-us/258.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.taxlineitemrequest.customtaxattributes"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"customTaxAttributes\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"customTaxAttributes\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is commercetax.TaxLineItemRequest, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented commercetax.TaxLineItemRequest declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:commercetax.TaxLineItemRequest.referenceDocumentCode",
@@ -2149,12 +2149,12 @@
       "declaration": "global commercetax.TaxTransactionRequest customTaxAttributes {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxTransactionRequest.htm/en-us/258.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.taxtransactionrequest.customtaxattributes"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"customTaxAttributes\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"customTaxAttributes\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is commercetax.TaxTransactionRequest, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented commercetax.TaxTransactionRequest declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise.DynamicMenuItem",
@@ -2317,130 +2317,120 @@
       "declaration": "public String EntityId {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entityid"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityId\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityId\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityIdValue",
       "declaration": "public String EntityIdValue {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entityidvalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityIdValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityIdValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityName",
       "declaration": "public String EntityName {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entityname"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityName\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityName\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityNameValue",
       "declaration": "public String EntityNameValue {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.entitynamevalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityNameValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityNameValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.Label",
       "declaration": "public String Label {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.label"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"Label\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"Label\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.LabelValue",
       "declaration": "public String LabelValue {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.labelvalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"LabelValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"LabelValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormula",
       "declaration": "public String SummaryTextWithFormula {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.summarytextwithformula"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"SummaryTextWithFormula\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"SummaryTextWithFormula\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormulaValue",
       "declaration": "public String SummaryTextWithFormulaValue {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.summarytextwithformulavalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"SummaryTextWithFormulaValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"SummaryTextWithFormulaValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.sortByDate",
       "declaration": "public Date sortByDate {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.sortbydate"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"sortByDate\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"sortByDate\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is Date, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented Date declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.sortByDateValue",
       "declaration": "public Date sortByDateValue {get; set;}",
       "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem.sortbydatevalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ],
-      "scope": "t2",
-      "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"sortByDateValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
-      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
-      "preserveAvailability": true
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"sortByDateValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is Date, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented Date declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
     },
     {
       "surfaceId": "apex:pref.LoadFormData",

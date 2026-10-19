@@ -1285,7 +1285,7 @@
       ],
       "scope": "t2",
       "disposition": "existing-case",
-      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getQueryLocator\",\"type\":\"Database.QueryLocator\",\"parameters\":[\"List<Object>\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getQueryLocator\",\"type\":\"Database.QueryLocator\",\"parameters\":[\"List<Object>\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Return-type review: the signature spells Database. QueryLocator; the normalized short QueryLocator return and registered Database.QueryLocator denote the same qualified return type, protected by the existing QueryLocator runtime test.",
       "reason": "The exact old/new signatures differ only in a formal parameter label; owner, method, argument types and return type are unchanged. Existing compiler/runtime behavior remains bound, without inventing an introduction date."
     },
     {

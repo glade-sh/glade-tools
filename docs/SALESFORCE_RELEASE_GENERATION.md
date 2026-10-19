@@ -336,8 +336,8 @@ unsupported, preserves 2,613 historical API 67 exclusions as historical evidence
 and separately lists all 405 unavailable reference identities. Its inventory
 hash and complete current declaration coverage have a dedicated fixture test.
 
-The reviewed API 67-to-68 delta has 626 rows: 129 supported declaration/CBC
-cases with exact product tests, and 497 explicit unsupported/not-claimed cases.
+The reviewed API 67-to-68 delta has 626 rows: 119 supported declaration/CBC
+cases with exact product tests, and 507 explicit unsupported/not-claimed cases.
 Existing implemented declaration shapes use `preserveAvailability` and exact
 generated shape subtests; first capture or namespace correction does not invent
 an introduction/retirement boundary or assert hosted-service behavior.
@@ -493,3 +493,13 @@ the generator refuses to relabel observed or conclusive data. The SFDX sources
 remain unchanged; only request-version metadata advances. The real verifier
 provenance regression checks these inputs together before any org operation.
 The final Correctness run must still collect native and candidate results.
+
+The final return-type audit compared364 newly supported member declarations
+against the candidate's registered types. It found33 exact historical/current
+property rows modeled as Object instead of their documented String, Date or
+specific public type. Those rows are explicitly not claimed, with both types
+recorded per item; a name/argument shape test does not prove a typed property.
+The short QueryLocator versus Database.QueryLocator spelling is a reviewed
+qualified-name equivalence, protected by an existing runtime test. API68 now
+has119 supported declaration/behavior rows and507 explicitly unsupported or
+not-claimed rows. Historical repeats are reviewed per transition.
