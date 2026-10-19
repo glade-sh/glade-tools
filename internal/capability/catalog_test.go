@@ -131,6 +131,22 @@ func TestWriteCatalogJSON(t *testing.T) {
 	}
 }
 
+func TestProductNamespaceMarkdownSeparatesInventoryFromExcludedSupport(t *testing.T) {
+	report := ProductNamespaceReport{}
+	var output bytes.Buffer
+	if err := WriteProductNamespaceMarkdown(&output, report); err != nil {
+		t.Fatal(err)
+	}
+	for _, text := range []string{
+		"ConnectApi, Slack and DataWeave are excluded and unsupported",
+		"Inventory rows do not confer release support",
+	} {
+		if !strings.Contains(output.String(), text) {
+			t.Fatalf("namespace inventory must disclose release exclusions; missing %q", text)
+		}
+	}
+}
+
 func TestBuildProductNamespaceReport(t *testing.T) {
 	catalog := Catalog{
 		SchemaVersion: CatalogSchemaVersion,

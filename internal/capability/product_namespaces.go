@@ -305,6 +305,9 @@ func WriteProductNamespaceMarkdown(w io.Writer, report ProductNamespaceReport) e
 	if _, err := fmt.Fprintln(w, "\n`Target` and `Status` describe runtime capability classification. Declaration columns describe generated type/member availability only."); err != nil {
 		return err
 	}
+	if _, err := fmt.Fprintln(w, "\nConnectApi, Slack and DataWeave are excluded and unsupported by the release scope. Inventory rows do not confer release support, even when inherited catalog entries describe declarations or runtime behavior."); err != nil {
+		return err
+	}
 	if _, err := fmt.Fprintln(w, "\n| Namespace | Target | Status | Declaration status | Types | Declared types | Members | Declared members | Missing members | Entries | Declared entries | Inputs | Outputs |"); err != nil {
 		return err
 	}
