@@ -13,6 +13,9 @@ def build(source, notes_inventory):
     count = len(files)
     if identity.get('version') != 'latest' or not count or identity.get('pages') != {'success': count, 'empty': 0, 'failed': 0, 'total': count}:
         raise ValueError('fresh current-only LWC acquisition is incomplete')
+    invalid = [p.name for p in files if p.read_text().lstrip().startswith('# Oops') or '## Something went wrong' in p.read_text()]
+    if invalid:
+        raise ValueError('current-only LWC acquisition contains publisher error pages: ' + ', '.join(invalid))
     notes = json.loads(notes_inventory.read_text())
     publication = [doc for doc in notes['documents'] if doc['sourcePath'] == 'rn_lwc_versioning.md']
     if len(publication) != 1 or publication[0].get('title') != 'Get the Latest LWC Changes with LWC API Version 68.0':

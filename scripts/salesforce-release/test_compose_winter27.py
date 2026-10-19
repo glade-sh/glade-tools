@@ -96,6 +96,10 @@ class WinterCompositionTest(unittest.TestCase):
         self.assertNotIn('publishedAtlasVersion',lwc)
         self.assertEqual(lwc['currentOnlyPublication']['inventory']['sha256'],sha256(notes_inventory))
         self.assertEqual(lwc,composition['lwc'])
+        (source/'reference-api-modules.md').write_text('# Oops\n\n## Something went wrong\n')
+        with self.assertRaisesRegex(ValueError,'publisher error pages'):
+            compose(self.atlas,self.notes,self.previous,self.previous_inventory,self.inventory,self.manifest,source,notes_inventory)
+        (source/'reference-api-modules.md').write_text('# Modules\n')
         notes_inventory.write_text(json.dumps({'documents':[{'sourcePath':'rn_lwc_versioning.md','title':'API version example 68.0'}]}))
         with self.assertRaisesRegex(ValueError,'exact API 68'):
             compose(self.atlas,self.notes,self.previous,self.previous_inventory,self.inventory,self.manifest,source,notes_inventory)
