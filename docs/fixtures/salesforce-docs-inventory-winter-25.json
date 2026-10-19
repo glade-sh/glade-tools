@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "totalFiles": 2659,
-  "totalMembers": 4824,
+  "totalMembers": 4823,
   "namespaces": [
     {
       "namespace": "(none)",
@@ -56,7 +56,7 @@
       "documents": 877,
       "inputs": 265,
       "outputs": 535,
-      "members": 1107
+      "members": 1106
     },
     {
       "namespace": "DataRetrieval",
@@ -12567,18 +12567,6 @@
           ],
           "section": "ContentHub Methods",
           "description": "Get a repository in an Experience Cloud site."
-        },
-        {
-          "kind": "method",
-          "name": "getRepository",
-          "signature": "public static ConnectApi.ContentHubRepository getRepository(String repositoryId)",
-          "apiVersion": "369.0",
-          "returnType": "ConnectApi.ContentHubRepository",
-          "parameters": [
-            "String"
-          ],
-          "section": "ContentHub Methods",
-          "description": "Get a repository."
         },
         {
           "kind": "method",
@@ -80266,145 +80254,115 @@
     {
       "sourcePath": "lwc/reference-lightning-commerce-register-guest-buyer-api.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "`lightning/commerceRegisterGuestBuyerApi`",
+      "title": "`lightning/commerceRegisterGuestBuyerApi` Module"
     },
     {
       "sourcePath": "lwc/reference-lightning-commerce-repricing-api.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "`lightning/commerceRepricingApi`",
+      "title": "`lightning/commerceRepricingApi` Module"
     },
     {
       "sourcePath": "lwc/reference-lightning-graphql-api.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "`lightning/uiGraphQLApi`",
+      "title": "`lightning/uiGraphQLApi` (v1)"
     },
     {
       "sourcePath": "lwc/reference-lightning-industries-education.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "`lightning/industriesEducationPublicApi`",
+      "title": "`lightning/industriesEducationPublicApi` Module"
     },
     {
       "sourcePath": "lwc/reference-lightning-mobilecapabilities.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "`lightning/mobileCapabilities`",
+      "title": "`lightning/mobileCapabilities` Module"
     },
     {
       "sourcePath": "lwc/reference-lightning-service-knowledge-api.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "`lightning/serviceKnowledgeApi`",
+      "title": "`lightning/serviceKnowledgeApi` Module"
     },
     {
       "sourcePath": "lwc/reference-notify-record-update.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
+      "name": "`notifyRecordUpdateAvailable(recordIds)`",
+      "title": "`notifyRecordUpdateAvailable(recordIds)`",
+      "behaviors": [
+        {
+          "kind": "deprecated",
+          "evidence": "deprecated"
+        }
       ]
     },
     {
       "sourcePath": "lwc/reference-objects-lwc-multi-column-sort.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "Standard",
+      "title": "Standard Objects That Support List View Multiple-Column Sort"
     },
     {
       "sourcePath": "lwc/reference-objects-lwc-record-home.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "Standard",
+      "title": "Standard Objects Support for Record Home Pages"
     },
     {
       "sourcePath": "lwc/reference-objects-lwc-related-lists-sort.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "Standard",
+      "title": "Standard Objects That Don’t Support Related List Multiple-Column Sort"
     },
     {
       "sourcePath": "lwc/reference-objects-lwc.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "Salesforce",
+      "title": "Salesforce Objects Support in LWC"
     },
     {
       "sourcePath": "lwc/reference-page-reference-type.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "PageReference",
+      "title": "PageReference Types"
     },
     {
       "sourcePath": "lwc/reference-salesforce-modules.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
+      "name": "`@salesforce`",
+      "title": "`@salesforce` Modules",
+      "behaviors": [
+        {
+          "kind": "deprecated",
+          "evidence": "deprecated"
+        }
       ]
     },
     {
       "sourcePath": "lwc/reference-supported-objects.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "Salesforce",
+      "title": "Salesforce Objects Supported by `lightning/ui*Api` Modules"
     },
     {
       "sourcePath": "lwc/reference-template-errors.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
-      ]
+      "name": "HTML",
+      "title": "HTML Template Errors"
     },
     {
       "sourcePath": "lwc/reference-ui-api.md",
       "kind": "document",
-      "name": "Oops",
-      "title": "Oops",
-      "headings": [
-        "Something went wrong"
+      "name": "`lightning/ui*Api`",
+      "title": "`lightning/ui*Api` Wire Adapters and Functions",
+      "behaviors": [
+        {
+          "kind": "deprecated",
+          "evidence": "deprecated"
+        }
       ]
     },
     {

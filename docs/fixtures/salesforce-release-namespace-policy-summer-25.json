@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "namespace": "ConnectApi",
-  "inventorySHA256": "739109e1486d81cdfdd30aaf10b1711a059faccae6f110e621cd0789fafd6c3e",
+  "inventorySHA256": "94c4a64686c222757e0618687851be860b255f86a97c9364b2312d702bd7623b",
   "acquisitionReceiptSHA256": "9ca529488d9e71417deb0be7736a0ae20166d77d6f0e29c950d04e67b6035087",
   "acquisition": {
     "schemaVersion": 1,
@@ -6082,28 +6082,10 @@
       "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.CdpSegmentContainerOutput getSegment(String segmentApiName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpSegment_static_methods.htm/en-us/256.0). No implementation or parity is claimed."
     },
     {
-      "surfaceId": "apex:ConnectApi.CdpSegment.getSegmentById(String)",
-      "scope": "outside-claim",
-      "disposition": "explicit-unsupported",
-      "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.CdpSegmentContainerOutput getSegmentById(String segmentId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpSegment_static_methods.htm/en-us/256.0). No implementation or parity is claimed."
-    },
-    {
       "surfaceId": "apex:ConnectApi.CdpSegment.getSegments()",
       "scope": "outside-claim",
       "disposition": "explicit-unsupported",
       "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.CdpSegmentContainerOutput getSegments() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpSegment_static_methods.htm/en-us/256.0). No implementation or parity is claimed."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.CdpSegment.getSegmentsFilteredPaginated(Integer,Integer,String,String)",
-      "scope": "outside-claim",
-      "disposition": "explicit-unsupported",
-      "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.CdpSegmentContainerOutput getSegmentsFilteredPaginated(Integer batchSize, Integer offset, String orderBy, String filters) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpSegment_static_methods.htm/en-us/256.0). No implementation or parity is claimed."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.CdpSegment.getSegmentsFilteredPaginated(Integer,Integer,String,String,String)",
-      "scope": "outside-claim",
-      "disposition": "explicit-unsupported",
-      "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.CdpSegmentContainerOutput getSegmentsFilteredPaginated(Integer batchSize, Integer offset, String orderBy, String dataspace, String filters) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpSegment_static_methods.htm/en-us/256.0). No implementation or parity is claimed."
     },
     {
       "surfaceId": "apex:ConnectApi.CdpSegment.getSegmentsPaginated(Integer,Integer,String)",
@@ -10664,12 +10646,6 @@
       "scope": "outside-claim",
       "disposition": "explicit-unsupported",
       "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.ContentHubRepositoryCollection getRepositories(String communityId, Integer pageParam, Integer pageSize) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ContentHub_static_methods.htm/en-us/256.0). No implementation or parity is claimed."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ContentHub.getRepository(String)",
-      "scope": "outside-claim",
-      "disposition": "explicit-unsupported",
-      "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.ContentHubRepository getRepository(String repositoryId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ContentHub_static_methods.htm/en-us/256.0). No implementation or parity is claimed."
     },
     {
       "surfaceId": "apex:ConnectApi.ContentHub.getRepository(String,String)",

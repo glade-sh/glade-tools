@@ -209,8 +209,8 @@ Dependencies: beautifulsoup4 4.15.0, lxml 6.1.3, markdownify 1.2.3, playwright 1
 - Summer generated inventory SHA-256: `d37948ca89da3c14fcd6ad54dc85653935007b58f54361af86aef240748e4233`.
 
 These note inventories are separate inputs, not complete GA reference snapshots
-or executed correctness proof. Historical and API 68 reference acquisitions
-remain incomplete after persistent public content HTTP 403 responses. Winter
+or executed correctness proof. ConnectApi-only reference failures are now explicitly policy-excluded; retained
+HTTP403 records supply acquisition evidence, not declaration or parity credit. Winter
 '25 notes exported 1,471 of 1,472 TOC articles; the LinkedIn Lead Gen article
 returned no versioned record. Its incomplete export is retained externally and
 is not admitted as a complete inventory or source receipt.
@@ -287,7 +287,7 @@ silently substitute historical release-note inventories.
 
 ## API 68 checked source inputs, acquired 2026-10-19 UTC
 
-This contract checks Apex source 65.0-68.0 and discrete endpoint versions
+This contract checks Apex source 62.0-68.0 and discrete endpoint versions
 60.0/65.0/66.0/67.0/68.0, with default 65.0 for both axes. Static declaration
 classification and generated-table agreement do not establish executed
 Salesforce correctness; the analyzer deliberately retains zero execution credit.
@@ -368,39 +368,104 @@ Static totals: 1,145/1,145 classified surfaces; 22/22 classified behaviors;
 5,824/5,824 routed articles; no unclassified entries. Correctness execution
 remains a separate gate against the final product commit.
 
-## API 62-64 candidate reference inputs, acquired 2026-10-19 UTC
+## API 62–68 contract, public acquisition on 2026-10-19 UTC
 
-These historical generated inputs remain candidates. Their initial current-only LWC input contained publisher error pages and must be regenerated from the valid recapture described above before admission.
+The baseline is Winter '25/API62, followed by Spring '25/API63, Summer '25/API64,
+Winter '26/API65, Spring '26/API66, Summer '26/API67 and Winter '27/API68.
+Default source/endpoint remain65.0. Endpoints remain the discrete
+60.0/65.0/66.0/67.0/68.0 set; source62–64 does not add HTTP endpoints62–64.
+Existing public65–67 source receipts and inventories remain unchanged.
 
-| API / Atlas | Acquired Apex | Policy-excluded references | Retained 403 | Normalized documents / members | Known ConnectApi exclusions | Completed UTC |
-| --- | ---: | ---: | ---: | ---: | ---: | --- |
-| 62 / 252 | 1692 | 245 | 100 | 2659 / 4824 | 1967 | 06:28:25 |
-| 63 / 254 | 1694 | 308 | 99 | 2662 / 4866 | 1988 | 06:32:20 |
-| 64 / 256 | 1702 | 443 | 106 | 2675 / 4990 | 2046 | 06:36:40 |
+All historical LWC views were regenerated from the valid28-page current-only
+recapture described above. Publisher error pages are rejected before assembly.
+The existing availability filter is also applied to historical reference
+inventories: every excluded future-labeled declaration is retained in a generated
+inventory-filter receipt. Raw public source bytes remain unchanged. Normalized
+inventory manifests and source receipts bind the filtered digest.
 
-The remaining Atlas families contain 942, 943 and 948 acquired pages for APIs
-62, 63 and 64 respectively, with zero failed or empty pages. The existing
-assembler derives historical LWC views from the fresh 28-page current-only
-reference, retaining its availability-filtering limitation. Each normalized
-inventory was regenerated and byte-checked by `docs-inventory`; manifests use
-`NewReleaseManifest` and source receipts use the existing public exporter.
+| API / Atlas | Acquired Apex | Policy-excluded refs | Retained403 URLs | Documents / members | Future-labeled rows filtered |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 62 /252 |1692|245|100|2659 /4823|1|
+| 63 /254 |1694|308|99|2662 /4865|1|
+| 64 /256 |1702|443|106|2675 /4986|4|
 
-Public publication sources (each TOC also provides every content reference):
+The filtered ContentHub API369.0 label is impossible and has an explicit
+source correction to the earliest captured API62 declaration; ConnectApi remains
+excluded. The API64 CdpSegment rows explicitly sayAPI65 and are not relabeled.
+Existing declarations of Composite REST, CleanRule, FieldMappingField/Row and
+DeleteFilter are captured atAPI62, so later annotation changes do not invent
+API65 introductions. DeleteFilter's existing API67 non-parity boundary remains.
+Every correction identifies its exact public declaration, source file and URL.
 
-- https://developer.salesforce.com/docs/get_document/atlas.en-us.252.0.apexref.meta
-- https://developer.salesforce.com/docs/get_document/atlas.en-us.254.0.apexref.meta
-- https://developer.salesforce.com/docs/get_document/atlas.en-us.256.0.apexref.meta
+Use the assembler, `compose_inventory --historical-api`, source receipt exporter
+and namespace policy exporter commands above. The same canonical inventory
+library and classification exporter produce these files. Re-running the compose
+command into an empty output directory must reproduce the exact normalized
+inventories, manifests and filter records; a direct unfiltered inventory check
+is not a check of the explicitly filtered output.
 
-Repeat the historical assembly/manifest/receipt and namespace policy commands
-above for each API. Acquisition receipts retain the original scraper and
-wrapper hashes, dates, TOC hashes, inherited inputs and all 405 denied public
-ConnectApi URLs across the four acquisitions. Known acquired declarations and
-unavailable reference identities remain separate; classifications are generated.
+### Historical release-note coverage
 
-The full candidate remains blocked on one unavailable API 62 release-note leaf:
+Winter '26 notes were acquired anonymously with the existing exporter:
+
+```bash
+python3 scripts/salesforce-release/export_release_notes.py \
+  --release 258 --output "$WINTER_NOTES_OUTPUT" \
+  --concurrency 2 --request-delay 0.1 --attempts 1
+glade-tools docs-inventory --source "$WINTER_NOTES_OUTPUT" \
+  --output docs/fixtures/salesforce-release-notes-inventory-winter-26.json
+```
+
+The commands use no org access, credentials or denied-reference retries. Exact seasonal source:
+https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm&language=en_US&release=258&type=5
+
+All1794 articles were acquired, resolved revision258.0.0. The retained export
+records every topic ID, URL, article revision, publication/fetch dates and hash.
+Spring/Summer '25 inventories above cover1509/1550 articles. Each of the three
+transitions has an explicit per-article policy with requireExplicit branches;
+the same `generate_release_routes.py` exporter produces all routes. The six
+transitions total10677 inventory documents, all routed. The static contract has
+1724/1724 classified surface deltas and28/28 classified behaviors, with zero
+execution credit. Qualified declaration/test evidence lives in generated
+classifications, backed by checked review inputs.
+
+The source63/64/65 LWC publication notes bind exact version-selection tests.
+API65 abstract-method access changes bind the existing compiler rule and exact
+sema tests. QueryLocator/Crypto parameter-label changes bind unchanged exact
+argument/return shapes and existing runtime tests; they do not invent new
+runtime behavior or source introductions. Documentation disappear/reappear
+edges require explicit reviews on both sides. A preserved capture gap cannot
+erase an independently reviewed earlier introduction date.
+
+The eight-argument TaxLineItemRequest constructor is captured atAPI62/63,
+replaced in one export by a nine-argument productSKU form, and captured again at
+API65. The implemented, exact shape-tested eight-argument declaration is
+preserved. Its unsupported alternate signature is separately classified. These
+are declaration decisions, not native per-version constructor-execution proof.
+The GraphQL module has a local implementation subset and Node tests, but no
+admitted exact Go product-test binding at the published tools product pin for
+the whole public module surface. It remains explicitly not claimed in this
+contract; generic LWC version tests are not substituted for module proof.
+
+### Unavailable Winter '25 baseline article
+
+Exact seasonal URL:
 https://help.salesforce.com/s/articleView?id=release-notes.rn_sales_features_core_leads_linkedinleadgen.htm&language=en_US&release=252&type=5
-The retained export is 1471/1472 articles, revision 252.15.0. The article API has
-no versioned record and the public article page has no visible content. This
-is not a ConnectApi exclusion, and no complete API 62 note inventory is asserted.
-Historical transitions still require per-item delta classifications and note
-routes. API 68 has the independent source-admission issue described above.
+
+A polite existing-scraper check at2026-10-19T07:32:39Z returned HTTP200 from both
+the article API and public page. The API had no versioned record for252.15.0
+(versionNone); the public page had no visible content heading after30 seconds.
+The retained1471/1472-article export is incomplete and is not committed as a
+complete note inventory. This is not a ConnectApi exception.
+
+The unchanged contract schema treats its first release as a reference baseline
+and forbids classifications, changeInventory and changeRoutes on that release.
+It checks62->63 onward, not61->62 changes. Therefore a local full-window table
+check supplies no coverage or proof for this missing baseline article, and it
+must never be described as a complete Winter '25 note acquisition. A publication
+policy requiring complete baseline notes would still block that selection;
+the unavailable source is retained explicitly for the coordinator's decision.
+
+Winter26 export completedUTC: `2026-10-19T07:42:48Z`.
+ExporterSHA256: `5e0ab9545024ee05826b043a731638e7decddee64e5ac61ee75966dcb31164c2`.
+Retained export metadataSHA256: `b4c1dc8cb8b6b4a3094b6251dff9ed8e26ba8ccf206845ce46b40efec1d94203`.

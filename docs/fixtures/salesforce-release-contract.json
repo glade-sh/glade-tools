@@ -8,6 +8,24 @@
   "windows": {
     "source": [
       {
+        "version": "62.0",
+        "productTests": [
+          "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/62.0"
+        ]
+      },
+      {
+        "version": "63.0",
+        "productTests": [
+          "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/63.0"
+        ]
+      },
+      {
+        "version": "64.0",
+        "productTests": [
+          "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/64.0"
+        ]
+      },
+      {
         "version": "65.0",
         "proofCases": [
           "APEX-API65-ABSTRACT-DEFAULT-ACCESS"
@@ -88,13 +106,49 @@
   },
   "releases": [
     {
+      "name": "Winter '25",
+      "apiVersion": "62.0",
+      "maturity": "ga",
+      "manifest": "salesforce-release-winter-25.json",
+      "inventory": "salesforce-docs-inventory-winter-25.json",
+      "sourceReceipt": "salesforce-release-source-winter-25.json",
+      "sourceReceiptSHA256": "2ebebd157e821cd308981fda15d61fa5b934143513ba0b35c300aadc63e09793"
+    },
+    {
+      "name": "Spring '25",
+      "apiVersion": "63.0",
+      "maturity": "ga",
+      "manifest": "salesforce-release-spring-25.json",
+      "inventory": "salesforce-docs-inventory-spring-25.json",
+      "sourceReceipt": "salesforce-release-source-spring-25.json",
+      "sourceReceiptSHA256": "070b95af3854f056970bc502aacb563d23d5af304a3d8ce7af0fd9c3feea8c10",
+      "classifications": "salesforce-release-classifications-winter-to-spring-25.json",
+      "changeInventory": "salesforce-release-notes-inventory-spring-25.json",
+      "changeRoutes": "salesforce-release-note-routes-winter-to-spring-25.json"
+    },
+    {
+      "name": "Summer '25",
+      "apiVersion": "64.0",
+      "maturity": "ga",
+      "manifest": "salesforce-release-summer-25.json",
+      "inventory": "salesforce-docs-inventory-summer-25.json",
+      "sourceReceipt": "salesforce-release-source-summer-25.json",
+      "sourceReceiptSHA256": "5d887d77a5ec3d5f2c679ebc29265424eb75e5d1472dea3c63cfa12e9b7a331c",
+      "classifications": "salesforce-release-classifications-spring-to-summer-25.json",
+      "changeInventory": "salesforce-release-notes-inventory-summer-25.json",
+      "changeRoutes": "salesforce-release-note-routes-spring-to-summer-25.json"
+    },
+    {
       "name": "Winter '26",
       "apiVersion": "65.0",
       "maturity": "ga",
       "manifest": "salesforce-release-winter-26.json",
       "inventory": "salesforce-docs-inventory-winter-26.json",
       "sourceReceipt": "salesforce-release-source-winter-26.json",
-      "sourceReceiptSHA256": "c37a438db9a4eaf4180b491668b07457f8ba5e9c3780c509d719299c89f517c0"
+      "sourceReceiptSHA256": "c37a438db9a4eaf4180b491668b07457f8ba5e9c3780c509d719299c89f517c0",
+      "classifications": "salesforce-release-classifications-summer-25-to-winter-26.json",
+      "changeInventory": "salesforce-release-notes-inventory-winter-26.json",
+      "changeRoutes": "salesforce-release-note-routes-summer-25-to-winter-26.json"
     },
     {
       "name": "Spring '26",
@@ -485,6 +539,117 @@
       ],
       "productTests": [
         "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_68.0"
+      ]
+    },
+    {
+      "id": "apex.query-locator.parameter-label-documentation",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "62.0",
+      "documentedIn": "63.0",
+      "maturity": "ga",
+      "surfaceIds": [
+        "apex:System.Database.getQueryLocator(List<Object>)",
+        "apex:System.Database.getQueryLocator(List<Object>,AccessLevel)"
+      ],
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_database.htm/en-us/254.0",
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_database.htm/en-us/254.0"
+      ],
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface",
+        "internal/vm/platform_test.go:TestExecDatabaseGetQueryLocator"
+      ]
+    },
+    {
+      "id": "apex.crypto.parameter-label-documentation",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "62.0",
+      "documentedIn": "64.0",
+      "maturity": "ga",
+      "surfaceIds": [
+        "apex:System.Crypto.decrypt(String,Blob,Blob,Blob)",
+        "apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob)",
+        "apex:System.Crypto.encrypt(String,Blob,Blob,Blob)",
+        "apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob)"
+      ],
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0"
+      ],
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface",
+        "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset",
+        "internal/vm/stdlib_test.go:TestExecCryptoManagedIVAndSignatureLocalSubset"
+      ]
+    },
+    {
+      "id": "lwc.framework-api63.version-selection",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "63.0",
+      "documentedIn": "63.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=254&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_63.0"
+      ]
+    },
+    {
+      "id": "lwc.framework-api64.version-selection",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "64.0",
+      "documentedIn": "64.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=256&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_64.0"
+      ]
+    },
+    {
+      "id": "lwc.framework-api65.version-selection",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "65.0",
+      "documentedIn": "65.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=258&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_65.0"
+      ]
+    },
+    {
+      "id": "apex.abstract-method.explicit-access-api65",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "65.0",
+      "documentedIn": "65.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_access_modifier.htm&language=en_US&release=258&type=5"
+      ],
+      "proofCases": [
+        "APEX-API65-ABSTRACT-DEFAULT-ACCESS"
+      ],
+      "productTests": [
+        "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65",
+        "internal/sema/version_contracts_test.go:TestAbstractMethodVersionGateUsesEffectiveSourceAPIVersion"
       ]
     }
   ],

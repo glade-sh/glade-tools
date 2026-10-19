@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "release": "Winter '25",
   "apiVersion": "62.0",
-  "digest": "f36a7b74647b32a1ad4976639ae978e175d483e5836ac3ccb215339d43e544aa",
+  "digest": "2a325a3144f69163f66fe37cfdbc7dd114a2b8939d9dae9fab360811f208b90d",
   "acquisition": "Anonymous versioned public Salesforce reference acquisition; unavailable ConnectApi TOC references are explicitly policy-excluded; current-only LWC is availability-filtered to the target API.",
   "sourceFamilies": [
     "apex-reference",

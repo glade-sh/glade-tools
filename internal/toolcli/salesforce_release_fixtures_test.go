@@ -92,13 +92,13 @@ func TestSalesforceReleaseFixtures(t *testing.T) {
 	if analysis.Report.Status != "fail" {
 		t.Fatalf("static release status = %s, want fail before evidence execution", analysis.Report.Status)
 	}
-	if got := analysis.Report.SurfaceDelta; got.Total != 1145 || got.Classified != 1145 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 576 {
+	if got := analysis.Report.SurfaceDelta; got.Total != 1724 || got.Classified != 1724 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 828 {
 		t.Errorf("surface delta = %#v", got)
 	}
-	if got := analysis.Report.BehaviorDelta; got.Total != 22 || got.Classified != 22 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 5 {
+	if got := analysis.Report.BehaviorDelta; got.Total != 28 || got.Classified != 28 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 5 {
 		t.Errorf("behavior delta = %#v", got)
 	}
-	if got := analysis.Report.ChangeInventory; got.Total != 5824 || got.Routed != 5824 || got.OutOfScope != 5792 {
+	if got := analysis.Report.ChangeInventory; got.Total != 10677 || got.Routed != 10677 || got.OutOfScope != 10634 {
 		t.Errorf("change inventory = %#v", got)
 	}
 	if len(analysis.Report.Unclassified) != 0 {

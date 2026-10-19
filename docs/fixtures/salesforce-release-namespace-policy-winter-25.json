@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "namespace": "ConnectApi",
-  "inventorySHA256": "c1bab3aa9db94ad7e273d5d93a94f44c7b8e4b63dbbe39fe9c2e3e5ac7d2ccab",
+  "inventorySHA256": "dfd1ddee1d83bd24be9cb634f97411a70ac707307a16a6e3745bc5da536bda09",
   "acquisitionReceiptSHA256": "16805f5efc80afdf259e702df8d43f6ffcdf4d04bf5a170b91543499750ab5c2",
   "acquisition": {
     "schemaVersion": 1,
@@ -8270,12 +8270,6 @@
       "scope": "outside-claim",
       "disposition": "explicit-unsupported",
       "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.ContentHubRepositoryCollection getRepositories(String communityId, Integer pageParam, Integer pageSize) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ContentHub_static_methods.htm/en-us/252.0). No implementation or parity is claimed."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ContentHub.getRepository(String)",
-      "scope": "outside-claim",
-      "disposition": "explicit-unsupported",
-      "reasonRef": "ConnectApi is excluded and unsupported by product scope policy. Known public declaration: public static ConnectApi.ContentHubRepository getRepository(String repositoryId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ContentHub_static_methods.htm/en-us/252.0). No implementation or parity is claimed."
     },
     {
       "surfaceId": "apex:ConnectApi.ContentHub.getRepository(String,String)",
