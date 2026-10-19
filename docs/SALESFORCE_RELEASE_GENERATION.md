@@ -126,3 +126,29 @@ The review object has schema version 1, `previousRelease`, `currentRelease` and
 `decisions`. Each decision has `surfaceId`, `scope`, `disposition`, `declaration`,
 `sourceURL`, `productEvidence`, `reason` and `productTests`. There are no inferred
 support decisions or default classification rules.
+
+## Bounded reference acquisition
+
+The public Atlas scraper can lose its anonymous session during a long export.
+`acquire_versioned_docs.py` calls that same scraper in batches of 100 pages,
+with one worker and a fresh anonymous browser session per batch. It resumes
+retained successful Markdown pages and stops on any failed or empty page.
+It verifies the API/Atlas publication identity and derives the season label
+from fetched metadata, avoiding stale hard-coded season labels in the scraper.
+Only a complete acquisition writes final root and family snapshot metadata.
+
+```bash
+python3 scripts/salesforce-release/acquire_versioned_docs.py \
+  --scraper "$PUBLIC_ATLAS_SCRAPER" --atlas 252.0 \
+  --output "$RAW_REFERENCE_OUTPUT" \
+  --batch-size 100 --concurrency 1 --request-delay 0.5
+```
+
+Use Atlas 254.0 and 256.0 for API 63 and 64. For the physical API 68 source,
+use Atlas 264.0 with `--families apex tooling-api apex-guide metadata-api
+object-reference`; the six-family composer separately binds explicit previous
+GA carries. Retain `_acquisition-batched.json`, publication JSON, TOCs and family
+version metadata outside the repository. The receipt records scraper/wrapper
+hashes, acquisition times, publication identities, batch counts and exact missing
+URLs on failure. Archive an incomplete receipt under a dated name before retrying;
+never relabel or commit an incomplete source as a complete release snapshot.

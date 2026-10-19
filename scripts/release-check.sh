@@ -39,6 +39,7 @@ case "${1:-all}" in
 		git diff --check
 		node --test scripts/*.test.mjs
 		python3 -m unittest discover -s scripts/salesforce-release -p test_compose_winter27.py
+		python3 -m unittest discover -s scripts/salesforce-release -p test_acquire_versioned_docs.py
 		go test "${packages[@]}"
 		go test -count=1 ./internal/corpusassurance
 		;;
