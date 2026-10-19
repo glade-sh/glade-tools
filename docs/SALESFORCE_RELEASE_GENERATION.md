@@ -214,3 +214,30 @@ remain incomplete after persistent public content HTTP 403 responses. Winter
 '25 notes exported 1,471 of 1,472 TOC articles; the LinkedIn Lead Gen article
 returned no versioned record. Its incomplete export is retained externally and
 is not admitted as a complete inventory or source receipt.
+
+## ConnectApi acquisition policy
+
+ConnectApi is excluded and unsupported. Do not retry its denied documentation
+requests or supply authentication, cookies or header workarounds. Retain the
+anonymous HTTP 403 observations and distinguish unavailable references from
+acquired declarations. The bounded wrapper can reuse retained public TOCs and
+Markdown without requesting them again:
+
+```bash
+python3 scripts/salesforce-release/acquire_versioned_docs.py \
+  --scraper "$PUBLIC_SCRAPER" --atlas 264.0 --families apex \
+  --retained-input "$RETAINED_PUBLIC_INPUT" --output "$NEW_OUTPUT" \
+  --failure-evidence "$RETAINED_HTTP_STATUSES" --exclude-connectapi
+```
+
+Repeat for Atlas 252.0, 254.0 and 256.0. The retained status input is an array
+of `{atlas, url, status}` records; local diagnostic fields are not exported.
+Only the `apex_connectapi_*` and `connectAPI_*` public Apex reference filenames
+are excluded. Other namespaces remain subject to normal acquisition and review.
+Each family keeps its complete TOC, acquired Markdown, `_version.json`, and
+`_policy-excluded.json`. The latter names every unavailable reference with
+namespace `ConnectApi`, disposition `explicitly-unsupported`, and reason
+`excluded and unsupported; documentation not acquired`, plus the retained 403
+URLs and status counts. The acquisition receipt binds the TOC, policy ledger,
+retained input and HTTP evidence hashes. Acquired and excluded reference counts
+must cover the TOC exactly; an exclusion never supplies an invented signature.
