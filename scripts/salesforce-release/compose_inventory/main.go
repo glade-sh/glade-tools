@@ -28,6 +28,7 @@ func main() {
 	out := flag.String("output", "", "Output fixture directory")
 	notes := flag.String("notes", "", "Local release-notes264 directory")
 	historicalAPI := flag.String("historical-api", "", "Generate an assembled historical API 62.0, 63.0 or 64.0 snapshot instead of composing API 68")
+	lwcSource := flag.String("lwc-source", "", "Fresh current-only LWC acquisition root containing lwc/")
 	flag.Parse()
 	if *historicalAPI != "" {
 		if *atlas == "" || *out == "" || *previous != "" || *notes != "" {
@@ -49,6 +50,11 @@ func main() {
 	must(e)
 	prior, e := apexdocs.ReadInventory(*previous)
 	must(e)
+	if *lwcSource != "" {
+		fresh, err := apexdocs.BuildInventory(*lwcSource)
+		must(err)
+		inv, prior = replaceLWCCarry(inv, prior, fresh)
+	}
 	inv, exclusions := composeInventory(inv, prior)
 	f, e := os.Create(filepath.Join(*out, "salesforce-docs-inventory-winter-27.json"))
 	must(e)
@@ -64,6 +70,23 @@ func main() {
 	must(f.Close())
 	write(filepath.Join(*out, "salesforce-release-inventory-filter-winter-27.json"), map[string]interface{}{"schemaVersion": 1, "targetAPIVersion": "68.0", "excludedFutureDeclarations": exclusions, "inventoryDigest": manifest.Digest, "releaseNotesDigest": apexdocs.CanonicalDigest(noteInv)})
 	fmt.Println(manifest.Digest)
+}
+
+func replaceLWCCarry(inv, prior, fresh apexdocs.Inventory) (apexdocs.Inventory, apexdocs.Inventory) {
+	kept := make([]apexdocs.Document, 0, len(prior.Documents))
+	for _, doc := range prior.Documents {
+		if !strings.HasPrefix(doc.SourcePath, "lwc/") {
+			kept = append(kept, doc)
+		}
+	}
+	prior.Documents = kept
+	for _, doc := range fresh.Documents {
+		if !strings.HasPrefix(doc.SourcePath, "lwc/") {
+			panic("fresh LWC input contains another family")
+		}
+		inv.Documents = append(inv.Documents, doc)
+	}
+	return inv, prior
 }
 
 func historicalManifest(inv apexdocs.Inventory, api string) (apexdocs.ReleaseManifest, string, error) {

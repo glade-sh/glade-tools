@@ -146,6 +146,7 @@ type SourceFamilyReceipt struct {
 }
 
 type LWCSourceReceipt struct {
+	CurrentOnlyPublication  *LWCPublicationReceipt      `json:"currentOnlyPublication,omitempty"`
 	PublishedAtlasVersion   string                      `json:"publishedAtlasVersion,omitempty"`
 	CarriedFrom             string                      `json:"carriedFrom,omitempty"`
 	CarriedReceiptSHA256    string                      `json:"carriedReceiptSHA256,omitempty"`
@@ -160,6 +161,13 @@ type LWCSourceReceipt struct {
 	Copied                  []SourceFileReceipt         `json:"copied"`
 	Excluded                []ExcludedSourceFileReceipt `json:"excluded"`
 	Limitation              string                      `json:"limitation"`
+}
+
+type LWCPublicationReceipt struct {
+	APIVersion string            `json:"apiVersion"`
+	Inventory  SourceToolReceipt `json:"inventory"`
+	SourcePath string            `json:"sourcePath"`
+	SourceURL  string            `json:"sourceURL"`
 }
 
 type LWCSourceVersionReceipt struct {
@@ -669,6 +677,9 @@ func validateReleaseSourceReceipt(root string, release Release, manifest apexdoc
 		seenAdditional[family.Name] = true
 	}
 	if err := validateLWCCarry(receipt.Snapshot.LWC, wantAtlasVersion, previousGA, previousGASHA256); err != nil {
+		return err
+	}
+	if err := validateCurrentLWCPublication(root, release, receipt.Snapshot.LWC); err != nil {
 		return err
 	}
 	lwc := receipt.Snapshot.LWC

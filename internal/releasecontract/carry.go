@@ -2,6 +2,7 @@ package releasecontract
 
 import (
 	"fmt"
+	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"path/filepath"
 	"reflect"
 )
@@ -53,13 +54,16 @@ func validateLWCCarry(lwc LWCSourceReceipt, target string, previous *ReleaseSour
 		return err
 	}
 	if lwc.CarriedFrom == "" {
-		if apiInt(target) >= 264 && lwc.PublishedAtlasVersion != target {
+		if apiInt(target) >= 264 && lwc.PublishedAtlasVersion != target && lwc.CurrentOnlyPublication == nil {
 			return fmt.Errorf("lwc implicit carry is forbidden; publication identity or explicit previous GA provenance is required")
 		}
 		if lwc.PublishedAtlasVersion != "" && lwc.PublishedAtlasVersion != target {
 			return fmt.Errorf("lwc publication identity mismatch")
 		}
 		return nil
+	}
+	if lwc.CurrentOnlyPublication != nil {
+		return fmt.Errorf("lwc carry cannot also bind fresh current-only publication")
 	}
 	if lwc.PublishedAtlasVersion != "" && lwc.PublishedAtlasVersion != lwc.CarriedFrom {
 		return fmt.Errorf("lwc carry cannot also declare current documentation published")
@@ -70,6 +74,30 @@ func validateLWCCarry(lwc LWCSourceReceipt, target string, previous *ReleaseSour
 		return fmt.Errorf("lwc carry differs from the previous GA family receipt")
 	}
 	return nil
+}
+
+func validateCurrentLWCPublication(root string, release Release, lwc LWCSourceReceipt) error {
+	p := lwc.CurrentOnlyPublication
+	if p == nil {
+		return nil
+	}
+	if release.APIVersion != "68.0" || p.APIVersion != release.APIVersion || lwc.CarriedFrom != "" || lwc.Unpublished || lwc.PublishedAtlasVersion != "" || p.Inventory.Path != release.ChangeInventory || p.SourcePath != "rn_lwc_versioning.md" || p.SourceURL != "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=264&type=5" {
+		return fmt.Errorf("current-only LWC publication identity mismatch")
+	}
+	actual, err := sourceFileSHA256(filepath.Join(root, p.Inventory.Path))
+	if err != nil || actual != p.Inventory.SHA256 {
+		return fmt.Errorf("current-only LWC publication inventory SHA-256 mismatch")
+	}
+	var inv apexdocs.Inventory
+	if err := readStrict(filepath.Join(root, p.Inventory.Path), &inv); err != nil {
+		return err
+	}
+	for _, doc := range inv.Documents {
+		if doc.SourcePath == p.SourcePath && doc.Title == "Get the Latest LWC Changes with LWC API Version 68.0" {
+			return nil
+		}
+	}
+	return fmt.Errorf("current-only LWC publication note does not identify API 68")
 }
 
 // A composed source receipt must describe exactly the checked composition,

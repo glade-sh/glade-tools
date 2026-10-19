@@ -82,3 +82,20 @@ class WinterCompositionTest(unittest.TestCase):
         (self.notes/'note.md').write_text('# Changed after export\n')
         with self.assertRaisesRegex(ValueError, 'release-note file hash'):
             self.build()
+
+    def test_fresh_current_only_lwc_binds_exact_publication_note(self):
+        source = self.root / 'fresh-lwc'; source.mkdir()
+        (source/'reference-api-modules.md').write_text('# Modules\n')
+        (source/'_version.json').write_text(json.dumps({'version':'latest','pages':{'success':1,'empty':0,'failed':0,'total':1}}))
+        notes_inventory = self.root/'notes-inventory.json'
+        notes_inventory.write_text(json.dumps({'documents':[{'sourcePath':'rn_lwc_versioning.md','title':'Get the Latest LWC Changes with LWC API Version 68.0'}]}))
+        inv=json.loads(self.inventory.read_text());inv['documents']=[d for d in inv['documents'] if not d['sourcePath'].startswith('lwc/')]+[{'sourcePath':'lwc/reference-api-modules.md'}];self.inventory.write_text(json.dumps(inv))
+        composition, receipt = compose(self.atlas,self.notes,self.previous,self.previous_inventory,self.inventory,self.manifest,source,notes_inventory)
+        lwc=receipt['snapshot']['lwc']
+        self.assertNotIn('carriedFrom',lwc)
+        self.assertNotIn('publishedAtlasVersion',lwc)
+        self.assertEqual(lwc['currentOnlyPublication']['inventory']['sha256'],sha256(notes_inventory))
+        self.assertEqual(lwc,composition['lwc'])
+        notes_inventory.write_text(json.dumps({'documents':[{'sourcePath':'rn_lwc_versioning.md','title':'API version example 68.0'}]}))
+        with self.assertRaisesRegex(ValueError,'exact API 68'):
+            compose(self.atlas,self.notes,self.previous,self.previous_inventory,self.inventory,self.manifest,source,notes_inventory)

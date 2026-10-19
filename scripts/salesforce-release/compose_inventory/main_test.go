@@ -90,3 +90,13 @@ func TestHistoricalManifestUsesCanonicalInventoryAndExactSeason(t *testing.T) {
 		t.Fatal("historical mode must not bypass the API 68 carry composition")
 	}
 }
+
+func TestFreshLWCDoesNotRetainStaleCarriedDocuments(t *testing.T) {
+	prior := apexdocs.Inventory{Documents: []apexdocs.Document{{SourcePath: "lwc/old.md"}, {SourcePath: "rest-api/keep.md"}}}
+	fresh := apexdocs.Inventory{Documents: []apexdocs.Document{{SourcePath: "lwc/new.md"}}}
+	inv, previous := replaceLWCCarry(apexdocs.Inventory{}, prior, fresh)
+	got, _ := composeInventory(inv, previous)
+	if len(got.Documents) != 2 || got.Documents[0].SourcePath != "lwc/new.md" || got.Documents[1].SourcePath != "rest-api/keep.md" {
+		t.Fatalf("fresh source=%+v", got.Documents)
+	}
+}
