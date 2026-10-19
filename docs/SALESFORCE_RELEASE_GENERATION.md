@@ -37,6 +37,50 @@ previous GA release. This records documentation provenance only. The ordinary
 if a carried family is published, unavailable or ambiguous. Unit tests use
 fake HTTP clients.
 
+### Online checks required before publication
+
+The ordinary CLI command below requires anonymous HTTPS access to Salesforce
+documentation. Run it against the selected contract and the final product
+checkout with that variant's generated-table patches applied:
+
+```bash
+glade-tools salesforce release \
+  --contract docs/fixtures/salesforce-release-contract.json \
+  --glade-root "$GLADE_ROOT" --check
+```
+
+Both current variants carry the API 67 (Atlas 262.0) Aura, REST and Visualforce
+references into API 68 (Atlas 264.0). The command performs a GET for each actual
+current publication endpoint, in this order:
+
+- `https://developer.salesforce.com/docs/get_document/atlas.en-us.lightning.meta`
+- `https://developer.salesforce.com/docs/get_document/atlas.en-us.api_rest.meta`
+- `https://developer.salesforce.com/docs/get_document/atlas.en-us.pages.meta`
+
+Each response must be HTTP 200, parse as publication JSON, identify Atlas
+262.0 (with matching API 67.0 when the structured version form is returned),
+and contain a non-null TOC array. Atlas 264.0 being published requires replacing
+the carry with a fresh snapshot. A different, absent or ambiguous identity,
+empty/invalid response, non-200 status, timeout or network failure fails closed
+before the five generated product tables are compared. There is no offline
+override; saved receipts, direct generation and injected-client tests do not
+replace this online check. The client timeout is 30 seconds per request.
+
+The current LWC input is freshly acquired and has no carry, so these contracts
+do not request an LWC freshness check. If an explicit LWC carry is introduced,
+the same command also checks
+`https://developer.salesforce.com/docs/platform/lwc/guide/reference-configuration-tags.html`
+for an unambiguous current API/release marker proving that the prior guide is
+still current. Unavailable or unrecognized content fails closed there too.
+
+The tools CI core and default release lanes exercise deterministic checks and
+fake HTTP clients; their success does not establish live publication freshness.
+The final Salesforce Correctness gate invokes the ordinary `--check` before
+product tests and native verification. That run must have access to the three
+public endpoints above and separately satisfy its product/native proof gates.
+These documentation requests use no org credentials and acquire no excluded
+ConnectApi pages. No release-mode, byte-check or proof requirement is waived.
+
 Given retained Atlas and release-note exports, generate the inventory first:
 
 ```bash

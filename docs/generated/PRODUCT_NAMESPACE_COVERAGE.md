@@ -13,6 +13,8 @@ Generated from the Salesforce Apex docs inventory and capability catalog.
 
 `Target` and `Status` describe runtime capability classification. Declaration columns describe generated type/member availability only.
 
+ConnectApi, Slack and DataWeave are excluded and unsupported by the release scope. Inventory rows do not confer release support, even when inherited catalog entries describe declarations or runtime behavior.
+
 | Namespace | Target | Status | Declaration status | Types | Declared types | Members | Declared members | Missing members | Entries | Declared entries | Inputs | Outputs |
 | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | ConnectApi | `typed-stub` | `unknown` | `partial` | 1351 | 66 | 1210 | 1129 | 81 | 2564 | 1196 | 341 | 923 |

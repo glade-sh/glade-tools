@@ -28,11 +28,16 @@ covering attributes, events, and rendering.
 
 ### t2 — Hosted-Service API and Apex Namespace
 
-REST, Tooling, ConnectApi, and metadata-backed Apex namespace surfaces whose
+REST, Tooling, and in-scope metadata-backed Apex namespace surfaces whose
 underlying operation is backed by hosted Salesforce services. T2 surfaces
 cannot produce real hosted results locally. They are satisfied by deterministic
 mocks that expose the documented types and return documented response shapes
 for known inputs.
+
+ConnectApi, Slack and DataWeave are excluded and unsupported, including their
+types, declarations, DTOs and hosted operations. Their inventory entries do
+not require deterministic mocks or establish support. See
+[Explicitly Unsupported Namespaces](#explicitly-unsupported-namespaces).
 
 ### outside-claim — Hosted-Only or Administration
 
@@ -61,10 +66,20 @@ Outside-claim surfaces are marked `explicit-unsupported` and require a
 
 ### Deterministic Mock for ConnectApi
 
-Summer '26 ConnectApi input and response types must exist locally, but commerce,
-routing, quote, and prompt results come from hosted services. A deterministic
-ConnectApi mock must expose the documented DTO shapes and return stable
-documented response shapes for known inputs.
+This historical reason anchor is superseded by
+[Explicitly Unsupported Namespaces](#explicitly-unsupported-namespaces).
+ConnectApi is explicitly unsupported. No local DTO, declaration, response-shape
+or deterministic-mock requirement applies to it. The anchor remains for
+historical references; it grants no current support or proof credit.
+
+### Explicitly Unsupported Namespaces
+
+ConnectApi, Slack and DataWeave are excluded and unsupported. Checked release
+classifications place their surfaces outside the claim with an explicit
+unsupported reason. Retained documentation, declarations or implementation
+artifacts do not change this disposition or require a mock implementation.
+The other scope and evidence requirements in this document remain applicable
+to in-scope surfaces.
 
 ### Deterministic Mock for Invocable Action Metadata
 
@@ -80,7 +95,7 @@ server models the object.
 
 ### Deterministic Mock for Hosted Apex Namespaces
 
-ConnectApi, Invocable, RichMessaging, sfdw, sfsqlquery, and wave operations
+Invocable, RichMessaging, sfdw, sfsqlquery, and wave operations
 depend on hosted Salesforce services. Local support exposes the exact
 versioned types and signatures, then returns stable documented shapes for
 known test inputs.
@@ -106,8 +121,9 @@ execution explicitly.
 ## Moving-correctness release workflow
 
 Glade supports the checked moving window, not every historical source version.
-The current source window is 65.0, 66.0, and 67.0. The endpoint window is 60.0,
-65.0, 66.0, and 67.0. Source, endpoint, org profile, and LWC bundle versions are
+The current source and endpoint windows are defined by
+[`salesforce-release-contract.json`](fixtures/salesforce-release-contract.json).
+Source, endpoint, org profile, and LWC bundle versions are
 independent axes and never supply fallback values for one another.
 Release-mode compiler verification runs only catalog rules inside the checked
 source window. Historical rules remain audit coverage, not product support

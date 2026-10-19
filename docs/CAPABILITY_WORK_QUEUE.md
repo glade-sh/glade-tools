@@ -4,7 +4,7 @@ This queue turns Salesforce surface expansion into small checked slices. Each ro
 
 | Surface | Next capability slice | Status source | Proof hook | Implementation entry point | Next check |
 | --- | --- | --- | --- | --- | --- |
-| ConnectApi | ChatterFeeds, ChatterUsers, CommerceCart, CommerceCatalog, CommerceStorePricing, Topics, and Wave methods implemented; next is Organization, endpoint extension lifecycle, and broader passive DTO coverage | `internal/capability` | Add or extend `compat` fixture for endpoint extension before/after hooks and org settings | `internal/vm`, `internal/typesys` | `go test ./internal/vm ./internal/capability` |
+| ConnectApi | Excluded and unsupported; the former DTO and endpoint-extension work item is superseded by the [release scope](SALESFORCE_RELEASE_SCOPE.md#explicitly-unsupported-namespaces) | Checked release classifications | No implementation or mock requirement; retained artifacts grant no support credit | Outside the release claim | Keep explicit unsupported classifications |
 | Metadata | Read-only custom metadata and Metadata API describe shapes | `internal/capability` | Add metadata fixture covering records, labels, and static resources | `internal/schema`, `internal/storage`, `internal/vm` | `go run ./cmd/glade compat mvp --json` |
 | Reports | Report describe/run result DTOs used by tests | `internal/capability` | Add report fixture with grouped and tabular result expectations | `internal/vm`, `internal/compat` | `go test ./internal/vm ./internal/compat` |
 | ApexPages | Standard controller, PageReference, and message behavior without rendering | `internal/capability` | Add Visualforce controller compatibility fixture | `internal/vm`, `internal/apextest` | `go test ./internal/vm ./internal/apextest` |
