@@ -1,0 +1,67 @@
+# Reproducing Salesforce release inputs
+
+The release contract requires a separately acquired snapshot for every checked
+source API version. A version list is not documentation provenance. Keep the
+raw public documentation and exporter metadata outside this repository; commit
+the generated inventories, manifests and source receipts with their reviewed
+classification and routing inputs.
+
+Use the existing `docs-inventory` command and the exporters in
+`scripts/salesforce-release`. The source receipt exporter records the assembler
+and exporter hashes, Atlas family versions and hashes, inventory hash, and the
+limitations of the current-only LWC reference. Release-note routes come from
+`generate_release_routes.py` with an inventory, its exported TOC and a reviewed
+policy. A generator does not decide whether a feature is supported.
+
+## Public sources
+
+Atlas reference metadata is available at
+`https://developer.salesforce.com/docs/get_document/atlas.en-us.<ATLAS>.apexref.meta`.
+Use `lightning`, `api_rest`, `api_tooling` and `pages` for the other Atlas
+families. The Atlas number is twice the API major version plus 128: API 62,
+63, 64 and 68 use Atlas 252, 254, 256 and 264 respectively.
+
+Seasonal release notes use
+`https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm&language=en_US&release=<ATLAS>&type=5`.
+The current-only LWC reference is
+[the Lightning Web Components guide](https://developer.salesforce.com/docs/platform/lwc/guide/reference.html).
+Record actual acquisition dates and URLs in the retained scrape metadata.
+Do not relabel a current page as a historical snapshot.
+
+## Winter '27 composition
+
+When a family is unpublished at Atlas 264, an explicit carry may bind its
+unchanged normalized inventory and source receipt from the immediately
+previous GA release. This records documentation provenance only. The ordinary
+`salesforce release --check` rechecks anonymous publication metadata and fails
+if a carried family is published, unavailable or ambiguous. Unit tests use
+fake HTTP clients.
+
+Given retained Atlas and release-note exports, generate the inventory first:
+
+```bash
+go run ./scripts/salesforce-release/compose_inventory \
+  --atlas "$ATLAS_INPUT" --notes "$NOTES_INPUT" \
+  --previous-inventory docs/fixtures/salesforce-docs-inventory-summer-26.json \
+  --output "$OUTPUT"
+python3 scripts/salesforce-release/compose_winter27.py \
+  --atlas "$ATLAS_INPUT" --notes "$NOTES_INPUT" \
+  --previous-receipt docs/fixtures/salesforce-release-source-summer-26.json \
+  --previous-inventory docs/fixtures/salesforce-docs-inventory-summer-26.json \
+  --inventory "$OUTPUT/salesforce-docs-inventory-winter-27.json" \
+  --manifest "$OUTPUT/salesforce-release-winter-27.json" \
+  --composition-output "$OUTPUT/salesforce-release-composition-winter-27.json" \
+  --receipt-output "$OUTPUT/salesforce-release-source-winter-27.json"
+```
+
+The composition binds the physical Atlas source, additional reference families,
+release notes and exact previous inventory/receipt. It records exclusions for
+declarations whose documented API is later than the target. Its snapshot hash
+identifies that composition, rather than a reconstructed historical source tree.
+
+Review each new surface classification and release-note route before updating
+the contract. Documentation-only classifications must not create runtime
+rejection gates; runtime rejection requires an explicit non-parity behavior
+binding. A changed declaration still requires a behavior binding. Then run
+`salesforce release --check` against the exact product checkout. Generation and
+classification alone supply no executed correctness credit.

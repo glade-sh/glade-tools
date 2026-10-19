@@ -3,6 +3,7 @@ package toolcli
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,20 +12,45 @@ import (
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
 )
 
+func TestSalesforceReleaseCheckRejectsUnprovedPublication(t *testing.T) {
+	root := t.TempDir()
+	contract := fixturesPath("docs/fixtures/salesforce-release-contract.json")
+	var stdout, stderr strings.Builder
+	code := runSalesforceReleaseWithRecheck([]string{"--contract", contract, "--glade-root", root, "--check"}, &stdout, &stderr, func(string) error {
+		return errors.New("publication identity unavailable")
+	})
+	if code != 1 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "publication identity unavailable") {
+		t.Fatalf("code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	if _, err := os.Stat(filepath.Join(root, "internal")); !os.IsNotExist(err) {
+		t.Fatalf("failed check changed output tree: %v", err)
+	}
+}
+
 func TestSalesforceReleaseCommandGeneratesAndChecks(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module github.com/glade-sh/glade\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	contract := fixturesPath("docs/fixtures/salesforce-release-contract.json")
+	checks := 0
 	for _, test := range []struct{ flag, want string }{{"--write", "wrote"}, {"--check", "current"}} {
 		var stdout, stderr strings.Builder
-		code := Run(context.Background(), []string{"salesforce", "release", "--contract", contract, "--glade-root", root, test.flag}, &stdout, &stderr)
+		code := runSalesforceReleaseWithRecheck([]string{"--contract", contract, "--glade-root", root, test.flag}, &stdout, &stderr, func(path string) error {
+			if path != contract {
+				t.Fatalf("recheck contract = %q", path)
+			}
+			checks++
+			return nil
+		})
 		if code != 0 || stderr.Len() != 0 || !strings.Contains(stdout.String(), test.want+": internal/apexversion/support_generated.go") {
 			t.Fatalf("%s: code=%d stdout=%q stderr=%q", test.flag, code, stdout.String(), stderr.String())
 		}
 	}
 
+	if checks != 1 {
+		t.Fatalf("publication rechecks = %d; want 1", checks)
+	}
 	var stdout, stderr strings.Builder
 	if code := Run(context.Background(), []string{"salesforce", "release", "--contract", contract, "--write"}, &stdout, &stderr); code != 1 || !strings.Contains(stderr.String(), "generation mode requires --glade-root") {
 		t.Fatalf("code=%d stderr=%q", code, stderr.String())

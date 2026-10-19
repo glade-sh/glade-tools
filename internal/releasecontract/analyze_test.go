@@ -566,7 +566,7 @@ func (f *releaseAnalysisFixture) write(t *testing.T) {
 				"assembler":             map[string]any{"path": "scripts/salesforce-release/assemble_versioned_docs.py", "sha256": strings.Repeat("e", 64)},
 				"versionedSourceSHA256": strings.Repeat("f", 64), "families": families,
 				"lwc": map[string]any{
-					"filterReceiptSHA256": strings.Repeat("1", 64), "sourceVersion": "latest", "sourceVersionSHA256": strings.Repeat("2", 64),
+					"publishedAtlasVersion": atlasVersion, "filterReceiptSHA256": strings.Repeat("1", 64), "sourceVersion": "latest", "sourceVersionSHA256": fmt.Sprintf("%x", sha256.Sum256([]byte(release.APIVersion))),
 					"sourceVersionMetadata": map[string]any{"file": "_version.json", "version": "latest", "sha256": strings.Repeat("3", 64)},
 					"availabilityTable":     "reference-api-modules.md", "availabilityTableSHA256": strings.Repeat("4", 64),
 					"copiedMarkdownFiles": 1, "copied": []map[string]any{{"path": "reference-api-modules.md", "sha256": strings.Repeat("5", 64)}},
