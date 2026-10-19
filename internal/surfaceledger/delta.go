@@ -45,12 +45,13 @@ const (
 
 // ReleaseClassification records an explicit decision for one surface.
 type ReleaseClassification struct {
-	SurfaceID    string             `json:"surfaceId"`
-	Scope        ReleaseScope       `json:"scope"`
-	Disposition  ReleaseDisposition `json:"disposition"`
-	CaseID       string             `json:"caseId,omitempty"`    // existing-case/new-case require this or ProductTests
-	ReasonRef    string             `json:"reasonRef,omitempty"` // required for deterministic-mock, explicit-unsupported
-	ProductTests []string           `json:"productTests,omitempty"`
+	PreserveAvailability bool               `json:"preserveAvailability,omitempty"`
+	SurfaceID            string             `json:"surfaceId"`
+	Scope                ReleaseScope       `json:"scope"`
+	Disposition          ReleaseDisposition `json:"disposition"`
+	CaseID               string             `json:"caseId,omitempty"`    // existing-case/new-case require this or ProductTests
+	ReasonRef            string             `json:"reasonRef,omitempty"` // required for deterministic-mock, explicit-unsupported
+	ProductTests         []string           `json:"productTests,omitempty"`
 }
 
 // ComputeReleaseDelta produces added, removed, changed, and unchanged lists
@@ -212,6 +213,9 @@ func contractEqual(a, b SurfaceLedgerRow) bool {
 
 // ValidateReleaseClassification checks scope, disposition, and required fields.
 func ValidateReleaseClassification(c ReleaseClassification) error {
+	if c.PreserveAvailability && (c.Disposition != DispoExistingCase || len(c.ProductTests) == 0 || c.ReasonRef == "" || c.Scope == ScopeOutsideClaim) {
+		return fmt.Errorf("preserving existing availability requires a supported existing-case, exact product tests and evidence for %s", c.SurfaceID)
+	}
 	switch c.Scope {
 	case ScopeT0, ScopeT1, ScopeT2, ScopeOutsideClaim:
 		// valid

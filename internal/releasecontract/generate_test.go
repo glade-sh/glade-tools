@@ -217,3 +217,41 @@ func TestRuntimeUnsupportedRequiresExplicitBehaviorBinding(t *testing.T) {
 		t.Fatalf("unbound runtime gate: %v", err)
 	}
 }
+
+func TestExistingDeclarationCapturePreservesAvailabilityAndBindsExactShape(t *testing.T) {
+	for _, kind := range []surfaceledger.DeltaKind{surfaceledger.DeltaAdded, surfaceledger.DeltaRemoved} {
+		t.Run(string(kind), func(t *testing.T) {
+			id := "apex:Archive.Existing"
+			row := surfaceledger.SurfaceLedgerRow{SurfaceID: id, Product: surfaceledger.ProductApex, Kind: surfaceledger.KindType, Namespace: "Archive", TypeName: "Existing"}
+			entry := surfaceledger.DeltaEntry{SurfaceID: id, Kind: kind}
+			if kind == surfaceledger.DeltaAdded {
+				entry.New = &row
+			} else {
+				entry.Old = &row
+			}
+			c := surfaceledger.ReleaseClassification{SurfaceID: id, Scope: surfaceledger.ScopeT2, Disposition: surfaceledger.DispoExistingCase, ReasonRef: "Existing product declaration; documentation capture is not an introduction/retirement.", ProductTests: []string{"internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:archive.existing"}, PreserveAvailability: true}
+			a := Analysis{Contract: Contract{Defaults: Defaults{Source: "65.0", Endpoint: "65.0"}, Windows: Windows{Source: []VersionProof{{Version: "65.0"}, {Version: "68.0"}}, Endpoint: []VersionProof{{Version: "65.0"}}}, Behaviors: []Behavior{{ID: "existing-shape", SurfaceIDs: []string{id}}}}, Report: Report{Ranges: map[string]Range{"apex:archive.existing": {Since: 68}}}, SurfaceChanges: []SurfaceChange{{Entry: entry, Classification: &c}}}
+			sources, err := renderGeneratedVersionSources(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := string(sources[generatedVersionPaths[1]])
+			if !strings.Contains(got, `var generatedManualSurfaceIDs = []string{"apex:archive.existing"}`) || strings.Contains(got, `"archive.existing":`) {
+				t.Fatalf("existing declaration acquired a source gate: %s", got)
+			}
+			a.Contract.Behaviors = nil
+			if _, err := renderGeneratedVersionSources(a); err != nil {
+				t.Fatal("a preserved declaration is not a new behavior", err)
+			}
+			c.ProductTests = nil
+			if _, err := renderGeneratedVersionSources(a); err == nil {
+				t.Fatal("preserved declaration without exact shape test accepted")
+			}
+			c.ProductTests = []string{"internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:archive.existing"}
+			c.Disposition = surfaceledger.DispoExplicitUnsupported
+			if surfaceledger.ValidateReleaseClassification(c) == nil {
+				t.Fatal("unsupported declaration cannot assert supported availability")
+			}
+		})
+	}
+}

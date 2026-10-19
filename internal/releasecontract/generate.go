@@ -113,10 +113,28 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 		changes = append(changes, change)
 	}
 	manual := map[string]bool{}
+	preservedDeclarations := map[string]bool{}
 	removed := map[string]bool{}
 	unsupported := map[string]bool{}
 	for _, change := range changes {
 		key := surfaceledger.CanonicalSurfaceIDKey(change.Entry.SurfaceID)
+		if change.Classification != nil && change.Classification.PreserveAvailability {
+			if err := surfaceledger.ValidateReleaseClassification(*change.Classification); err != nil {
+				return nil, err
+			}
+			row := change.Entry.New
+			if row == nil {
+				row = change.Entry.Old
+			}
+			if (change.Entry.Kind != surfaceledger.DeltaAdded && change.Entry.Kind != surfaceledger.DeltaRemoved) || row == nil || row.Product != surfaceledger.ProductApex {
+				return nil, fmt.Errorf("preserving existing availability requires an added or removed Apex documentation row: %s", key)
+			}
+			// A newly captured declaration can already be implemented across
+			// the checked window. Retain its exact shape test binding without
+			// inventing an introduction boundary from its first captured page.
+			manual[key] = true
+			preservedDeclarations[key] = true
+		}
 		if change.Classification != nil && change.Classification.Disposition == surfaceledger.DispoExplicitUnsupported {
 			unsupported[key] = true
 		}
@@ -135,7 +153,7 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 		if unsupported[key] {
 			continue
 		}
-		if !bound[key] {
+		if !bound[key] && !preservedDeclarations[key] {
 			return nil, fmt.Errorf("manual surface %s requires a behavior surfaceId binding", key)
 		}
 	}

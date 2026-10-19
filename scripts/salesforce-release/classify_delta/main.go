@@ -18,14 +18,15 @@ import (
 )
 
 type decision struct {
-	SurfaceID       string                           `json:"surfaceId"`
-	Scope           surfaceledger.ReleaseScope       `json:"scope"`
-	Disposition     surfaceledger.ReleaseDisposition `json:"disposition"`
-	Declaration     string                           `json:"declaration"`
-	SourceURL       string                           `json:"sourceURL"`
-	ProductEvidence string                           `json:"productEvidence"`
-	Reason          string                           `json:"reason"`
-	ProductTests    []string                         `json:"productTests"`
+	PreserveAvailability bool                             `json:"preserveAvailability,omitempty"`
+	SurfaceID            string                           `json:"surfaceId"`
+	Scope                surfaceledger.ReleaseScope       `json:"scope"`
+	Disposition          surfaceledger.ReleaseDisposition `json:"disposition"`
+	Declaration          string                           `json:"declaration"`
+	SourceURL            string                           `json:"sourceURL"`
+	ProductEvidence      string                           `json:"productEvidence"`
+	Reason               string                           `json:"reason"`
+	ProductTests         []string                         `json:"productTests"`
 }
 
 type review struct {
@@ -63,7 +64,7 @@ func classify(changes []releasecontract.SurfaceChange, decisions []decision) ([]
 		if len(d.ProductTests) == 0 {
 			return nil, fmt.Errorf("review %s requires product test bindings", d.SurfaceID)
 		}
-		c := surfaceledger.ReleaseClassification{SurfaceID: d.SurfaceID, Scope: d.Scope, Disposition: d.Disposition, ProductTests: d.ProductTests, ReasonRef: "Declaration: " + d.Declaration + " (" + d.SourceURL + "). Product evidence: " + d.ProductEvidence + ". Decision: " + d.Reason}
+		c := surfaceledger.ReleaseClassification{PreserveAvailability: d.PreserveAvailability, SurfaceID: d.SurfaceID, Scope: d.Scope, Disposition: d.Disposition, ProductTests: d.ProductTests, ReasonRef: "Declaration: " + d.Declaration + " (" + d.SourceURL + "). Product evidence: " + d.ProductEvidence + ". Decision: " + d.Reason}
 		if err := surfaceledger.ValidateReleaseClassification(c); err != nil {
 			return nil, err
 		}
