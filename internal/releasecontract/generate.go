@@ -62,10 +62,60 @@ func Generate(analysis Analysis, gladeRoot string, write bool) ([]string, error)
 }
 
 func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error) {
+	bound := map[string]bool{}
+	runtimeUnsupported := map[string]bool{}
+	for _, behavior := range analysis.Contract.Behaviors {
+		for _, id := range behavior.SurfaceIDs {
+			key := surfaceledger.CanonicalSurfaceIDKey(id)
+			bound[key] = true
+			if behavior.Outcome == "explicit-non-parity" {
+				runtimeUnsupported[key] = true
+			}
+		}
+	}
+	// Outside-claim documentation decisions classify the release delta; they
+	// do not prove a runtime rejection. Only an explicit non-parity behavior
+	// binding can promote such a decision into generated unsupported gates.
+	changes := make([]SurfaceChange, 0, len(analysis.SurfaceChanges))
+	ranges := make(map[string]Range, len(analysis.Report.Ranges))
+	for key, rng := range analysis.Report.Ranges {
+		ranges[key] = rng
+	}
+	releaseAPI := map[string]int{}
+	for _, release := range analysis.Contract.Releases {
+		releaseAPI[release.Name] = apiInt(release.APIVersion)
+	}
+	for _, change := range analysis.SurfaceChanges {
+		key := surfaceledger.CanonicalSurfaceIDKey(change.Entry.SurfaceID)
+		c := change.Classification
+		documentationOnly := c != nil && c.Scope == surfaceledger.ScopeOutsideClaim && c.Disposition == surfaceledger.DispoExplicitUnsupported && !runtimeUnsupported[key]
+		if documentationOnly {
+			if change.Entry.Kind == surfaceledger.DeltaAdded {
+				rng := ranges[key]
+				if releaseAPI[change.CurrentRelease] > 0 && rng.Since == releaseAPI[change.CurrentRelease] {
+					delete(ranges, key)
+				}
+			}
+			// A disappearance from the docs must not cut off an existing
+			// runtime range. Retain any older, independently bound boundary.
+			if change.Entry.Kind == surfaceledger.DeltaRemoved {
+				rng := ranges[key]
+				if releaseAPI[change.CurrentRelease] > 0 && rng.Until == releaseAPI[change.CurrentRelease] {
+					rng.Until = 0
+					ranges[key] = rng
+				}
+			}
+			continue
+		}
+		if c != nil && c.Disposition == surfaceledger.DispoExplicitUnsupported && !runtimeUnsupported[key] {
+			return nil, fmt.Errorf("unsupported surface %s requires an explicit-non-parity behavior surfaceId binding", key)
+		}
+		changes = append(changes, change)
+	}
 	manual := map[string]bool{}
 	removed := map[string]bool{}
 	unsupported := map[string]bool{}
-	for _, change := range analysis.SurfaceChanges {
+	for _, change := range changes {
 		key := surfaceledger.CanonicalSurfaceIDKey(change.Entry.SurfaceID)
 		if change.Classification != nil && change.Classification.Disposition == surfaceledger.DispoExplicitUnsupported {
 			unsupported[key] = true
@@ -79,12 +129,6 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 			if removed[key] {
 				manual[key] = true
 			}
-		}
-	}
-	bound := map[string]bool{}
-	for _, behavior := range analysis.Contract.Behaviors {
-		for _, id := range behavior.SurfaceIDs {
-			bound[surfaceledger.CanonicalSurfaceIDKey(id)] = true
 		}
 	}
 	for key := range manual {
@@ -104,7 +148,7 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 	unsupportedPlatformIDs := []string{}
 	lwcRanges := map[string]Range{}
 	toolingRanges := map[string]Range{}
-	for _, change := range analysis.SurfaceChanges {
+	for _, change := range changes {
 		row := change.Entry.New
 		if row == nil {
 			row = change.Entry.Old
@@ -113,7 +157,7 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 			return nil, fmt.Errorf("surface change %s has no row", change.Entry.SurfaceID)
 		}
 		key := surfaceledger.CanonicalSurfaceIDKey(change.Entry.SurfaceID)
-		rng, ok := analysis.Report.Ranges[key]
+		rng, ok := ranges[key]
 		if !ok {
 			return nil, fmt.Errorf("surface change %s has no range", change.Entry.SurfaceID)
 		}
@@ -164,7 +208,7 @@ func renderGeneratedVersionSources(analysis Analysis) (map[string][]byte, error)
 
 	memberRanges := map[string]Range{}
 	for member, candidate := range memberCandidates {
-		if manualGroups[member] || !allApexMemberRangesEqual(analysis.Report.Ranges, member, candidate) {
+		if manualGroups[member] || !allApexMemberRangesEqual(ranges, member, candidate) {
 			continue
 		}
 		memberRanges[member] = candidate
