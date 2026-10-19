@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "namespace": "ConnectApi",
-  "inventorySHA256": "3273a1de01ecf988ed7268dc1d1abbcfa9a935440b2ed4c86c231cc6fa4c93aa",
+  "inventorySHA256": "9e3cbbc2bd4d19bec20c9f386ae72cb6cb477a37f0f3baa9ba3a358f32e04bd5",
   "acquisitionReceiptSHA256": "244a79063ec48b6271d8e61a9fd82ddefcd0a7a2fbf4de0b29e9631558dcf963",
   "acquisition": {
     "schemaVersion": 1,

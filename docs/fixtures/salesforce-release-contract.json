@@ -36,6 +36,13 @@
           "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/67.0",
           "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/66.0_bundle_67.0"
         ]
+      },
+      {
+        "version": "68.0",
+        "productTests": [
+          "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/68.0",
+          "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_68.0"
+        ]
       }
     ],
     "endpoint": [
@@ -61,6 +68,12 @@
         "version": "67.0",
         "productTests": [
           "internal/server/server_test.go:TestSupportedAPIVersionRouting/67.0"
+        ]
+      },
+      {
+        "version": "68.0",
+        "productTests": [
+          "internal/server/server_test.go:TestSupportedAPIVersionRouting/68.0"
         ]
       }
     ],
@@ -106,6 +119,18 @@
       "classifications": "salesforce-release-classifications-spring-to-summer-26.json",
       "changeInventory": "salesforce-release-notes-inventory-summer-26.json",
       "changeRoutes": "salesforce-release-note-routes-spring-to-summer-26.json"
+    },
+    {
+      "name": "Winter '27",
+      "apiVersion": "68.0",
+      "maturity": "ga",
+      "manifest": "salesforce-release-winter-27.json",
+      "inventory": "salesforce-docs-inventory-winter-27.json",
+      "sourceReceipt": "salesforce-release-source-winter-27.json",
+      "sourceReceiptSHA256": "f6575c19c19a6c0ce7c289f30b49b41d7be9b1db8f958a7493c21fe900205b2c",
+      "classifications": "salesforce-release-classifications-summer-26-to-winter-27.json",
+      "changeInventory": "salesforce-release-notes-inventory-winter-27.json",
+      "changeRoutes": "salesforce-release-note-routes-summer-26-to-winter-27.json"
     }
   ],
   "surfaceCorrections": "salesforce-release-surface-corrections.json",
@@ -201,22 +226,6 @@
       ]
     },
     {
-      "id": "apex.dataweave.nested-soql",
-      "axis": "source",
-      "kind": "changed",
-      "outcome": "supported",
-      "since": "66.0",
-      "documentedIn": "66.0",
-      "maturity": "ga",
-      "sourceRefs": [
-        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_DWSupportQueryResults.htm&language=en_US&release=260&type=5"
-      ],
-      "productTests": [
-        "internal/vm/stdlib_test.go:TestNestedSOQLAPIVersion65ThrowsDataWeaveScriptException",
-        "internal/vm/stdlib_test.go:TestNestedSOQLAPIVersion66"
-      ]
-    },
-    {
       "id": "rest.invocable-parameter.constructor-validation",
       "axis": "endpoint",
       "kind": "changed",
@@ -229,25 +238,6 @@
       ],
       "productTests": [
         "internal/server/server_test.go:TestInvocableParameterConstructorValidationAPI66IsExplicitlyUnsupported"
-      ]
-    },
-    {
-      "id": "connectapi.named-credentials.external-auth-id-parameter",
-      "axis": "source",
-      "kind": "changed",
-      "outcome": "explicit-non-parity",
-      "since": "66.0",
-      "documentedIn": "66.0",
-      "maturity": "ga",
-      "surfaceIds": [
-        "apex:ConnectApi.NamedCredentials.deleteExternalAuthIdentityProvider(String)",
-        "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)"
-      ],
-      "sourceRefs": [
-        "https://help.salesforce.com/s/articleView?id=release-notes.rn_security_named_credentials_update_delete_nc.htm&language=en_US&release=260&type=5"
-      ],
-      "productTests": [
-        "internal/vm/platform_test.go:TestNamedCredentialsExternalAuthIdentityProviderChangesAreExplicitlyUnsupported"
       ]
     },
     {
@@ -463,11 +453,44 @@
         "internal/server/server_test.go:TestToolingExecuteAnonymousRejectsEndpointOutsideSourceWindow",
         "internal/server/soap_apex_test.go:TestSOAPApexExecuteAnonymousVersion60IsExplicitlyUnsupported"
       ]
+    },
+    {
+      "id": "apex.crypto.cbc-encrypt.declaration",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "68.0",
+      "documentedIn": "68.0",
+      "maturity": "ga",
+      "surfaceIds": [
+        "apex:System.Crypto.encrypt(String,Blob,Blob,Blob)"
+      ],
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_crypto.htm/en-us/264.0"
+      ],
+      "productTests": [
+        "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset"
+      ]
+    },
+    {
+      "id": "lwc.framework-api68.version-selection",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "68.0",
+      "documentedIn": "68.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=264&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_68.0"
+      ]
     }
   ],
   "noFallbackProductTests": [
     "internal/apexversion/version_test.go:TestResolveSourceRejectsUnsupportedWithoutFallback",
-    "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_64.0",
+    "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_58.0",
     "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_",
     "internal/server/server_test.go:TestUnsupportedAPIVersionRouting",
     "internal/gladecli/dap_cache_test.go:TestDAPCacheKeyIncludesSourceAPIVersion"

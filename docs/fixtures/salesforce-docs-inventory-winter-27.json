@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "totalFiles": 2928,
+  "totalFiles": 2929,
   "totalMembers": 5677,
   "namespaces": [
     {
       "namespace": "(none)",
-      "documents": 1126,
+      "documents": 1127,
       "members": 151
     },
     {
@@ -91150,6 +91150,12 @@
       "kind": "document",
       "name": "`lightning/commerceRepricingApi`",
       "title": "`lightning/commerceRepricingApi` Module"
+    },
+    {
+      "sourcePath": "lwc/reference-lightning-distributed-marketing-api.md",
+      "kind": "document",
+      "name": "`lightning/distributedMarketing`",
+      "title": "`lightning/distributedMarketing` Module"
     },
     {
       "sourcePath": "lwc/reference-lightning-graphql-api.md",

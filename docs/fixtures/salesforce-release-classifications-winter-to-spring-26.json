@@ -4,771 +4,532 @@
   "currentRelease": "Spring '26",
   "classifications": [
     {
-      "surfaceId": "apex:commercepayments.AbstractResponse.setRetryCategory(commercepayments.RetryCategory)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.abstractresponse.setretrycategory(commercepayments.retrycategory)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.AbstractResponse.setRetryDecision(commercepayments.RetryDecision)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.abstractresponse.setretrydecision(commercepayments.retrydecision)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.AuthorizationResponse.setAsync(Boolean)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.authorizationresponse.setasync(boolean)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.BaseApiPaymentMethodRequest.idType",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.baseapipaymentmethodrequest.idtype"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.BaseNotification.setGatewayAvsCode(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.basenotification.setgatewayavscode(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.CaptureNotification.setGatewayAvsCode(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.capturenotification.setgatewayavscode(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PaymentMethodIdType",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.paymentmethodidtype"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PaymentMethodTokenizationRequest.savedByMerchant",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.paymentmethodtokenizationrequest.savedbymerchant"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setAmount(Double)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setamount(double)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setCardPaymentMethodResponse(commercepayments.CardPaymentMethodResponse)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setcardpaymentmethodresponse(commercepayments.cardpaymentmethodresponse)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayAvsCode(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayavscode(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayDate(Datetime)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewaydate(datetime)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayMessage(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewaymessage(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceDetails(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayreferencedetails(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceNumber(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayreferencenumber(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCode(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayresultcode(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCodeDescription(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayresultcodedescription(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetails(commercepayments.PaymentMethodDetailsResponse)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setpaymentmethoddetails(commercepayments.paymentmethoddetailsresponse)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetailsResponse(commercepayments.PaymentMethodDetailsResponse)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setpaymentmethoddetailsresponse(commercepayments.paymentmethoddetailsresponse)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setsalesforceresultcodeinfo(commercepayments.salesforceresultcodeinfo)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.ReferencedRefundNotification.setGatewayAvsCode(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.referencedrefundnotification.setgatewayavscode(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.ReferencedRefundResponse.setAsync(Boolean)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.referencedrefundresponse.setasync(boolean)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.RetryCategory",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.retrycategory"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.RetryDecision",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.retrydecision"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.SaleNotification.setRetryCategory(commercepayments.RetryCategory)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salenotification.setretrycategory(commercepayments.retrycategory)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.SaleNotification.setRetryDecision(commercepayments.RetryDecision)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salenotification.setretrydecision(commercepayments.retrydecision)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.SaleRequest.submittedByMerchant",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salerequest.submittedbymerchant"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.SaleResponse.setRetryCategory(commercepayments.RetryCategory)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.saleresponse.setretrycategory(commercepayments.retrycategory)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercepayments.SaleResponse.setRetryDecision(commercepayments.RetryDecision)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.saleresponse.setretrydecision(commercepayments.retrydecision)"
-      ]
-    },
-    {
-      "surfaceId": "apex:commercetax.CalculateTaxRequest.isHeaderTaxRequested",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.calculatetaxrequest.isheadertaxrequested"
-      ]
-    },
-    {
       "surfaceId": "apex:ConnectApi.AbstractPicklistValueAttributes",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.AbstractPicklistValueAttributes (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_abstract_picklist_value_attributes.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.abstractpicklistvalueattributes"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.BuyerProductSummaryRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.BuyerProductSummaryRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_buyer_product_summary.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.buyerproductsummaryrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CaseStatusPicklistValueAttributes",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CaseStatusPicklistValueAttributes (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_case_status_picklist_value_attributes.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.casestatuspicklistvalueattributes"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CdpQuery.getMetadataEntities()",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CdpQueryMetadataEntitiesOutput getMetadataEntities() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpQuery_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquery.getmetadataentities()"
-      ]
-    },
-    {
-      "surfaceId": "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String,String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquery.getmetadataentities(string,string,string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CdpQueryMetadataEntitiesOutput getMetadataEntities(String entityCategory, String entityType) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpQuery_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquery.getmetadataentities(string,string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CdpQueryMetadataEntitiesOutput getMetadataEntities(String entityCategory, String entityType, String dataspace) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpQuery_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CdpQueryMetadataEntitiesOutput",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CdpQueryMetadataEntitiesOutput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_cdp_query_metadata_entities_output.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquerymetadataentitiesoutput"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CdpQueryMetadataEntityOutput",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CdpQueryMetadataEntityOutput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_cdp_query_metadata_entity_output.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquerymetadataentityoutput"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ChangeOrderAdjustmentGroupSummaryInputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeOrderAdjustmentGroupSummaryInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_order_adjustment_group_summary.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderadjustmentgroupsummaryinputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ChangeOrderDeliveryGroupSummaryInputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeOrderDeliveryGroupSummaryInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_order_delivery_group_summary.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderdeliverygroupsummaryinputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ChangeOrderItemAdjustmentLineSummaryInputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeOrderItemAdjustmentLineSummaryInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_order_item_adjustment_line_summary.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderitemadjustmentlinesummaryinputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ChangeOrderItemSummaryInputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeOrderItemSummaryInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_order_item_summary.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderitemsummaryinputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ChangeOrderItemTaxLineItemSummaryInputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeOrderItemTaxLineItemSummaryInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_order_item_tax_line_item_summary.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderitemtaxlineitemsummaryinputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ChangeOrderSummaryInputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeOrderSummaryInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_order_summary.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeordersummaryinputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CommerceCart.createQuoteFromCart(String,String,ConnectApi.CreateQuoteFromCartInput)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CreateQuoteFromCartOutput createQuoteFromCart(String webstoreId, String activeCartOrId, ConnectApi.CreateQuoteFromCartInput createQuoteFromCartInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercecart.createquotefromcart(string,string,connectapi.createquotefromcartinput)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "surfaceId": "apex:ConnectApi.CommerceCatalog.getProductChildCollection(String,String,String,List<String>,List<String>,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,String,Integer,String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "surfaceId": "apex:ConnectApi.CommerceCatalog.getProductChildCollection(String,String,String,List\u003cString\u003e,List\u003cString\u003e,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,String,Integer,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ProductChildCollection getProductChildCollection(String webstoreId, String productId, String effectiveAccountId, List\u003cString\u003e fields, List\u003cString\u003e mediaGroups, Boolean excludeFields, Boolean excludeMedia, Boolean excludeAttributeSetInfo, Boolean excludeQuantityRule, Boolean includeProductSellingModels, Boolean includeRequiredChildrenOnly, Boolean excludeDynamicAttributeInfo, String pageToken, Integer pageSize, String noCache) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCatalog_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercecatalog.getproductchildcollection(string,string,string,list<string>,list<string>,boolean,boolean,boolean,boolean,boolean,boolean,boolean,string,integer,string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CommerceNote",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CommerceNote (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_commerce_note.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercenote"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CommerceQuoteCollection",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CommerceQuoteCollection (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_commerce_quote_collection.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotecollection"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CommerceQuoteDetail",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CommerceQuoteDetail (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_commerce_quote_detail.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotedetail"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CommerceQuoteLineItem",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CommerceQuoteLineItem (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_commerce_quote_line_item.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotelineitem"
-      ]
-    },
-    {
-      "surfaceId": "apex:ConnectApi.CommerceQuotes",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes"
-      ]
-    },
-    {
-      "surfaceId": "apex:ConnectApi.CommerceQuotes.getQuoteDetail(String,String,String,String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes.getquotedetail(string,string,string,string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:ConnectApi.CommerceQuotes.getQuotes(String,String,String,ConnectApi.CommereQuotesSortOrder,Integer,String,String,String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes.getquotes(string,string,string,connectapi.commerequotessortorder,integer,string,string,string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CommerceQuoteWithProductDetail",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CommerceQuoteWithProductDetail (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_commerce_quote_with_product_detail.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotewithproductdetail"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "surfaceId": "apex:ConnectApi.CreatedFile",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "surfaceId": "apex:ConnectApi.CommerceQuotes",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CommerceQuotes (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceQuotes_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createdfile"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuotes.getQuoteDetail(String,String,String,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CommerceQuoteDetail getQuoteDetail(String webstoreId, String quoteId, String effectiveAccountId, String fields) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceQuotes_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuotes.getQuotes(String,String,String,ConnectApi.CommereQuotesSortOrder,Integer,String,String,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CommerceQuoteCollection getQuotes(String webstoreId, String effectiveAccountId, String fields, ConnectApi.CommereQuotesSortOrder sortParam, Integer pageSize, String pageToken, String earliestDate, String latestDate) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceQuotes_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CreateQuoteFromCartInput",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CreateQuoteFromCartInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_create_quote_from_cart.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createquotefromcartinput"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.CreateQuoteFromCartOutput",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CreateQuoteFromCartOutput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_create_quote_from_cart_output.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createquotefromcartoutput"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "surfaceId": "apex:ConnectApi.fetchFilesInput",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "surfaceId": "apex:ConnectApi.CreatedFile",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CreatedFile (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CreatedFileRepresentation.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.fetchfilesinput"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.FetchFilesOutputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.FetchFilesOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_fetch_files.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.fetchfilesoutputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.FlowApprovalProcess",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.FlowApprovalProcess (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_flow_approval_process.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocess"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.FlowApprovalProcessAction",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.FlowApprovalProcessAction (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_flow_approval_process_action.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocessaction"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.FlowApprovalProcessCollection",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.FlowApprovalProcessCollection (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_flow_approval_process_collection.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocesscollection"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.FlowApprovalProcesses",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.FlowApprovalProcesses (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_FlowApprovalProcesses_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocesses"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
-      "surfaceId": "apex:ConnectApi.FlowApprovalProcesses.getFlowApprovalProcessWithStatus(String,List<String>)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "surfaceId": "apex:ConnectApi.FlowApprovalProcesses.getFlowApprovalProcessWithStatus(String,List\u003cString\u003e)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.FlowApprovalProcessCollection getFlowApprovalProcessWithStatus(String relatedRecordId, List\u003cString\u003e processNames) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_FlowApprovalProcesses_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocesses.getflowapprovalprocesswithstatus(string,list<string>)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.LeadStatusPicklistValueAttributes",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.LeadStatusPicklistValueAttributes (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_lead_status_picklist_value_attributes.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.leadstatuspicklistvalueattributes"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ManagedContent.getManagedContentProvidersForSpace(String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ManagedContentProviderCollection getManagedContentProvidersForSpace(String contentSpaceId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContent_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.managedcontent.getmanagedcontentprovidersforspace(string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.ManagedContent.updateManagedContentProviderInstance(String,ConnectApi.ManagedContentProviderInput)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ManagedContentProviderInstance updateManagedContentProviderInstance(String providerInstanceId, ConnectApi.ManagedContentProviderInput providerInstanceInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContent_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.managedcontent.updatemanagedcontentproviderinstance(string,connectapi.managedcontentproviderinput)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.NamedCredentials.deleteExternalAuthIdentityProvider(String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void deleteExternalAuthIdentityProvider(String developerName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.deleteexternalauthidentityprovider(string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.NamedCredentials.deleteExternalCredential(String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void deleteExternalCredential(String developerName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.deleteexternalcredential(string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.NamedCredentials.deleteNamedCredential(String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void deleteNamedCredential(String developerName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.deletenamedcredential(string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ExternalAuthIdentityProvider updateExternalAuthIdentityProvider(String developerName, ConnectApi.ExternalAuthIdentityProviderInput requestBody) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.updateexternalauthidentityprovider(string,connectapi.externalauthidentityproviderinput)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.NamedCredentials.updateExternalCredential(String,ConnectApi.ExternalCredentialInput)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ExternalCredential updateExternalCredential(String developerName, ConnectApi.ExternalCredentialInput requestBody) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.updateexternalcredential(string,connectapi.externalcredentialinput)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.NamedCredentials.updateNamedCredential(String,ConnectApi.NamedCredentialInput)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.NamedCredential updateNamedCredential(String developerName, ConnectApi.NamedCredentialInput requestBody) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.updatenamedcredential(string,connectapi.namedcredentialinput)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.OpportunityStagePicklistValueAttributes",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.OpportunityStagePicklistValueAttributes (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_opportunity_stage_picklist_value_attributes.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.opportunitystagepicklistvalueattributes"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.OptimizationFiles",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.OptimizationFiles (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_OptimizationFiles_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.optimizationfiles"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.OptimizationFiles.FetchOptimizationFiles(ConnectApi.fetchFilesInput)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.FetchFilesOutputRepresentation FetchOptimizationFiles(ConnectApi.fetchFilesInput fetchFilesInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_OptimizationFiles_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.optimizationfiles.fetchoptimizationfiles(connectapi.fetchfilesinput)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.Orchestration.getOrchestrationInstanceCollection(String,String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.OrchestrationInstanceCollection getOrchestrationInstanceCollection(String relatedRecordId, String relatedOrchestrationId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Orchestration_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.orchestration.getorchestrationinstancecollection(string,string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.OrderSummary.previewChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.PreviewChangeOrderSummaryOutputRepresentation previewChange(String orderSummaryId, ConnectApi.ChangeOrderSummaryInputRepresentation changeOrderSummaryInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_OrderSummary_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.ordersummary.previewchange(string,connectapi.changeordersummaryinputrepresentation)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.OrderSummary.submitChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.SubmitChangeOrderSummaryOutputRepresentation submitChange(String orderSummaryId, ConnectApi.ChangeOrderSummaryInputRepresentation changeOrderSummaryInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_OrderSummary_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.ordersummary.submitchange(string,connectapi.changeordersummaryinputrepresentation)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.PicklistValue",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.PicklistValue (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_picklist_value.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.picklistvalue"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.PicklistValues",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.PicklistValues (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_picklist_values.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.picklistvalues"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.PicklistValuesCollection",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.PicklistValuesCollection (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_picklist_values_collection.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.picklistvaluescollection"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.PreviewChangeOrderSummaryOutputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.PreviewChangeOrderSummaryOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_preview_change_order_summary_output.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.previewchangeordersummaryoutputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.QuoteError",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.QuoteError (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_quote_error_output.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.quoteerror"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.RecordUi",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.RecordUi (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_RecordUi_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.recordui"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.RecordUi.getPicklistValuesByRecordType(String,String)",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.PicklistValuesCollection getPicklistValuesByRecordType(String objectApiName, String recordTypeId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_RecordUi_static_methods.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.recordui.getpicklistvaluesbyrecordtype(string,string)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.SubmitChangeOrderSummaryOutputRepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SubmitChangeOrderSummaryOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_submit_change_order_summary_output.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.submitchangeordersummaryoutputrepresentation"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:ConnectApi.WorkStepPicklistValueAttribute",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.WorkStepPicklistValueAttribute (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_work_step_picklist_value_attribute.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.worksteppicklistvalueattribute"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.fetchFilesInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.fetchFilesInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_fetch_files.htm/en-us/260.0). Product evidence: The exact declaration is recorded in the checked public inventory. Product scope policy explicitly excludes ConnectApi even where declaration symbols exist. No hosted implementation or parity is claimed.. Decision: ConnectApi is excluded and unsupported by the approved D45 scope policy. Unacquired references remain separately accounted for; no unavailable declaration is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
       ]
     },
     {
       "surfaceId": "apex:Database.CursorFetchResult",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: type Database.CursorFetchResult (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_CursorFetchResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult"
       ]
@@ -777,6 +538,7 @@
       "surfaceId": "apex:Database.CursorFetchResult.getNextIndex()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Integer getNextIndex() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_CursorFetchResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.getnextindex()"
       ]
@@ -785,6 +547,7 @@
       "surfaceId": "apex:Database.CursorFetchResult.getNumDeletedRecords()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Integer getNumDeletedRecords() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_CursorFetchResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.getnumdeletedrecords()"
       ]
@@ -793,6 +556,7 @@
       "surfaceId": "apex:Database.CursorFetchResult.getRecords()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public List\u003cSObject\u003e getRecords() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_CursorFetchResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.getrecords()"
       ]
@@ -801,6 +565,7 @@
       "surfaceId": "apex:Database.CursorFetchResult.isDone()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Boolean isDone() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_CursorFetchResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.isdone()"
       ]
@@ -809,6 +574,7 @@
       "surfaceId": "apex:Database.PaginationCursor",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: type Database.PaginationCursor (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_PaginationCursor.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor"
       ]
@@ -817,6 +583,7 @@
       "surfaceId": "apex:Database.PaginationCursor.fetchDeleted(Integer,Integer)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Integer fetchDeleted(Integer start, Integer pageSize) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_PaginationCursor.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor.fetchdeleted(integer,integer)"
       ]
@@ -825,6 +592,7 @@
       "surfaceId": "apex:Database.PaginationCursor.fetchPage(Integer,Integer)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Database.CursorFetchResult fetchPage(Integer start, Integer pageSize) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_PaginationCursor.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor.fetchpage(integer,integer)"
       ]
@@ -833,54 +601,16 @@
       "surfaceId": "apex:Database.PaginationCursor.getNumRecords()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Integer getNumRecords() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Database_PaginationCursor.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor.getnumrecords()"
-      ]
-    },
-    {
-      "surfaceId": "apex:embeddedai.ApexMap.ApexMap()",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.apexmap()"
-      ]
-    },
-    {
-      "surfaceId": "apex:embeddedai.ApexMap.ApexMap(String,String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.apexmap(string,string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation()",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.recordapexrepresentation()"
-      ]
-    },
-    {
-      "surfaceId": "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation(String,List<embeddedai.ApexMap>,List<embeddedai.RecordApexRepresentation>)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.recordapexrepresentation(string,list<embeddedai.apexmap>,list<embeddedai.recordapexrepresentation>)"
-      ]
-    },
-    {
-      "surfaceId": "apex:embeddedai.RecordApexRepresentation.toRecordApexRep(String)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.torecordapexrep(string)"
       ]
     },
     {
       "surfaceId": "apex:Invocable.Action.createCustomAction(String,String,String,String)",
       "scope": "t0",
       "disposition": "new-case",
+      "reasonRef": "Declaration: public static Invocable.Action createCustomAction(String type, String namespace, String name, String version) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Invocable_Action.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.createcustomaction(string,string,string,string)"
       ]
@@ -889,6 +619,7 @@
       "surfaceId": "apex:Invocable.Action.createStandardAction(String,String)",
       "scope": "t0",
       "disposition": "new-case",
+      "reasonRef": "Declaration: public static Invocable.Action createStandardAction(String type, String version) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Invocable_Action.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.createstandardaction(string,string)"
       ]
@@ -897,134 +628,16 @@
       "surfaceId": "apex:Invocable.Action.getVersion()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getVersion() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Invocable_Action.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.getversion()"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder.build()",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.build()"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withActionIdentifier(String)",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withactionidentifier(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withNotificationTypeId(String)",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withnotificationtypeid(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withRecipientId(String)",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withrecipientid(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withSenderId(String)",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withsenderid(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withTargetId(String)",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withtargetid(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withTargetPageRef(String)",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withtargetpageref(string)"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.getActionIdentifier()",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getactionidentifier()"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.getNotificationTypeId()",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getnotificationtypeid()"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.getRecipientId()",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getrecipientid()"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.getSenderId()",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getsenderid()"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.getTargetId()",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.gettargetid()"
-      ]
-    },
-    {
-      "surfaceId": "apex:Messaging.ActionableNotification.getTargetPageRef()",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.gettargetpageref()"
       ]
     },
     {
       "surfaceId": "apex:Messaging.ActionError",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: type Messaging.ActionError (https://developer.salesforce.com/docs/get_document_content/apexref/apex_enum_Messaging_ActionError.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionerror"
       ]
@@ -1033,6 +646,7 @@
       "surfaceId": "apex:Messaging.ActionResult",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: type Messaging.ActionResult (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult"
       ]
@@ -1041,6 +655,7 @@
       "surfaceId": "apex:Messaging.ActionResult.Builder",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: type Messaging.ActionResult.Builder (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder"
       ]
@@ -1049,6 +664,7 @@
       "surfaceId": "apex:Messaging.ActionResult.Builder.build()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionResult build() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.build()"
       ]
@@ -1057,6 +673,7 @@
       "surfaceId": "apex:Messaging.ActionResult.Builder.withErrorCode(Messaging.ActionError)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionResult.Builder withErrorCode(Messaging.ActionError errorCode) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.witherrorcode(messaging.actionerror)"
       ]
@@ -1065,6 +682,7 @@
       "surfaceId": "apex:Messaging.ActionResult.Builder.withMessage(String)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionResult.Builder withMessage(String message) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.withmessage(string)"
       ]
@@ -1073,6 +691,7 @@
       "surfaceId": "apex:Messaging.ActionResult.Builder.withSuccess(Boolean)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionResult.Builder withSuccess(Boolean success) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.withsuccess(boolean)"
       ]
@@ -1081,6 +700,7 @@
       "surfaceId": "apex:Messaging.ActionResult.getErrorCode()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionError getErrorCode() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.geterrorcode()"
       ]
@@ -1089,6 +709,7 @@
       "surfaceId": "apex:Messaging.ActionResult.getMessage()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getMessage() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.getmessage()"
       ]
@@ -1097,14 +718,151 @@
       "surfaceId": "apex:Messaging.ActionResult.isSuccess()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Boolean isSuccess() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionResult.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.issuccess()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: type Messaging.ActionableNotification (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: type Messaging.ActionableNotification.Builder (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.build()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionableNotification build() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.build()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withActionIdentifier(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionableNotification.Builder withActionIdentifier(String actionIdentifier) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withactionidentifier(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withNotificationTypeId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionableNotification.Builder withNotificationTypeId(String notificationTypeId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withnotificationtypeid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withRecipientId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionableNotification.Builder withRecipientId(String recipientId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withrecipientid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withSenderId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionableNotification.Builder withSenderId(String senderId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withsenderid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withTargetId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionableNotification.Builder withTargetId(String targetId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withtargetid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withTargetPageRef(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionableNotification.Builder withTargetPageRef(String targetPageRef) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification_Builder.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withtargetpageref(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getActionIdentifier()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getActionIdentifier() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getactionidentifier()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getNotificationTypeId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getNotificationTypeId() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getnotificationtypeid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getRecipientId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getRecipientId() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getrecipientid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getSenderId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getSenderId() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getsenderid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getTargetId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getTargetId() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.gettargetid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getTargetPageRef()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getTargetPageRef() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Messaging_ActionableNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.gettargetpageref()"
       ]
     },
     {
       "surfaceId": "apex:Messaging.NotificationActionHandler",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: type Messaging.NotificationActionHandler (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_Messaging_NotificationActionHandler.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.notificationactionhandler"
       ]
@@ -1113,6 +871,7 @@
       "surfaceId": "apex:Messaging.NotificationActionHandler.executeAction(Messaging.ActionableNotification)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public Messaging.ActionResult executeAction(Messaging.ActionableNotification actionableNotification) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_Messaging_NotificationActionHandler.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.notificationactionhandler.executeaction(messaging.actionablenotification)"
       ]
@@ -1121,6 +880,7 @@
       "surfaceId": "apex:RichMessaging.ProcessFormHandler",
       "scope": "t0",
       "disposition": "new-case",
+      "reasonRef": "Declaration: type RichMessaging.ProcessFormHandler (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_RichMessaging_ProcessFormHandler.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processformhandler"
       ]
@@ -1129,30 +889,34 @@
       "surfaceId": "apex:RichMessaging.ProcessFormHandler.processFormRequest(RichMessaging.ProcessFormResponse)",
       "scope": "t0",
       "disposition": "new-case",
+      "reasonRef": "Declaration: ID processFormRequest(RichMessaging.ProcessFormResponse formResponse) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_RichMessaging_ProcessFormHandler.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processformhandler.processformrequest(richmessaging.processformresponse)"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.Database.getPaginationCursor(String,Object)",
-      "scope": "t0",
-      "disposition": "existing-case",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getpaginationcursor(string,object)"
       ]
     },
     {
       "surfaceId": "apex:System.Database.getPaginationCursor(String)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Database.PaginationCursor getPaginationCursor(String query) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_database.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getpaginationcursor(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.getPaginationCursor(String,Object)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Database.PaginationCursor getPaginationCursor(String query, Object accessLevel) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_database.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getpaginationcursor(string,object)"
       ]
     },
     {
       "surfaceId": "apex:System.Database.getPaginationCursorWithBinds(String,Map,Object)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Database.PaginationCursor getPaginationCursorWithBinds(String query, Map bindMap, Object accessLevel) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_database.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getpaginationcursorwithbinds(string,map,object)"
       ]
@@ -1161,6 +925,7 @@
       "surfaceId": "apex:System.Limits.getApexCursors()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Integer getApexCursors() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_limits.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getapexcursors()"
       ]
@@ -1169,6 +934,7 @@
       "surfaceId": "apex:System.Limits.getApexPaginationCursorRows()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Integer getApexPaginationCursorRows() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_limits.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getapexpaginationcursorrows()"
       ]
@@ -1177,6 +943,7 @@
       "surfaceId": "apex:System.Limits.getApexPaginationCursors()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Integer getApexPaginationCursors() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_limits.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getapexpaginationcursors()"
       ]
@@ -1185,6 +952,7 @@
       "surfaceId": "apex:System.Limits.getLimitApexCursors()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Integer getLimitApexCursors() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_limits.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getlimitapexcursors()"
       ]
@@ -1193,6 +961,7 @@
       "surfaceId": "apex:System.Limits.getLimitApexPaginationCursorRows()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Integer getLimitApexPaginationCursorRows() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_limits.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getlimitapexpaginationcursorrows()"
       ]
@@ -1201,6 +970,7 @@
       "surfaceId": "apex:System.Limits.getLimitApexPaginationCursors()",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Integer getLimitApexPaginationCursors() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_limits.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getlimitapexpaginationcursors()"
       ]
@@ -1209,6 +979,7 @@
       "surfaceId": "apex:System.System.purgeOldAsyncJobs(Date,Integer)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Integer purgeOldAsyncJobs(Date dt, Integer numOfJobs) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_system.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.system.purgeoldasyncjobs(date,integer)"
       ]
@@ -1217,24 +988,340 @@
       "surfaceId": "apex:System.Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)",
       "scope": "t0",
       "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Messaging.ActionResult testNotificationActionHandler( Messaging.NotificationActionHandler handler, Messaging.ActionableNotification actionableNotification ) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_test.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.test.testnotificationactionhandler(messaging.notificationactionhandler,messaging.actionablenotification)"
       ]
     },
     {
-      "surfaceId": "apex:wave.QueryNode.order(List<List<String>>)",
+      "surfaceId": "apex:commercepayments.AbstractResponse.setRetryCategory(commercepayments.RetryCategory)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setRetryCategory(commercepayments.RetryCategory retryCategory) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_AbstractResponse.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.abstractresponse.setretrycategory(commercepayments.retrycategory)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.AbstractResponse.setRetryDecision(commercepayments.RetryDecision)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setRetryDecision(commercepayments.RetryDecision retryDecision) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_AbstractResponse.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.abstractresponse.setretrydecision(commercepayments.retrydecision)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.AuthorizationResponse.setAsync(Boolean)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setAsync(Boolean async) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_AuthorizationResponse.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.authorizationresponse.setasync(boolean)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.BaseApiPaymentMethodRequest.idType",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public commercepayments.PaymentMethodIdType idType {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_BaseApiPaymentMethodRequest.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.baseapipaymentmethodrequest.idtype"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.BaseNotification.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayAvsCode(String gatewayAvsCode) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_BaseNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.basenotification.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.CaptureNotification.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayAvsCode(String gatewayAvsCode) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_CaptureNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.capturenotification.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentMethodIdType",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: type commercepayments.PaymentMethodIdType (https://developer.salesforce.com/docs/get_document_content/apexref/apex_enum_commercepayments_PaymentMethodIdType.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.paymentmethodidtype"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentMethodTokenizationRequest.savedByMerchant",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public Boolean savedByMerchant {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.paymentmethodtokenizationrequest.savedbymerchant"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setAmount(Double)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setAmount(Double amount) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setAmount.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setamount(double)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setCardPaymentMethodResponse(commercepayments.CardPaymentMethodResponse)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: global void setCardPaymentMethodResponse(commercepaymentsCardPaymentMethodResponse cardpaymentMethodResponse) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setCardPaymentMethodResponse.htm/en-us/258.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setcardpaymentmethodresponse(commercepayments.cardpaymentmethodresponse)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayAvsCode(String gatewayAvsCode) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setGatewayAvsCode.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayDate(Datetime)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayDate(Datetime gatewayDate) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setGatewayDate.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewaydate(datetime)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayMessage(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayMessage(String gatewayMessage) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setGatewayMessage.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewaymessage(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceDetails(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayReferenceDetails(String gatewayReferenceDetails) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setGatewayReferenceDetails.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayreferencedetails(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceNumber(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayReferenceNumber(String gatewayReferenceNumber) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setGatewayReferenceNumber.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayreferencenumber(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayResultCode(String gatewayResultCode) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setGatewayResultCode.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayresultcode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCodeDescription(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayResultCodeDescription(String gatewayResultCodeDescription) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setGatewayResultCodeDescription.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayresultcodedescription(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetails(commercepayments.PaymentMethodDetailsResponse)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setPaymentMethodDetails(commercepayments.PaymentMethodDetailsResponse paymentMethodDetails) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setPaymentMethodDetails.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setpaymentmethoddetails(commercepayments.paymentmethoddetailsresponse)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetailsResponse(commercepayments.PaymentMethodDetailsResponse)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: global void setPaymentMethodDetailsResponse(commercepayments.PaymentMethodDetailsResponse paymentMethodDetailsResponse) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setPaymentMethodDetailsResponse.htm/en-us/258.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setpaymentmethoddetailsresponse(commercepayments.paymentmethoddetailsresponse)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo salesforceResultCodeInfo) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_commercepayments_PostAuthorizationResponse_setSalesforceResultCodeInfo.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setsalesforceresultcodeinfo(commercepayments.salesforceresultcodeinfo)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.ReferencedRefundNotification.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setGatewayAvsCode(String gatewayAvsCode) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_ReferencedRefundNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.referencedrefundnotification.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.ReferencedRefundResponse.setAsync(Boolean)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setAsync(Boolean async) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_ReferencedRefundResponse.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.referencedrefundresponse.setasync(boolean)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: type commercepayments.RetryCategory (https://developer.salesforce.com/docs/get_document_content/apexref/apex_enum_commercepayments_RetryCategory.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.retrycategory"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryDecision",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: type commercepayments.RetryDecision (https://developer.salesforce.com/docs/get_document_content/apexref/apex_enum_commercepayments_RetryDecision.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.retrydecision"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleNotification.setRetryCategory(commercepayments.RetryCategory)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setRetryCategory(commercepayments.RetryCategory retryCategory) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_SaleNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salenotification.setretrycategory(commercepayments.retrycategory)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleNotification.setRetryDecision(commercepayments.RetryDecision)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setRetryDecision(commercepayments.RetryDecision retryDecision) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_SaleNotification.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salenotification.setretrydecision(commercepayments.retrydecision)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleRequest.submittedByMerchant",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public Boolean submittedByMerchant {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_SaleRequest.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salerequest.submittedbymerchant"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleResponse.setRetryCategory(commercepayments.RetryCategory)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setRetryCategory(commercepayments.RetryCategory retryCategory) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_SaleResponse.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.saleresponse.setretrycategory(commercepayments.retrycategory)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleResponse.setRetryDecision(commercepayments.RetryDecision)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public void setRetryDecision(commercepayments.RetryDecision retryDecision) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercepayments_SaleResponse.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.saleresponse.setretrydecision(commercepayments.retrydecision)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercetax.CalculateTaxRequest.isHeaderTaxRequested",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: global Boolean isHeaderTaxRequested {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_CalculateTaxRequest.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.calculatetaxrequest.isheadertaxrequested"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap.ApexMap()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public ApexMap() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_ApexMap.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.apexmap()"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap.ApexMap(String,String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public ApexMap(String key, String value) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_ApexMap.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.apexmap(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public RecordApexRepresentation() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.recordapexrepresentation()"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation(String,List\u003cembeddedai.ApexMap\u003e,List\u003cembeddedai.RecordApexRepresentation\u003e)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public RecordApexRepresentation(String objectType, List\u003cembeddedai.ApexMap\u003e recordData, List\u003cembeddedai.RecordApexRepresentation\u003e relatedRecordData) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.recordapexrepresentation(string,list\u003cembeddedai.apexmap\u003e,list\u003cembeddedai.recordapexrepresentation\u003e)"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.toRecordApexRep(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "reasonRef": "Declaration: public static embeddedai.RecordApexRepresentation toRecordApexRep(String jsonString) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. . Decision: Existing checked declaration-shape classification retained; no new runtime evidence is credited.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.torecordapexrep(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.order(List\u003cList\u003cString\u003e\u003e)",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "reasonRef": "Declaration: public wave.QueryNode order(List\u003cList\u003cString\u003e\u003e orders) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_wave_QueryNode.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces. Decision: docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
       "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:wave.querynode.order(list<list<string>>)"
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:wave.querynode.order(list\u003clist\u003cstring\u003e\u003e)"
       ]
     },
     {
       "surfaceId": "lwc:`experience/blockBuilderApi`",
       "scope": "t1",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#lwc-version-gated-module",
+      "reasonRef": "Declaration: module .`experience/blockBuilderApi` (https://developer.salesforce.com/docs/platform/lwc/guide/reference-experience-block-builder-api.html). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. docs/SALESFORCE_RELEASE_SCOPE.md#lwc-version-gated-module. Decision: docs/SALESFORCE_RELEASE_SCOPE.md#lwc-version-gated-module",
       "productTests": [
         "internal/lwc/compile/compile_test.go:TestLWCModuleAvailabilityFollowsBundleAPIVersion"
       ]
@@ -1243,7 +1330,7 @@
       "surfaceId": "tooling:CustomNotifActionDef",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "reasonRef": "Declaration: type .CustomNotifActionDef (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_customnotifactiondef.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api. Decision: docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
       "productTests": [
         "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:customnotifactiondef"
       ]
@@ -1252,7 +1339,7 @@
       "surfaceId": "tooling:CustomNotificationActionGroup",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "reasonRef": "Declaration: type .CustomNotificationActionGroup (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_customnotificationactiongroup.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api. Decision: docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
       "productTests": [
         "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:customnotificationactiongroup"
       ]
@@ -1261,7 +1348,7 @@
       "surfaceId": "tooling:ExtConvParticipantIntegDef",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "reasonRef": "Declaration: type .ExtConvParticipantIntegDef (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_extconvparticipantintegdef.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api. Decision: docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
       "productTests": [
         "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:extconvparticipantintegdef"
       ]
@@ -1270,7 +1357,7 @@
       "surfaceId": "tooling:SandboxProcessStage",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "reasonRef": "Declaration: type .SandboxProcessStage (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_sandboxprocessstage.htm/en-us/260.0). Product evidence: Retained existing public classification and its exact product-test bindings from public main 6ba8fa83ff29. docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api. Decision: docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
       "productTests": [
         "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:sandboxprocessstage"
       ]

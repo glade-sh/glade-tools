@@ -2,7 +2,7 @@
   "excludedFutureDeclarations": [
     "apex/apex_ConnectAPI_ContentHub_static_methods.md:getRepository: API369.0"
   ],
-  "inventoryDigest": "f34d4a1acd86e5872dd64834a475626c39614e048ea6e5d81f29d575bfc4bcb2",
+  "inventoryDigest": "a194b14c4b11298746701e79332e73dd7705cbf5539fbea89481bc9d0578bb7f",
   "releaseNotesDigest": "216cf4fe7606ec410b973bc7ea314c1347226c3ad9499fe75d07c16b1faea0d0",
   "schemaVersion": 1,
   "targetAPIVersion": "68.0"

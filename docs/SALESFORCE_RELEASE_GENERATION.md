@@ -285,44 +285,92 @@ Use API 63.0 / `spring-25` and API 64.0 / `summer-25` for the other
 historical snapshots. Historical mode deliberately cannot compose API 68 or
 silently substitute historical release-note inventories.
 
-## API 68 candidate reference inputs, acquired 2026-10-19 UTC
+## API 68 checked source inputs, acquired 2026-10-19 UTC
 
-These files are **not admitted to the active release contract**. Its checked
-source window remains 65.0-67.0 until all API 68 provenance, per-item delta
-classifications and note routes pass. The intended candidate window is
-62.0-68.0. No new checked-window or Salesforce parity claim is made here.
+This contract checks Apex source 65.0-68.0 and discrete endpoint versions
+60.0/65.0/66.0/67.0/68.0, with default 65.0 for both axes. Static declaration
+classification and generated-table agreement do not establish executed
+Salesforce correctness; the analyzer deliberately retains zero execution credit.
 
-The anonymous public Apex acquisition completed at `2026-10-19T06:28:11Z`:
-1,926 acquired pages and 405 unavailable ConnectApi references cover all 2,331
-TOC references. The retained HTTP evidence contains 100 ConnectApi 403 URLs.
-No excluded page was requested during this continuation. Tooling contains 347
-completely acquired references. Exact checked API 67 inventories supply the
-explicit Aura, REST, Visualforce and LWC documentation carries in the candidate
-normalized inventory. The source URLs are:
+Apex: 1,926 acquired pages plus 405 unavailable ConnectApi references cover
+all 2,331 TOC references; the retained per-release evidence has 100 ConnectApi
+403 URLs. No denied page was retried. Tooling has 347 acquired pages. Aura,
+REST and Visualforce bind the exact checked API 67 inventories/receipts, and
+normal `--check` rechecks their actual unversioned publication endpoints.
 
-- [Apex publication metadata](https://developer.salesforce.com/docs/get_document/atlas.en-us.264.0.apexref.meta).
-- [Tooling publication metadata](https://developer.salesforce.com/docs/get_document/atlas.en-us.264.0.api_tooling.meta).
+- [Apex source TOC](https://developer.salesforce.com/docs/get_document/atlas.en-us.264.0.apexref.meta).
+- [Tooling source TOC](https://developer.salesforce.com/docs/get_document/atlas.en-us.264.0.api_tooling.meta).
+- [LWC reference](https://developer.salesforce.com/docs/platform/lwc/guide/reference-api-modules.html).
+- [API 68 LWC publication note](https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=264&type=5).
 
-Run the `compose_inventory` command above, then the namespace policy exporter
-against its inventory and the acquired Apex `_policy-excluded.json`.
-The normalized inventory has 2,928 documents and 5,677 members. Its generated
-namespace policy explicitly marks 2,235 known ConnectApi surfaces unsupported
-and separately enumerates the 405 unavailable references. Future documented
-API exclusions remain in the generated inventory-filter file.
+The earlier nominally successful current-only LWC export contained publisher
+Oops pages and is rejected. A normal recapture with the existing scraper
+completed all 28 pages with HTTP 200, no empty/failed documents and no publisher
+error pages. No cookies, header workarounds or 403 retries were used. Retained
+HTTP metadata binds each requested URL, status and fetch time. Its completion
+UTC was 2026-10-19T07:03:30.340318Z. LWC remains a current-release-only,
+availability-filtered view: the exact seasonal note inventory/hash and note
+identity bind its API 68 publication. No Atlas-numbered LWC guide is invented.
 
-The normal publication probe passes the unversioned Atlas checks for Aura,
-REST and Visualforce but exits 1 at:
-`Winter '27 lwc carry recheck: current-only LWC guide does not prove 264.0 documentation is unpublished`.
-The current-only guide has no usable current-publication marker. API 68's
-release note explicitly calls LWC 68.0 current. Consequently, the unverified
-composition/source receipt is retained outside public fixtures; this branch
-does not assert that LWC 264 documentation is unpublished. A valid fresh LWC
-source binding must replace that carry before source admission or table
-regeneration. The frozen carried inventory alone does not resolve this issue.
+```bash
+go run ./scripts/salesforce-release/compose_inventory \
+  --atlas "$ATLAS_INPUT" --notes "$NOTES_INPUT" \
+  --lwc-source "$CURRENT_LWC_ROOT" \
+  --previous-inventory docs/fixtures/salesforce-docs-inventory-summer-26.json \
+  --output "$OUTPUT"
+python3 scripts/salesforce-release/compose_winter27.py \
+  --atlas "$ATLAS_INPUT" --notes "$NOTES_INPUT" \
+  --lwc-source "$CURRENT_LWC_ROOT/lwc" \
+  --notes-inventory docs/fixtures/salesforce-release-notes-inventory-winter-27.json \
+  --previous-receipt docs/fixtures/salesforce-release-source-summer-26.json \
+  --previous-inventory docs/fixtures/salesforce-docs-inventory-summer-26.json \
+  --inventory "$OUTPUT/salesforce-docs-inventory-winter-27.json" \
+  --manifest "$OUTPUT/salesforce-release-winter-27.json" \
+  --composition-output "$OUTPUT/salesforce-release-composition-winter-27.json" \
+  --receipt-output "$OUTPUT/salesforce-release-source-winter-27.json"
+```
+
+The normalized inventory has 2929 documents and 5677 members. The
+namespace policy explicitly marks all 2,235 acquired known ConnectApi surfaces
+unsupported, preserves 2,613 historical API 67 exclusions as historical evidence,
+and separately lists all 405 unavailable reference identities. Its inventory
+hash and complete current declaration coverage have a dedicated fixture test.
+
+The reviewed API 67-to-68 delta has 626 rows: 129 supported declaration/CBC
+cases with exact product tests, and 497 explicit unsupported/not-claimed cases.
+Existing implemented declaration shapes use `preserveAvailability` and exact
+generated shape subtests; first capture or namespace correction does not invent
+an introduction/retirement boundary or assert hosted-service behavior.
+Unimplemented QueryOptions, DPoP, JWE/Crypto overloads and new Tooling resources
+retain their exact checked declarations, public URLs, product absence evidence,
+reasons and structural controls in generated classification data.
+
+ConnectApi, Slack and DataWeave are excluded by scope policy. Historical delta
+classifications and the two conflicting historical behavior claims were
+reconciled to that policy. Other historical classifications retain their
+existing exact product-test bindings; no new proof is credited.
+
+Every API 68 article has an explicit reviewed route override; every branch
+requires explicit review. Core Apex/API/LWC notes have specific declaration or
+behavior bindings, or exact reasons for not claiming the described feature.
+Other application/service/setup items carry article-specific scope decisions.
+Increased heap caps are implemented in candidate product but are not newly admitted as a
+cap/enforcement parity claim here; the dedicated candidate product conformance test is outside
+the retained published CI pin. Existing bounded heap-accounting claims remain.
+
+Regenerate classification files with `classify_delta --contract ... --release
+... --review ... --output ...` using the checked per-item review inputs. Generate
+API 68 routes with `generate_release_routes.py`, its checked policy, the exact
+seasonal TOC and note inventory. The historical Spring route policy was also
+regenerated against its complete 1,829-entry public release-260 TOC.
+
+Static totals: 1,145/1,145 classified surfaces; 22/22 classified behaviors;
+5,824/5,824 routed articles; no unclassified entries. Correctness execution
+remains a separate gate against the final product commit.
 
 ## API 62-64 candidate reference inputs, acquired 2026-10-19 UTC
 
-These generated source inputs are not admitted to the active contract.
+These historical generated inputs remain candidates. Their initial current-only LWC input contained publisher error pages and must be regenerated from the valid recapture described above before admission.
 
 | API / Atlas | Acquired Apex | Policy-excluded references | Retained 403 | Normalized documents / members | Known ConnectApi exclusions | Completed UTC |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
