@@ -170,3 +170,47 @@ progress output distinguishes completed attempts, successful exports and failed
 articles. `_export-meta.json` retains the requested Atlas season, exact resolved
 release, source URLs, returned versions, publication dates and content hashes.
 An error record or a missing version leaves the export incomplete.
+
+## Spring and Summer '25 seasonal notes, 2026-10-19 UTC
+
+The corrected exporter completed the anonymous public
+[Spring '25 release notes](https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm&language=en_US&release=254&type=5)
+and [Summer '25 release notes](https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm&language=en_US&release=256&type=5)
+with zero failures. Before inventory generation, every article hash, exact
+resolved version, seasonal URL and topic ID was checked against the complete
+export metadata and TOC. Inventories were generated and checked with the same
+`docs-inventory` command used for the existing public releases.
+
+```bash
+python3 scripts/salesforce-release/export_release_notes.py \
+  --release 254 --output "$SPRING_NOTES_OUTPUT" \
+  --concurrency 2 --request-delay 0.1
+glade-tools docs-inventory --source "$SPRING_NOTES_OUTPUT" \
+  --output docs/fixtures/salesforce-release-notes-inventory-spring-25.json
+glade-tools docs-inventory --source "$SPRING_NOTES_OUTPUT" \
+  --check docs/fixtures/salesforce-release-notes-inventory-spring-25.json
+```
+
+Repeat with release 256, the Summer output and
+`salesforce-release-notes-inventory-summer-25.json`.
+
+| Input | Resolved version | Completed UTC | Articles | Members |
+| --- | --- | --- | ---: | ---: |
+| Spring '25 | `254.14.0` | `2026-10-19T05:57:00Z` | 1509 | 32 |
+| Summer '25 | `256.12.0` | `2026-10-19T05:57:18Z` | 1550 | 20 |
+
+Exporter SHA-256: `5e0ab9545024ee05826b043a731638e7decddee64e5ac61ee75966dcb31164c2`.
+Dependencies: beautifulsoup4 4.15.0, lxml 6.1.3, markdownify 1.2.3, playwright 1.64.0.
+
+- Spring export metadata SHA-256: `0817e5818bbaafc06d21dd2a85c5cd1d191a5383be2f3d5af30d4a7d4d892438`.
+- Spring generated inventory SHA-256: `b665e92adbcb32d7472d576861e16e02dc4b70d53005777fa07d6a93594de5bf`.
+
+- Summer export metadata SHA-256: `71c1eefcdc8600f09b586f900437b3e330e6bf3b3828d8e8a261ce81353149be`.
+- Summer generated inventory SHA-256: `d37948ca89da3c14fcd6ad54dc85653935007b58f54361af86aef240748e4233`.
+
+These note inventories are separate inputs, not complete GA reference snapshots
+or executed correctness proof. Historical and API 68 reference acquisitions
+remain incomplete after persistent public content HTTP 403 responses. Winter
+'25 notes exported 1,471 of 1,472 TOC articles; the LinkedIn Lead Gen article
+returned no versioned record. Its incomplete export is retained externally and
+is not admitted as a complete inventory or source receipt.
