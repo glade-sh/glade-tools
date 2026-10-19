@@ -152,3 +152,18 @@ version metadata outside the repository. The receipt records scraper/wrapper
 hashes, acquisition times, publication identities, batch counts and exact missing
 URLs on failure. Archive an incomplete receipt under a dated name before retrying;
 never relabel or commit an incomplete source as a complete release snapshot.
+
+## Historical seasonal publication revisions
+
+A requested Atlas season can resolve to a revised publication, such as Atlas
+252 resolving to release-note version `252.15.0`. The exporter preserves the
+exact revision in the public page's anonymous article request and requires every
+returned record to match that revision and topic. It rejects a template from a
+different Atlas season. Do not replace the revision with an invented `.0.0`
+version or accept current-release content for a historical season.
+
+The exporter checks the seasonal root before starting the article queue. Its
+progress output distinguishes completed attempts, successful exports and failed
+articles. `_export-meta.json` retains the requested Atlas season, exact resolved
+release, source URLs, returned versions, publication dates and content hashes.
+An error record or a missing version leaves the export incomplete.

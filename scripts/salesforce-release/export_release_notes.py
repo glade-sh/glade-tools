@@ -88,12 +88,24 @@ def article_filename(topic_id):
     return re.sub(r"[^A-Za-z0-9_.-]", "_", stem) + ".md"
 
 
+def validate_publication_version(version, release):
+    if not isinstance(version, str) or not re.fullmatch(re.escape(release) + r"\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)", version):
+        raise ValueError(f"publication version {version!r} does not match requested Atlas {release}")
+    return version
+
+
+def template_publication_version(template, release):
+    message = json.loads(parse_qs(template, keep_blank_values=True)["message"][0])
+    params = message["actions"][0]["params"]["params"]["articleParameters"]
+    return validate_publication_version(params.get("release"), release)
+
+
 def build_article_request(template, topic_id, release):
     form = {key: values[0] for key, values in parse_qs(template, keep_blank_values=True).items()}
     message = json.loads(form["message"])
     params = message["actions"][0]["params"]["params"]["articleParameters"]
     params["urlName"] = topic_id
-    params["release"] = f"{release}.0.0"
+    params["release"] = template_publication_version(template, release)
     form["message"] = json.dumps(message, separators=(",", ":"))
     form["aura.pageURI"] = "/s/articleView?" + urlencode(
         {"id": topic_id, "language": params.get("language", "en_US"), "release": release, "type": "5"}
@@ -123,14 +135,14 @@ def article_markdown(xhtml, parser="xml"):
     return text + "\n"
 
 
-def extract_article(payload, topic_id, release):
+def extract_article(payload, topic_id, release, resolved_version=None):
     actions = payload.get("actions") or []
     if len(actions) != 1 or actions[0].get("state") != "SUCCESS":
         raise ValueError("article request did not succeed")
     record = (((actions[0].get("returnValue") or {}).get("returnValue") or {}).get("record") or {})
     if record.get("Is_Error_Response__c"):
         raise ValueError("article API returned an error record")
-    expected_version = f"{release}.0.0"
+    expected_version = validate_publication_version(resolved_version or f"{release}.0.0", release)
     if record.get("Version__c") != expected_version:
         raise ValueError(f"article version {record.get('Version__c')!r} != {expected_version!r}")
     expected_topic = topic_id.removesuffix(".htm")
@@ -151,11 +163,11 @@ def write_atomic(path, data):
     os.replace(temporary, path)
 
 
-def toc_metadata(release, source, entries):
+def toc_metadata(release, source, entries, resolved_version=None):
     tool = Path(__file__).resolve()
     return {
         "schemaVersion": 1,
-        "release": f"{release}.0.0",
+        "release": validate_publication_version(resolved_version or f"{release}.0.0", release),
         "source": source,
         "entries": entries,
         "tool": str(tool),
@@ -219,7 +231,7 @@ async def fetch_article(request_context, endpoint, template, headers, topic_id, 
                 raise RuntimeError(f"HTTP {response.status}")
             if not response.ok:
                 raise ValueError(f"HTTP {response.status}")
-            return extract_article(await response.json(), topic_id, release)
+            return extract_article(await response.json(), topic_id, release, template_publication_version(template, release))
         except Exception as error:
             last_error = error
             if attempt + 1 < attempts:
@@ -237,8 +249,9 @@ async def export(args):
             root_url, toc_entries, topics, endpoint, template, headers = await load_toc_and_template(
                 page, args.release, args.language
             )
+            resolved_version = template_publication_version(template, args.release)
             if args.toc_only:
-                metadata = toc_metadata(args.release, root_url, toc_entries)
+                metadata = toc_metadata(args.release, root_url, toc_entries, resolved_version)
                 write_atomic(args.output / "_toc.json", json.dumps(metadata, indent=2, ensure_ascii=False) + "\n")
                 print(json.dumps({"release": metadata["release"], "tocArticleCount": len(toc_entries)}, indent=2))
                 return 0
@@ -249,16 +262,18 @@ async def export(args):
 
             semaphore = asyncio.Semaphore(args.concurrency)
             completed = 0
+            succeeded = 0
+            failed = 0
 
             async def one(topic_id):
-                nonlocal completed
+                nonlocal completed, succeeded, failed
                 output = args.output / article_filename(topic_id)
                 source_url = "https://help.salesforce.com/s/articleView?" + urlencode(
                     {"id": topic_id, "language": args.language, "release": args.release, "type": "5"}
                 )
                 try:
                     async with semaphore:
-                        record = await fetch_article(
+                        record = root_record if topic_id == ROOT_TOPIC else await fetch_article(
                             context.request, endpoint, template, headers, topic_id, args.release, args.attempts
                         )
                         acquisition = "article-api-xhtml"
@@ -277,6 +292,7 @@ async def export(args):
                         write_atomic(output, markdown)
                         if args.request_delay:
                             await asyncio.sleep(args.request_delay)
+                    succeeded += 1
                     return {
                         "topicId": topic_id,
                         "sourceUrl": source_url,
@@ -288,13 +304,22 @@ async def export(args):
                         "sha256": hashlib.sha256(markdown.encode()).hexdigest(),
                     }
                 except Exception as error:
+                    failed += 1
                     raise RuntimeError(f"{topic_id}: {error}") from error
                 finally:
                     completed += 1
                     if completed % 50 == 0 or completed == len(selected):
-                        print(f"exported {completed}/{len(selected)}", flush=True)
+                        print(f"completed {completed}/{len(selected)}: exported={succeeded}, failed={failed}", flush=True)
 
-            results = await asyncio.gather(*(one(topic) for topic in selected), return_exceptions=True)
+            # Fail before admitting a whole seasonal queue when its root cannot
+            # supply the exact resolved public revision. Do not relabel current
+            # or missing article data as a historical release.
+            try:
+                root_record = await fetch_article(context.request, endpoint, template, headers, ROOT_TOPIC, args.release, args.attempts)
+            except Exception as error:
+                results = [RuntimeError(f"seasonal root preflight: {error}")]
+            else:
+                results = await asyncio.gather(*(one(topic) for topic in selected), return_exceptions=True)
         finally:
             await browser.close()
 
@@ -303,7 +328,8 @@ async def export(args):
     metadata = {
         "schemaVersion": 1,
         "source": root_url,
-        "release": f"{args.release}.0.0",
+        "release": resolved_version,
+        "requestedAtlasRelease": args.release,
         "language": args.language,
         "exportedAt": utc_timestamp(),
         "tocArticleCount": len(topics),
