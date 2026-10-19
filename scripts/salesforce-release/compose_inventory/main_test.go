@@ -100,3 +100,14 @@ func TestFreshLWCDoesNotRetainStaleCarriedDocuments(t *testing.T) {
 		t.Fatalf("fresh source=%+v", got.Documents)
 	}
 }
+
+func TestHistoricalInventoryRecordsEveryFutureDeclarationExclusion(t *testing.T) {
+	inv := apexdocs.Inventory{Documents: []apexdocs.Document{
+		{SourcePath: "apex/current.md", Members: []apexdocs.Member{{Name: "present", APIVersion: "62.0"}, {Name: "future", APIVersion: "65.0"}}},
+		{SourcePath: "tooling-api/future.md", APIVersion: "64.0"},
+	}}
+	got, excluded := filterInventory(inv, 63)
+	if got.TotalFiles != 1 || got.TotalMembers != 1 || len(excluded) != 2 || got.Documents[0].Members[0].Name != "present" {
+		t.Fatalf("got=%+v excluded=%v", got, excluded)
+	}
+}

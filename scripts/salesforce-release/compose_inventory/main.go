@@ -36,10 +36,14 @@ func main() {
 		}
 		inv, err := apexdocs.BuildInventory(*atlas)
 		must(err)
+		major, err := strconv.Atoi(strings.TrimSuffix(*historicalAPI, ".0"))
+		must(err)
+		inv, excluded := filterInventory(inv, major)
 		manifest, slug, err := historicalManifest(inv, *historicalAPI)
 		must(err)
 		write(filepath.Join(*out, "salesforce-docs-inventory-"+slug+".json"), inv)
 		write(filepath.Join(*out, "salesforce-release-"+slug+".json"), manifest)
+		write(filepath.Join(*out, "salesforce-release-inventory-filter-"+slug+".json"), map[string]interface{}{"schemaVersion": 1, "targetAPIVersion": *historicalAPI, "excludedFutureDeclarations": excluded, "inventoryDigest": manifest.Digest})
 		fmt.Println(manifest.Digest)
 		return
 	}
@@ -147,18 +151,24 @@ func composeInventory(inv, prior apexdocs.Inventory) (apexdocs.Inventory, []stri
 			inv.Documents = append(inv.Documents, d)
 		}
 	}
+	return filterInventory(inv, 68)
+}
+
+// filterInventory retains the same six reference families and records every
+// declaration whose explicit availability is later than the checked snapshot.
+func filterInventory(inv apexdocs.Inventory, targetMajor int) (apexdocs.Inventory, []string) {
 	filtered := inv.Documents[:0]
 	var exclusions []string
 	for _, d := range inv.Documents {
 		v, _ := strconv.ParseFloat(d.APIVersion, 64)
-		if v > 68 {
+		if v > float64(targetMajor) {
 			exclusions = append(exclusions, d.SourcePath+": API"+d.APIVersion)
 			continue
 		}
 		ms := d.Members[:0]
 		for _, m := range d.Members {
 			v, _ := strconv.ParseFloat(m.APIVersion, 64)
-			if v <= 68 {
+			if v <= float64(targetMajor) {
 				ms = append(ms, m)
 			} else {
 				exclusions = append(exclusions, d.SourcePath+":"+m.Name+": API"+m.APIVersion)
