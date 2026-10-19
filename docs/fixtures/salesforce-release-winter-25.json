@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "release": "Winter '25",
+  "apiVersion": "62.0",
+  "digest": "f36a7b74647b32a1ad4976639ae978e175d483e5836ac3ccb215339d43e544aa",
+  "acquisition": "Anonymous versioned public Salesforce reference acquisition; unavailable ConnectApi TOC references are explicitly policy-excluded; current-only LWC is availability-filtered to the target API.",
+  "sourceFamilies": [
+    "apex-reference",
+    "aura-reference",
+    "lwc-reference",
+    "rest-api-reference",
+    "tooling-api-reference",
+    "visualforce-reference"
+  ]
+}

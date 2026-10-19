@@ -284,3 +284,75 @@ glade-tools docs-inventory --source "$ASSEMBLED_SNAPSHOT" \
 Use API 63.0 / `spring-25` and API 64.0 / `summer-25` for the other
 historical snapshots. Historical mode deliberately cannot compose API 68 or
 silently substitute historical release-note inventories.
+
+## API 68 candidate reference inputs, acquired 2026-10-19 UTC
+
+These files are **not admitted to the active release contract**. Its checked
+source window remains 65.0-67.0 until all API 68 provenance, per-item delta
+classifications and note routes pass. The intended candidate window is
+62.0-68.0. No new checked-window or Salesforce parity claim is made here.
+
+The anonymous public Apex acquisition completed at `2026-10-19T06:28:11Z`:
+1,926 acquired pages and 405 unavailable ConnectApi references cover all 2,331
+TOC references. The retained HTTP evidence contains 100 ConnectApi 403 URLs.
+No excluded page was requested during this continuation. Tooling contains 347
+completely acquired references. Exact checked API 67 inventories supply the
+explicit Aura, REST, Visualforce and LWC documentation carries in the candidate
+normalized inventory. The source URLs are:
+
+- [Apex publication metadata](https://developer.salesforce.com/docs/get_document/atlas.en-us.264.0.apexref.meta).
+- [Tooling publication metadata](https://developer.salesforce.com/docs/get_document/atlas.en-us.264.0.api_tooling.meta).
+
+Run the `compose_inventory` command above, then the namespace policy exporter
+against its inventory and the acquired Apex `_policy-excluded.json`.
+The normalized inventory has 2,928 documents and 5,677 members. Its generated
+namespace policy explicitly marks 2,235 known ConnectApi surfaces unsupported
+and separately enumerates the 405 unavailable references. Future documented
+API exclusions remain in the generated inventory-filter file.
+
+The normal publication probe passes the unversioned Atlas checks for Aura,
+REST and Visualforce but exits 1 at:
+`Winter '27 lwc carry recheck: current-only LWC guide does not prove 264.0 documentation is unpublished`.
+The current-only guide has no usable current-publication marker. API 68's
+release note explicitly calls LWC 68.0 current. Consequently, the unverified
+composition/source receipt is retained outside public fixtures; this branch
+does not assert that LWC 264 documentation is unpublished. A valid fresh LWC
+source binding must replace that carry before source admission or table
+regeneration. The frozen carried inventory alone does not resolve this issue.
+
+## API 62-64 candidate reference inputs, acquired 2026-10-19 UTC
+
+These generated source inputs are not admitted to the active contract.
+
+| API / Atlas | Acquired Apex | Policy-excluded references | Retained 403 | Normalized documents / members | Known ConnectApi exclusions | Completed UTC |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 62 / 252 | 1692 | 245 | 100 | 2659 / 4824 | 1967 | 06:28:25 |
+| 63 / 254 | 1694 | 308 | 99 | 2662 / 4866 | 1988 | 06:32:20 |
+| 64 / 256 | 1702 | 443 | 106 | 2675 / 4990 | 2046 | 06:36:40 |
+
+The remaining Atlas families contain 942, 943 and 948 acquired pages for APIs
+62, 63 and 64 respectively, with zero failed or empty pages. The existing
+assembler derives historical LWC views from the fresh 28-page current-only
+reference, retaining its availability-filtering limitation. Each normalized
+inventory was regenerated and byte-checked by `docs-inventory`; manifests use
+`NewReleaseManifest` and source receipts use the existing public exporter.
+
+Public publication sources (each TOC also provides every content reference):
+
+- https://developer.salesforce.com/docs/get_document/atlas.en-us.252.0.apexref.meta
+- https://developer.salesforce.com/docs/get_document/atlas.en-us.254.0.apexref.meta
+- https://developer.salesforce.com/docs/get_document/atlas.en-us.256.0.apexref.meta
+
+Repeat the historical assembly/manifest/receipt and namespace policy commands
+above for each API. Acquisition receipts retain the original scraper and
+wrapper hashes, dates, TOC hashes, inherited inputs and all 405 denied public
+ConnectApi URLs across the four acquisitions. Known acquired declarations and
+unavailable reference identities remain separate; classifications are generated.
+
+The full candidate remains blocked on one unavailable API 62 release-note leaf:
+https://help.salesforce.com/s/articleView?id=release-notes.rn_sales_features_core_leads_linkedinleadgen.htm&language=en_US&release=252&type=5
+The retained export is 1471/1472 articles, revision 252.15.0. The article API has
+no versioned record and the public article page has no visible content. This
+is not a ConnectApi exclusion, and no complete API 62 note inventory is asserted.
+Historical transitions still require per-item delta classifications and note
+routes. API 68 has the independent source-admission issue described above.
