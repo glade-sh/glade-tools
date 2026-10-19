@@ -32,6 +32,12 @@ func TestAtlasCarryPublicationRecheck(t *testing.T) {
 	}{
 		{"not published", 404, "", ""},
 		{"prior fallback", 200, `{"version":"262.0","toc":[]}`, ""},
+		{"prior null TOC", 200, `{"version":"262.0","toc":null}`, "does not prove"},
+		{"prior invalid TOC", 200, `{"version":"262.0","toc":"not a TOC"}`, "does not prove"},
+		{"structured prior fallback", 200, `{"version":{"doc_version":"262.0","release_version":"67.0"},"toc":[]}`, ""},
+		{"structured published", 200, `{"version":{"doc_version":"264.0","release_version":"68.0"},"toc":[]}`, "replace"},
+		{"structured inconsistent identity", 200, `{"version":{"doc_version":"262.0","release_version":"68.0"},"toc":[]}`, "invalid"},
+		{"structured missing API identity", 200, `{"version":{"doc_version":"262.0"},"toc":[]}`, "invalid"},
 		{"now published", 200, `{"version":"264.0","toc":[]}`, "replace"},
 		{"ambiguous", 200, `{"toc":[]}`, "does not prove"},
 		{"server failure", 503, "", "unavailable"},

@@ -73,19 +73,47 @@ func checkAtlasPublication(ctx context.Context, client docsClient, url, target, 
 		return fmt.Errorf("publication unavailable: HTTP %d", response.StatusCode)
 	}
 	var metadata struct {
-		Version string          `json:"version"`
+		Version json.RawMessage `json:"version"`
 		TOC     json.RawMessage `json:"toc"`
 	}
 	if err := json.NewDecoder(io.LimitReader(response.Body, 8<<20)).Decode(&metadata); err != nil {
 		return fmt.Errorf("publication metadata invalid: %w", err)
 	}
-	if metadata.Version == target {
+	version, err := atlasPublicationVersion(metadata.Version)
+	if err != nil {
+		return err
+	}
+	if version == target {
 		return fmt.Errorf("documentation %s is published; replace the carried receipt", target)
 	}
-	if metadata.Version != previous || len(metadata.TOC) == 0 {
+	var toc []json.RawMessage
+	if version != previous || json.Unmarshal(metadata.TOC, &toc) != nil || toc == nil {
 		return fmt.Errorf("publication metadata does not prove %s is unpublished", target)
 	}
 	return nil
+}
+
+func atlasPublicationVersion(raw json.RawMessage) (string, error) {
+	if len(raw) == 0 {
+		return "", nil
+	}
+	var version string
+	if err := json.Unmarshal(raw, &version); err == nil && version != "" {
+		return version, nil
+	}
+	// Atlas get_document returns a version object with independent document
+	// and API identities. Check both rather than trusting its display label.
+	var identity struct {
+		Document string `json:"doc_version"`
+		API      string `json:"release_version"`
+	}
+	if err := json.Unmarshal(raw, &identity); err != nil {
+		return "", fmt.Errorf("publication metadata invalid: %w", err)
+	}
+	if !apiVersionPattern.MatchString(identity.API) || identity.Document != fmt.Sprintf("%d.0", 2*apiInt(identity.API)+128) {
+		return "", fmt.Errorf("publication metadata invalid: inconsistent Atlas/API version identity")
+	}
+	return identity.Document, nil
 }
 
 // LWC is a current-only guide rather than a numbered Atlas family. Only an
