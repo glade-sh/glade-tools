@@ -145,9 +145,12 @@ python3 scripts/salesforce-release/acquire_versioned_docs.py \
 ```
 
 Use Atlas 254.0 and 256.0 for API 63 and 64. For the physical API 68 source,
-use Atlas 264.0 with `--families apex tooling-api apex-guide metadata-api
-object-reference`; the six-family composer separately binds explicit previous
-GA carries. Retain `_acquisition-batched.json`, publication JSON, TOCs and family
+use Atlas 264.0 with `--families apex tooling-api`; the six-family composer
+separately binds explicit previous GA carries. Optional supplementary guides
+are included as context only when present and completely exported. The composer
+rejects failed, empty, missing or mismatched family page counts before writing
+a source receipt. Release notes must have a complete matching export receipt,
+exact article versions and unchanged file hashes. Retain `_acquisition-batched.json`, publication JSON, TOCs and family
 version metadata outside the repository. The receipt records scraper/wrapper
 hashes, acquisition times, publication identities, batch counts and exact missing
 URLs on failure. Archive an incomplete receipt under a dated name before retrying;

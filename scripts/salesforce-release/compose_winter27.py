@@ -8,6 +8,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from assemble_versioned_docs import file_count, sha256, tree_sha256, write_json
@@ -21,6 +22,28 @@ def read(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def validate_complete_atlas_family(directory, name):
+    identity = read(directory / "_version.json")
+    if identity.get("version") != "264.0":
+        raise ValueError(f"{name} must publish 264.0")
+    pages = identity.get("pages", {})
+    markdown_count = sum(1 for path in directory.rglob("*.md") if path.is_file())
+    if not markdown_count or pages.get("empty") != 0 or pages.get("failed") != 0 or pages.get("success") != markdown_count or pages.get("total") != markdown_count:
+        raise ValueError(f"{name} public source export is incomplete")
+
+
+def validate_complete_release_notes(directory):
+    metadata = read(directory / "_export-meta.json")
+    files = metadata.get("files", [])
+    actual = {path.relative_to(directory).as_posix() for path in directory.rglob("*.md") if path.is_file()}
+    version = metadata.get("release", "")
+    if metadata.get("complete") is not True or not re.fullmatch(r"264\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)", version) or metadata.get("failures") != [] or not actual or len(files) != len(actual) or {item.get("file") for item in files} != actual or any(metadata.get(key) != len(actual) for key in ("tocArticleCount", "exportedArticleCount", "selectedArticleCount")):
+        raise ValueError("public release-note export is incomplete or has a mismatched release")
+    for item in files:
+        if item.get("version") != version or sha256(directory / item["file"]) != item.get("sha256"):
+            raise ValueError("public release-note file hash or version differs from its export receipt")
+
+
 def compose(atlas, notes, previous_receipt, previous_inventory, inventory, manifest):
     atlas, notes = Path(atlas), Path(notes)
     prior, prior_inventory, current_inventory, release = map(read, (previous_receipt, previous_inventory, inventory, manifest))
@@ -29,6 +52,7 @@ def compose(atlas, notes, previous_receipt, previous_inventory, inventory, manif
     meta = read(atlas / "_scrape-meta.json")
     if meta["version"] != "264.0":
         raise ValueError("Atlas source must be the explicit 264.0 scrape")
+    validate_complete_release_notes(notes)
     if sha256(previous_inventory) != prior["inventorySHA256"]:
         raise ValueError("previous inventory differs from the checked previous GA receipt")
     def carried_documents(value):
@@ -44,13 +68,15 @@ def compose(atlas, notes, previous_receipt, previous_inventory, inventory, manif
             families.append({**row, **carry})
         else:
             directory = atlas / name
-            identity = read(directory / "_version.json")
-            if identity["version"] != "264.0":
-                raise ValueError(f"{name} must publish 264.0")
+            validate_complete_atlas_family(directory, name)
             families.append({"name": name, "version": "264.0", "fileCount": file_count(directory), "sha256": tree_sha256(directory)})
     additional = []
     for name in ADDITIONAL:
         directory = notes if name == "release-notes" else atlas / name
+        if name != "release-notes":
+            if not directory.exists():
+                continue
+            validate_complete_atlas_family(directory, name)
         additional.append({"name": name, "version": "264.0", "fileCount": file_count(directory), "sha256": tree_sha256(directory)})
     lwc = {**copy.deepcopy(prior["snapshot"]["lwc"]), **carry}
     composition = {
