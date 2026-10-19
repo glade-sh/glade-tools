@@ -261,3 +261,26 @@ knowledge of declarations in pages that were not acquired. Other namespaces
 require their own per-item declaration and implementation review. The policy
 export is a source input; it does not replace delta classifications, release
 routes, complete source receipts, or an executed release check.
+
+For APIs 62.0, 63.0 and 64.0, assemble the five completed Atlas families with
+the existing availability-filtered LWC assembler. Generate the normalized
+inventory and canonical manifest with the same inventory library as APIs 65-67:
+
+```bash
+python3 scripts/salesforce-release/assemble_versioned_docs.py \
+  --source "$VERSIONED_SOURCE" --lwc-source "$CURRENT_LWC_SOURCE" \
+  --output "$ASSEMBLED_SNAPSHOT" --target-api-version 62.0
+go run ./scripts/salesforce-release/compose_inventory \
+  --atlas "$ASSEMBLED_SNAPSHOT" --historical-api 62.0 --output "$OUTPUT"
+python3 scripts/salesforce-release/export_source_receipt.py \
+  --snapshot "$ASSEMBLED_SNAPSHOT" \
+  --inventory "$OUTPUT/salesforce-docs-inventory-winter-25.json" \
+  --manifest "$OUTPUT/salesforce-release-winter-25.json" \
+  --output "$OUTPUT/salesforce-release-source-winter-25.json"
+glade-tools docs-inventory --source "$ASSEMBLED_SNAPSHOT" \
+  --check "$OUTPUT/salesforce-docs-inventory-winter-25.json"
+```
+
+Use API 63.0 / `spring-25` and API 64.0 / `summer-25` for the other
+historical snapshots. Historical mode deliberately cannot compose API 68 or
+silently substitute historical release-note inventories.

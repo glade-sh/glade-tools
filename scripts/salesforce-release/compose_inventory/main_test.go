@@ -79,3 +79,14 @@ func TestComposeInventoryKeepsDeclaredReferenceFamilyDenominator(t *testing.T) {
 		t.Fatalf("supplementary sources changed the six-family contract denominator: %#v", got.Documents)
 	}
 }
+
+func TestHistoricalManifestUsesCanonicalInventoryAndExactSeason(t *testing.T) {
+	inv := apexdocs.Inventory{SchemaVersion: 1, TotalFiles: 1, Documents: []apexdocs.Document{{SourcePath: "apex/example.md", Name: "Example"}}}
+	manifest, slug, err := historicalManifest(inv, "62.0")
+	if err != nil || slug != "winter-25" || manifest.Release != "Winter '25" || manifest.APIVersion != "62.0" || manifest.Digest != apexdocs.CanonicalDigest(inv) || len(manifest.SourceFamilies) != 6 {
+		t.Fatalf("manifest=%+v slug=%s error=%v", manifest, slug, err)
+	}
+	if _, _, err := historicalManifest(inv, "68.0"); err == nil {
+		t.Fatal("historical mode must not bypass the API 68 carry composition")
+	}
+}
