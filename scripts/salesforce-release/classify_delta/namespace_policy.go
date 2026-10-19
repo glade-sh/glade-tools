@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
@@ -66,7 +67,7 @@ func connectAPIClassifications(inv apexdocs.Inventory, atlas string) []surfacele
 	return result
 }
 
-func exportNamespacePolicy(inventoryPath, acquisitionPath, output string) error {
+func exportNamespacePolicy(inventoryPath, acquisitionPath, output string, prior ...string) error {
 	inv, err := apexdocs.ReadInventory(inventoryPath)
 	if err != nil {
 		return err
@@ -106,14 +107,34 @@ func exportNamespacePolicy(inventoryPath, acquisitionPath, output string) error 
 			return fmt.Errorf("retained HTTP evidence is not an excluded ConnectApi 403")
 		}
 	}
+	historical := []surfaceledger.ReleaseClassification{}
+	historicalHash := ""
+	if len(prior) == 2 && prior[0] != "" {
+		if !regexp.MustCompile(`^[1-9][0-9]*\.0$`).MatchString(prior[1]) {
+			return fmt.Errorf("historical namespace classifications require --previous-api")
+		}
+		api, _ := strconv.Atoi(strings.TrimSuffix(prior[1], ".0"))
+		atlas := fmt.Sprintf("%d.0", 2*api+128)
+		previous, err := apexdocs.ReadInventory(prior[0])
+		if err != nil {
+			return err
+		}
+		historicalHash = fileSHA256(prior[0])
+		for _, row := range connectAPIClassifications(previous, atlas) {
+			row.ReasonRef = "Historical source evidence only; current documentation was not inferred from it. " + row.ReasonRef
+			historical = append(historical, row)
+		}
+	}
 	write(output, struct {
-		SchemaVersion   int                                   `json:"schemaVersion"`
-		Namespace       string                                `json:"namespace"`
-		InventorySHA256 string                                `json:"inventorySHA256"`
-		ReceiptSHA256   string                                `json:"acquisitionReceiptSHA256"`
-		Acquisition     policyAcquisition                     `json:"acquisition"`
-		Classifications []surfaceledger.ReleaseClassification `json:"classifications"`
-	}{1, "ConnectApi", fileSHA256(inventoryPath), fmt.Sprintf("%x", sha256.Sum256(data)), acquisition, connectAPIClassifications(inv, acquisition.AtlasVersion)})
+		SchemaVersion             int                                   `json:"schemaVersion"`
+		Namespace                 string                                `json:"namespace"`
+		InventorySHA256           string                                `json:"inventorySHA256"`
+		ReceiptSHA256             string                                `json:"acquisitionReceiptSHA256"`
+		Acquisition               policyAcquisition                     `json:"acquisition"`
+		Classifications           []surfaceledger.ReleaseClassification `json:"classifications"`
+		HistoricalInventorySHA256 string                                `json:"historicalInventorySHA256,omitempty"`
+		HistoricalClassifications []surfaceledger.ReleaseClassification `json:"historicalClassifications,omitempty"`
+	}{1, "ConnectApi", fileSHA256(inventoryPath), fmt.Sprintf("%x", sha256.Sum256(data)), acquisition, connectAPIClassifications(inv, acquisition.AtlasVersion), historicalHash, historical})
 	return nil
 }
 

@@ -55,4 +55,22 @@ func TestNamespacePolicyRejectsOtherNamespacesAndMismatchedEvidence(t *testing.T
 			}
 		})
 	}
+	previous := filepath.Join(root, "previous.json")
+	data, _ = json.Marshal(apexdocs.Inventory{SchemaVersion: 1, Documents: []apexdocs.Document{{SourcePath: "apex/apex_connectapi_old.md", Kind: "class", Namespace: "ConnectApi", Name: "Old", Title: "Old Class"}}})
+	if err := os.WriteFile(previous, data, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(acquisition, []byte(valid), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := exportNamespacePolicy(inventory, acquisition, output, previous, "67.0"); err != nil {
+		t.Fatal(err)
+	}
+	result, err := os.ReadFile(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(result), `"historicalClassifications"`) || !strings.Contains(string(result), `"apex:ConnectApi.Old"`) || !strings.Contains(string(result), "/en-us/262.0") || !strings.Contains(string(result), "current documentation was not inferred") {
+		t.Fatalf("historical exclusion was lost or falsely labeled current: %s", result)
+	}
 }

@@ -107,7 +107,7 @@ func main() {
 		if *current == "" || *policyOutput == "" || *policyReceipt == "" || *contract != "" || *output != "" || *deltaOutput != "" || *reviewPath != "" {
 			must(fmt.Errorf("namespace policy export requires only --current-inventory, --namespace-policy-receipt and --namespace-policy-output"))
 		}
-		must(exportNamespacePolicy(*current, *policyReceipt, *policyOutput))
+		must(exportNamespacePolicy(*current, *policyReceipt, *policyOutput, *previous, *previousVersion))
 		return
 	}
 	var changes []releasecontract.SurfaceChange
