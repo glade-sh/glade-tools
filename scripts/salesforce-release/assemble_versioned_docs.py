@@ -117,6 +117,11 @@ def assemble(versioned_source, lwc_source, output, target_version):
     if output.exists():
         raise FileExistsError(f"output already exists: {output}")
 
+    for path in sorted(lwc_source.glob("*.md")):
+        content = path.read_text(encoding="utf-8")
+        if content.lstrip().startswith("# Oops") or "## Something went wrong" in content:
+            raise ValueError(f"current-only LWC acquisition contains publisher error page: {path.name}")
+
     source_metadata = read_json(versioned_source / "_scrape-meta.json")
     if not source_metadata.get("version"):
         raise ValueError("versioned source metadata is missing version")
