@@ -2602,3 +2602,15 @@ func TestSalesforceVerify_Schema2ProductTestsDoNotSupplyLegacyDeltaProof(t *test
 		t.Fatalf("expected legacy proof failure: %+v", report)
 	}
 }
+
+func TestSalesforceVerifyRepositoryInputsMatchCurrentContract(t *testing.T) {
+	contract, _, err := releasecontract.Load(fixturesPath("docs/fixtures/salesforce-release-contract.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	current := contract.Releases[len(contract.Releases)-1].APIVersion
+	opts := salesforceVerifyOptions{Catalog: fixturesPath("docs/fixtures/apex-language-rules.json"), RuntimeCases: fixturesPath("docs/fixtures/salesforce-runtime-correctness.json"), TestProject: fixturesPath("testdata/salesforce-correctness")}
+	if err := checkAPIVersionProvenance(releaseManifest{APIVersion: current}, opts); err != nil {
+		t.Fatal(err)
+	}
+}

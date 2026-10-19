@@ -60,6 +60,9 @@
         "productTests": [
           "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/68.0",
           "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_68.0"
+        ],
+        "proofCases": [
+          "APEX-API68-CRYPTO-CBC-DECLARATION"
         ]
       }
     ],
@@ -524,6 +527,9 @@
       ],
       "productTests": [
         "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset"
+      ],
+      "proofCases": [
+        "APEX-API68-CRYPTO-CBC-DECLARATION"
       ]
     },
     {

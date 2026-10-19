@@ -16,11 +16,11 @@ test("Apex language-rule evidence is documented and discoverable", () => {
   const gapCount = catalog.rules.filter((rule) => rule.status === "confirmed-gap").length;
   const pendingCount = catalog.rules.filter((rule) => rule.status === "oracle-pending").length;
 
-  assert.equal(catalog.rules.length, 422);
+  assert.equal(catalog.rules.length, 423);
   assert.equal(reservedCount, 121);
-  assert.equal(acceptCount, 68);
+  assert.equal(acceptCount, 69);
   assert.equal(rejectCount, 354);
-  assert.equal(supportedCount, 422);
+  assert.equal(supportedCount, 423);
   assert.equal(gapCount, 0);
   assert.equal(pendingCount, 0);
   assert.ok(catalog.rules.some((rule) => rule.id === "APEX-RESERVED-CURRENCY"));

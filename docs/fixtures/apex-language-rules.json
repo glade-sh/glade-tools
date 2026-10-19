@@ -5848,6 +5848,19 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectUnreachableInstructions"
+    },
+    {
+      "id": "APEX-API68-CRYPTO-CBC-DECLARATION",
+      "area": "crypto-declarations",
+      "docsPath": "https://developer.salesforce.com/docs/atlas.en-us.264.0.apexref.meta/apexref/apex_classes_restful_crypto.htm",
+      "docsLines": "public static Blob encrypt(String algorithmName, Blob secretKey, Blob initializationVector, Blob clearData)",
+      "apiVersion": 68,
+      "sourceKind": "class",
+      "source": "public class ReleaseCryptoDeclaration68 { public static Blob encrypt(Blob key, Blob iv, Blob clearText) { return System.Crypto.encrypt('AES256', key, iv, clearText); } }",
+      "oracle": "accept",
+      "owner": "vm",
+      "status": "supported",
+      "productTest": "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset"
     }
   ]
 }

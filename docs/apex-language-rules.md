@@ -1,14 +1,14 @@
 # Apex language-rule evidence
 
 `docs/fixtures/apex-language-rules.json` is the checked compiler compatibility
-catalog for Glade. It contains 422 checked rows:
+catalog for Glade. It contains 423 checked rows:
 
 - 121 reserved identifiers;
-- 301 other compiler controls;
-- 68 accept controls; and
+- 302 other compiler controls;
+- 69 accept controls; and
 - 354 rejection controls.
 
-The current status breakdown is 422 supported rows, 0 confirmed Glade gaps, and
+The current status breakdown is 423 supported rows, 0 confirmed Glade gaps, and
 0 oracle-pending rows. All rows are currently marked supported in the checked
 catalog. A supported row
 must point to an exact Glade product regression test.
@@ -16,6 +16,13 @@ must point to an exact Glade product regression test.
 The catalog includes `APEX-RESERVED-CURRENCY`, which proves that Salesforce and
 Glade reject `currency` as a variable name. Reserved identifier matching is
 case-insensitive.
+
+The API 68 Crypto declaration case is generated from the exact reviewed public
+signature and bound to the existing deterministic local CBC implementation test.
+Its expected compile acceptance comes from that public declaration. It contains
+no native observation or parity credit; the Correctness lane must collect fresh
+Salesforce and candidate observations. The published CI product pin stays fixed;
+that lane uses the final explicit product SHA after the product update merges.
 
 ## Row contract
 

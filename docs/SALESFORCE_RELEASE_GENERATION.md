@@ -469,3 +469,27 @@ the unavailable source is retained explicitly for the coordinator's decision.
 Winter26 export completedUTC: `2026-10-19T07:42:48Z`.
 ExporterSHA256: `5e0ab9545024ee05826b043a731638e7decddee64e5ac61ee75966dcb31164c2`.
 Retained export metadataSHA256: `b4c1dc8cb8b6b4a3094b6251dff9ed8e26ba8ccf206845ce46b40efec1d94203`.
+
+## Verifier execution targets
+
+The real runtime seed and lifecycle SFDX project must target the contract's
+current release, independently of the source-window floor. Generate API68
+request metadata and its public-document-derived compiler case with:
+
+```bash
+python3 scripts/salesforce-release/generate_verifier_inputs.py \
+  --contract docs/fixtures/salesforce-release-contract.json \
+  --catalog docs/fixtures/apex-language-rules.json \
+  --runtime-cases docs/fixtures/salesforce-runtime-correctness.json \
+  --test-project testdata/salesforce-correctness --write
+```
+
+Use `--check` for a read-only byte check. This preserves the published product
+CI pin and every existing compiler-catalog byte. The added API68 Crypto case
+comes from its exact checked public declaration and existing product test. It
+supplies a future compiler request and source/behavior proof requirement, not an
+observation. Runtime comparisons remain inconclusive with empty observations;
+the generator refuses to relabel observed or conclusive data. The SFDX sources
+remain unchanged; only request-version metadata advances. The real verifier
+provenance regression checks these inputs together before any org operation.
+The final Correctness run must still collect native and candidate results.
