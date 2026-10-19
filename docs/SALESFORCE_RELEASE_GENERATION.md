@@ -241,3 +241,23 @@ namespace `ConnectApi`, disposition `explicitly-unsupported`, and reason
 URLs and status counts. The acquisition receipt binds the TOC, policy ledger,
 retained input and HTTP evidence hashes. Acquired and excluded reference counts
 must cover the TOC exactly; an exclusion never supplies an invented signature.
+
+Before assembly, verify the retained family coverage and export its policy
+classifications using the same canonical surface normalization as the gate:
+
+```bash
+python3 scripts/salesforce-release/validate_policy_exclusions.py "$NEW_OUTPUT/apex"
+go run ./scripts/salesforce-release/classify_delta \
+  --current-inventory "$NORMALIZED_INVENTORY" \
+  --namespace-policy-receipt "$NEW_OUTPUT/apex/_policy-excluded.json" \
+  --namespace-policy-output "$GENERATED_NAMESPACE_POLICY"
+```
+
+The generated namespace policy enumerates **every known ConnectApi surface**,
+including unchanged declarations, as `outside-claim` / `explicit-unsupported`.
+It also retains the unavailable TOC references and 403 evidence separately.
+These records assert an exclusion from product scope, not runtime parity or
+knowledge of declarations in pages that were not acquired. Other namespaces
+require their own per-item declaration and implementation review. The policy
+export is a source input; it does not replace delta classifications, release
+routes, complete source receipts, or an executed release check.

@@ -116,3 +116,8 @@ class AcquisitionTests(unittest.TestCase):
             self.assertEqual(identity['pages']['success'], 2)
             self.assertEqual(identity['policyExcludedReferences'], 1)
             self.assertTrue(json.loads((output / '_acquisition-batched.json').read_text())['complete'])
+            from validate_policy_exclusions import validate
+            self.assertEqual(validate(output / 'apex')['policyExcluded'], 1)
+            (output / 'apex/apex_System_Crypto.md').unlink()
+            with self.assertRaisesRegex(ValueError, 'policy'):
+                validate(output / 'apex')

@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 from assemble_versioned_docs import file_count, sha256, tree_sha256, write_json
+from validate_policy_exclusions import validate as validate_policy_exclusions
 
 GENERATOR = "scripts/salesforce-release/compose_winter27.py"
 CARRIES = ("lightning-aura", "rest-api", "visualforce")
@@ -30,6 +31,10 @@ def validate_complete_atlas_family(directory, name):
     markdown_count = sum(1 for path in directory.rglob("*.md") if path.is_file())
     if not markdown_count or pages.get("empty") != 0 or pages.get("failed") != 0 or pages.get("success") != markdown_count or pages.get("total") != markdown_count:
         raise ValueError(f"{name} public source export is incomplete")
+    if identity.get('policyExcludedReferences') is not None or (directory / '_policy-excluded.json').exists():
+        if name != 'apex':
+            raise ValueError('namespace acquisition exclusions apply only to Apex ConnectApi')
+        validate_policy_exclusions(directory)
 
 
 def validate_complete_release_notes(directory):

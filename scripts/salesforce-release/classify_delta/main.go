@@ -100,7 +100,16 @@ func main() {
 	reviewPath := flag.String("review", "", "Explicit reviewed decisions; omit only when exporting the delta")
 	deltaOutput := flag.String("delta-output", "", "Export exact delta rows for review")
 	output := flag.String("output", "", "Generated schema-2 classification file")
+	policyReceipt := flag.String("namespace-policy-receipt", "", "Acquisition policy receipt for excluded ConnectApi references")
+	policyOutput := flag.String("namespace-policy-output", "", "Enumerate all known ConnectApi declarations as unsupported, separately from unavailable references")
 	flag.Parse()
+	if *policyOutput != "" || *policyReceipt != "" {
+		if *current == "" || *policyOutput == "" || *policyReceipt == "" || *contract != "" || *output != "" || *deltaOutput != "" || *reviewPath != "" {
+			must(fmt.Errorf("namespace policy export requires only --current-inventory, --namespace-policy-receipt and --namespace-policy-output"))
+		}
+		must(exportNamespacePolicy(*current, *policyReceipt, *policyOutput))
+		return
+	}
 	var changes []releasecontract.SurfaceChange
 	prevName := *previousName
 	if *contract != "" {
