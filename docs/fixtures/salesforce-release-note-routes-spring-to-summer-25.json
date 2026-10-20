@@ -139,7 +139,6 @@
       ],
       "surfaceIds": [
         "apex:Auth.AuthProviderTokenResponse.AuthProviderTokenResponse(String,String,String,String,String)",
-        "apex:Auth.AuthProviderTokenResponse.idToken",
         "apex:Auth.GeneratedUserData",
         "apex:Auth.GeneratedUserData.GeneratedUserData(String,String,String,String,String,String,String,String,String)",
         "apex:Auth.GeneratedUserData.alias",

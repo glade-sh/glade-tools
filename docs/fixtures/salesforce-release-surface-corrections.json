@@ -231,6 +231,26 @@
         "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Metadata_RelatedListItem.htm/en-us/254.0"
       ],
       "reason": "Salesforce returns this property at API 62.0, but the API 62.0 reference export omits it."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.verifyHMac(String,Blob,Blob,Blob)",
+      "since": "62.0",
+      "sourceApiVersion": "63.0",
+      "sourcePath": "apex/apex_classes_restful_crypto.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/254.0"
+      ],
+      "reason": "Salesforce accepts this overload at API 62.0, but the API 62.0 reference export types the last parameter as Boolean."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.idToken",
+      "since": "62.0",
+      "sourceApiVersion": "64.0",
+      "sourcePath": "apex/apex_class_Auth_AuthProviderTokenResponse.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_AuthProviderTokenResponse.htm/en-us/256.0"
+      ],
+      "reason": "Salesforce exposes this field at API 62.0, but the API 62.0 and 63.0 reference exports omit it."
     }
   ]
 }

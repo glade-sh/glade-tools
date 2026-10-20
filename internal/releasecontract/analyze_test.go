@@ -700,6 +700,8 @@ func TestCheckedCorrectionsKeepPreWindowDeclarationsUngated(t *testing.T) {
 		"apex:system.parentjobresult",
 		"apex:system.system.attachfinalizer(object)",
 		"apex:compression.zipwriter.getentrynames()",
+		"apex:system.crypto.verifyhmac(string,blob,blob,blob)",
+		"apex:auth.authprovidertokenresponse.idtoken",
 	} {
 		rng, ok := analysis.Report.Ranges[id]
 		if !ok || rng.Since != 62 || rng.Until != 0 {

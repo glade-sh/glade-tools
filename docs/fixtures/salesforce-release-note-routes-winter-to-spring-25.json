@@ -103,7 +103,6 @@
         "apex:QuickAction.DescribeQuickActionParameter.parametervalue",
         "apex:System.Cookie.Cookie(String,String,String,Integer,Boolean,String,Boolean)",
         "apex:System.Cookie.isHttpOnly()",
-        "apex:System.Crypto.verifyHMac(String,Blob,Blob,Blob)",
         "apex:System.Crypto.verifyHMac(String,Blob,Blob,Boolean)",
         "apex:System.Database.getQueryLocator(List<Object>)",
         "apex:System.Database.getQueryLocator(List<Object>,AccessLevel)",

@@ -469,7 +469,7 @@ Spring/Summer '25 inventories above cover1509/1550 articles. Each of the three
 transitions has an explicit per-article policy with requireExplicit branches;
 the same `generate_release_routes.py` exporter produces all routes. The six
 transitions total10677 inventory documents, all routed. The static contract has
-1711/1711 classified surface deltas and28/28 classified behaviors, with zero
+1709/1709 classified surface deltas and28/28 classified behaviors, with zero
 execution credit. Qualified declaration/test evidence lives in generated
 classifications, backed by checked review inputs.
 

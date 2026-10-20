@@ -936,15 +936,6 @@
       ]
     },
     {
-      "surfaceId": "apex:System.Crypto.verifyHMac(String,Blob,Blob,Blob)",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public static Boolean verifyHMac(String algorithmName, Blob data, Blob privateKey, Blob macToVerify) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"verifyHmac\",\"type\":\"Boolean\",\"parameters\":[\"String\",\"Blob\",\"Blob\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.crypto.verifyhmac(string,blob,blob,blob)"
-      ]
-    },
-    {
       "surfaceId": "apex:System.Crypto.verifyHMac(String,Blob,Blob,Boolean)",
       "scope": "outside-claim",
       "disposition": "explicit-unsupported",

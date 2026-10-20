@@ -13,15 +13,6 @@
       ]
     },
     {
-      "surfaceId": "apex:Auth.AuthProviderTokenResponse.idToken",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String idToken {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_AuthProviderTokenResponse.htm/en-us/256.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"idToken\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.authprovidertokenresponse.idtoken"
-      ]
-    },
-    {
       "surfaceId": "apex:Auth.GeneratedUserData",
       "scope": "t2",
       "disposition": "existing-case",
