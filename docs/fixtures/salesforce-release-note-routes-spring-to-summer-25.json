@@ -202,7 +202,6 @@
         "apex:embeddedai.RecordApexRepresentation.recordData",
         "apex:embeddedai.RecordApexRepresentation.relatedRecordData",
         "apex:embeddedai.RecordApexRepresentation.toString()",
-        "apex:formulaeval.FormulaBuilder.parseAsTemplate(Boolean)",
         "apex:ise_bots_apex.DynamicMenuItem",
         "apex:ise_bots_apex.DynamicMenuItem.EntityId",
         "apex:ise_bots_apex.DynamicMenuItem.EntityIdValue",

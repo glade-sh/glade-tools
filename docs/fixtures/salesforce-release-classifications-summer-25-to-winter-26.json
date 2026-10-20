@@ -679,78 +679,6 @@
       ]
     },
     {
-      "surfaceId": "apex:System.Finalizer",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: type System.Finalizer (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_System_Finalizer.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"interface\",\"name\":\"Finalizer\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.finalizer"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.Finalizer.execute(FinalizerContext)",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public void execute(System.FinalizerContext finalizerContext) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_System_Finalizer.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"execute\",\"type\":\"void\",\"parameters\":[\"FinalizerContext\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.finalizer.execute(finalizercontext)"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: type System.FinalizerContext (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_System_FinalizerContext.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"FinalizerContext\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.finalizercontext"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getAsyncApexJobId()",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public Id getAsyncApexJobId() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_System_FinalizerContext.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getAsyncApexJobId\",\"type\":\"Id\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.finalizercontext.getasyncapexjobid()"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getException()",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public Exception getException() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_System_FinalizerContext.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getException\",\"type\":\"Exception\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.finalizercontext.getexception()"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getRequestId()",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public String getRequestId() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_System_FinalizerContext.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getRequestId\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.finalizercontext.getrequestid()"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getResult()",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public System.ParentJobResult getResult() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_interface_System_FinalizerContext.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getResult\",\"type\":\"ParentJobResult\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.finalizercontext.getresult()"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.ParentJobResult",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: type System.ParentJobResult (https://developer.salesforce.com/docs/get_document_content/apexref/apex_enum_System_ParentJobResult.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"enum\",\"name\":\"ParentJobResult\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.parentjobresult"
-      ]
-    },
-    {
       "preserveAvailability": true,
       "surfaceId": "apex:System.SObject.clone(Boolean)",
       "scope": "t2",
@@ -781,21 +709,13 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:System.String.template(Map\u003cString,Object\u003e)",
       "scope": "t2",
       "disposition": "existing-case",
       "reasonRef": "Declaration: public String template(Map\u003cString, Object\u003e valueMap) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_string.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"template\",\"type\":\"String\",\"parameters\":[\"Map\u003cString,Object\u003e\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.string.template(map\u003cstring,object\u003e)"
-      ]
-    },
-    {
-      "surfaceId": "apex:System.System.attachFinalizer(Object)",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public static void attachFinalizer(Object finalizer) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_system.htm/en-us/258.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"attachFinalizer\",\"type\":\"void\",\"parameters\":[\"Object\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.system.attachfinalizer(object)"
       ]
     },
     {

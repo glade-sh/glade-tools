@@ -73,83 +73,83 @@
     },
     {
       "surfaceId": "apex:System.Finalizer",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_interface_System_Finalizer.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this interface, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.Finalizer.execute(FinalizerContext)",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_interface_System_Finalizer.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this exact interface method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.FinalizerContext",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this interface, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.FinalizerContext.getAsyncApexJobId()",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.FinalizerContext.getException()",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.FinalizerContext.getRequestId()",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.FinalizerContext.getResult()",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.ParentJobResult",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_enum_System_ParentJobResult.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents this enum as FinalizerContext.getResult's return type, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:System.String.template(Map<String,Object>)",
@@ -163,13 +163,13 @@
     },
     {
       "surfaceId": "apex:System.System.attachFinalizer(Object)",
-      "since": "65.0",
+      "since": "62.0",
       "sourceApiVersion": "67.0",
       "sourcePath": "apex/apex_methods_system_system.md",
       "sourceRefs": [
         "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
       ],
-      "reason": "The API 65.0 developer guide documents System.attachFinalizer, but the API 65.0 and 66.0 Apex reference exports omit its page."
+      "reason": "Transaction Finalizers predate API 62.0 and Salesforce accepts this declaration at API 62.0 and later, but the API 62.0 through 66.0 Apex reference exports omit its page. The API 65.0 developer guide also documents it."
     },
     {
       "surfaceId": "apex:wave.QueryNode.order(List<List<String>>)",
@@ -191,6 +191,46 @@
       ],
       "reason": "The exact DeleteFilter declaration is present without an API annotation in the API62-64 references. API65 adds a65.0 annotation to that existing declaration. Preserve its captured API62 baseline availability; this documentation-label correction does not establish runtime delete-filter execution parity. The existing independently classified API67 removal/non-parity boundary is retained.",
       "until": "67.0"
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.getEntryNames()",
+      "since": "62.0",
+      "sourceApiVersion": "63.0",
+      "sourcePath": "apex/apex_class_compression_zipwriter.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_compression_zipwriter.htm/en-us/254.0"
+      ],
+      "reason": "Salesforce accepts this method at API 62.0, but the API 62.0 reference export omits it."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.addEntry(String,String,Datetime,Compression.Method,Blob)",
+      "since": "62.0",
+      "sourceApiVersion": "63.0",
+      "sourcePath": "apex/apex_class_compression_zipwriter.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_compression_zipwriter.htm/en-us/254.0"
+      ],
+      "reason": "Salesforce accepts this overload at API 62.0, but the API 62.0 reference export omits it."
+    },
+    {
+      "surfaceId": "apex:formulaeval.FormulaBuilder.parseAsTemplate(Boolean)",
+      "since": "62.0",
+      "sourceApiVersion": "64.0",
+      "sourcePath": "apex/apex_class_formulaeval_FormulaBuilder.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_formulaeval_FormulaBuilder.htm/en-us/256.0"
+      ],
+      "reason": "Salesforce accepts this method at API 62.0, but the API 62.0 and 63.0 reference exports omit it."
+    },
+    {
+      "surfaceId": "apex:Metadata.RelatedListItem.quickActions",
+      "since": "62.0",
+      "sourceApiVersion": "63.0",
+      "sourcePath": "apex/apex_class_Metadata_RelatedListItem.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Metadata_RelatedListItem.htm/en-us/254.0"
+      ],
+      "reason": "Salesforce returns this property at API 62.0, but the API 62.0 reference export omits it."
     }
   ]
 }

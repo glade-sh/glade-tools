@@ -814,6 +814,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:Messaging.SingleEmailMessage.getOneClickPost()",
       "scope": "t2",
       "disposition": "existing-case",
@@ -823,6 +824,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:Messaging.SingleEmailMessage.setOneClickPost(Boolean)",
       "scope": "t2",
       "disposition": "existing-case",
@@ -832,6 +834,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:Messaging.SingleEmailMessage.setUnsubscribeComment(String)",
       "scope": "t2",
       "disposition": "existing-case",
@@ -841,21 +844,13 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:Messaging.SingleEmailMessage.setUnsubscribeUrls(List\u003cString\u003e)",
       "scope": "t2",
       "disposition": "existing-case",
       "reasonRef": "Declaration: public void setUnsubscribeUrls(List\u003cString\u003e unsubscribeUrls) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_email_outbound_single.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"setUnsubscribeUrls\",\"type\":\"void\",\"parameters\":[\"List\u003cString\u003e\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.singleemailmessage.setunsubscribeurls(list\u003cstring\u003e)"
-      ]
-    },
-    {
-      "surfaceId": "apex:Metadata.RelatedListItem.quickActions",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public List\u003cString\u003e quickActions {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Metadata_RelatedListItem.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"quickActions\",\"type\":\"List\u003cString\u003e\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:metadata.relatedlistitem.quickactions"
       ]
     },
     {
@@ -931,6 +926,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:System.Cookie.isHttpOnly()",
       "scope": "t2",
       "disposition": "existing-case",
@@ -1029,24 +1025,6 @@
       "reasonRef": "Declaration: global TaxCustomerDetailsRequest(String accountId, String code, String exemptionNo, String exemptionReason, String taxCertificateId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxCustomerDetailsRequest.htm/en-us/252.0). Product evidence: The owner commercetax.TaxCustomerDetailsRequest exists, but no member with this exact name and parameter list exists in its registered declaration shape. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6.. Decision: Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
-      ]
-    },
-    {
-      "surfaceId": "apex:compression.ZipWriter.addEntry(String,String,Datetime,Compression.Method,Blob)",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public Compression.ZipEntry addEntry(String name, String comment, Datetime modTime, Compression.Method method, Blob data) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_compression_zipwriter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"addEntry\",\"type\":\"compression.ZipEntry\",\"parameters\":[\"String\",\"String\",\"Datetime\",\"compression.Method\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:compression.zipwriter.addentry(string,string,datetime,compression.method,blob)"
-      ]
-    },
-    {
-      "surfaceId": "apex:compression.ZipWriter.getEntryNames()",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public Set\u003cString\u003e getEntryNames() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_compression_zipwriter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getEntryNames\",\"type\":\"Set\u003cString\u003e\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:compression.zipwriter.getentrynames()"
       ]
     },
     {

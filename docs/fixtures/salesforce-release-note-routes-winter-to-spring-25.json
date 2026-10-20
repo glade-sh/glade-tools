@@ -94,7 +94,6 @@
         "apex:Messaging.SingleEmailMessage.setOneClickPost(Boolean)",
         "apex:Messaging.SingleEmailMessage.setUnsubscribeComment(String)",
         "apex:Messaging.SingleEmailMessage.setUnsubscribeUrls(List<String>)",
-        "apex:Metadata.RelatedListItem.quickActions",
         "apex:QuickAction.DescribeQuickActionParameter",
         "apex:QuickAction.DescribeQuickActionParameter.getParameterName()",
         "apex:QuickAction.DescribeQuickActionParameter.getParameterType()",
@@ -113,9 +112,7 @@
         "apex:System.System.resumeJobById(String)",
         "apex:System.System.resumeJobByName(String)",
         "apex:commercetax.TaxCustomerDetailsRequest.TaxCustomerDetailsRequest(String,String,String,String)",
-        "apex:commercetax.TaxCustomerDetailsRequest.TaxCustomerDetailsRequest(String,String,String,String,String)",
-        "apex:compression.ZipWriter.addEntry(String,String,Datetime,Compression.Method,Blob)",
-        "apex:compression.ZipWriter.getEntryNames()"
+        "apex:commercetax.TaxCustomerDetailsRequest.TaxCustomerDetailsRequest(String,String,String,String,String)"
       ]
     },
     {

@@ -686,3 +686,24 @@ func TestAnalyzeRequiresBothGapEdgesToBeReviewedAsDocumentation(t *testing.T) {
 		}
 	}
 }
+
+// Declarations that predate the checked window but are missing from early
+// reference exports must not receive an introduction boundary.
+func TestCheckedCorrectionsKeepPreWindowDeclarationsUngated(t *testing.T) {
+	analysis, err := Analyze(filepath.Join("..", "..", "docs", "fixtures", "salesforce-release-contract.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []string{
+		"apex:system.finalizer",
+		"apex:system.finalizercontext.getresult()",
+		"apex:system.parentjobresult",
+		"apex:system.system.attachfinalizer(object)",
+		"apex:compression.zipwriter.getentrynames()",
+	} {
+		rng, ok := analysis.Report.Ranges[id]
+		if !ok || rng.Since != 62 || rng.Until != 0 {
+			t.Fatalf("%s range = %+v (present %v), want Since 62 with no Until", id, rng, ok)
+		}
+	}
+}

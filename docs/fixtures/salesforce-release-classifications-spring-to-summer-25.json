@@ -787,6 +787,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder",
       "scope": "t2",
       "disposition": "existing-case",
@@ -796,6 +797,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder.addId(Id)",
       "scope": "t2",
       "disposition": "existing-case",
@@ -805,6 +807,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder.addInteger(Integer)",
       "scope": "t2",
       "disposition": "existing-case",
@@ -814,6 +817,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder.addString(String)",
       "scope": "t2",
       "disposition": "existing-case",
@@ -823,6 +827,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder.build()",
       "scope": "t2",
       "disposition": "existing-case",
@@ -832,6 +837,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder.getMaxSize()",
       "scope": "t2",
       "disposition": "existing-case",
@@ -841,6 +847,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder.getRemainingSize()",
       "scope": "t2",
       "disposition": "existing-case",
@@ -850,6 +857,7 @@
       ]
     },
     {
+      "preserveAvailability": true,
       "surfaceId": "apex:QueueableDuplicateSignature.Builder.getSize()",
       "scope": "t2",
       "disposition": "existing-case",
@@ -1027,15 +1035,6 @@
       "reasonRef": "Declaration: public String toString() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/256.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"toString\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
       "productTests": [
         "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.tostring()"
-      ]
-    },
-    {
-      "surfaceId": "apex:formulaeval.FormulaBuilder.parseAsTemplate(Boolean)",
-      "scope": "t2",
-      "disposition": "existing-case",
-      "reasonRef": "Declaration: public formulaeval.FormulaBuilder parseAsTemplate(Boolean templateMode) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_formulaeval_FormulaBuilder.htm/en-us/256.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"parseAsTemplate\",\"type\":\"formulaeval.FormulaBuilder\",\"parameters\":[\"Boolean\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
-      "productTests": [
-        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:formulaeval.formulabuilder.parseastemplate(boolean)"
       ]
     },
     {
