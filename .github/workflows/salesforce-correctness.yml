@@ -18,6 +18,9 @@ jobs:
     timeout-minutes: 75
     env:
       GOMEMLIMIT: "6GiB"
+      # Match Glade CI: plain Babel code frames and the installed Playwright module.
+      NO_COLOR: "1"
+      GLADE_LWC_PLAYWRIGHT_MODULE: ${{ github.workspace }}/glade/lwcruntime/node_modules/playwright
     defaults:
       run:
         working-directory: glade-tools
@@ -77,6 +80,12 @@ jobs:
           node-version: "22"
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli@2.145.6
+      - name: Install Glade browser test dependencies
+        working-directory: glade
+        run: |
+          set -euo pipefail
+          npm ci --prefix lwcruntime
+          scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium
       - name: Build release-shaped Linux candidate
         working-directory: glade
         run: |
