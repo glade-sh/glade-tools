@@ -192,7 +192,7 @@ test("full fixtures is a single bounded weekly and manual lane", () => {
     "GLADE_REMOTE: https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/glade-sh/glade.git\n        run: |\n          requested_ref=\"$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)\"\n          scripts/resolve-sibling-ref.sh \"$GLADE_REMOTE\" \"$requested_ref\" main",
     "- uses: actions/checkout@v6\n        with:\n          repository: glade-sh/glade\n          path: glade\n          ref: ${{ steps.glade-ref.outputs.ref }}\n          token: ${{ steps.app-token.outputs.token }}",
     "run: test \"$(git -C ../glade rev-parse HEAD)\" = \"$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)\"",
-    '- uses: actions/setup-go@v6\n        with:\n          go-version: "1.26.3"\n          cache-dependency-path: glade-tools/go.sum',
+    '- uses: actions/setup-go@v6\n        with:\n          go-version: "1.26.10"\n          cache-dependency-path: glade-tools/go.sum',
   ]) {
     assert.ok(currentCiSetup.includes(requiredSetup), `current CI missing ${requiredSetup}`);
   }
