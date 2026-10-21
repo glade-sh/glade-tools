@@ -18,6 +18,10 @@ type salesforceReleaseOptions struct {
 }
 
 func runSalesforceRelease(args []string, stdout, stderr io.Writer) int {
+	return runSalesforceReleaseWithRecheck(args, stdout, stderr, releasecontract.RecheckCarriedSources)
+}
+
+func runSalesforceReleaseWithRecheck(args []string, stdout, stderr io.Writer, recheck func(string) error) int {
 	if len(args) > 0 && isHelpArg(args[0]) {
 		printSalesforceReleaseHelp(stdout)
 		return 0
@@ -31,6 +35,12 @@ func runSalesforceRelease(args []string, stdout, stderr io.Writer) int {
 	if err != nil {
 		fmt.Fprintf(stderr, "glade-tools: %v\n", err)
 		return 1
+	}
+	if opts.Check {
+		if err := recheck(opts.Contract); err != nil {
+			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+			return 1
+		}
 	}
 	if opts.Write || opts.Check {
 		paths, err := releasecontract.Generate(analysis, opts.GladeRoot, opts.Write)

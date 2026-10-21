@@ -1,12 +1,17 @@
 package toolcli
 
 import (
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"github.com/glade-sh/glade/tools/internal/releasecontract"
+	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
 var workspaceRoot = "../.."
@@ -87,17 +92,60 @@ func TestSalesforceReleaseFixtures(t *testing.T) {
 	if analysis.Report.Status != "fail" {
 		t.Fatalf("static release status = %s, want fail before evidence execution", analysis.Report.Status)
 	}
-	if got := analysis.Report.SurfaceDelta; got.Total != 519 || got.Classified != 519 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 3 {
+	if got := analysis.Report.SurfaceDelta; got.Total != 1709 || got.Classified != 1709 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 861 {
 		t.Errorf("surface delta = %#v", got)
 	}
-	if got := analysis.Report.BehaviorDelta; got.Total != 22 || got.Classified != 22 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 6 {
+	if got := analysis.Report.BehaviorDelta; got.Total != 28 || got.Classified != 28 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 5 {
 		t.Errorf("behavior delta = %#v", got)
 	}
-	if got := analysis.Report.ChangeInventory; got.Total != 3990 || got.Routed != 3990 || got.OutOfScope != 3962 {
+	if got := analysis.Report.ChangeInventory; got.Total != 10677 || got.Routed != 10677 || got.OutOfScope != 10634 {
 		t.Errorf("change inventory = %#v", got)
 	}
 	if len(analysis.Report.Unclassified) != 0 {
 		t.Errorf("unclassified = %v", analysis.Report.Unclassified)
+	}
+}
+
+func TestAPI68NamespacePolicyCoversEveryKnownConnectApiDeclaration(t *testing.T) {
+	path := fixturesPath("docs/fixtures/salesforce-docs-inventory-winter-27.json")
+	inv, err := apexdocs.ReadInventory(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(fixturesPath("docs/fixtures/salesforce-release-namespace-policy-winter-27.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var policy struct {
+		Namespace       string                                `json:"namespace"`
+		InventorySHA256 string                                `json:"inventorySHA256"`
+		Classifications []surfaceledger.ReleaseClassification `json:"classifications"`
+	}
+	if err := json.Unmarshal(data, &policy); err != nil {
+		t.Fatal(err)
+	}
+	if policy.Namespace != "ConnectApi" || policy.InventorySHA256 != fmt.Sprintf("%x", sha256.Sum256(raw)) {
+		t.Fatal("namespace policy does not bind the checked inventory")
+	}
+	expected := map[string]bool{}
+	for _, row := range surfaceledger.ReleaseRowsFromDocsInventory(inv) {
+		if row.Namespace == "ConnectApi" {
+			expected[surfaceledger.CanonicalSurfaceIDKey(row.SurfaceID)] = true
+		}
+	}
+	for _, c := range policy.Classifications {
+		key := surfaceledger.CanonicalSurfaceIDKey(c.SurfaceID)
+		if !expected[key] || c.Scope != surfaceledger.ScopeOutsideClaim || c.Disposition != surfaceledger.DispoExplicitUnsupported || c.ReasonRef == "" {
+			t.Fatalf("invalid or duplicate namespace policy: %+v", c)
+		}
+		delete(expected, key)
+	}
+	if len(expected) != 0 {
+		t.Fatalf("namespace policy omitted %d known declarations", len(expected))
 	}
 }
 

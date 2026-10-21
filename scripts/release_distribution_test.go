@@ -298,6 +298,9 @@ func TestReleaseCheckSplitsCoreAndReleaseEntrypointsWithoutDirectArchiveBuild(t 
 	}
 	for _, line := range []string{
 		"node --test scripts/*.test.mjs",
+		"python3 -m unittest discover -s scripts/salesforce-release -p test_compose_winter27.py",
+		"python3 -m unittest discover -s scripts/salesforce-release -p test_acquire_versioned_docs.py",
+		"python3 -m unittest discover -s scripts/salesforce-release -p test_generate_verifier_inputs.py",
 		"go test \"${packages[@]}\"",
 		"go test -count=1 ./scripts",
 		"go test -count=1 ./internal/surfaceledger -run 'TestCB(23MergedFamilyEvidenceClosesTargetRows|56HostedPolicyCoversOnlyDeclaredServiceEffects|65EventBusAccessLevelSurfaceIDsAreCanonicalAndUnique|65EventBusFixtureExercisesAndMergesAllFourOverloads|193LocalMockCoreFixtureIsExact|206FixtureAndComparisonAreExact)$'",
@@ -349,6 +352,9 @@ func releaseCheckContractError(checkText string) error {
 	wantCore := []string{
 		"git diff --check",
 		"node --test scripts/*.test.mjs",
+		"python3 -m unittest discover -s scripts/salesforce-release -p test_compose_winter27.py",
+		"python3 -m unittest discover -s scripts/salesforce-release -p test_acquire_versioned_docs.py",
+		"python3 -m unittest discover -s scripts/salesforce-release -p test_generate_verifier_inputs.py",
 		`go test "${packages[@]}"`,
 		"go test -count=1 ./internal/corpusassurance",
 	}
@@ -373,7 +379,8 @@ func releaseCheckContractError(checkText string) error {
 		"-count=1", "./internal/apexdocs", "./internal/apexrules", "./internal/capability", "./internal/compat",
 		"./internal/corpuscheck", "./internal/examplescan", "./internal/lwcparity", "./internal/metadata", "./internal/oracleprobe",
 		"./internal/orgpackage", "./internal/perfscan", "./internal/perftool", "./internal/producttestverify", "./internal/projectscan",
-		"./internal/uicontroller", "./internal/toolcli",
+		"./internal/releasecontract", "./internal/uicontroller", "./internal/toolcli",
+		"./scripts/salesforce-release/compose_inventory", "./scripts/salesforce-release/classify_delta",
 	}
 	var gotPackages []string
 	inPackages := false

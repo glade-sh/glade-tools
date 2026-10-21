@@ -433,6 +433,11 @@ func inferMetadata(rel, title string) documentMeta {
 }
 
 func splitNamespaceName(value, fallback string) (string, string) {
+	// A class namespace may itself contain underscores. The public class title
+	// identifies the suffix without truncating namespaces such as SF_Archive.
+	if fallback != "" && strings.HasSuffix(value, "_"+fallback) {
+		return strings.TrimSuffix(value, "_"+fallback), fallback
+	}
 	parts := strings.SplitN(value, "_", 2)
 	if len(parts) == 1 {
 		return "", fallbackOr(parts[0], fallback)

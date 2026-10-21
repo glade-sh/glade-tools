@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""Compose Winter '27 provenance from a local 264 scrape and checked 262 receipts.
+
+Carried inventory documents come from the immutable checked previous inventory,
+not the mutable current-only docs directory. No network or Salesforce commands.
+"""
+import argparse
+import copy
+import hashlib
+import json
+import re
+from pathlib import Path
+
+from assemble_versioned_docs import file_count, sha256, tree_sha256, write_json
+from validate_policy_exclusions import validate as validate_policy_exclusions
+from current_lwc import build as build_current_lwc
+
+GENERATOR = "scripts/salesforce-release/compose_winter27.py"
+CARRIES = ("lightning-aura", "rest-api", "visualforce")
+ADDITIONAL = ("apex-guide", "metadata-api", "object-reference", "release-notes")
+
+
+def read(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def validate_complete_atlas_family(directory, name):
+    identity = read(directory / "_version.json")
+    if identity.get("version") != "264.0":
+        raise ValueError(f"{name} must publish 264.0")
+    pages = identity.get("pages", {})
+    markdown_count = sum(1 for path in directory.rglob("*.md") if path.is_file())
+    if not markdown_count or pages.get("empty") != 0 or pages.get("failed") != 0 or pages.get("success") != markdown_count or pages.get("total") != markdown_count:
+        raise ValueError(f"{name} public source export is incomplete")
+    if identity.get('policyExcludedReferences') is not None or (directory / '_policy-excluded.json').exists():
+        if name != 'apex':
+            raise ValueError('namespace acquisition exclusions apply only to Apex ConnectApi')
+        validate_policy_exclusions(directory)
+
+
+def validate_complete_release_notes(directory):
+    metadata = read(directory / "_export-meta.json")
+    files = metadata.get("files", [])
+    actual = {path.relative_to(directory).as_posix() for path in directory.rglob("*.md") if path.is_file()}
+    version = metadata.get("release", "")
+    if metadata.get("complete") is not True or not re.fullmatch(r"264\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)", version) or metadata.get("failures") != [] or not actual or len(files) != len(actual) or {item.get("file") for item in files} != actual or any(metadata.get(key) != len(actual) for key in ("tocArticleCount", "exportedArticleCount", "selectedArticleCount")):
+        raise ValueError("public release-note export is incomplete or has a mismatched release")
+    for item in files:
+        if item.get("version") != version or sha256(directory / item["file"]) != item.get("sha256"):
+            raise ValueError("public release-note file hash or version differs from its export receipt")
+
+
+def compose(atlas, notes, previous_receipt, previous_inventory, inventory, manifest, lwc_source=None, notes_inventory=None):
+    atlas, notes = Path(atlas), Path(notes)
+    prior, prior_inventory, current_inventory, release = map(read, (previous_receipt, previous_inventory, inventory, manifest))
+    if prior["apiVersion"] != "67.0" or prior["snapshot"]["atlasVersion"] != "262.0" or release["apiVersion"] != "68.0":
+        raise ValueError("composition requires API 68 and its previous GA API 67 receipt")
+    meta = read(atlas / "_scrape-meta.json")
+    if meta["version"] != "264.0":
+        raise ValueError("Atlas source must be the explicit 264.0 scrape")
+    validate_complete_release_notes(notes)
+    if sha256(previous_inventory) != prior["inventorySHA256"]:
+        raise ValueError("previous inventory differs from the checked previous GA receipt")
+    def carried_documents(value):
+        names = CARRIES if lwc_source else (*CARRIES, "lwc")
+        return [row for row in value["documents"] if row["sourcePath"].split("/")[0] in names]
+    if carried_documents(prior_inventory) != carried_documents(current_inventory):
+        raise ValueError("carried inventory documents differ from the checked previous GA")
+    previous_hash = sha256(previous_receipt)
+    carry = {"carriedFrom": "262.0", "carriedReceiptSHA256": previous_hash, "unpublished": True}
+    families = []
+    for row in prior["snapshot"]["families"]:
+        name = row["name"]
+        if name in CARRIES:
+            families.append({**row, **carry})
+        else:
+            directory = atlas / name
+            validate_complete_atlas_family(directory, name)
+            families.append({"name": name, "version": "264.0", "fileCount": file_count(directory), "sha256": tree_sha256(directory)})
+    additional = []
+    for name in ADDITIONAL:
+        directory = notes if name == "release-notes" else atlas / name
+        if name != "release-notes":
+            if not directory.exists():
+                continue
+            validate_complete_atlas_family(directory, name)
+        additional.append({"name": name, "version": "264.0", "fileCount": file_count(directory), "sha256": tree_sha256(directory)})
+    lwc = build_current_lwc(lwc_source, notes_inventory) if lwc_source else {**copy.deepcopy(prior["snapshot"]["lwc"]), **carry}
+    if lwc_source:
+        expected_paths = {'lwc/' + row['path'] for row in lwc['copied']}
+        actual_paths = {row['sourcePath'] for row in current_inventory['documents'] if row['sourcePath'].startswith('lwc/')}
+        if actual_paths != expected_paths:
+            raise ValueError('fresh LWC source and normalized inventory paths differ')
+    composition = {
+        "schemaVersion": 1, "atlasVersion": "264.0", "targetAPIVersion": "68.0",
+        "versionedSourceSHA256": tree_sha256(atlas), "families": families,
+        "additionalFamilies": additional, "carriedInventorySHA256": sha256(previous_inventory),
+        "previousSourceReceiptSHA256": previous_hash, "lwc": lwc,
+    }
+    # The snapshot identity names this composition, not a nonexistent copied
+    # tree. Its independently bound components are the physical 264 tree and
+    # the immutable checked previous-GA receipt/inventory.
+    composition_hash = hashlib.sha256((json.dumps(composition, indent=2, sort_keys=True) + "\n").encode()).hexdigest()
+    receipt = {
+        "schemaVersion": 1, "release": release["release"], "apiVersion": "68.0",
+        "manifestDigest": release["digest"], "inventorySHA256": sha256(inventory),
+        "generator": {"path": GENERATOR, "sha256": sha256(__file__)},
+        "snapshot": {
+            "sha256": composition_hash, "metadataSHA256": composition_hash,
+            "compositionReceipt": {"path": "salesforce-release-composition-winter-27.json", "sha256": composition_hash},
+            "atlasVersion": "264.0", "atlasVersionLabel": "API v68.0 (Winter '27)",
+            "targetAPIVersion": "68.0", "totalPages": current_inventory["totalFiles"],
+            "assembler": {"path": GENERATOR, "sha256": sha256(__file__)},
+            "versionedSourceSHA256": composition["versionedSourceSHA256"],
+            "families": families, "additionalFamilies": additional, "lwc": lwc,
+            "limitations": [lwc["limitation"], "Aura, REST and Visualforce Atlas 264.0 docs are unpublished; explicit 262.0 carries bind the checked previous GA receipt and normalized inventory. LWC records its own current-only source or explicit carry separately.", "Snapshot and metadata hashes identify salesforce-release-composition-winter-27.json: a composition of the physical 264.0 source and checked 262.0 receipt/inventory, not copied 262.0 source bytes."],
+        },
+    }
+    return composition, receipt
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    for name in ("atlas", "notes", "previous-receipt", "previous-inventory", "inventory", "manifest", "composition-output", "receipt-output"):
+        p.add_argument("--" + name, required=True, type=Path)
+    p.add_argument('--lwc-source', type=Path)
+    p.add_argument('--notes-inventory', type=Path)
+    a = p.parse_args()
+    if bool(a.lwc_source) != bool(a.notes_inventory):
+        p.error('--lwc-source and --notes-inventory must be supplied together')
+    composition, receipt = compose(a.atlas, a.notes, a.previous_receipt, a.previous_inventory, a.inventory, a.manifest, a.lwc_source, a.notes_inventory)
+    write_json(a.composition_output, composition)
+    write_json(a.receipt_output, receipt)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "release": "Winter '27",
+  "apiVersion": "68.0",
+  "digest": "a194b14c4b11298746701e79332e73dd7705cbf5539fbea89481bc9d0578bb7f",
+  "acquisition": "Owned Atlas264.0 scrape with explicit previousGA262.0 documentation carries; normalized checked Summer26 inventory supplies frozen carried documents.",
+  "sourceFamilies": [
+    "apex-reference",
+    "aura-reference",
+    "lwc-reference",
+    "rest-api-reference",
+    "tooling-api-reference",
+    "visualforce-reference"
+  ]
+}

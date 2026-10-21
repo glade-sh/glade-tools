@@ -857,3 +857,16 @@ func writeDoc(t *testing.T, path, content string) {
 		t.Fatal(err)
 	}
 }
+
+func TestBuildInventoryPreservesUnderscoresInClassNamespace(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_class_SF_Archive_ArchiverAccessor.md"), "# ArchiverAccessor Class\n\n## Namespace\n[SF\\_Archive](./apex_namespace_SF_Archive.md)\n\n## ArchiverAccessor Methods\n### setMock(mock)\n\n#### Signature\n`public static void setMock(HttpCalloutMock mock)`\n")
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc := inv.Documents[0]
+	if doc.Namespace != "SF_Archive" || doc.Name != "ArchiverAccessor" {
+		t.Fatalf("metadata lost namespace components: %#v", doc)
+	}
+}

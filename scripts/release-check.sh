@@ -27,14 +27,20 @@ packages=(
 	./internal/perftool
 	./internal/producttestverify
 	./internal/projectscan
+	./internal/releasecontract
 	./internal/uicontroller
 	./internal/toolcli
+	./scripts/salesforce-release/compose_inventory
+	./scripts/salesforce-release/classify_delta
 )
 
 case "${1:-all}" in
 	core)
 		git diff --check
 		node --test scripts/*.test.mjs
+		python3 -m unittest discover -s scripts/salesforce-release -p test_compose_winter27.py
+		python3 -m unittest discover -s scripts/salesforce-release -p test_acquire_versioned_docs.py
+		python3 -m unittest discover -s scripts/salesforce-release -p test_generate_verifier_inputs.py
 		go test "${packages[@]}"
 		go test -count=1 ./internal/corpusassurance
 		;;

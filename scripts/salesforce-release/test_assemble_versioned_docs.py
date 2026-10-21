@@ -84,6 +84,14 @@ class AssembleVersionedDocsTest(unittest.TestCase):
             family_metadata["version"] = version
             version_path.write_text(json.dumps(family_metadata), encoding="utf-8")
 
+    def test_rejects_lwc_publisher_error_even_when_export_count_says_success(self):
+        for content in ("# Oops\n", "# Reference\n## Something went wrong\n"):
+            with self.subTest(content=content):
+                (self.lwc_source / "guide.md").write_text(content)
+                with self.assertRaisesRegex(ValueError, "publisher error"):
+                    self._assemble("65.0")
+                self.assertFalse((self.root / "out-65.0").exists())
+
     def test_target_65_excludes_module_first_available_in_66(self):
         output = self._assemble("65.0")
 

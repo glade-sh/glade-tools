@@ -450,11 +450,11 @@ func TestApplySurfaceCorrectionsReplacesImpossibleDocumentedVersion(t *testing.T
 
 func TestCheckedSurfaceCorrectionsMatchReleaseInventories(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
-	specs := []Release{
-		{Name: "Winter '26", APIVersion: "65.0", Inventory: "salesforce-docs-inventory-winter-26.json"},
-		{Name: "Spring '26", APIVersion: "66.0", Inventory: "salesforce-docs-inventory-spring-26.json"},
-		{Name: "Summer '26", APIVersion: "67.0", Inventory: "salesforce-docs-inventory-summer-26.json"},
+	contract, _, err := Load(filepath.Join(root, "salesforce-release-contract.json"))
+	if err != nil {
+		t.Fatal(err)
 	}
+	specs := contract.Releases
 	releases := make([]loadedRelease, len(specs))
 	for index, spec := range specs {
 		var inventory apexdocs.Inventory
@@ -478,7 +478,18 @@ func TestCheckedSurfaceCorrectionsMatchReleaseInventories(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for index, want := range [][3]int{{147, 2, 2}, {367, 1, 0}} {
+	for _, expected := range [][4]int{{66, 147, 2, 2}, {67, 367, 1, 0}} {
+		index := -1
+		for i, r := range releases {
+			if apiInt(r.release.APIVersion) == expected[0] {
+				index = i - 1
+				break
+			}
+		}
+		if index < 0 {
+			t.Fatal("missing checked transition", expected[0])
+		}
+		want := [3]int{expected[1], expected[2], expected[3]}
 		added, removed, changed, _, err := surfaceledger.DiffReleaseRows(releases[index].rows, releases[index+1].rows)
 		if err != nil {
 			t.Fatal(err)
@@ -566,7 +577,7 @@ func (f *releaseAnalysisFixture) write(t *testing.T) {
 				"assembler":             map[string]any{"path": "scripts/salesforce-release/assemble_versioned_docs.py", "sha256": strings.Repeat("e", 64)},
 				"versionedSourceSHA256": strings.Repeat("f", 64), "families": families,
 				"lwc": map[string]any{
-					"filterReceiptSHA256": strings.Repeat("1", 64), "sourceVersion": "latest", "sourceVersionSHA256": strings.Repeat("2", 64),
+					"publishedAtlasVersion": atlasVersion, "filterReceiptSHA256": strings.Repeat("1", 64), "sourceVersion": "latest", "sourceVersionSHA256": fmt.Sprintf("%x", sha256.Sum256([]byte(release.APIVersion))),
 					"sourceVersionMetadata": map[string]any{"file": "_version.json", "version": "latest", "sha256": strings.Repeat("3", 64)},
 					"availabilityTable":     "reference-api-modules.md", "availabilityTableSHA256": strings.Repeat("4", 64),
 					"copiedMarkdownFiles": 1, "copied": []map[string]any{{"path": "reference-api-modules.md", "sha256": strings.Repeat("5", 64)}},
@@ -632,4 +643,69 @@ func mustReadFile(t *testing.T, path string) []byte {
 		t.Fatal(err)
 	}
 	return data
+}
+
+func TestAnalyzeRequiresBothGapEdgesToBeReviewedAsDocumentation(t *testing.T) {
+	for _, outside := range []bool{false, true} {
+		root := t.TempDir()
+		writeAnalysisFixtureWith(t, releaseAnalysisFixture{root: root, reappear: true}, true)
+		for _, api := range []string{"67", "68"} {
+			path := filepath.Join(root, "class-"+api+".json")
+			var file ClassificationFile
+			if err := json.Unmarshal(mustReadFile(t, path), &file); err != nil {
+				t.Fatal(err)
+			}
+			for i := range file.Classifications {
+				c := &file.Classifications[i]
+				if c.SurfaceID != "apex:System.New66" {
+					continue
+				}
+				c.CaseID = ""
+				c.ReasonRef = "Exact acquired declaration and product-shape review: capture gap only"
+				c.ProductTests = []string{"x_test.go:TestShape"}
+				c.Disposition = surfaceledger.DispoExistingCase
+				c.PreserveAvailability = true
+				if outside {
+					c.Scope = surfaceledger.ScopeOutsideClaim
+					c.Disposition = surfaceledger.DispoExplicitUnsupported
+					c.PreserveAvailability = false
+				}
+			}
+			data, _ := json.Marshal(file)
+			if err := os.WriteFile(path, data, 0600); err != nil {
+				t.Fatal(err)
+			}
+			got, err := Analyze(filepath.Join(root, "contract.json"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			has := strings.Contains(strings.Join(got.Report.Unclassified, "\n"), "reappeared")
+			if has != (api == "67") {
+				t.Fatalf("outside=%v reviewed-through=%s unclassified=%v", outside, api, got.Report.Unclassified)
+			}
+		}
+	}
+}
+
+// Declarations that predate the checked window but are missing from early
+// reference exports must not receive an introduction boundary.
+func TestCheckedCorrectionsKeepPreWindowDeclarationsUngated(t *testing.T) {
+	analysis, err := Analyze(filepath.Join("..", "..", "docs", "fixtures", "salesforce-release-contract.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []string{
+		"apex:system.finalizer",
+		"apex:system.finalizercontext.getresult()",
+		"apex:system.parentjobresult",
+		"apex:system.system.attachfinalizer(object)",
+		"apex:compression.zipwriter.getentrynames()",
+		"apex:system.crypto.verifyhmac(string,blob,blob,blob)",
+		"apex:auth.authprovidertokenresponse.idtoken",
+	} {
+		rng, ok := analysis.Report.Ranges[id]
+		if !ok || rng.Since != 62 || rng.Until != 0 {
+			t.Fatalf("%s range = %+v (present %v), want Since 62 with no Until", id, rng, ok)
+		}
+	}
 }

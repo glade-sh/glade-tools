@@ -1,0 +1,1528 @@
+{
+  "schemaVersion": 1,
+  "previousRelease": "Spring '25",
+  "currentRelease": "Summer '25",
+  "decisions": [
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.AuthProviderTokenResponse(String,String,String,String,String)",
+      "declaration": "public AuthProviderTokenResponse(String provider, String oauthToken, String oauthSecretOrRefreshToken, String state, String idToken)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_AuthProviderTokenResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The owner Auth.AuthProviderTokenResponse exists, but no member with this exact name and parameter list exists in its registered declaration shape. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6.",
+      "reason": "Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.idToken",
+      "declaration": "public String idToken {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_AuthProviderTokenResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.authprovidertokenresponse.idtoken"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"idToken\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData",
+      "declaration": "type Auth.GeneratedUserData",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"GeneratedUserData\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.GeneratedUserData(String,String,String,String,String,String,String,String,String)",
+      "declaration": "public GeneratedUserData(String firstName, String lastName, String email, String username, String alias, String languageLocaleKey, String localesIdKey, String emailEncodingKey, String timeZoneSidKey)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.generateduserdata(string,string,string,string,string,string,string,string,string)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"GeneratedUserData\",\"type\":null,\"parameters\":[\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.alias",
+      "declaration": "public String alias {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.alias"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"alias\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.email",
+      "declaration": "public String email {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.email"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"email\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.emailEncodingKey",
+      "declaration": "public String emailEncodingKey {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.emailencodingkey"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"emailEncodingKey\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.firstName",
+      "declaration": "public String firstName {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.firstname"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"firstName\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.languageLocaleKey",
+      "declaration": "public String languageLocaleKey {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.languagelocalekey"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"languageLocaleKey\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.lastName",
+      "declaration": "public String lastName {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.lastname"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"lastName\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.localesIdKey",
+      "declaration": "public String localesIdKey {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.localesidkey"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"localesIdKey\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.timeZoneSidKey",
+      "declaration": "public String timeZoneSidKey {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.timezonesidkey"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"timeZoneSidKey\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.username",
+      "declaration": "public String username {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_GeneratedUserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.generateduserdata.username"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"username\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput",
+      "declaration": "type Auth.JsonValueOutput",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"JsonValueOutput\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.JsonValueOutput(String,Boolean,Integer,Double,String,String)",
+      "declaration": "public JsonValueOutput(String stringValue, Boolean booleanValue, Integer integerValue, Double doubleValue, String jsonStringValue, String jsonArrayValue)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput.jsonvalueoutput(string,boolean,integer,double,string,string)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"JsonValueOutput\",\"type\":null,\"parameters\":[\"String\",\"Boolean\",\"Integer\",\"Double\",\"String\",\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.booleanValue",
+      "declaration": "public Boolean booleanValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput.booleanvalue"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"booleanValue\",\"type\":\"Boolean\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.doubleValue",
+      "declaration": "public Double doubleValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput.doublevalue"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"doubleValue\",\"type\":\"Double\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.integerValue",
+      "declaration": "public Integer integerValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput.integervalue"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"integerValue\",\"type\":\"Integer\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.jsonArrayValue",
+      "declaration": "public String jsonArrayValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput.jsonarrayvalue"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"jsonArrayValue\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.jsonStringValue",
+      "declaration": "public String jsonStringValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput.jsonstringvalue"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"jsonStringValue\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.stringValue",
+      "declaration": "public String stringValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_JsonValueOutput.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.jsonvalueoutput.stringvalue"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"stringValue\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.UserData(String,String,String,String,String,String,String,String,String,String,Map<String,String>,String,String)",
+      "declaration": "public UserData(String identifier, String firstName, String lastName, String fullName, String email, String link, String username, String locale, String provider, String siteLoginUrl, Map<String,String> attributeMap, String idToken, String userInfoJSONString)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_UserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.userdata.userdata(string,string,string,string,string,string,string,string,string,string,map<string,string>,string,string)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"UserData\",\"type\":null,\"parameters\":[\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"Map<String,String>\",\"String\",\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.idToken",
+      "declaration": "public String idToken {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_UserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.userdata.idtoken"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"idToken\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.idTokenJSONString",
+      "declaration": "public String idTokenJSONString {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_UserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.userdata.idtokenjsonstring"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"idTokenJSONString\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.userInfoJSONString",
+      "declaration": "public String userInfoJSONString {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_Auth_UserData.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:auth.userdata.userinfojsonstring"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"userInfoJSONString\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupEvaluationService",
+      "declaration": "type CommerceBuyGrp.BuyerGroupEvaluationService",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupEvaluationService.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupevaluationservice"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"BuyerGroupEvaluationService\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupEvaluationService.getBuyerGroupIds(CommerceBuyGrp.BuyerGroupRequest)",
+      "declaration": "public CommerceBuyGrp.BuyerGroupResponse getBuyerGroupIds(CommerceBuyGrp.BuyerGroupRequest request)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupEvaluationService.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupevaluationservice.getbuyergroupids(commercebuygrp.buyergrouprequest)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getBuyerGroupIds\",\"type\":\"CommerceBuyGrp.BuyerGroupResponse\",\"parameters\":[\"CommerceBuyGrp.BuyerGroupRequest\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupRequest",
+      "declaration": "type CommerceBuyGrp.BuyerGroupRequest",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupRequest.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergrouprequest"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"BuyerGroupRequest\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupRequest.getAccountId()",
+      "declaration": "public String getAccountId()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupRequest.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergrouprequest.getaccountid()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getAccountId\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupRequest.getRequestContextParameters()",
+      "declaration": "public Map<String,Object> getRequestContextParameters()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupRequest.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergrouprequest.getrequestcontextparameters()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getRequestContextParameters\",\"type\":\"Map<String,Object>\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupRequest.getStoreId()",
+      "declaration": "public String getStoreId()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupRequest.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergrouprequest.getstoreid()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getStoreId\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupResponse",
+      "declaration": "type CommerceBuyGrp.BuyerGroupResponse",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupresponse"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"BuyerGroupResponse\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupResponse.BuyerGroupResponse()",
+      "declaration": "public BuyerGroupResponse()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupresponse.buyergroupresponse()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"BuyerGroupResponse\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupResponse.BuyerGroupResponse(Set<String>)",
+      "declaration": "public BuyerGroupResponse(Set<String> buyerGroupIds)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupresponse.buyergroupresponse(set<string>)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"BuyerGroupResponse\",\"type\":null,\"parameters\":[\"Set<String>\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupResponse.getBuyerGroupIds()",
+      "declaration": "public Set<String> getBuyerGroupIds()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupresponse.getbuyergroupids()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getBuyerGroupIds\",\"type\":\"Set<String>\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupResponse.setBuyerGroupIds(Set<String>)",
+      "declaration": "public void setBuyerGroupIds(Set<String> buyerGroupIds)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupresponse.setbuyergroupids(set<string>)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"setBuyerGroupIds\",\"type\":\"void\",\"parameters\":[\"Set<String>\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:CommerceBuyGrp.BuyerGroupResponse.setError(String,String)",
+      "declaration": "public void setError(String errorMessage, String localizedErrorMessage)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_CommerceBuyGrp_BuyerGroupResponse.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercebuygrp.buyergroupresponse.seterror(string,string)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"setError\",\"type\":\"void\",\"parameters\":[\"String\",\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ActivationExternalPlatformAttribute",
+      "declaration": "type ConnectApi.ActivationExternalPlatformAttribute",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_activation_external_platform_attribute.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ActivationExternalPlatformAttributeConfig",
+      "declaration": "type ConnectApi.ActivationExternalPlatformAttributeConfig",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_activation_external_platform_attribute_config.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ActivationExternalPlatformCollection",
+      "declaration": "type ConnectApi.ActivationExternalPlatformCollection",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_activation_external_platform_collection.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation",
+      "declaration": "type ConnectApi.CdpActivation",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpActivation_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation.deleteActivation(String)",
+      "declaration": "public static Void deleteActivation(String activationId)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpActivation_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationExternalPlatform",
+      "declaration": "type ConnectApi.CdpActivationExternalPlatform",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpActivationExternalPlatform_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationExternalPlatform.getActivationExternalPlatforms()",
+      "declaration": "public static ConnectApi.ActivationExternalPlatformCollection getActivationExternalPlatforms()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpActivationExternalPlatform_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationExternalPlatform.getActivationExternalPlatformsPaginated(Integer,Integer,String)",
+      "declaration": "public static ConnectApi.ActivationExternalPlatformCollection getActivationExternalPlatformsPaginated(Integer limit, Integer offset, String orderBy)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpActivationExternalPlatform_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQuery.getDataGraphDataWithLookupKeys(String,String,String,Boolean)",
+      "declaration": "public static ConnectApi.CdpQueryOutput getDataGraphDataWithLookupKeys(String dataGraphEntityName, String lookupKeys, String dataspace, Boolean noCache)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpQuery_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCart.addItemToCart(String,String,String,ConnectApi.CartItemInput,String,Boolean)",
+      "declaration": "public static ConnectApi.CartItem addItemToCart(String webstoreId, String effectiveAccountId, String activeCartOrId, ConnectApi.CartItemInput cartItemInput, String currencyIsoCode, Boolean includeCartData)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCart.updateCartItem(String,String,String,String,ConnectApi.CartItemInput,String,Boolean)",
+      "declaration": "public static ConnectApi.CartItem updateCartItem(String webstoreId, String effectiveAccountId, String activeCartOrId, String cartItemId, ConnectApi.CartItemInput cartItem, String currencyIsoCode, Boolean includeCartData)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalog.getCategoryMenuItems(String,Boolean,Boolean,String,String,Integer,Integer)",
+      "declaration": "public static ConnectApi.NavigationMenuItemCollection getCategoryMenuItems(String webstoreId, Boolean includeImageUrl, Boolean addHomeMenuItem, String publishStatus, String effectiveAccountId, Integer maxLevels, Integer maxItems)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCatalog_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalog.getProduct(String,String,String,List<String>,List<String>,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,String)",
+      "declaration": "public static ConnectApi.ProductDetail getProduct(String webstoreId, String productId, String effectiveAccountId, List<String> fields, List<String> mediaGroups, Boolean excludeFields, Boolean excludeMedia, Boolean excludePrimaryProductCategory, Boolean excludeVariationInfo, Boolean excludeAttributeSetInfo, Boolean excludeQuantityRule, Boolean excludeProductSellingModels, String noCache)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCatalog_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalog.getProducts(String,String,List<String>,List<String>,List<String>,Boolean,Boolean,Boolean,Boolean,Boolean,String)",
+      "declaration": "public static ConnectApi.ProductOverviewCollection getProducts(String webstoreId, String effectiveAccountId, List<String> ids, List<String> skus, List<String> fields, Boolean excludeMedia, Boolean includeQuantityRule, Boolean includeProductSellingModels, Boolean includeAttributeSetInfo, Boolean includeGroupByAttributeVariationInfo, String noCache)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCatalog_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearch.getSuggestions(String,String,String,Integer,Boolean,Integer,List<String>,Boolean,String)",
+      "declaration": "public static ConnectApi.ProductSearchSuggestionsResults getSuggestions(String webstoreId, String effectiveAccountId, String searchTerm, Integer maxResults, Boolean includeSuggestedProducts, Integer maxSuggestedProducts, List<String> suggestedFields, Boolean includeSuggestedTerms, String popularProductsCategoryId)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceSearch_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateSocialNamedCredential",
+      "declaration": "type ConnectApi.CreateSocialNamedCredential",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_create_social_named_credential_result.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateWebStoreMetaConfiguration",
+      "declaration": "type ConnectApi.CreateWebStoreMetaConfiguration",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_create_web_store_meta_config_result.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DistinctFacetValueDisplayMetadataRepresentation",
+      "declaration": "type ConnectApi.DistinctFacetValueDisplayMetadataRepresentation",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_distinct_facet_value_display_metadata.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.EinsteinPromptTemplateAttachmentExclusionInfo",
+      "declaration": "type ConnectApi.EinsteinPromptTemplateAttachmentExclusionInfo",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_einstein_prompt_template_attachment_exclusion_info.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.EinsteinPromptTemplateMergeFieldInformationContext",
+      "declaration": "type ConnectApi.EinsteinPromptTemplateMergeFieldInformationContext",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_einstein_prompt_template_merge_field_information_contex.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FieldService.evaluateRecordsetFilterCriteria(ConnectApi.RecordsetFilterCriteriaInput)",
+      "declaration": "public static ConnectApi.RecordsetFilterCriteriaOutput evaluateRecordsetFilterCriteria(ConnectApi.RecordsetFilterCriteriaInput recordsetFilterCriteriaInput)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_FieldService_static_methods.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.LinkAttachment",
+      "declaration": "type ConnectApi.LinkAttachment",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_link_attachment.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContent.getManagedContentSpace(String)",
+      "declaration": "public static ConnectApi.ManagedContentSpace getManagedContentSpace(String contentSpaceId)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContent_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentChannelCollection",
+      "declaration": "type ConnectApi.ManagedContentChannelCollection",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_managed_content_channel_collection.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentChannelDetail",
+      "declaration": "type ConnectApi.ManagedContentChannelDetail",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_managed_content_channel_detail.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentDeliveryDocumentSummary",
+      "declaration": "type ConnectApi.ManagedContentDeliveryDocumentSummary",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_managed_content_delivery_document_summary.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaceBaseType",
+      "declaration": "type ConnectApi.ManagedContentSpaceBaseType",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_managed_content_space_base_type.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaceCollectionRepresentation",
+      "declaration": "type ConnectApi.ManagedContentSpaceCollectionRepresentation",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_managed_content_space_collection.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaceInput",
+      "declaration": "type ConnectApi.ManagedContentSpaceInput",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_managed_content_space.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaceUpdateInput",
+      "declaration": "type ConnectApi.ManagedContentSpaceUpdateInput",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_managed_content_space_update.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaces.getManagedContentSpace(String)",
+      "declaration": "public static ConnectApi.ManagedContentSpace getManagedContentSpace(String contentSpaceId)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContentSpaces_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaces.getManagedContentSpaces(Integer,Integer,String)",
+      "declaration": "public static ConnectApi.ManagedContentSpaceCollectionRepresentation getManagedContentSpaces(Integer pageParam, Integer pageSize, String nameFragment)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContentSpaces_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaces.patchManagedContentSpace(String,ConnectApi.ManagedContentSpaceUpdateInput)",
+      "declaration": "public static ConnectApi.ManagedContentSpace patchManagedContentSpace(String contentSpaceId, ConnectApi.ManagedContentSpaceUpdateInput ManagedContentSpaceUpdateInput)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContentSpaces_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentSpaces.postManagedContentSpace(ConnectApi.ManagedContentSpaceInput)",
+      "declaration": "public static ConnectApi.ManagedContentSpace postManagedContentSpace(ConnectApi.ManagedContentSpaceInput ManagedContentSpaceInput)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContentSpaces_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedSocialAccount",
+      "declaration": "type ConnectApi.ManagedSocialAccount",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_managed_social_account_output.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MessageBody",
+      "declaration": "type ConnectApi.MessageBody",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_msg_body.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MuteSummary",
+      "declaration": "type ConnectApi.MuteSummary",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_mute_summary.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ObjectQueryInfo",
+      "declaration": "type ConnectApi.ObjectQueryInfo",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_object_query_inf.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Organization.getSettings()",
+      "declaration": "public static ConnectApi.OrganizationSettings getSettings()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Organization_static_methods.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ProductBundleChildOutput",
+      "declaration": "type ConnectApi.ProductBundleChildOutput",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_product_bundle_child_output.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PromotionApproachingDiscount",
+      "declaration": "type ConnectApi.PromotionApproachingDiscount",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_promotion_approaching_discount.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.QueryInfo",
+      "declaration": "type ConnectApi.QueryInfo",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_query_inf.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RangeFacetDisplayMetadataRepresentation",
+      "declaration": "type ConnectApi.RangeFacetDisplayMetadataRepresentation",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_range_facet_display_metadata.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RangeRefinementInput",
+      "declaration": "type ConnectApi.RangeRefinementInput",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_range_refinement.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RangeSearchFacet",
+      "declaration": "type ConnectApi.RangeSearchFacet",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_range_search_facet.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchResultGroup",
+      "declaration": "type ConnectApi.SearchResultGroup",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_search_result_grou.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialStatusRepresentation",
+      "declaration": "type ConnectApi.SocialStatusRepresentation",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_status_response.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.WebStoreMetaConfig",
+      "declaration": "type ConnectApi.WebStoreMetaConfig",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_web_store_meta_config.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.WebStoreMetaConfigurations",
+      "declaration": "type ConnectApi.WebStoreMetaConfigurations",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_web_store_meta_config_result.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.",
+      "reason": "D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred."
+    },
+    {
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType",
+      "declaration": "type Process.PluginDescribeResult.ParameterType",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_enum_Process_PluginDescribeResult_ParameterType.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:process.plugindescriberesult.parametertype"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"enum\",\"name\":\"ParameterType\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder",
+      "declaration": "type QueueableDuplicateSignature.Builder",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"Builder\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.addId(Id)",
+      "declaration": "public System.QueueableDuplicateSignature.Builder addId(Id id)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder.addid(id)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"addId\",\"type\":\"QueueableDuplicateSignature.Builder\",\"parameters\":[\"Id\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.addInteger(Integer)",
+      "declaration": "public System.QueueableDuplicateSignature.Builder addInteger(Integer i)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder.addinteger(integer)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"addInteger\",\"type\":\"QueueableDuplicateSignature.Builder\",\"parameters\":[\"Integer\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.addString(String)",
+      "declaration": "public System.QueueableDuplicateSignature.Builder addString(String s)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder.addstring(string)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"addString\",\"type\":\"QueueableDuplicateSignature.Builder\",\"parameters\":[\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.build()",
+      "declaration": "public System.QueueableDuplicateSignature build()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder.build()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"build\",\"type\":\"QueueableDuplicateSignature\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.getMaxSize()",
+      "declaration": "public Integer getMaxSize()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder.getmaxsize()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getMaxSize\",\"type\":\"Integer\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.getRemainingSize()",
+      "declaration": "public Integer getRemainingSize()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder.getremainingsize()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getRemainingSize\",\"type\":\"Integer\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.getSize()",
+      "declaration": "public Integer getSize()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:queueableduplicatesignature.builder.getsize()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getSize\",\"type\":\"Integer\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.decrypt(String,Blob,Blob,Blob)",
+      "declaration": "public static Blob decrypt(String algorithmName, Blob secretKey, Blob initializationVector, Blob cipherText)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.crypto.decrypt(string,blob,blob,blob)",
+        "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset",
+        "internal/vm/stdlib_test.go:TestExecCryptoManagedIVAndSignatureLocalSubset"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"decrypt\",\"type\":\"Blob\",\"parameters\":[\"String\",\"Blob\",\"Blob\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "The exact old/new signatures differ only in a formal parameter label; owner, method, argument types and return type are unchanged. Existing compiler/runtime behavior remains bound, without inventing an introduction date."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob)",
+      "declaration": "public static Blob decryptWithManagedIV(String algorithmName, Blob secretKey, Blob IVAndCipherText)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.crypto.decryptwithmanagediv(string,blob,blob)",
+        "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset",
+        "internal/vm/stdlib_test.go:TestExecCryptoManagedIVAndSignatureLocalSubset"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"decryptWithManagedIV\",\"type\":\"Blob\",\"parameters\":[\"String\",\"Blob\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "The exact old/new signatures differ only in a formal parameter label; owner, method, argument types and return type are unchanged. Existing compiler/runtime behavior remains bound, without inventing an introduction date."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob,Blob)",
+      "declaration": "public static Blob decryptWithManagedIV(String algorithmName, Blob secretKey, Blob IVAndCipherText, Blob aaData)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.crypto.decryptwithmanagediv(string,blob,blob,blob)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"decryptWithManagedIV\",\"type\":\"Blob\",\"parameters\":[\"String\",\"Blob\",\"Blob\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.encrypt(String,Blob,Blob,Blob)",
+      "declaration": "public static Blob encrypt(String algorithmName, Blob secretKey, Blob initializationVector, Blob clearText)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.crypto.encrypt(string,blob,blob,blob)",
+        "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset",
+        "internal/vm/stdlib_test.go:TestExecCryptoManagedIVAndSignatureLocalSubset"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"encrypt\",\"type\":\"Blob\",\"parameters\":[\"String\",\"Blob\",\"Blob\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "The exact old/new signatures differ only in a formal parameter label; owner, method, argument types and return type are unchanged. Existing compiler/runtime behavior remains bound, without inventing an introduction date."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob)",
+      "declaration": "public static Blob encryptWithManagedIV(String algorithmName, Blob secretKey, Blob clearText)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.crypto.encryptwithmanagediv(string,blob,blob)",
+        "internal/vm/stdlib_test.go:TestExecCryptoEncryptAESCBCDeterministicLocalSubset",
+        "internal/vm/stdlib_test.go:TestExecCryptoManagedIVAndSignatureLocalSubset"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"encryptWithManagedIV\",\"type\":\"Blob\",\"parameters\":[\"String\",\"Blob\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "The exact old/new signatures differ only in a formal parameter label; owner, method, argument types and return type are unchanged. Existing compiler/runtime behavior remains bound, without inventing an introduction date."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob,Blob)",
+      "declaration": "public static Blob encryptWithManagedIV(String algorithmName, Blob secretKey, Blob clearText, Blob aaData)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.crypto.encryptwithmanagediv(string,blob,blob,blob)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"encryptWithManagedIV\",\"type\":\"Blob\",\"parameters\":[\"String\",\"Blob\",\"Blob\",\"Blob\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxLineItemRequest.TaxLineItemRequest(commercetax.LineTaxAddressesRequest,Double,String,String,Double,String,String,Datetime)",
+      "declaration": "global TaxLineItemRequest(commercetax.LineTaxAddressesRequest addresses, Double amount, String description, String productCode, Double quantity, String lineNumber, String taxCode, Datetime effectiveDate)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxLineItemRequest.htm/en-us/254.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.taxlineitemrequest.taxlineitemrequest(commercetax.linetaxaddressesrequest,double,string,string,double,string,string,datetime)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"TaxLineItemRequest\",\"type\":null,\"parameters\":[\"commercetax.LineTaxAddressesRequest\",\"Double\",\"String\",\"String\",\"Double\",\"String\",\"String\",\"Datetime\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "This is capture/namespace normalization or an existing overload, not evidence of a new runtime introduction/retirement. Preserve the implemented declaration shape; no new hosted/runtime parity claim is made.",
+      "preserveAvailability": true
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxLineItemRequest.TaxLineItemRequest(commercetax.LineTaxAddressesRequest,Double,String,String,String,Double,String,String,Datetime)",
+      "declaration": "global TaxLineItemRequest(commercetax.LineTaxAddressesRequest addresses, Double amount, String description, String productCode, String productSKU, Double quantity, String lineNumber, String taxCode, Datetime effectiveDate)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxLineItemRequest.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The owner commercetax.TaxLineItemRequest exists, but no member with this exact name and parameter list exists in its registered declaration shape. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6.",
+      "reason": "Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxLineItemRequest.productSKU",
+      "declaration": "global String productSKU {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxLineItemRequest.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.taxlineitemrequest.productsku"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"productSKU\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap",
+      "declaration": "type embeddedai.ApexMap",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_ApexMap.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"ApexMap\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap.key",
+      "declaration": "public String key {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_ApexMap.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.key"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"key\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap.toString()",
+      "declaration": "public String toString()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_ApexMap.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.tostring()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"toString\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap.value",
+      "declaration": "public String value {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_ApexMap.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.value"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"value\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation",
+      "declaration": "type embeddedai.RecordApexRepresentation",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"RecordApexRepresentation\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.objectType",
+      "declaration": "public String objectType {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.objecttype"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"objectType\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.recordData",
+      "declaration": "public List<embeddedai.ApexMap> recordData {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.recorddata"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"recordData\",\"type\":\"List<embeddedai.ApexMap>\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.relatedRecordData",
+      "declaration": "public List<embeddedai.RecordApexRepresentation> relatedRecordData {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.relatedrecorddata"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"relatedRecordData\",\"type\":\"List<embeddedai.RecordApexRepresentation>\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.toString()",
+      "declaration": "public String toString()",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_embeddedai_RecordApexRepresentation.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.tostring()"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"toString\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:formulaeval.FormulaBuilder.parseAsTemplate(Boolean)",
+      "declaration": "public formulaeval.FormulaBuilder parseAsTemplate(Boolean templateMode)",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_formulaeval_FormulaBuilder.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:formulaeval.formulabuilder.parseastemplate(boolean)"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"parseAsTemplate\",\"type\":\"formulaeval.FormulaBuilder\",\"parameters\":[\"Boolean\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem",
+      "declaration": "type ise_bots_apex.DynamicMenuItem",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:ise_bots_apex.dynamicmenuitem"
+      ],
+      "scope": "t2",
+      "disposition": "existing-case",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"DynamicMenuItem\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.",
+      "reason": "Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityId",
+      "declaration": "public String EntityId {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityId\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityIdValue",
+      "declaration": "public String EntityIdValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityIdValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityName",
+      "declaration": "public String EntityName {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityName\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.EntityNameValue",
+      "declaration": "public String EntityNameValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"EntityNameValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.Label",
+      "declaration": "public String Label {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"Label\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.LabelValue",
+      "declaration": "public String LabelValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"LabelValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormula",
+      "declaration": "public String SummaryTextWithFormula {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"SummaryTextWithFormula\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormulaValue",
+      "declaration": "public String SummaryTextWithFormulaValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"SummaryTextWithFormulaValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is String, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented String declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.sortByDate",
+      "declaration": "public Date sortByDate {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"sortByDate\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is Date, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented Date declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "apex:ise_bots_apex.DynamicMenuItem.sortByDateValue",
+      "declaration": "public Date sortByDateValue {get; set;}",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_ise_bots_apex_DynamicMenuItem.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"sortByDateValue\",\"type\":\"Object\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Typed declaration audit: the exact public return/property type is Date, while the registered candidate member type is Object. The existing framework shape test checks member presence/arguments and does not prove the public return/property type.",
+      "reason": "Not claimed: the exact typed declaration is not implemented and test-bound. A dynamic Object carrier does not establish the documented Date declaration or native field semantics. No runtime rejection or parity is inferred from this documentation decision."
+    },
+    {
+      "surfaceId": "tooling:AuthorizedEmailDomain",
+      "declaration": "type AuthorizedEmailDomain",
+      "sourceURL": "https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_authorizedemaildomain.htm/en-us/256.0",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ],
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "productEvidence": "The exact AuthorizedEmailDomain public Tooling object was checked against internal/server Tooling routes and object-specific test bindings. Generic local metadata/CRUD handling is not an implemented and test-bound claim for this Salesforce Tooling object.",
+      "reason": "Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection."
+    }
+  ]
+}

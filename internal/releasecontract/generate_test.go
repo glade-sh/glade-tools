@@ -4,6 +4,7 @@ import (
 	"go/format"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
@@ -40,7 +41,7 @@ func TestGenerateVersionTables(t *testing.T) {
 				Source:   []VersionProof{{Version: "65.0"}, {Version: "66.0"}, {Version: "67.0"}},
 				Endpoint: []VersionProof{{Version: "60.0"}, {Version: "65.0"}, {Version: "66.0"}, {Version: "67.0"}},
 			},
-			Behaviors: []Behavior{{ID: "manual", SurfaceIDs: []string{"apex:Foo.NewType.changed()"}}},
+			Behaviors: []Behavior{{ID: "manual", SurfaceIDs: []string{"apex:Foo.NewType.changed()"}}, {ID: "preview", Outcome: "explicit-non-parity", SurfaceIDs: []string{"apex:System.Preview"}}},
 		},
 		Report: Report{
 			SurfaceDelta:    Denominator{Total: 9, Classified: 9},
@@ -160,5 +161,118 @@ var generatedLWCModuleAvailability = map[string]apexversion.Range{
 	}
 	if _, err := Generate(analysis, root, false); err == nil {
 		t.Fatal("Generate check unexpectedly accepted drift")
+	}
+}
+
+func TestDocumentationOnlyDeltaDoesNotCreateRuntimeAvailability(t *testing.T) {
+	row := func(id, typ, member string) surfaceledger.SurfaceLedgerRow {
+		kind := surfaceledger.KindType
+		if member != "" {
+			kind = surfaceledger.KindMethod
+		}
+		return surfaceledger.SurfaceLedgerRow{SurfaceID: id, Product: surfaceledger.ProductApex, Kind: kind, Namespace: "System", TypeName: typ, MemberName: member}
+	}
+	old := row("apex:System.Existing", "Existing", "")
+	added := row("apex:System.Documented", "Documented", "")
+	changed := row("apex:System.Existing.other()", "Existing", "other")
+	overload := row("apex:System.Existing.run(String)", "Existing", "run")
+	newOverload := row("apex:System.Existing.run(Integer)", "Existing", "run")
+	unsupported := func(id string) *surfaceledger.ReleaseClassification {
+		return &surfaceledger.ReleaseClassification{SurfaceID: id, Scope: surfaceledger.ScopeOutsideClaim, Disposition: surfaceledger.DispoExplicitUnsupported, ReasonRef: "documentation-only"}
+	}
+	a := Analysis{
+		Contract: Contract{Defaults: Defaults{Source: "65.0", Endpoint: "65.0"}, Windows: Windows{Source: []VersionProof{{Version: "65.0"}, {Version: "66.0"}, {Version: "67.0"}, {Version: "68.0"}}}, Releases: []Release{{Name: "Old", APIVersion: "66.0"}, {Name: "New", APIVersion: "68.0"}}},
+		Report:   Report{Ranges: map[string]Range{"apex:system.existing": {Since: 66, Until: 68}, "apex:system.documented": {Since: 68}, "apex:system.existing.other()": {Since: 65}, "apex:system.existing.run(string)": {Since: 66}, "apex:system.existing.run(integer)": {Since: 68}}},
+		SurfaceChanges: []SurfaceChange{
+			{CurrentRelease: "Old", Entry: surfaceledger.DeltaEntry{Kind: surfaceledger.DeltaAdded, SurfaceID: old.SurfaceID, New: &old}},
+			{CurrentRelease: "New", Entry: surfaceledger.DeltaEntry{Kind: surfaceledger.DeltaRemoved, SurfaceID: old.SurfaceID, Old: &old}, Classification: unsupported(old.SurfaceID)},
+			{CurrentRelease: "New", Entry: surfaceledger.DeltaEntry{Kind: surfaceledger.DeltaAdded, SurfaceID: added.SurfaceID, New: &added}, Classification: unsupported(added.SurfaceID)},
+			{CurrentRelease: "New", Entry: surfaceledger.DeltaEntry{Kind: surfaceledger.DeltaChanged, SurfaceID: changed.SurfaceID, New: &changed}, Classification: unsupported(changed.SurfaceID)},
+			{CurrentRelease: "Old", Entry: surfaceledger.DeltaEntry{Kind: surfaceledger.DeltaAdded, SurfaceID: overload.SurfaceID, New: &overload}},
+			{CurrentRelease: "New", Entry: surfaceledger.DeltaEntry{Kind: surfaceledger.DeltaAdded, SurfaceID: newOverload.SurfaceID, New: &newOverload}, Classification: unsupported(newOverload.SurfaceID)},
+		},
+	}
+	generated, err := renderGeneratedVersionSources(a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := string(generated["internal/sema/platform_availability_generated.go"])
+	for _, bad := range []string{"system.documented", "Until: 68", "existing.other()", "run(integer)"} {
+		if strings.Contains(source, bad) {
+			t.Fatalf("documentation-only delta emitted %q:\n%s", bad, source)
+		}
+	}
+	for _, want := range []string{`"system.existing": {Since: 66}`, `"system.existing.run": {Since: 66}`, `generatedUnsupportedPlatformSurfaceIDs = []string{}`} {
+		if !strings.Contains(source, want) {
+			t.Fatalf("missing preserved %q:\n%s", want, source)
+		}
+	}
+}
+
+func TestRuntimeUnsupportedRequiresExplicitBehaviorBinding(t *testing.T) {
+	row := surfaceledger.SurfaceLedgerRow{SurfaceID: "apex:System.New", Product: surfaceledger.ProductApex, Kind: surfaceledger.KindType, Namespace: "System", TypeName: "New"}
+	change := SurfaceChange{Entry: surfaceledger.DeltaEntry{Kind: surfaceledger.DeltaAdded, SurfaceID: row.SurfaceID, New: &row}, Classification: &surfaceledger.ReleaseClassification{SurfaceID: row.SurfaceID, Scope: surfaceledger.ScopeT0, Disposition: surfaceledger.DispoExplicitUnsupported, ReasonRef: "unsupported"}}
+	a := Analysis{SurfaceChanges: []SurfaceChange{change}}
+	if _, err := renderGeneratedVersionSources(a); err == nil || !strings.Contains(err.Error(), "explicit-non-parity behavior") {
+		t.Fatalf("unbound runtime gate: %v", err)
+	}
+}
+
+func TestExistingDeclarationCapturePreservesAvailabilityAndBindsExactShape(t *testing.T) {
+	for _, kind := range []surfaceledger.DeltaKind{surfaceledger.DeltaAdded, surfaceledger.DeltaRemoved} {
+		t.Run(string(kind), func(t *testing.T) {
+			id := "apex:Archive.Existing"
+			row := surfaceledger.SurfaceLedgerRow{SurfaceID: id, Product: surfaceledger.ProductApex, Kind: surfaceledger.KindType, Namespace: "Archive", TypeName: "Existing"}
+			entry := surfaceledger.DeltaEntry{SurfaceID: id, Kind: kind}
+			if kind == surfaceledger.DeltaAdded {
+				entry.New = &row
+			} else {
+				entry.Old = &row
+			}
+			c := surfaceledger.ReleaseClassification{SurfaceID: id, Scope: surfaceledger.ScopeT2, Disposition: surfaceledger.DispoExistingCase, ReasonRef: "Existing product declaration; documentation capture is not an introduction/retirement.", ProductTests: []string{"internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:archive.existing"}, PreserveAvailability: true}
+			a := Analysis{Contract: Contract{Defaults: Defaults{Source: "65.0", Endpoint: "65.0"}, Windows: Windows{Source: []VersionProof{{Version: "65.0"}, {Version: "68.0"}}, Endpoint: []VersionProof{{Version: "65.0"}}}, Behaviors: []Behavior{{ID: "existing-shape", SurfaceIDs: []string{id}}}}, Report: Report{Ranges: map[string]Range{"apex:archive.existing": {Since: 68}}}, SurfaceChanges: []SurfaceChange{{Entry: entry, Classification: &c}}}
+			sources, err := renderGeneratedVersionSources(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := string(sources[generatedVersionPaths[1]])
+			if !strings.Contains(got, `var generatedManualSurfaceIDs = []string{"apex:archive.existing"}`) || strings.Contains(got, `"archive.existing":`) {
+				t.Fatalf("existing declaration acquired a source gate: %s", got)
+			}
+			a.Contract.Behaviors = nil
+			if _, err := renderGeneratedVersionSources(a); err != nil {
+				t.Fatal("a preserved declaration is not a new behavior", err)
+			}
+			c.ProductTests = nil
+			if _, err := renderGeneratedVersionSources(a); err == nil {
+				t.Fatal("preserved declaration without exact shape test accepted")
+			}
+			c.ProductTests = []string{"internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:archive.existing"}
+			c.Disposition = surfaceledger.DispoExplicitUnsupported
+			if surfaceledger.ValidateReleaseClassification(c) == nil {
+				t.Fatal("unsupported declaration cannot assert supported availability")
+			}
+		})
+	}
+}
+
+func TestPreservedDocumentationGapKeepsAnIndependentlyReviewedIntroduction(t *testing.T) {
+	id := "apex:Archive.Existing"
+	row := surfaceledger.SurfaceLedgerRow{SurfaceID: id, Product: surfaceledger.ProductApex, Kind: surfaceledger.KindType, Namespace: "Archive", TypeName: "Existing"}
+	intro := surfaceledger.ReleaseClassification{SurfaceID: id, Scope: surfaceledger.ScopeT2, Disposition: surfaceledger.DispoExistingCase, ReasonRef: "Real API66 introduction", ProductTests: []string{"x_test.go:TestShape"}}
+	preserve := intro
+	preserve.PreserveAvailability = true
+	preserve.ReasonRef = "Exact declaration preserved across reviewed publication gaps"
+	a := Analysis{Contract: Contract{Defaults: Defaults{Source: "65.0", Endpoint: "65.0"}, Windows: Windows{Source: []VersionProof{{Version: "65.0"}, {Version: "66.0"}, {Version: "67.0"}, {Version: "68.0"}}, Endpoint: []VersionProof{{Version: "65.0"}}}, Releases: []Release{{Name: "r66", APIVersion: "66.0"}, {Name: "r67", APIVersion: "67.0"}, {Name: "r68", APIVersion: "68.0"}}}, Report: Report{Ranges: map[string]Range{"apex:archive.existing": {Since: 66, Until: 67}}}, SurfaceChanges: []SurfaceChange{
+		{CurrentRelease: "r66", Entry: surfaceledger.DeltaEntry{SurfaceID: id, Kind: surfaceledger.DeltaAdded, New: &row}, Classification: &intro},
+		{CurrentRelease: "r67", Entry: surfaceledger.DeltaEntry{SurfaceID: id, Kind: surfaceledger.DeltaRemoved, Old: &row}, Classification: &preserve},
+		{CurrentRelease: "r68", Entry: surfaceledger.DeltaEntry{SurfaceID: id, Kind: surfaceledger.DeltaAdded, New: &row}, Classification: &preserve}}}
+	sources, err := renderGeneratedVersionSources(a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := string(sources[generatedVersionPaths[1]])
+	if !strings.Contains(got, `"archive.existing": {Since: 66}`) || strings.Contains(got, "Until: 67") || strings.Contains(got, `[]string{"apex:archive.existing"}`) {
+		t.Fatalf("introduction lost or gap treated as retirement: %s", got)
 	}
 }

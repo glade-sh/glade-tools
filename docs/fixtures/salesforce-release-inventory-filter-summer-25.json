@@ -1,0 +1,11 @@
+{
+  "excludedFutureDeclarations": [
+    "apex/apex_ConnectAPI_CdpSegment_static_methods.md:getSegmentById: API65.0",
+    "apex/apex_ConnectAPI_CdpSegment_static_methods.md:getSegmentsFilteredPaginated: API65.0",
+    "apex/apex_ConnectAPI_CdpSegment_static_methods.md:getSegmentsFilteredPaginated: API65.0",
+    "apex/apex_ConnectAPI_ContentHub_static_methods.md:getRepository: API369.0"
+  ],
+  "inventoryDigest": "c306f1cc487c84665d581303f4831d7f42ab22e342913cc471fded830f5a1599",
+  "schemaVersion": 1,
+  "targetAPIVersion": "64.0"
+}

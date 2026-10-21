@@ -1405,6 +1405,17 @@ func TestSalesforceVerify_ReleaseModeRejectsDirtyRoot(t *testing.T) {
 	catalogPath := makeCatalog(t, dir)
 	runtimePath := makeRuntimeFixture(t, dir)
 	projectPath := makeTestProject(t, dir)
+	contractPath := fixturesPath("docs/fixtures/salesforce-release-contract.json")
+	contract, _, err := releasecontract.Load(contractPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	currentAPI := contract.Releases[len(contract.Releases)-1].APIVersion
+	// Reach the dirty-root assertion with inputs matching the moving contract.
+	replaceFile(t, runtimePath, "67.0", currentAPI)
+	replaceFile(t, filepath.Join(projectPath, "sfdx-project.json"), "67.0", currentAPI)
+	replaceFile(t, filepath.Join(projectPath, "force-app", "main", "default", "classes", "CorrectnessProbeTest.cls-meta.xml"), "67.0", currentAPI)
+	replaceFile(t, catalogPath, `"apiVersion": 67`, `"apiVersion": `+currentAPI)
 	candidatePath := makeCandidate(t, dir)
 	outPath := filepath.Join(dir, "out", "report.json")
 
@@ -1412,7 +1423,7 @@ func TestSalesforceVerify_ReleaseModeRejectsDirtyRoot(t *testing.T) {
 	// Use the real Run to test flag parsing with dirty root
 	args := []string{
 		"salesforce", "verify",
-		"--release-contract", fixturesPath("docs/fixtures/salesforce-release-contract.json"),
+		"--release-contract", contractPath,
 		"--product-version-proof", proofPath,
 		"--catalog", catalogPath,
 		"--runtime-cases", runtimePath,
@@ -2589,5 +2600,17 @@ func TestSalesforceVerify_Schema2ProductTestsDoNotSupplyLegacyDeltaProof(t *test
 	report := runVerifyWithDeps(t, opts, allPassDeps())
 	if report.ReleaseDelta == nil || report.ReleaseDelta.Status != "fail" || report.Status != "fail" {
 		t.Fatalf("expected legacy proof failure: %+v", report)
+	}
+}
+
+func TestSalesforceVerifyRepositoryInputsMatchCurrentContract(t *testing.T) {
+	contract, _, err := releasecontract.Load(fixturesPath("docs/fixtures/salesforce-release-contract.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	current := contract.Releases[len(contract.Releases)-1].APIVersion
+	opts := salesforceVerifyOptions{Catalog: fixturesPath("docs/fixtures/apex-language-rules.json"), RuntimeCases: fixturesPath("docs/fixtures/salesforce-runtime-correctness.json"), TestProject: fixturesPath("testdata/salesforce-correctness")}
+	if err := checkAPIVersionProvenance(releaseManifest{APIVersion: current}, opts); err != nil {
+		t.Fatal(err)
 	}
 }

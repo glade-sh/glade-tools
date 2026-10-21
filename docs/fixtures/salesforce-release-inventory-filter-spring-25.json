@@ -1,0 +1,8 @@
+{
+  "excludedFutureDeclarations": [
+    "apex/apex_ConnectAPI_ContentHub_static_methods.md:getRepository: API369.0"
+  ],
+  "inventoryDigest": "9cfba606cac3b473063af34b1143deb7340172cf62cc3ac7ccc17b48775b05a7",
+  "schemaVersion": 1,
+  "targetAPIVersion": "63.0"
+}

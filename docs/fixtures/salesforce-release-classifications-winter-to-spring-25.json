@@ -1,0 +1,1058 @@
+{
+  "schemaVersion": 2,
+  "previousRelease": "Winter '25",
+  "currentRelease": "Spring '25",
+  "classifications": [
+    {
+      "surfaceId": "apex:ConnectApi.AbstractList",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.AbstractList (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_abstract_list_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.AttributeLimitingExpressionInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.AttributeLimitingExpressionInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_attribute_limiting_expression.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BooleanList",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.BooleanList (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_boolean_list_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CalculateCartInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CalculateCartInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_cart_calculate.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CancelAllOrderItemsAsyncOutputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CancelAllOrderItemsAsyncOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_cancel_all_order_items_async_output.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CancelAllOrderItemsInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CancelAllOrderItemsInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_cancel_all_order_items.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CartEvaluateShippingInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CartEvaluateShippingInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_cart_evaluate_shipping.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CartEvaluateTaxInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CartEvaluateTaxInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_cart_evaluate_tax.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CartShippingAddressInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CartShippingAddressInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_cart_shipping_address.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpConnection",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.CdpConnection (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpConnection_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpConnection.getDatabaseSchemas(String,ConnectApi.ConnectionDbSchemaCollectionInputRepresentation)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ConnectionDbSchemaCollection getDatabaseSchemas(String connectionId, ConnectApi.ConnectionDbSchemaCollectionInputRepresentation getDatabaseSchemasInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpConnection_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQuery.getDataGraphData(String,String,Boolean)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CdpQueryOutput getDataGraphData(String dataGraphEntityName, String id, Boolean live) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpQuery_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQuery.getDataGraphData(String,String,String,Boolean)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CdpQueryOutput getDataGraphData(String dataGraphEntityName, String id, String dataspace, Boolean live) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpQuery_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpSegment.getSegmentMembers(Integer,Integer,String,String,String,List\u003cString\u003e)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CdpSegmentMemberOutput getSegmentMembers(Integer limit, Integer offset, String orderBy, String segmentApiName, String filters, List\u003cString\u003e fields) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CdpSegment_static_methods.htm/en-us/252.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeItemFeeTaxInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeItemFeeTaxInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_item_fee_tax.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeItemFeeWithTaxInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ChangeItemFeeWithTaxInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_change_item_fee_with_tax.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Chunk",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.Chunk (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_chun.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCart.calculateCart(String,String,String,ConnectApi.CalculateCartInput)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CalculateCartResult calculateCart(String webstoreId, String activeCartOrId, String effectiveAccountId, ConnectApi.CalculateCartInput calculateCartInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCart.evaluateShipping(String,String,String,ConnectApi.CartEvaluateShippingInput)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CalculateCartResult evaluateShipping(String webstoreId, String activeCartOrId, String effectiveAccountId, ConnectApi.CartEvaluateShippingInput cartEvaluateShippingInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCart.evaluateTaxes(String,String,String,ConnectApi.CartEvaluateTaxInput)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.CalculateCartResult evaluateTaxes(String webstoreId, String activeCartOrId, String effectiveAccountId, ConnectApi.CartEvaluateTaxInput cartEvaluateTaxInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalog.getProducts(String,String,List\u003cString\u003e,List\u003cString\u003e,List\u003cString\u003e,Boolean,Boolean,Boolean,Boolean,Boolean)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ProductOverviewCollection getProducts(String webstoreId, String effectiveAccountId, List\u003cString\u003e ids, List\u003cString\u003e skus, List\u003cString\u003e fields, Boolean excludeMedia, Boolean includeQuantityRule, Boolean includeProductSellingModels, Boolean includeAttributeSetInfo, Boolean includeGroupByAttributeVariationInfo) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_CommerceCatalog_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ConnectionDbSchemaCollection",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ConnectionDbSchemaCollection (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_connection_db_schema_collection.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ConnectionDbSchemaCollectionInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ConnectionDbSchemaCollectionInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_connection_db_schema_collection.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DataCategoryMetadata",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DataCategoryMetadata (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_data_category_metadat.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DataCategoryValueMetadata",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DataCategoryValueMetadata (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_data_category_value_metadat.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DateEstimationOutputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DateEstimationOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_date_estimation_output.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeliveryAddressInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DeliveryAddressInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_delivery_address.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeliveryEstimateOutputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DeliveryEstimateOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_delivery_estimate_output.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeliveryEstimationErrorOutputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DeliveryEstimationErrorOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_delivery_estimation_error_output.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeliveryEstimationProductInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DeliveryEstimationProductInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_delivery_estimation_product.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DoubleList",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.DoubleList (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_double_list_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.EinsteinPromptTemplateAttachment",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.EinsteinPromptTemplateAttachment (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_einstein_prompt_template_attachment.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.EstimateDeliveryDateInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.EstimateDeliveryDateInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_estimate_delivery_date.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.EstimateDeliveryDateOutputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.EstimateDeliveryDateOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_estimate_delivery_date_output.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExtendedCommerceDelivery",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ExtendedCommerceDelivery (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ExtendedCommerceDelivery_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExtendedCommerceDelivery.estimateDeliveryDate(ConnectApi.EstimateDeliveryDateInputRepresentation,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.EstimateDeliveryDateOutputRepresentation estimateDeliveryDate(ConnectApi.EstimateDeliveryDateInputRepresentation estimateDeliveryDateInput, String externalReference) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ExtendedCommerceDelivery_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExternalAuthIdentityProviderParameter",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ExternalAuthIdentityProviderParameter (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_external_auth_identity_provider_parameter.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExternalAuthIdentityProviderParameterInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ExternalAuthIdentityProviderParameterInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_external_auth_identity_provider_parameter.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FieldMetadata",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.FieldMetadata (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_field_metadat.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.LongList",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.LongList (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_long_list_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MCSFolderShare",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.MCSFolderShare (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_m_c_s_folder_share.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MCSFolderShareCollection",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.MCSFolderShareCollection (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_m_c_s_folder_share_collection.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MCSFolderShareCollectionUpdateInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.MCSFolderShareCollectionUpdateInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_m_c_s_folder_share_collection_update.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MCSFolderShareInput",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.MCSFolderShareInput (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_m_c_s_folder_share.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MCSFolderShareTarget",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.MCSFolderShareTarget (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_m_c_s_folder_share_target.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MCSFolderShareTargetCollection",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.MCSFolderShareTargetCollection (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_m_c_s_folder_share_target_collection.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContent.getMCSFolderShareTargets(String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.MCSFolderShareTargetCollection getMCSFolderShareTargets(String folderId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContent_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContent.getMCSFolderShares(String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.MCSFolderShareCollection getMCSFolderShares(String folderId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContent_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContent.patchMCSFolderShares(String,ConnectApi.MCSFolderShareCollectionUpdateInput)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.MCSFolderShareCollection patchMCSFolderShares(String folderId, ConnectApi.MCSFolderShareCollectionUpdateInput mcsFolderShareCollectionUpdateInput) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContent_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentDelivery.getCollectionItemsForChannel(String,String,String,Integer,Integer)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ManagedContentCollectionItems getCollectionItemsForChannel(String channelId, String collectionKeyOrId, String language, Integer pageToken, Integer pageSize) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContentDelivery_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContentDelivery.getCollectionItemsForSite(String,String,String,Integer,Integer)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ManagedContentCollectionItems getCollectionItemsForSite(String siteId, String collectionKeyOrId, String language, Integer pageToken, Integer pageSize) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_ManagedContentDelivery_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.MatchInfo",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.MatchInfo (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_match_inf.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ObjectMetadata",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ObjectMetadata (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_object_metadat.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.OmnichannelInventoryService",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.OmnichannelInventoryService (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_OmnichannelInventoryService_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.OmnichannelInventoryService.submitInventoryAvailabilityUpload(ConnectApi.BinaryInput)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.OCIUploadInventoryAvailabilityOutputRepresentation submitInventoryAvailabilityUpload(ConnectApi.BinaryInput fileUpload) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_OmnichannelInventoryService_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Orchestration.getOrchestrationInstance(String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.OrchestrationInstance getOrchestrationInstance(String instanceId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Orchestration_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PageInfo",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.PageInfo (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_page_inf.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PaymentInitiationSourceInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.PaymentInitiationSourceInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_payment_initiation_source.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ProductAttributeValueMetadataRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ProductAttributeValueMetadataRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_product_attribute_value_metadata.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ProductDeliverEstimationOutputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ProductDeliverEstimationOutputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_product_deliver_estimation_output.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordFieldValue",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.RecordFieldValue (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_field_valu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ScopedSearchResults",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ScopedSearchResults (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_scoped_search_result.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.answer(String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.SearchAnswer answer(String q) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.answer(String,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.SearchAnswer answer(String q, String objectApiName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.answer(String,String,List\u003cString\u003e)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.SearchAnswer answer(String q, String objectApiName, List\u003cString\u003e displayFields) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.find(String,ConnectApi.SearchRequest)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.ScopedSearchResults find(String objectApiName, ConnectApi.SearchRequest request) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.findAndGroup(String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.SearchResultGroups findAndGroup(String q) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.findAndGroup(String,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.SearchResultGroups findAndGroup(String q, String configurationName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.findAndGroup(String,String,Boolean)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static ConnectApi.SearchResultGroups findAndGroup(String q, String configurationName, Boolean highlights) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.setTestAnswer(String,ConnectApi.SearchAnswer)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void setTestAnswer(String q, ConnectApi.SearchAnswer result) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.setTestAnswer(String,String,ConnectApi.SearchAnswer)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void setTestAnswer(String q, String objectApiName, ConnectApi.SearchAnswer result) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.setTestFind(String,ConnectApi.SearchRequest,ConnectApi.ScopedSearchResults)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void setTestFind(String objectApiName, ConnectApi.SearchRequest request, ConnectApi.ScopedSearchResults result) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.setTestFindAndGroup(String,ConnectApi.SearchResultGroups)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void setTestFindAndGroup(String q, ConnectApi.SearchResultGroups result) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.setTestFindAndGroup(String,String,Boolean,ConnectApi.SearchResultGroups)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void setTestFindAndGroup(String q, String configurationName, Boolean highlights, ConnectApi.SearchResultGroups result) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Search.setTestFindAndGroup(String,String,ConnectApi.SearchResultGroups)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Void setTestFindAndGroup(String q, String configurationName, ConnectApi.SearchResultGroups result) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_ConnectAPI_Search_static_methods.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchAnswer",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchAnswer (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_search_answe.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchAppliedOrderBy",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchAppliedOrderBy (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_applied_order_b.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchDataCategory",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchDataCategory (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_data_category_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchFilter",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchFilter (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_filter_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchObject",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchObject (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_search_objec.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchOrderBy",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchOrderBy (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_order_by_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchRequest",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchRequest (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_search_reques.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchResult",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchResult (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_search_resul.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchResultGroups",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchResultGroups (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_search_result.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SearchStatus",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SearchStatus (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_statu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ShippingCarrierInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ShippingCarrierInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_shipping_carrier.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ShippingCarrierMethodInputRepresentation",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ShippingCarrierMethodInputRepresentation (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_shipping_carrier_method.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SpellCorrectionInfo",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.SpellCorrectionInfo (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_spell_correction_inf.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.StringList",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.StringList (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_input_string_list_inpu.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ThemeInfo",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type ConnectApi.ThemeInfo (https://developer.salesforce.com/docs/get_document_content/apexref/apex_connectapi_output_theme_inf.htm/en-us/254.0). Product evidence: Exact public declaration recorded above. ConnectApi is explicitly excluded and unsupported by D45, including declaration-only symbols; no hosted behavior or parity is claimed.. Decision: D45 namespace exclusion. Unacquired references and retained HTTP403 evidence remain separate; no unavailable signature is inferred.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "preserveAvailability": true,
+      "surfaceId": "apex:Messaging.SingleEmailMessage.getOneClickPost()",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Boolean getOneClickPost() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_email_outbound_single.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getOneClickPost\",\"type\":\"Boolean\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.singleemailmessage.getoneclickpost()"
+      ]
+    },
+    {
+      "preserveAvailability": true,
+      "surfaceId": "apex:Messaging.SingleEmailMessage.setOneClickPost(Boolean)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public void setOneClickPost(Boolean oneClickPost) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_email_outbound_single.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"setOneClickPost\",\"type\":\"void\",\"parameters\":[\"Boolean\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.singleemailmessage.setoneclickpost(boolean)"
+      ]
+    },
+    {
+      "preserveAvailability": true,
+      "surfaceId": "apex:Messaging.SingleEmailMessage.setUnsubscribeComment(String)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public void setUnsubscribeComment(String unsubscribeComment) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_email_outbound_single.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"setUnsubscribeComment\",\"type\":\"void\",\"parameters\":[\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.singleemailmessage.setunsubscribecomment(string)"
+      ]
+    },
+    {
+      "preserveAvailability": true,
+      "surfaceId": "apex:Messaging.SingleEmailMessage.setUnsubscribeUrls(List\u003cString\u003e)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public void setUnsubscribeUrls(List\u003cString\u003e unsubscribeUrls) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_email_outbound_single.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"setUnsubscribeUrls\",\"type\":\"void\",\"parameters\":[\"List\u003cString\u003e\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.singleemailmessage.setunsubscribeurls(list\u003cstring\u003e)"
+      ]
+    },
+    {
+      "surfaceId": "apex:QuickAction.DescribeQuickActionParameter",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: type QuickAction.DescribeQuickActionParameter (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_QuickAction_DescribeQuickActionParameter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"class\",\"name\":\"DescribeQuickActionParameter\",\"type\":null,\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:quickaction.describequickactionparameter"
+      ]
+    },
+    {
+      "surfaceId": "apex:QuickAction.DescribeQuickActionParameter.getParameterName()",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getParameterName() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_QuickAction_DescribeQuickActionParameter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getParameterName\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:quickaction.describequickactionparameter.getparametername()"
+      ]
+    },
+    {
+      "surfaceId": "apex:QuickAction.DescribeQuickActionParameter.getParameterType()",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getParameterType() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_QuickAction_DescribeQuickActionParameter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getParameterType\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:quickaction.describequickactionparameter.getparametertype()"
+      ]
+    },
+    {
+      "surfaceId": "apex:QuickAction.DescribeQuickActionParameter.getParameterValue()",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String getParameterValue() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_QuickAction_DescribeQuickActionParameter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getParameterValue\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:quickaction.describequickactionparameter.getparametervalue()"
+      ]
+    },
+    {
+      "surfaceId": "apex:QuickAction.DescribeQuickActionParameter.parametername",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String parametername {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_QuickAction_DescribeQuickActionParameter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"parametername\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:quickaction.describequickactionparameter.parametername"
+      ]
+    },
+    {
+      "surfaceId": "apex:QuickAction.DescribeQuickActionParameter.parametertype",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String parametertype {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_QuickAction_DescribeQuickActionParameter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"parametertype\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:quickaction.describequickactionparameter.parametertype"
+      ]
+    },
+    {
+      "surfaceId": "apex:QuickAction.DescribeQuickActionParameter.parametervalue",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public String parametervalue {get; set;} (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_QuickAction_DescribeQuickActionParameter.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"property\",\"name\":\"parametervalue\",\"type\":\"String\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:quickaction.describequickactionparameter.parametervalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Cookie.Cookie(String,String,String,Integer,Boolean,String,Boolean)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Cookie(String name, String value, String path, Integer maxAge, Boolean isSecure, String SameSite, Boolean isHttpOnly) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_sites_cookie.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"Cookie\",\"type\":null,\"parameters\":[\"String\",\"String\",\"String\",\"Integer\",\"Boolean\",\"String\",\"Boolean\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.cookie.cookie(string,string,string,integer,boolean,string,boolean)"
+      ]
+    },
+    {
+      "preserveAvailability": true,
+      "surfaceId": "apex:System.Cookie.isHttpOnly()",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public Boolean isHttpOnly() (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_sites_cookie.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"isHttpOnly\",\"type\":\"Boolean\",\"parameters\":[]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.cookie.ishttponly()"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Crypto.verifyHMac(String,Blob,Blob,Boolean)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: public static Boolean verifyHMac(String algorithmName, Blob data, Blob privateKey, Boolean macToVerify) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_classes_restful_crypto.htm/en-us/252.0). Product evidence: The owner System.Crypto exists, but no member with this exact name and parameter list exists in its registered declaration shape. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6.. Decision: Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.getQueryLocator(List\u003cObject\u003e)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Database. QueryLocator getQueryLocator(sObject [] staticSoqlQueryResult) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_database.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getQueryLocator\",\"type\":\"Database.QueryLocator\",\"parameters\":[\"List\u003cObject\u003e\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package. Return-type review: the signature spells Database. QueryLocator; the normalized short QueryLocator return and registered Database.QueryLocator denote the same qualified return type, protected by the existing QueryLocator runtime test.. Decision: The exact old/new signatures differ only in a formal parameter label; owner, method, argument types and return type are unchanged. Existing compiler/runtime behavior remains bound, without inventing an introduction date.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getquerylocator(list\u003cobject\u003e)",
+        "internal/vm/platform_test.go:TestExecDatabaseGetQueryLocator"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.getQueryLocator(List\u003cObject\u003e,AccessLevel)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public static Database.QueryLocator getQueryLocator(sObject [] staticSoqlQueryResult, System.AccessLevel accessLevel) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_database.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"getQueryLocator\",\"type\":\"Database.QueryLocator\",\"parameters\":[\"List\u003cObject\u003e\",\"System.AccessLevel\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: The exact old/new signatures differ only in a formal parameter label; owner, method, argument types and return type are unchanged. Existing compiler/runtime behavior remains bound, without inventing an introduction date.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getquerylocator(list\u003cobject\u003e,accesslevel)",
+        "internal/vm/platform_test.go:TestExecDatabaseGetQueryLocator"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.System.pauseJobById(String)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public static void pauseJobById(String cronTriggerId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_system.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"pauseJobById\",\"type\":\"void\",\"parameters\":[\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.system.pausejobbyid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.System.pauseJobByName(String)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public static void pauseJobByName(String jobName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_system.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"pauseJobByName\",\"type\":\"void\",\"parameters\":[\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.system.pausejobbyname(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.System.resumeJobById(String)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public static void resumeJobById(String cronTriggerId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_system.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"resumeJobById\",\"type\":\"void\",\"parameters\":[\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.system.resumejobbyid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.System.resumeJobByName(String)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: public static void resumeJobByName(String jobName) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_methods_system_system.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"method\",\"name\":\"resumeJobByName\",\"type\":\"void\",\"parameters\":[\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.system.resumejobbyname(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxCustomerDetailsRequest.TaxCustomerDetailsRequest(String,String,String,String)",
+      "scope": "t2",
+      "disposition": "existing-case",
+      "reasonRef": "Declaration: global TaxCustomerDetailsRequest(String accountId, String code, String exemptionNo, String exemptionReason) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxCustomerDetailsRequest.htm/en-us/254.0). Product evidence: The candidate product typesys.StandardPlatformSymbolView declares this exact qualified type/member and parameter list: {\"kind\":\"constructor\",\"name\":\"TaxCustomerDetailsRequest\",\"type\":null,\"parameters\":[\"String\",\"String\",\"String\",\"String\"]}. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6. The named generated-surface subtest requires this exact shape, not merely a containing package.. Decision: Supported declaration shape only. An added declaration receives its documented source availability; this does not claim hosted execution, service effects or native runtime parity.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.taxcustomerdetailsrequest.taxcustomerdetailsrequest(string,string,string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxCustomerDetailsRequest.TaxCustomerDetailsRequest(String,String,String,String,String)",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: global TaxCustomerDetailsRequest(String accountId, String code, String exemptionNo, String exemptionReason, String taxCertificateId) (https://developer.salesforce.com/docs/get_document_content/apexref/apex_class_commercetax_TaxCustomerDetailsRequest.htm/en-us/252.0). Product evidence: The owner commercetax.TaxCustomerDetailsRequest exists, but no member with this exact name and parameter list exists in its registered declaration shape. Standard-symbol receipt SHA256 f6739da10096d30c67eebb1d77d09c2d04578cc31bd064cbaaf53c6f423a70e6.. Decision: Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "tooling:AccountPlanObjMeasCalcCond",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type AccountPlanObjMeasCalcCond (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_accountplanobjmeascalccond.htm/en-us/254.0). Product evidence: The exact AccountPlanObjMeasCalcCond public Tooling object was checked against internal/server Tooling routes and object-specific test bindings. Generic local metadata/CRUD handling is not an implemented and test-bound claim for this Salesforce Tooling object.. Decision: Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "tooling:AccountPlanObjMeasCalcDef",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type AccountPlanObjMeasCalcDef (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_accountplanobjmeascalcdef.htm/en-us/254.0). Product evidence: The exact AccountPlanObjMeasCalcDef public Tooling object was checked against internal/server Tooling routes and object-specific test bindings. Generic local metadata/CRUD handling is not an implemented and test-bound claim for this Salesforce Tooling object.. Decision: Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "tooling:CustomFieldDisplay",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type CustomFieldDisplay (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_customfielddisplay.htm/en-us/254.0). Product evidence: The exact CustomFieldDisplay public Tooling object was checked against internal/server Tooling routes and object-specific test bindings. Generic local metadata/CRUD handling is not an implemented and test-bound claim for this Salesforce Tooling object.. Decision: Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    },
+    {
+      "surfaceId": "tooling:CustomMsgChannel",
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "Declaration: type CustomMsgChannel (https://developer.salesforce.com/docs/get_document_content/api_tooling/tooling_api_objects_custommsgchannel.htm/en-us/254.0). Product evidence: The exact CustomMsgChannel public Tooling object was checked against internal/server Tooling routes and object-specific test bindings. Generic local metadata/CRUD handling is not an implemented and test-bound claim for this Salesforce Tooling object.. Decision: Not claimed: this exact declaration/resource has no admitted matching implementation and product-test binding for the claimed public surface. This is an explicit documentation scope decision, not evidence of a tested runtime rejection.",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface"
+      ]
+    }
+  ]
+}

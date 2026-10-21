@@ -1,5 +1,5 @@
 {
-  "apiVersion": "67.0",
+  "apiVersion": "68.0",
   "comparisons": [
     {
       "caseId": "decimal-round-default-positive-tie",
@@ -9,5 +9,5 @@
       "gladeObservation": ""
     }
   ],
-  "_note": "This fixture is seeded from oracleprobe.StdlibCases().  Cases are populated by the verifier lane — do not duplicate the case catalog here."
+  "_note": "This fixture is seeded from oracleprobe.StdlibCases().  Cases are populated by the verifier lane \u2014 do not duplicate the case catalog here."
 }

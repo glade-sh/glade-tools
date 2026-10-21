@@ -1,10 +1,13 @@
+import asyncio
 import json
+import tempfile
+from types import SimpleNamespace
 import sys
 import unittest
 import warnings
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import export_release_notes as exporter
 from bs4 import XMLParsedAsHTMLWarning
@@ -161,7 +164,7 @@ class ExportReleaseNotesTests(unittest.TestCase):
                         "articleParameters": {
                             "urlName": "release-notes.salesforce_release_notes.htm",
                             "language": "en_US",
-                            "release": "260.0.0",
+                            "release": "262.0.0",
                             "requestedArticleType": "HelpDocs",
                             "requestedArticleTypeNumber": "5",
                         }
@@ -172,7 +175,7 @@ class ExportReleaseNotesTests(unittest.TestCase):
         template = urlencode({
             "message": json.dumps(message),
             "aura.context": '{"mode":"PROD"}',
-            "aura.pageURI": "/s/articleView?id=release-notes.salesforce_release_notes.htm&release=260&type=5",
+            "aura.pageURI": "/s/articleView?id=release-notes.salesforce_release_notes.htm&release=262&type=5",
             "aura.token": "null",
         })
 
@@ -185,6 +188,44 @@ class ExportReleaseNotesTests(unittest.TestCase):
         self.assertIn("id=release-notes.rn_apex.htm", rebound["aura.pageURI"][0])
         self.assertIn("release=262", rebound["aura.pageURI"][0])
         self.assertEqual(rebound["aura.context"], ['{"mode":"PROD"}'])
+
+    def test_historical_request_preserves_resolved_publication_revision(self):
+        template = urlencode({'message': json.dumps({'actions':[{'params':{'params':{'articleParameters':{'urlName':exporter.ROOT_TOPIC, 'language':'en_US', 'release':'252.15.0'}}}}]})})
+        rebound = parse_qs(exporter.build_article_request(template, 'release-notes.rn_apex.htm', '252'))
+        params = json.loads(rebound['message'][0])['actions'][0]['params']['params']['articleParameters']
+        self.assertEqual(params['release'], '252.15.0')
+        with self.assertRaisesRegex(ValueError, 'publication'):
+            exporter.build_article_request(template, 'release-notes.rn_apex.htm', '254')
+
+    def test_historical_article_requires_exact_resolved_revision(self):
+        response = {'actions':[{'state':'SUCCESS','returnValue':{'returnValue':{'record':{
+            'Version__c':'252.15.0', 'Topic_Id__c':'release-notes.rn_apex', 'Content__c':'<p>Apex</p>'
+        }}}}]}
+        self.assertEqual(exporter.extract_article(response, 'release-notes.rn_apex.htm', '252', resolved_version='252.15.0')['Version__c'], '252.15.0')
+        with self.assertRaisesRegex(ValueError, 'version'):
+            exporter.extract_article(response, 'release-notes.rn_apex.htm', '252', resolved_version='252.14.0')
+        with self.assertRaisesRegex(ValueError, 'publication'):
+            exporter.extract_article(response, 'release-notes.rn_apex.htm', '254', resolved_version='252.15.0')
+
+    def test_failed_seasonal_root_stops_before_article_queue_and_retains_metadata(self):
+        template = urlencode({'message': json.dumps({'actions':[{'params':{'params':{'articleParameters':{'release':'252.15.0'}}}}]})})
+        context = SimpleNamespace(request=object(), new_page=AsyncMock(return_value=object()))
+        browser = SimpleNamespace(new_context=AsyncMock(return_value=context), close=AsyncMock())
+        manager = AsyncMock()
+        manager.__aenter__.return_value = SimpleNamespace(chromium=SimpleNamespace(launch=AsyncMock(return_value=browser)))
+        topics = [exporter.ROOT_TOPIC, 'release-notes.rn_apex.htm']
+        with tempfile.TemporaryDirectory() as directory:
+            args = SimpleNamespace(output=Path(directory), release='252', language='en_US', toc_only=False, limit=0, concurrency=1, attempts=1, request_delay=0)
+            with patch.object(exporter, 'async_playwright', return_value=manager), patch.object(exporter, 'load_toc_and_template', new=AsyncMock(return_value=('https://help.salesforce.com/source', [], topics, 'endpoint', template, {}))), patch.object(exporter, 'fetch_article', new=AsyncMock(side_effect=RuntimeError('missing historical record'))) as fetch:
+                self.assertEqual(asyncio.run(exporter.export(args)), 1)
+            self.assertEqual(fetch.await_count, 1)
+            self.assertEqual(fetch.await_args.args[4], exporter.ROOT_TOPIC)
+            metadata = json.loads((Path(directory) / '_export-meta.json').read_text())
+            self.assertEqual(metadata['release'], '252.15.0')
+            self.assertFalse(metadata['complete'])
+            self.assertEqual(metadata['exportedArticleCount'], 0)
+            self.assertIn('seasonal root preflight', metadata['failures'][0])
+            self.assertEqual(list(Path(directory).glob('*.md')), [])
 
     def test_article_markdown_uses_content_body_and_relative_release_links(self):
         xhtml = """<html><head><title>Ignore</title></head><body>

@@ -1,0 +1,195 @@
+{
+  "apiVersion": "62.0",
+  "generator": {
+    "path": "scripts/salesforce-release/export_source_receipt.py",
+    "sha256": "dd49e40b8624f68feeb3a19846aa1439e14184d1ead5a6c0660193f158ef119d"
+  },
+  "inventorySHA256": "dfd1ddee1d83bd24be9cb634f97411a70ac707307a16a6e3745bc5da536bda09",
+  "manifestDigest": "2a325a3144f69163f66fe37cfdbc7dd114a2b8939d9dae9fab360811f208b90d",
+  "release": "Winter '25",
+  "schemaVersion": 1,
+  "snapshot": {
+    "assembler": {
+      "path": "scripts/salesforce-release/assemble_versioned_docs.py",
+      "sha256": "a8cdbf9c46253bf49e76670d09cbc8d6876c4ea4250fad410a12cb5306693227"
+    },
+    "atlasVersion": "252.0",
+    "atlasVersionLabel": "API v62.0  (Winter '25)",
+    "families": [
+      {
+        "fileCount": 1695,
+        "name": "apex",
+        "sha256": "b88cbe44fe7aaed3ae187ba6313f44730c8846c17ee92468f75d6dc412c209fb",
+        "version": "252.0"
+      },
+      {
+        "fileCount": 159,
+        "name": "lightning-aura",
+        "sha256": "6a2950dc3ac5147763f6993d88db8072ada27a9fa36402bb79e30cde12977524",
+        "version": "252.0"
+      },
+      {
+        "fileCount": 307,
+        "name": "rest-api",
+        "sha256": "9c80df99679e155fc1b328e780691dcfb2c0e530e4d64f06f8a75ee8c24bdfeb",
+        "version": "252.0"
+      },
+      {
+        "fileCount": 320,
+        "name": "tooling-api",
+        "sha256": "b56262d55c2957b36d7e73695f290f028cd3b0ace9c0597e8a56d3a172df493b",
+        "version": "252.0"
+      },
+      {
+        "fileCount": 164,
+        "name": "visualforce",
+        "sha256": "58d469209650c2270cf8d326fcdf4bfb96082862654e9aba218bd774fc7bd216",
+        "version": "252.0"
+      }
+    ],
+    "limitations": [
+      "Salesforce publishes the LWC reference as current-release-only; this is an availability-filtered view."
+    ],
+    "lwc": {
+      "availabilityTable": "reference-api-modules.md",
+      "availabilityTableSHA256": "16f14590acf0d70fdd060eb098ea30f2e0f68bd61e835fd15095496a9bf72147",
+      "copied": [
+        {
+          "path": "reference-api-modules.md",
+          "sha256": "16f14590acf0d70fdd060eb098ea30f2e0f68bd61e835fd15095496a9bf72147"
+        },
+        {
+          "path": "reference-configuration-tags.md",
+          "sha256": "3051132ca1658dda6a42a3a97addc296fc5a9a7814b23fd4fde89f7a9c34e0a2"
+        },
+        {
+          "path": "reference-decorators.md",
+          "sha256": "1678eafd98f60d817db9c4d630841d67e93756ba463bd9f166d197c3d8d9817d"
+        },
+        {
+          "path": "reference-directives.md",
+          "sha256": "725d237001995c0f895b43abc390b4287de545f7f7f42cbe605557087edad4e0"
+        },
+        {
+          "path": "reference-experience-cms-api.md",
+          "sha256": "9c1d1cfadc6a04e13755a7a39c4f9b1f2ee20e67e10c8c4c6917b5c51b4c0c4b"
+        },
+        {
+          "path": "reference-experience-cms-editor-api.md",
+          "sha256": "d66daf04603d3459371b211ef4feacebce7efe6f14b4381534fd62862aaa9885"
+        },
+        {
+          "path": "reference-lightning-analytics-wave-api.md",
+          "sha256": "9b229de2ce2ea68acf6f8216831fef96079ed56361a43f5aa79b336d3b0780f8"
+        },
+        {
+          "path": "reference-lightning-cms-delivery-api-list-content.md",
+          "sha256": "83ec8bda402e24885613ce355af33d35282db942cb7d63680fc5c4cc8b6b8696"
+        },
+        {
+          "path": "reference-lightning-commerce-cart-api.md",
+          "sha256": "c9795492895748a2f3ef3750ed1155a9c686d57386a482f4a021ede94c92d0c5"
+        },
+        {
+          "path": "reference-lightning-commerce-register-guest-buyer-api.md",
+          "sha256": "b0bd078c1a67380f0662024278f43247d91befb988934d04e2bd063fdd065a8a"
+        },
+        {
+          "path": "reference-lightning-commerce-repricing-api.md",
+          "sha256": "c0cb9fd7cc5e7120b6ecde92439d5fa049bff8d784cdb816da7eb93d971339fe"
+        },
+        {
+          "path": "reference-lightning-graphql-api.md",
+          "sha256": "7f450f93d94c266d06da902a6e6bb012215605004c5d449d4861fc15b27702dc"
+        },
+        {
+          "path": "reference-lightning-industries-education.md",
+          "sha256": "806bd06926778694869d8bb8ed5de3d940de06add7089258b7a2605f03a5f74a"
+        },
+        {
+          "path": "reference-lightning-mobilecapabilities.md",
+          "sha256": "7b84378fc5c91385b979977a2bb80d45ae19dfeab43ee2cd4c5dee990e67af0f"
+        },
+        {
+          "path": "reference-lightning-service-knowledge-api.md",
+          "sha256": "7d7ee95a523e4b07d670e4082a5bae1205ab8bb441a7e90e3c9292332c4df64e"
+        },
+        {
+          "path": "reference-notify-record-update.md",
+          "sha256": "412758342b2c8959c8a913725571b8eadbb4757171451074b229efc59a500b98"
+        },
+        {
+          "path": "reference-objects-lwc-multi-column-sort.md",
+          "sha256": "7d6724975e3a8d09950c2898ff9ca5cd063db94669305a6cd854a222cf4df17d"
+        },
+        {
+          "path": "reference-objects-lwc-record-home.md",
+          "sha256": "3f3c7956f4bbb00cee5c7dd23109091c8700edf6100478f89e1f02900d719ecc"
+        },
+        {
+          "path": "reference-objects-lwc-related-lists-sort.md",
+          "sha256": "6c47041adcde2f6b3578137755e435c78b8043d86ca0416b7ac8af43b87923d4"
+        },
+        {
+          "path": "reference-objects-lwc.md",
+          "sha256": "389278f2ca68cb8c9ff3c903e6a0b44b10ccef93ad28c7a4b5ef08daba624b58"
+        },
+        {
+          "path": "reference-page-reference-type.md",
+          "sha256": "08016c9a464d6b344229e66f699c4e249ef8d58a29996d013e86fd09d30efe5d"
+        },
+        {
+          "path": "reference-salesforce-modules.md",
+          "sha256": "992201cd71712cde1dba38ac731a35fdfb0916550013a6bc6eb1e8d33ef46536"
+        },
+        {
+          "path": "reference-supported-objects.md",
+          "sha256": "1fbfd903dc5ba947142521757622f090d0a80613b469880099777e3ee1031beb"
+        },
+        {
+          "path": "reference-template-errors.md",
+          "sha256": "2361cc0efab28ceeabf9ab3e4efc7b19cc5448f77aba0436161d99625b4997a8"
+        },
+        {
+          "path": "reference-ui-api.md",
+          "sha256": "967f4aedfc5988bc474de46d2d36d79082ab3959b40b96867e18f906ca31cd1f"
+        }
+      ],
+      "copiedMarkdownFiles": 25,
+      "excluded": [
+        {
+          "file": "reference-experience-block-builder-api.md",
+          "firstAvailableAPIVersion": "66.0",
+          "module": "experience/blockBuilderApi",
+          "sourceSHA256": "447e9bd590bfb0a139067b562326f0fe33ceb481c5119da1479beea1c1cce15c"
+        },
+        {
+          "file": "reference-lightning-distributed-marketing-api.md",
+          "firstAvailableAPIVersion": "66.0",
+          "module": "lightning/distributedMarketing",
+          "sourceSHA256": "ee6f82db6cc01c391dc4a718c9a10343a1dc2f9328d1f450bf7bc509c3c63bcf"
+        },
+        {
+          "file": "reference-lightning-graphql-module.md",
+          "firstAvailableAPIVersion": "65.0",
+          "module": "lightning/graphql",
+          "sourceSHA256": "4e9014a53d40c10a2d60f64c63faf8352b4c359b92721c5939b74f3b12d35e47"
+        }
+      ],
+      "filterReceiptSHA256": "5e67c39045ecb707aecdbb58a366576d1357776fcf87e4f3d5f54ecb1ccbd21b",
+      "limitation": "Salesforce publishes the LWC reference as current-release-only; this is an availability-filtered view.",
+      "sourceVersion": "latest",
+      "sourceVersionMetadata": {
+        "file": "_version.json",
+        "sha256": "7c12e667b9ca1257f0961e0e65bd99350e042cc72461d6742aa54149cdd599b3",
+        "version": "latest"
+      },
+      "sourceVersionSHA256": "59d79ac85065b836cd5b7b5b1ef47d3035e198b1dad3aae11d1e977457a85d81"
+    },
+    "metadataSHA256": "7f444c0cc8d910c3a9fca9bfb1f20e14ba28bbf4b90e066915986ebc18dc270b",
+    "sha256": "b46616adf9d4bf8aac66cad40a7bfd309519295eb9224fc2a6cee2869f54c5d7",
+    "targetAPIVersion": "62.0",
+    "totalPages": 2659,
+    "versionedSourceSHA256": "3cbdfc10eef5d7a28401e8f2a92bbaef387fc52b05690191e060d1d1d6037f09"
+  }
+}

@@ -113,9 +113,7 @@
     },
     {
       "sourcePath": "rn_apex_DWSupportQueryResults.md",
-      "behaviorIds": [
-        "apex.dataweave.nested-soql"
-      ]
+      "outOfScopeReason": "The exact documented ConnectApi/DataWeave behavior is excluded and unsupported by the approved D45 product scope policy; no parity or supported runtime behavior is claimed."
     },
     {
       "sourcePath": "rn_apex_extract_picklist_values.md",
@@ -389,9 +387,6 @@
         "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)",
         "apex:ConnectApi.NamedCredentials.updateExternalCredential(String,ConnectApi.ExternalCredentialInput)",
         "apex:ConnectApi.NamedCredentials.updateNamedCredential(String,ConnectApi.NamedCredentialInput)"
-      ],
-      "behaviorIds": [
-        "connectapi.named-credentials.external-auth-id-parameter"
       ]
     }
   ]

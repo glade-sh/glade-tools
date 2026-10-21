@@ -120,6 +120,7 @@ type SourceToolReceipt struct {
 }
 
 type SourceSnapshotReceipt struct {
+	CompositionReceipt    *SourceToolReceipt    `json:"compositionReceipt,omitempty"`
 	SHA256                string                `json:"sha256"`
 	MetadataSHA256        string                `json:"metadataSHA256"`
 	AtlasVersion          string                `json:"atlasVersion"`
@@ -129,18 +130,27 @@ type SourceSnapshotReceipt struct {
 	Assembler             SourceToolReceipt     `json:"assembler"`
 	VersionedSourceSHA256 string                `json:"versionedSourceSHA256"`
 	Families              []SourceFamilyReceipt `json:"families"`
+	AdditionalFamilies    []SourceFamilyReceipt `json:"additionalFamilies,omitempty"`
 	LWC                   LWCSourceReceipt      `json:"lwc"`
 	Limitations           []string              `json:"limitations"`
 }
 
 type SourceFamilyReceipt struct {
-	Name      string `json:"name"`
-	Version   string `json:"version"`
-	FileCount int    `json:"fileCount"`
-	SHA256    string `json:"sha256"`
+	CarriedFrom          string `json:"carriedFrom,omitempty"`
+	CarriedReceiptSHA256 string `json:"carriedReceiptSHA256,omitempty"`
+	Unpublished          bool   `json:"unpublished,omitempty"`
+	Name                 string `json:"name"`
+	Version              string `json:"version"`
+	FileCount            int    `json:"fileCount"`
+	SHA256               string `json:"sha256"`
 }
 
 type LWCSourceReceipt struct {
+	CurrentOnlyPublication  *LWCPublicationReceipt      `json:"currentOnlyPublication,omitempty"`
+	PublishedAtlasVersion   string                      `json:"publishedAtlasVersion,omitempty"`
+	CarriedFrom             string                      `json:"carriedFrom,omitempty"`
+	CarriedReceiptSHA256    string                      `json:"carriedReceiptSHA256,omitempty"`
+	Unpublished             bool                        `json:"unpublished,omitempty"`
 	FilterReceiptSHA256     string                      `json:"filterReceiptSHA256"`
 	SourceVersion           string                      `json:"sourceVersion"`
 	SourceVersionSHA256     string                      `json:"sourceVersionSHA256"`
@@ -151,6 +161,13 @@ type LWCSourceReceipt struct {
 	Copied                  []SourceFileReceipt         `json:"copied"`
 	Excluded                []ExcludedSourceFileReceipt `json:"excluded"`
 	Limitation              string                      `json:"limitation"`
+}
+
+type LWCPublicationReceipt struct {
+	APIVersion string            `json:"apiVersion"`
+	Inventory  SourceToolReceipt `json:"inventory"`
+	SourcePath string            `json:"sourcePath"`
+	SourceURL  string            `json:"sourceURL"`
 }
 
 type LWCSourceVersionReceipt struct {
@@ -185,6 +202,8 @@ func Analyze(contractPath string) (Analysis, error) {
 	a.Report.OrgProfiles = AxisReport{Advertised: profileStrings(contract.Windows.OrgProfiles), Passing: []string{}}
 
 	releases := make([]loadedRelease, len(contract.Releases))
+	var previousGA *ReleaseSourceReceipt
+	previousGASHA256 := ""
 	for i, release := range contract.Releases {
 		manifest, err := loadManifest(filepath.Join(root, release.Manifest))
 		if err != nil {
@@ -216,8 +235,13 @@ func Analyze(contractPath string) (Analysis, error) {
 		if err != nil {
 			return a, err
 		}
-		if err := validateReleaseSourceReceipt(root, release, manifest, inventorySHA256, receipt); err != nil {
+		if err := validateReleaseSourceReceipt(root, release, manifest, inventorySHA256, receipt, previousGA, previousGASHA256); err != nil {
 			return a, fmt.Errorf("release %s source receipt: %w", release.Name, err)
+		}
+		if release.Maturity == "ga" {
+			previous := receipt
+			previousGA = &previous
+			previousGASHA256 = receiptSHA256
 		}
 		if inv.SchemaVersion != apexdocs.InventorySchemaVersion {
 			return a, fmt.Errorf("release %s inventory schemaVersion must be %d", release.Name, apexdocs.InventorySchemaVersion)
@@ -244,6 +268,11 @@ func Analyze(contractPath string) (Analysis, error) {
 		return a, err
 	}
 
+	type documentationGap struct {
+		key, previous, current      string
+		firstMissingAPI, currentAPI int
+	}
+	var gaps []documentationGap
 	presence := make(map[string][]bool)
 	for i, release := range releases {
 		for _, row := range release.rows {
@@ -266,12 +295,16 @@ func Analyze(contractPath string) (Analysis, error) {
 			continue
 		}
 		r := Range{Since: apiInt(releases[first].release.APIVersion)}
+		gapStart := 0
 		for i := first + 1; i < len(seen); i++ {
 			if !seen[i] && r.Until == 0 {
 				r.Until = apiInt(releases[i].release.APIVersion)
 			}
-			if seen[i] && r.Until != 0 && i > first+1 {
-				a.Report.Unclassified = append(a.Report.Unclassified, fmt.Sprintf("%s -> %s: %s (reappeared)", releases[i-1].release.Name, releases[i].release.Name, key))
+			if !seen[i] && seen[i-1] {
+				gapStart = i
+			}
+			if seen[i] && !seen[i-1] && gapStart > first {
+				gaps = append(gaps, documentationGap{key: key, previous: releases[i-1].release.Name, current: releases[i].release.Name, firstMissingAPI: apiInt(releases[gapStart].release.APIVersion), currentAPI: apiInt(releases[i].release.APIVersion)})
 			}
 		}
 		a.Report.Ranges[key] = r
@@ -403,9 +436,49 @@ func Analyze(contractPath string) (Analysis, error) {
 	if len(releases) > 1 {
 		a.Report.PreviousRelease, a.Report.CurrentRelease = releases[len(releases)-2].release.Name, releases[len(releases)-1].release.Name
 	}
+	for _, gap := range gaps {
+		if !reviewedDocumentationGap(a, gap.key, gap.firstMissingAPI, gap.currentAPI) {
+			a.Report.Unclassified = append(a.Report.Unclassified, fmt.Sprintf("%s -> %s: %s (reappeared)", gap.previous, gap.current, gap.key))
+		}
+	}
 	sort.Strings(a.Report.Unclassified)
 	sort.Slice(a.ChangeRoutes, func(i, j int) bool { return a.ChangeRoutes[i].SourcePath < a.ChangeRoutes[j].SourcePath })
 	return a, nil
+}
+
+// reviewedDocumentationGap requires an explicit decision on both sides of an
+// acquisition gap. It never infers a declaration or relaxes runtime non-parity.
+func reviewedDocumentationGap(a Analysis, key string, firstMissingAPI, currentAPI int) bool {
+	apis := map[string]int{}
+	for _, r := range a.Contract.Releases {
+		apis[r.Name] = apiInt(r.APIVersion)
+	}
+	for _, b := range a.Contract.Behaviors {
+		if b.Outcome == "explicit-non-parity" {
+			for _, id := range b.SurfaceIDs {
+				if surfaceledger.CanonicalSurfaceIDKey(id) == key {
+					return false
+				}
+			}
+		}
+	}
+	removed, added := false, false
+	for _, change := range a.SurfaceChanges {
+		api := apis[change.CurrentRelease]
+		if surfaceledger.CanonicalSurfaceIDKey(change.Entry.SurfaceID) != key || api < firstMissingAPI || api > currentAPI {
+			continue
+		}
+		if change.Entry.Kind != surfaceledger.DeltaAdded && change.Entry.Kind != surfaceledger.DeltaRemoved {
+			continue
+		}
+		c := change.Classification
+		if c == nil || !(c.PreserveAvailability || c.Scope == surfaceledger.ScopeOutsideClaim && c.Disposition == surfaceledger.DispoExplicitUnsupported) {
+			return false
+		}
+		removed = removed || change.Entry.Kind == surfaceledger.DeltaRemoved
+		added = added || change.Entry.Kind == surfaceledger.DeltaAdded
+	}
+	return removed && added
 }
 
 type loadedRelease struct {
@@ -568,7 +641,7 @@ func sourceFileSHA256(path string) (string, error) {
 	return fmt.Sprintf("%x", sha256.Sum256(data)), nil
 }
 
-func validateReleaseSourceReceipt(root string, release Release, manifest apexdocs.ReleaseManifest, inventorySHA256 string, receipt ReleaseSourceReceipt) error {
+func validateReleaseSourceReceipt(root string, release Release, manifest apexdocs.ReleaseManifest, inventorySHA256 string, receipt ReleaseSourceReceipt, previousGA *ReleaseSourceReceipt, previousGASHA256 string) error {
 	if receipt.SchemaVersion != 1 || receipt.Release != release.Name || receipt.APIVersion != release.APIVersion || receipt.Snapshot.TargetAPIVersion != release.APIVersion {
 		return fmt.Errorf("identity mismatch")
 	}
@@ -583,7 +656,35 @@ func validateReleaseSourceReceipt(root string, release Release, manifest apexdoc
 	if receipt.Snapshot.AtlasVersion != wantAtlasVersion || !strings.Contains(receipt.Snapshot.AtlasVersionLabel, "API v"+release.APIVersion) || receipt.Snapshot.TotalPages <= 0 {
 		return fmt.Errorf("Atlas source identity mismatch")
 	}
-	if receipt.Generator.Path != "scripts/salesforce-release/export_source_receipt.py" || receipt.Snapshot.Assembler.Path != "scripts/salesforce-release/assemble_versioned_docs.py" {
+	if receipt.Snapshot.CompositionReceipt != nil {
+		composition := receipt.Snapshot.CompositionReceipt
+		if receipt.Generator.Path != "scripts/salesforce-release/compose_winter27.py" || receipt.APIVersion != "68.0" {
+			return fmt.Errorf("composition generator identity mismatch")
+		}
+		if err := validateRepositoryPath(root, "compositionReceipt.path", composition.Path); err != nil {
+			return err
+		}
+		if !sha256Pattern.MatchString(composition.SHA256) || composition.SHA256 != receipt.Snapshot.MetadataSHA256 {
+			return fmt.Errorf("composition metadata binding mismatch")
+		}
+		actual, err := sourceFileSHA256(filepath.Join(root, composition.Path))
+		if err != nil {
+			return fmt.Errorf("composition receipt: %w", err)
+		}
+		if actual != composition.SHA256 {
+			return fmt.Errorf("composition receipt SHA-256 mismatch")
+		}
+		if err := validateSourceComposition(root, receipt, previousGA, previousGASHA256); err != nil {
+			return err
+		}
+	} else if receipt.Generator.Path != "scripts/salesforce-release/export_source_receipt.py" {
+		return fmt.Errorf("source tool path mismatch")
+	}
+	wantAssembler := "scripts/salesforce-release/assemble_versioned_docs.py"
+	if receipt.Snapshot.CompositionReceipt != nil {
+		wantAssembler = "scripts/salesforce-release/compose_winter27.py"
+	}
+	if receipt.Snapshot.Assembler.Path != wantAssembler {
 		return fmt.Errorf("source tool path mismatch")
 	}
 	for label, value := range map[string]string{
@@ -608,12 +709,28 @@ func validateReleaseSourceReceipt(root string, release Release, manifest apexdoc
 	}
 	seenFamilies := map[string]bool{}
 	for _, family := range receipt.Snapshot.Families {
-		if seenFamilies[family.Name] || !slices.Contains(wantFamilies, family.Name) || family.Version != wantAtlasVersion || family.FileCount <= 0 || !sha256Pattern.MatchString(family.SHA256) {
+		if seenFamilies[family.Name] || !slices.Contains(wantFamilies, family.Name) || family.FileCount <= 0 || !sha256Pattern.MatchString(family.SHA256) {
 			return fmt.Errorf("invalid Atlas family %q", family.Name)
+		}
+		if err := validateFamilyCarry(family, wantAtlasVersion, previousGA, previousGASHA256); err != nil {
+			return err
 		}
 		seenFamilies[family.Name] = true
 	}
 
+	seenAdditional := map[string]bool{}
+	for _, family := range receipt.Snapshot.AdditionalFamilies {
+		if seenAdditional[family.Name] || !slices.Contains([]string{"metadata-api", "object-reference", "apex-guide", "release-notes"}, family.Name) || family.Version != wantAtlasVersion || family.FileCount <= 0 || !sha256Pattern.MatchString(family.SHA256) || family.CarriedFrom != "" || family.CarriedReceiptSHA256 != "" || family.Unpublished {
+			return fmt.Errorf("invalid additional Atlas family %q", family.Name)
+		}
+		seenAdditional[family.Name] = true
+	}
+	if err := validateLWCCarry(receipt.Snapshot.LWC, wantAtlasVersion, previousGA, previousGASHA256); err != nil {
+		return err
+	}
+	if err := validateCurrentLWCPublication(root, release, receipt.Snapshot.LWC); err != nil {
+		return err
+	}
 	lwc := receipt.Snapshot.LWC
 	if lwc.SourceVersion != "latest" || lwc.SourceVersionMetadata.Version != "latest" || lwc.SourceVersionMetadata.File != "_version.json" || lwc.AvailabilityTable != "reference-api-modules.md" {
 		return fmt.Errorf("LWC source must retain latest current-only provenance")
