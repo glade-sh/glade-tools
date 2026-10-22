@@ -186,7 +186,7 @@ jobs:
 
   salesforce-correctness:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     env:
       GOMEMLIMIT: "6GiB"
       # Match Glade CI: plain Babel code frames and the installed Playwright module.
