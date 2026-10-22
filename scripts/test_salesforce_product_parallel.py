@@ -203,5 +203,62 @@ class ParallelProductTests(unittest.TestCase):
         subprocess.run(['git','-C',str(self.glade),'-c','user.name=Test','-c','user.email=test@example.com','commit','-qm','next'],check=True)
         self.run_script('shard',self.glade,self.plan,shard['id'],self.results / 'identity',passes=False)
 
+
+class DeferredDataWeaveSkipTests(unittest.TestCase):
+    """Glade defers five optional DataWeave Apex tests when no toolchain is installed (D45).
+    Only those exact tests, with their exact skip message, may be skipped; every other Apex test must pass."""
+
+    def load(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('product_parallel', Path(__file__).with_name('salesforce-product-parallel.py'))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def events(self, directory, tests):
+        package = PREFIX + 'internal/apextest'
+        lines = []
+        for name, action, message in tests:
+            lines.append({'Action': 'run', 'Package': package, 'Test': name})
+            if message:
+                lines.append({'Action': 'output', 'Package': package, 'Test': name, 'Output': message})
+            lines.append({'Action': action, 'Package': package, 'Test': name})
+        lines.append({'Action': 'pass', 'Package': package})
+        path = Path(directory) / 'events.jsonl'
+        path.write_text(''.join(json.dumps(e) + '\n' for e in lines))
+        return path, package
+
+    def check(self, tests, selected):
+        module = self.load()
+        with tempfile.TemporaryDirectory() as directory:
+            path, package = self.events(directory, tests)
+            shard = {'kind': 'apextest', 'packages': [package], 'selection': {'tests': selected}}
+            try:
+                module.validate_events(path, shard)
+            except BaseException as error:
+                return error
+        return None
+
+    def test_listed_dataweave_skip_with_its_message_is_accepted(self):
+        message = '    dataweave_source_proof_test.go:95: requires explicitly installed DataWeave toolchain\n'
+        names = ['TestRunDataWeaveSourceSourceNames', 'TestRunDataWeaveSourceChangedSource', 'TestRunDataWeaveSourceBuiltinImports',
+                 'TestRunDataWeaveSourceRestrictedWordsInLiterals', 'TestRunDataWeaveSourceLocalFunctionShadow']
+        tests = [(name, 'skip', message) for name in names] + [('TestOrdinary', 'pass', '')]
+        self.assertIsNone(self.check(tests, names + ['TestOrdinary']))
+
+    def test_listed_test_skipping_for_another_reason_is_rejected(self):
+        tests = [('TestRunDataWeaveSourceLocalFunctionShadow', 'skip', '    x_test.go:1: some other reason\n')]
+        self.assertIsNotNone(self.check(tests, ['TestRunDataWeaveSourceLocalFunctionShadow']))
+
+    def test_listed_test_skipping_without_output_is_rejected(self):
+        tests = [('TestRunDataWeaveSourceLocalFunctionShadow', 'skip', '')]
+        self.assertIsNotNone(self.check(tests, ['TestRunDataWeaveSourceLocalFunctionShadow']))
+
+    def test_unlisted_apex_test_cannot_use_the_dataweave_message(self):
+        message = '    y_test.go:3: requires explicitly installed DataWeave toolchain\n'
+        tests = [('TestSomethingElse', 'skip', message)]
+        self.assertIsNotNone(self.check(tests, ['TestSomethingElse']))
+
+
 if __name__ == '__main__':
     unittest.main()
