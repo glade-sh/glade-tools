@@ -51,6 +51,10 @@ else:
     for i in range(16):
         name = 'Test%02d'%i
         if re.search(regex,name):
+            if os.environ.get('SKIP_TEST') == name:
+                print(json.dumps({'Action':'output','Package':PACKAGE,'Test':name,'Output':'    x_test.go:9: requires explicitly installed DataWeave toolchain\\n'}))
+                print(json.dumps({'Action':'skip','Package':PACKAGE,'Test':name}))
+                continue
             print(json.dumps({'Action':'pass','Package':PACKAGE,'Test':name}))
     print(json.dumps({'Action':'pass','Package':PACKAGE}))
 '''
@@ -111,6 +115,32 @@ class ParallelProductTests(unittest.TestCase):
         self.assertEqual(len(summary['artifacts']),54)
         self.assertFalse((out / 'product-test-evidence/apextest.test').exists())
         self.assertEqual(len(plan['shards']),32)
+
+
+    def commit_deferred_script(self, name):
+        (self.glade / 'scripts').mkdir(exist_ok=True)
+        (self.glade / 'scripts/ci-go-test.sh').write_text(
+            '    (module + "/internal/apextest", "%s"): (("GLADE_DATAWEAVE_APEX_TEST_HOME",), "requires explicitly installed DataWeave toolchain"),\n' % name)
+        subprocess.run(['git','-C',str(self.glade),'add','.'],check=True)
+        subprocess.run(['git','-C',str(self.glade),'-c','user.name=Test','-c','user.email=test@example.com','commit','-qm','deferred'],check=True)
+
+    def test_end_to_end_accepts_a_deferred_dataweave_skip_through_the_final_validator(self):
+        self.commit_deferred_script('Test03')
+        self.env['SKIP_TEST'] = 'Test03'
+        self.env.pop('GLADE_DATAWEAVE_APEX_TEST_HOME', None)
+        self.execute_workers()
+        out = self.root / 'out'
+        self.run_script('aggregate',self.glade,self.plan,self.results,out)
+        self.assertEqual(json.loads((out / 'product-test-evidence/validation.json').read_text())['status'],'pass')
+
+    def test_end_to_end_rejects_an_undeclared_apex_skip(self):
+        self.commit_deferred_script('Test04')
+        self.env['SKIP_TEST'] = 'Test03'
+        self.env.pop('GLADE_DATAWEAVE_APEX_TEST_HOME', None)
+        self.run_script('prepare',self.glade,self.plan)
+        plan = json.loads((self.plan / 'parallel-plan.json').read_text())
+        apex = next(s for s in plan['shards'] if s['kind']=='apextest' and 'Test03' in s['selection']['tests'])
+        self.run_script('shard',self.glade,self.plan,apex['id'],self.results / apex['id'],passes=False)
 
     def test_aggregate_missing_duplicate_failed_or_mismatched_shard_fails_closed(self):
         plan = self.execute_workers()
