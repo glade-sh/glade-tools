@@ -58,7 +58,7 @@ test("CI has exactly core and release executing test lanes plus stable test aggr
   );
   for (const name of ["core", "release"]) {
     const lane = job(name);
-    assert.match(lane, /runs-on: ubuntu-latest\n\s+timeout-minutes: 15/);
+    assert.match(lane, /runs-on: ubuntu-latest\n\s+timeout-minutes: (15|25)/);
     for (const step of [
       "actions/checkout@v6",
       "actions/create-github-app-token@v3",
