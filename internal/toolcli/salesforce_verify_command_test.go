@@ -164,6 +164,11 @@ type productTestExecutionFixture struct {
 func writeProductTestExecutionFixture(t *testing.T, root, commit, action string) productTestExecutionFixture {
 	t.Helper()
 	const apexPackage = "github.com/glade-sh/glade/internal/apextest"
+	deferredApexSkip := action == "apex-deferred-skip" || action == "apex-undeclared-skip"
+	deferredMessage := "requires explicitly installed DataWeave toolchain"
+	if deferredApexSkip {
+		action = "pass"
+	}
 	dir := t.TempDir()
 	evidenceDir := filepath.Join(dir, "product-test-evidence")
 	if err := os.Mkdir(evidenceDir, 0o700); err != nil {
@@ -214,6 +219,9 @@ func writeProductTestExecutionFixture(t *testing.T, root, commit, action string)
 		writeArtifact(prefix+"/selection.json", append(selectionRaw, '\n'))
 		writeArtifact(prefix+"/regex.txt", []byte(regex+"\n"))
 		shardEvents := []byte(fmt.Sprintf("{\"Action\":\"pass\",\"Package\":%q,\"Test\":%q}\n{\"Action\":\"pass\",\"Package\":%q}\n", apexPackage, name, apexPackage))
+		if deferredApexSkip && name == "Test03" {
+			shardEvents = []byte(fmt.Sprintf("{\"Action\":\"output\",\"Package\":%q,\"Test\":%q,\"Output\":%q}\n{\"Action\":\"skip\",\"Package\":%q,\"Test\":%q}\n{\"Action\":\"pass\",\"Package\":%q}\n", apexPackage, name, "    x_test.go:9: "+deferredMessage+"\n", apexPackage, name, apexPackage))
+		}
 		shardEventsSHA := writeArtifact(prefix+"/events.jsonl", shardEvents)
 		shardSummaries[index] = map[string]any{"index": index, "testCount": 1, "eventsPath": prefix + "/events.jsonl", "eventsSHA256": shardEventsSHA}
 		combined = append(combined, shardEvents...)
@@ -2613,4 +2621,65 @@ func TestSalesforceVerifyRepositoryInputsMatchCurrentContract(t *testing.T) {
 	if err := checkAPIVersionProvenance(releaseManifest{APIVersion: current}, opts); err != nil {
 		t.Fatal(err)
 	}
+}
+
+
+// DataWeave is excluded (D45): Glade's own CI defers a few Apex tests when no toolchain is
+// installed. The verifier accepts exactly those skips, read from the candidate's ci-go-test.sh.
+func TestLoadProductTestEvidenceAcceptsOnlyDeclaredDeferredApexSkips(t *testing.T) {
+	commit := strings.Repeat("a", 40)
+	setup := func(t *testing.T, declared string) (string, productTestExecutionFixture) {
+		t.Helper()
+		root := t.TempDir()
+		if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module example.test/glade\n"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		testDir := filepath.Join(root, "internal", "demo")
+		if err := os.MkdirAll(testDir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(testDir, "demo_test.go"), []byte("package demo\nimport \"testing\"\nfunc TestVersion(t *testing.T) {}\n"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if declared != "" {
+			if err := os.MkdirAll(filepath.Join(root, "scripts"), 0o700); err != nil {
+				t.Fatal(err)
+			}
+			entry := "    (module + \"/internal/apextest\", \"" + declared + "\"): ((\"GLADE_DATAWEAVE_APEX_TEST_HOME\",), \"requires explicitly installed DataWeave toolchain\"),\n"
+			if err := os.WriteFile(filepath.Join(root, "scripts", "ci-go-test.sh"), []byte(entry), 0o600); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return root, writeProductTestExecutionFixture(t, root, commit, "apex-deferred-skip")
+	}
+	t.Setenv("GLADE_DATAWEAVE_APEX_TEST_HOME", "")
+	t.Run("declared", func(t *testing.T) {
+		root, fixture := setup(t, "Test03")
+		evidence, err := loadProductTestEvidence(fixture.proofPath, root, commit)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if evidence.passes["github.com/glade-sh/glade/internal/apextest\x00Test03"] {
+			t.Fatal("a deferred skip must not be recorded as a pass")
+		}
+	})
+	t.Run("undeclared", func(t *testing.T) {
+		root, fixture := setup(t, "Test04")
+		if _, err := loadProductTestEvidence(fixture.proofPath, root, commit); err == nil || !strings.Contains(err.Error(), "not one pass") {
+			t.Fatalf("undeclared skip error = %v", err)
+		}
+	})
+	t.Run("no script", func(t *testing.T) {
+		root, fixture := setup(t, "")
+		if _, err := loadProductTestEvidence(fixture.proofPath, root, commit); err == nil {
+			t.Fatal("a skip without a declared deferral was accepted")
+		}
+	})
+	t.Run("toolchain configured", func(t *testing.T) {
+		t.Setenv("GLADE_DATAWEAVE_APEX_TEST_HOME", "/configured/toolchain")
+		root, fixture := setup(t, "Test03")
+		if _, err := loadProductTestEvidence(fixture.proofPath, root, commit); err == nil {
+			t.Fatal("a configured toolchain must execute the deferred tests")
+		}
+	})
 }
