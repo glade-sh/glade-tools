@@ -356,7 +356,7 @@ func releaseCheckContractError(checkText string) error {
 		"python3 -m unittest discover -s scripts/salesforce-release -p test_acquire_versioned_docs.py",
 		"python3 -m unittest discover -s scripts/salesforce-release -p test_generate_verifier_inputs.py",
 		`go test "${packages[@]}"`,
-		"go test -count=1 ./internal/corpusassurance",
+		"go test -count=1 -timeout 20m ./internal/corpusassurance",
 	}
 	wantRelease := []string{
 		"git diff --check",
