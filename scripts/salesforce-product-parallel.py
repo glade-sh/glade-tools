@@ -138,8 +138,8 @@ def prepare(root, directory):
         binary = directory / f'{kind}.test'
         subprocess.run(['go', '-C', str(root), 'test', '-c', '-o', str(binary), './' + suffix], check=True)
         plan['binaries'][kind] = {'sha256': digest(binary), 'sizeBytes': binary.stat().st_size}
-        # Reject unsupported Example/Fuzz names rather than silently filtering them out.
-        raw = subprocess.check_output([str(binary), '-test.list', '.'], cwd=root / suffix, text=True)
+        # Match the serial wrapper's test-only contract; benchmarks are not test shards.
+        raw = subprocess.check_output([str(binary), '-test.list', '^Test'], cwd=root / suffix, text=True)
         (directory / f'{kind}-discovery-raw.txt').write_text(raw)
         names = raw.splitlines()
         require(names and len(set(names)) == len(names) and all(re.fullmatch(r'Test[A-Za-z0-9_]*', n) for n in names), 'unsupported or duplicate test discovery')

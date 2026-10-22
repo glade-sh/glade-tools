@@ -81,8 +81,8 @@ class BenchmarkDiscoveryRoutes(unittest.TestCase):
             def run(*args, extra_env=None):
                 result = subprocess.run(['bash', str(wrapper), *map(str, args)],
                                         env={**env, **(extra_env or {})}, text=True,
-                                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                self.assertEqual(result.returncode, 0, result.stdout)
+                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 return result.stdout
 
             plan_dir = root / 'salesforce-product-plan'
