@@ -13,14 +13,188 @@ permissions:
   contents: read
 
 jobs:
+  product-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    env:
+      CGO_ENABLED: "1"
+      GOMAXPROCS: "2"
+      GOMEMLIMIT: "6GiB"
+      LC_ALL: C
+      GLADE_LWC_COMPILE: "1"
+      NO_COLOR: "1"
+      GLADE_LWC_PLAYWRIGHT_MODULE: ${{ github.workspace }}/glade/lwcruntime/node_modules/playwright
+    defaults:
+      run:
+        working-directory: glade-tools
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          path: glade-tools
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate glade commit input
+        env:
+          GLADE_SHA: ${{ inputs.glade_sha }}
+        run: |
+          if [[ ! "$GLADE_SHA" =~ ^([0-9a-fA-F]{40})$ ]]; then
+            echo "glade_sha must be a full 40-hex commit" >&2
+            exit 1
+          fi
+          GLADE_SHA="${GLADE_SHA,,}"
+          echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"
+          TOOLS_SHA="$(git rev-parse HEAD)"
+          [[ "$TOOLS_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$TOOLS_SHA" = "$GITHUB_SHA"
+          echo "TOOLS_SHA=${TOOLS_SHA}" >> "$GITHUB_ENV"
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ vars.GLADE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GLADE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            glade
+            glade-tools
+          permission-contents: read
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: glade-sh/glade
+          path: glade
+          ref: ${{ inputs.glade_sha }}
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+      - name: Verify glade checkout identity
+        run: test "$(git -C ../glade rev-parse HEAD)" = "$GLADE_SHA"
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: "1.26.10"
+          cache-dependency-path: glade-tools/go.sum
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "22"
+      - name: Set product-test environment
+        run: echo "GLADE_ROOT=$(realpath ../glade)" >> "$GITHUB_ENV"
+      - name: Install product browser dependencies
+        working-directory: glade
+        run: |
+          npm ci --prefix third_party/lwc
+          npm ci --prefix lwcruntime
+          scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium
+      - name: Plan exact product coverage and build shared test binaries
+        id: plan
+        run: |
+          scripts/salesforce-product-tests.sh prepare "$(realpath ../glade)" "$RUNNER_TEMP/product-plan" > "$RUNNER_TEMP/product-matrix.json"
+          echo "matrix=$(cat "$RUNNER_TEMP/product-matrix.json")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: salesforce-product-plan
+          path: ${{ runner.temp }}/product-plan
+          if-no-files-found: error
+          retention-days: 7
+
+  product-shards:
+    needs: product-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.product-plan.outputs.matrix) }}
+    env:
+      CGO_ENABLED: "1"
+      GOMAXPROCS: "2"
+      GOMEMLIMIT: "6GiB"
+      LC_ALL: C
+      GLADE_LWC_COMPILE: "1"
+      NO_COLOR: "1"
+      GLADE_LWC_PLAYWRIGHT_MODULE: ${{ github.workspace }}/glade/lwcruntime/node_modules/playwright
+    defaults:
+      run:
+        working-directory: glade-tools
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          path: glade-tools
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate glade commit input
+        env:
+          GLADE_SHA: ${{ inputs.glade_sha }}
+        run: |
+          if [[ ! "$GLADE_SHA" =~ ^([0-9a-fA-F]{40})$ ]]; then
+            echo "glade_sha must be a full 40-hex commit" >&2
+            exit 1
+          fi
+          GLADE_SHA="${GLADE_SHA,,}"
+          echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"
+          TOOLS_SHA="$(git rev-parse HEAD)"
+          [[ "$TOOLS_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$TOOLS_SHA" = "$GITHUB_SHA"
+          echo "TOOLS_SHA=${TOOLS_SHA}" >> "$GITHUB_ENV"
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ vars.GLADE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GLADE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            glade
+            glade-tools
+          permission-contents: read
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: glade-sh/glade
+          path: glade
+          ref: ${{ inputs.glade_sha }}
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+      - name: Verify glade checkout identity
+        run: test "$(git -C ../glade rev-parse HEAD)" = "$GLADE_SHA"
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: "1.26.10"
+          cache-dependency-path: glade-tools/go.sum
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "22"
+      - name: Set product-test environment
+        run: echo "GLADE_ROOT=$(realpath ../glade)" >> "$GITHUB_ENV"
+      - name: Install product browser dependencies
+        working-directory: glade
+        run: |
+          npm ci --prefix third_party/lwc
+          npm ci --prefix lwcruntime
+          scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: salesforce-product-plan
+          path: ${{ runner.temp }}/product-plan
+      - name: Run exact product shard
+        env:
+          SHARD_ID: ${{ matrix.id }}
+        run: |
+          scripts/salesforce-product-tests.sh shard "$(realpath ../glade)" "$RUNNER_TEMP/product-plan" "$SHARD_ID" "$RUNNER_TEMP/product-result"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: salesforce-product-${{ matrix.id }}
+          path: ${{ runner.temp }}/product-result
+          if-no-files-found: error
+          retention-days: 90
+
   salesforce-correctness:
     runs-on: ubuntu-latest
-    timeout-minutes: 345
+    timeout-minutes: 60
     env:
       GOMEMLIMIT: "6GiB"
       # Match Glade CI: plain Babel code frames and the installed Playwright module.
       NO_COLOR: "1"
       GLADE_LWC_PLAYWRIGHT_MODULE: ${{ github.workspace }}/glade/lwcruntime/node_modules/playwright
+      SALESFORCE_PRODUCT_SHARDS: ${{ runner.temp }}/product-results
+    needs: [product-plan, product-shards]
+    if: ${{ needs.product-plan.result == 'success' && needs.product-shards.result == 'success' }}
     defaults:
       run:
         working-directory: glade-tools
@@ -149,6 +323,11 @@ jobs:
         run: |
           go build -o "$RUNNER_TEMP/glade-tools" ./cmd/glade-tools
           echo "TOOLS_BIN=$RUNNER_TEMP/glade-tools" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: salesforce-product-*
+          path: ${{ runner.temp }}/product-results
+          merge-multiple: false
       - name: Run correctness gate
         run: |
           scripts/salesforce-correctness-gate.sh \

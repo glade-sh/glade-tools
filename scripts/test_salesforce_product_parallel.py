@@ -149,6 +149,30 @@ class ParallelProductTests(unittest.TestCase):
                 self.run_script('aggregate',self.glade,self.plan,results,out,passes=False)
                 self.assertFalse((out / 'product-tests.jsonl').exists())
 
+    def test_aggregate_route_twins_reject_incomplete_or_failed_events(self):
+        plan = self.execute_workers()
+        import hashlib
+        for kind in ['packages','apextest','lwc-compile','visualforce']:
+            for mutation in ['missing-terminal','duplicate-terminal','failed-subtest','wrong-package']:
+                with self.subTest(kind=kind,mutation=mutation):
+                    results = self.root / (kind+'-'+mutation)
+                    shutil.copytree(self.results,results)
+                    selected = next(s for s in plan['shards'] if s['kind']==kind)
+                    shard = results / selected['id']
+                    path = shard / 'events.jsonl'
+                    events = [json.loads(line) for line in path.read_text().splitlines()]
+                    if mutation=='missing-terminal': events.pop()
+                    elif mutation=='duplicate-terminal': events.append(events[-1])
+                    elif mutation=='wrong-package': events[0]['Package']='unexpected/package'
+                    else: events.append({'Action':'fail','Package':selected['packages'][0],'Test':'Test00/child'})
+                    path.write_text(''.join(json.dumps(e)+'\n' for e in events))
+                    receipt = json.loads((shard / 'result.json').read_text())
+                    receipt['eventsSHA256']=hashlib.sha256(path.read_bytes()).hexdigest()
+                    (shard / 'result.json').write_text(json.dumps(receipt))
+                    out = self.root / ('out-'+kind+'-'+mutation)
+                    self.run_script('aggregate',self.glade,self.plan,results,out,passes=False)
+                    self.assertFalse((out / 'product-tests.jsonl').exists())
+
     def test_package_cwd_discovery_and_worker_routes(self):
         self.env['CHECK_PACKAGE_CWD']='1'
         plan = self.execute_workers()
