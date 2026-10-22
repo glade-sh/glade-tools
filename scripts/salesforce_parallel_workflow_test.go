@@ -44,3 +44,25 @@ func TestSalesforceProductParallelSyntheticRoutes(t *testing.T) {
 		t.Fatalf("parallel product routes: %v\n%s", err, out)
 	}
 }
+
+// GitHub rejects a workflow file whose job-level env uses the runner context
+// (it is only available in steps), which shows up as a failed "workflow file
+// issue" run before any job starts.
+func TestSalesforceCorrectnessWorkflowJobEnvAvoidsRunnerContext(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join("..", ".github", "workflows", "salesforce-correctness.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	inJobEnv := false
+	for number, line := range strings.Split(string(data), "\n") {
+		switch {
+		case line == "    env:":
+			inJobEnv = true
+		case inJobEnv && !strings.HasPrefix(line, "      ") && strings.TrimSpace(line) != "":
+			inJobEnv = false
+		}
+		if inJobEnv && strings.Contains(line, "${{ runner.") {
+			t.Errorf("line %d: job-level env must not use the runner context: %s", number+1, strings.TrimSpace(line))
+		}
+	}
+}
