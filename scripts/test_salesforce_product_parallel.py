@@ -228,16 +228,41 @@ class DeferredDataWeaveSkipTests(unittest.TestCase):
         path.write_text(''.join(json.dumps(e) + '\n' for e in lines))
         return path, package
 
-    def check(self, tests, selected):
+    FIVE = frozenset({'TestRunDataWeaveSourceSourceNames', 'TestRunDataWeaveSourceChangedSource', 'TestRunDataWeaveSourceBuiltinImports',
+                      'TestRunDataWeaveSourceRestrictedWordsInLiterals', 'TestRunDataWeaveSourceLocalFunctionShadow'})
+
+    def check(self, tests, selected, deferred=None):
         module = self.load()
         with tempfile.TemporaryDirectory() as directory:
             path, package = self.events(directory, tests)
             shard = {'kind': 'apextest', 'packages': [package], 'selection': {'tests': selected}}
             try:
-                module.validate_events(path, shard)
+                module.validate_events(path, shard, self.FIVE if deferred is None else deferred)
             except BaseException as error:
                 return error
         return None
+
+    def test_deferred_list_comes_from_the_candidate_ci_script(self):
+        module = self.load()
+        entry = '    (module + "/internal/apextest", "%s"): (("GLADE_DATAWEAVE_APEX_TEST_HOME",), "%s"),\n'
+        script = (entry % ('TestRunC5BulkTypedProof', 'requires explicitly installed DataWeave toolchain')
+                  + entry % ('TestRunDataWeaveTypedAdmitted', 'requires explicitly installed DataWeave toolchain')
+                  + entry % ('TestOtherReason', 'something else')
+                  + '    (module + "/internal/dataweave", "TestOfficialEngineSourceAndDenials"): (("X",), "requires explicitly installed DataWeave toolchain"),\n')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'scripts').mkdir()
+            (root / 'scripts' / 'ci-go-test.sh').write_text(script)
+            saved = os.environ.pop('GLADE_DATAWEAVE_APEX_TEST_HOME', None)
+            try:
+                self.assertEqual(module.load_deferred(root), frozenset({'TestRunC5BulkTypedProof', 'TestRunDataWeaveTypedAdmitted'}))
+                os.environ['GLADE_DATAWEAVE_APEX_TEST_HOME'] = '/configured/toolchain'
+                self.assertEqual(module.load_deferred(root), frozenset())
+            finally:
+                os.environ.pop('GLADE_DATAWEAVE_APEX_TEST_HOME', None)
+                if saved is not None: os.environ['GLADE_DATAWEAVE_APEX_TEST_HOME'] = saved
+            (root / 'scripts' / 'ci-go-test.sh').unlink()
+            self.assertEqual(module.load_deferred(root), frozenset())
 
     def test_listed_dataweave_skip_with_its_message_is_accepted(self):
         message = '    dataweave_source_proof_test.go:95: requires explicitly installed DataWeave toolchain\n'
