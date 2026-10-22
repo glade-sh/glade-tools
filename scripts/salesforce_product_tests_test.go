@@ -102,7 +102,7 @@ func TestSalesforceProductTestsBuildOnceAndShardSerially(t *testing.T) {
 			if got := strings.Count(callsText, "apex-shard "); got != 16 {
 				t.Fatalf("Apex shard executions = %d, want 16:\n%s", got, callsText)
 			}
-			if !strings.Contains(callsText, "non-apextest -json -count=1 -p 1 -timeout=30m") || strings.Contains(callsText, "non-apextest github.com/glade-sh/glade/internal/apextest") {
+			if !strings.Contains(callsText, "non-apextest -json -count=1 -p 1 -timeout=120m") || strings.Contains(callsText, "non-apextest github.com/glade-sh/glade/internal/apextest") {
 				t.Fatalf("non-Apex packages were not run serially and separately:\n%s", callsText)
 			}
 			if !strings.Contains(callsText, "cishard --package github.com/glade-sh/glade/internal/apextest --shards 16") {

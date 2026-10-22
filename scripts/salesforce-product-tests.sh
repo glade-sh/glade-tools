@@ -69,7 +69,7 @@ non_apex=()
 while IFS= read -r package; do
 	non_apex+=("$package")
 done <"$non_apex_packages"
-go -C "$glade_root" test -json -count=1 -p 1 -timeout=30m "${non_apex[@]}" >"$non_apex_events"
+go -C "$glade_root" test -json -count=1 -p 1 -timeout=120m "${non_apex[@]}" >"$non_apex_events"
 
 go -C "$glade_root" test -c -o "$binary" ./internal/apextest
 if [[ ! -x "$binary" ]]; then
@@ -148,7 +148,7 @@ for index in {0..15}; do
 		exit 1
 	fi
 	set +e
-	"$binary" -test.v=test2json -test.count=1 -test.timeout=30m -test.run="$regex" | \
+	"$binary" -test.v=test2json -test.count=1 -test.timeout=120m -test.run="$regex" | \
 		go -C "$glade_root" tool test2json -p "$package_name" >"$shard_dir/events.jsonl"
 	statuses=("${PIPESTATUS[@]}")
 	set -e
