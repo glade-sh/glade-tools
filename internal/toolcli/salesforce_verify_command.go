@@ -273,6 +273,30 @@ type productTestEvent struct {
 	Action  string `json:"Action"`
 	Package string `json:"Package"`
 	Test    string `json:"Test"`
+	Output  string `json:"Output"`
+}
+
+// DataWeave is excluded (D45). Glade's own CI defers some internal/apextest tests when no
+// DataWeave toolchain is installed; they may skip, and only with this exact output.
+const deferredApexSkipMessage = "requires explicitly installed DataWeave toolchain"
+
+var deferredApexEntryPattern = regexp.MustCompile(`\(module \+ "/internal/apextest", "(Test[A-Za-z0-9_]*)"\): \(\("GLADE_DATAWEAVE_APEX_TEST_HOME",\), "` + regexp.QuoteMeta(deferredApexSkipMessage) + `"\)`)
+
+// deferredApexTests reads the deferred list from the candidate's own scripts/ci-go-test.sh. A
+// missing script, or a configured toolchain (which must execute these tests), defers nothing.
+func deferredApexTests(gladeRoot string) map[string]bool {
+	deferred := map[string]bool{}
+	if os.Getenv("GLADE_DATAWEAVE_APEX_TEST_HOME") != "" {
+		return deferred
+	}
+	raw, err := os.ReadFile(filepath.Join(gladeRoot, "scripts", "ci-go-test.sh"))
+	if err != nil {
+		return deferred
+	}
+	for _, match := range deferredApexEntryPattern.FindAllStringSubmatch(string(raw), -1) {
+		deferred[match[1]] = true
+	}
+	return deferred
 }
 
 var productTestNamePattern = regexp.MustCompile(`^Test[A-Za-z0-9_]*$`)
@@ -1255,7 +1279,7 @@ func loadProductTestEvidence(proofPath, gladeRoot, gladeCommit string) (productT
 	if err := readExactJSONFile(executionEvidencePath, &execution); err != nil {
 		return productTestEvidence{}, fmt.Errorf("execution evidence: %w", err)
 	}
-	if err := validateProductTestExecutionEvidence(execution, filepath.Dir(proofPath), proof); err != nil {
+	if err := validateProductTestExecutionEvidence(execution, filepath.Dir(proofPath), proof, deferredApexTests(gladeRoot)); err != nil {
 		return productTestEvidence{}, err
 	}
 	module, err := goModulePath(root)
@@ -1289,7 +1313,7 @@ func loadProductTestEvidence(proofPath, gladeRoot, gladeCommit string) (productT
 	return productTestEvidence{gladeRoot: root, module: module, passes: passes, bindings: map[string]productTestBinding{}}, nil
 }
 
-func validateProductTestExecutionEvidence(execution productTestExecutionEvidence, proofDir string, proof productVersionProof) error {
+func validateProductTestExecutionEvidence(execution productTestExecutionEvidence, proofDir string, proof productVersionProof, deferred map[string]bool) error {
 	const apexPackage = "github.com/glade-sh/glade/internal/apextest"
 	if execution.SchemaVersion != 1 || execution.Status != "pass" || execution.ShardCount != 16 || len(execution.Shards) != 16 {
 		return fmt.Errorf("execution evidence identity or shard count mismatch")
@@ -1466,7 +1490,7 @@ func validateProductTestExecutionEvidence(execution productTestExecutionEvidence
 		if string(regexRaw) != shard.Regex+"\n" {
 			return fmt.Errorf("execution evidence shard %d regex differs from plan", index)
 		}
-		if err := validateProductTestShardTerminals(paths[eventsRelative], apexPackage, shard.Tests); err != nil {
+		if err := validateProductTestShardTerminals(paths[eventsRelative], apexPackage, shard.Tests, deferred); err != nil {
 			return fmt.Errorf("execution evidence shard %d: %w", index, err)
 		}
 		union = append(union, shard.Tests...)
@@ -1617,7 +1641,7 @@ func validateProductTestPackageTerminals(path string, packages []string) error {
 	return nil
 }
 
-func validateProductTestShardTerminals(path, packageName string, tests []string) error {
+func validateProductTestShardTerminals(path, packageName string, tests []string, deferred map[string]bool) error {
 	events, err := readProductTestEvents(path)
 	if err != nil {
 		return err
@@ -1625,6 +1649,7 @@ func validateProductTestShardTerminals(path, packageName string, tests []string)
 	wanted := make(map[string]bool, len(tests))
 	terminals := make(map[string][]string, len(tests))
 	packageTerminals := []string{}
+	outputs := make(map[string]string, len(tests))
 	for _, name := range tests {
 		wanted[name] = true
 	}
@@ -1644,14 +1669,21 @@ func validateProductTestShardTerminals(path, packageName string, tests []string)
 			}
 			terminals[event.Test] = append(terminals[event.Test], event.Action)
 		}
+		if event.Action == "output" && !strings.Contains(event.Test, "/") && wanted[event.Test] {
+			outputs[event.Test] += event.Output
+		}
 	}
 	if !slices.Equal(packageTerminals, []string{"pass"}) {
 		return fmt.Errorf("package terminal is not one pass")
 	}
 	for _, name := range tests {
-		if !slices.Equal(terminals[name], []string{"pass"}) {
-			return fmt.Errorf("test terminal for %s is not one pass", name)
+		if slices.Equal(terminals[name], []string{"pass"}) {
+			continue
 		}
+		if deferred[name] && slices.Equal(terminals[name], []string{"skip"}) && strings.Contains(outputs[name], deferredApexSkipMessage) {
+			continue
+		}
+		return fmt.Errorf("test terminal for %s is not one pass", name)
 	}
 	return nil
 }

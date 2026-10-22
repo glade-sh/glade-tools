@@ -2623,7 +2623,6 @@ func TestSalesforceVerifyRepositoryInputsMatchCurrentContract(t *testing.T) {
 	}
 }
 
-
 // DataWeave is excluded (D45): Glade's own CI defers a few Apex tests when no toolchain is
 // installed. The verifier accepts exactly those skips, read from the candidate's ci-go-test.sh.
 func TestLoadProductTestEvidenceAcceptsOnlyDeclaredDeferredApexSkips(t *testing.T) {
