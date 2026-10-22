@@ -2,6 +2,7 @@ package scripts
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -33,5 +34,13 @@ func TestSalesforceParallelWorkflowAggregateIsSoleAuthority(t *testing.T) {
 	}
 	if strings.Contains(text[:max(aggregate, 0)], "SF_SFDX_AUTH_URL") {
 		t.Fatal("product workers must remain credential-free")
+	}
+}
+
+func TestSalesforceProductParallelSyntheticRoutes(t *testing.T) {
+	cmd := exec.Command("python3", "-m", "unittest", "scripts/test_salesforce_product_parallel.py")
+	cmd.Dir = toolsRoot(t)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("parallel product routes: %v\n%s", err, out)
 	}
 }
