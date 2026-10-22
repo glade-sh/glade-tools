@@ -41,7 +41,9 @@ elif args[:2] == ['tool','test2json']:
     if os.environ.get('FAIL_CONVERTER'): sys.exit(3)
 else: sys.exit('unexpected go args: '+str(args))
 '''
-FAKE_BINARY = r'''import json, re, sys
+FAKE_BINARY = r'''import json, os, pathlib, re, sys
+if os.environ.get('CHECK_PACKAGE_CWD'):
+    assert pathlib.Path.cwd().as_posix().endswith(PACKAGE.split('/glade/', 1)[1]), 'wrong package working directory'
 if '-test.list' in sys.argv:
     print('\n'.join('Test%02d'%i for i in range(16)))
 else:
@@ -62,6 +64,8 @@ class ParallelProductTests(unittest.TestCase):
         self.glade = self.root / 'glade'
         (self.glade / 'scripts/internal/cishard').mkdir(parents=True)
         (self.glade / 'scripts/internal/cishard/main.go').write_text('package main\n')
+        for suffix in ['internal/apextest','internal/lwc/compile','internal/visualforce']:
+            (self.glade / suffix).mkdir(parents=True)
         subprocess.run(['git','init','-q',str(self.glade)],check=True)
         subprocess.run(['git','-C',str(self.glade),'add','.'],check=True)
         subprocess.run(['git','-C',str(self.glade),'-c','user.name=Test','-c','user.email=test@example.com','commit','-qm','initial'],check=True)
@@ -144,6 +148,20 @@ class ParallelProductTests(unittest.TestCase):
                 out = self.root / ('out-'+mutation)
                 self.run_script('aggregate',self.glade,self.plan,results,out,passes=False)
                 self.assertFalse((out / 'product-tests.jsonl').exists())
+
+    def test_package_cwd_discovery_and_worker_routes(self):
+        self.env['CHECK_PACKAGE_CWD']='1'
+        plan = self.execute_workers()
+        out = self.root / 'downloaded'
+        out.mkdir()
+        shutil.copytree(self.plan,out / 'salesforce-product-plan')
+        for shard in plan['shards']:
+            shutil.copytree(self.results / shard['id'],out / ('salesforce-product-'+shard['id']))
+        self.env['SALESFORCE_PRODUCT_SHARDS']=str(out)
+        destination = self.root / 'gate'
+        # The gate's original two-argument route must consume downloaded artifacts.
+        self.run_script(self.glade,destination)
+        self.assertEqual(json.loads((destination / 'product-test-evidence/validation.json').read_text())['status'],'pass')
 
     def test_worker_rejects_wrong_checkout_and_converter_failure(self):
         self.run_script('prepare',self.glade,self.plan)
