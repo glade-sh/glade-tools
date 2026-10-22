@@ -2,6 +2,11 @@ import hashlib, json, os, sys, tempfile
 
 out_dir, evidence, events_path, apex_package, binary_sha, binary_size_text = sys.argv[1:]
 
+# DataWeave is excluded (D45). The caller passes the tests Glade's own CI defers when no
+# DataWeave toolchain is installed; they may skip only with this exact output, and only here.
+DEFERRED_MESSAGE = "requires explicitly installed DataWeave toolchain"
+DEFERRED = frozenset(n for n in os.environ.get("SALESFORCE_DEFERRED_APEX_TESTS", "").split(",") if n)
+
 def reject_duplicates(pairs):
     value = {}
     for key, item in pairs:
@@ -66,6 +71,7 @@ for path in [all_packages_path, packages_path, non_apex_events, os.path.join(evi
     artifacts.append({"path": relative(path), "sha256": digest(path)})
 
 passed = []
+deferred_skipped = []
 shard_summaries = []
 shard_event_paths = []
 for index, shard in enumerate(shards):
@@ -78,6 +84,7 @@ for index, shard in enumerate(shards):
         raise SystemExit(f"Apex shard {index} selection differs from plan")
     expected = shard["tests"]
     terminals = {}
+    outputs = {}
     package_terminals = []
     with open(shard_events, encoding="utf-8") as source:
         for number, line in enumerate(source, 1):
@@ -89,16 +96,20 @@ for index, shard in enumerate(shards):
             name, action = event.get("Test"), event.get("Action")
             if isinstance(name, str) and "/" not in name and action in {"pass", "fail", "skip"}:
                 terminals.setdefault(name, []).append(action)
+            if isinstance(name, str) and "/" not in name and action == "output":
+                outputs.setdefault(name, []).append(event.get("Output", ""))
             if not name and action in {"pass", "fail", "skip"}:
                 package_terminals.append(action)
-    if set(terminals) != set(expected) or any(terminals[name] != ["pass"] for name in expected) or package_terminals != ["pass"]:
+    deferred_here = [name for name in expected if terminals.get(name) == ["skip"] and name in DEFERRED and DEFERRED_MESSAGE in "".join(outputs.get(name, []))]
+    if set(terminals) != set(expected) or any(terminals[name] != ["pass"] and name not in deferred_here for name in expected) or package_terminals != ["pass"]:
         raise SystemExit(f"Apex shard {index} does not contain one passing terminal per selected test")
-    passed.extend(expected)
+    passed.extend(name for name in expected if name not in deferred_here)
+    deferred_skipped.extend(deferred_here)
     shard_event_paths.append(shard_events)
     for path in [selection_path, regex_path, shard_events]:
         artifacts.append({"path": relative(path), "sha256": digest(path)})
     shard_summaries.append({"index": index, "testCount": len(expected), "eventsPath": relative(shard_events), "eventsSHA256": digest(shard_events)})
-if len(passed) != len(set(passed)) or sorted(passed) != discovery:
+if len(passed) != len(set(passed)) or sorted(passed + deferred_skipped) != discovery:
     raise SystemExit("passing Apex shard union does not exactly match discovery")
 
 descriptor, temporary = tempfile.mkstemp(prefix=".product-tests.", dir=out_dir)

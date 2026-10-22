@@ -297,7 +297,8 @@ def aggregate(root, directory, results, output):
     for name, source in entries.items():
         shutil.copytree(source, parallel / name)
     binary = plan['binaries']['apextest']
-    subprocess.run([sys.executable, str(TOOLS / 'scripts/salesforce-product-validation.py'), str(output), str(evidence), str(output / 'product-tests.jsonl'), PREFIX + 'internal/apextest', binary['sha256'], str(binary['sizeBytes'])], check=True)
+    subprocess.run([sys.executable, str(TOOLS / 'scripts/salesforce-product-validation.py'), str(output), str(evidence), str(output / 'product-tests.jsonl'), PREFIX + 'internal/apextest', binary['sha256'], str(binary['sizeBytes'])], check=True,
+                   env={**os.environ, 'SALESFORCE_DEFERRED_APEX_TESTS': ','.join(sorted(load_deferred(root)))})
 
 
 def main():
