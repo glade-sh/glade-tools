@@ -78,11 +78,26 @@ jobs:
       - name: Set product-test environment
         run: echo "GLADE_ROOT=$(realpath ../glade)" >> "$GITHUB_ENV"
       - name: Install product browser dependencies
+        timeout-minutes: 30
         working-directory: glade
         run: |
           npm ci --prefix third_party/lwc
           npm ci --prefix lwcruntime
-          scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium
+          printf '%s\n' 'Acquire::http::Timeout "30";' 'Acquire::https::Timeout "30";' 'Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/99glade-network >/dev/null
+          for attempt in 1 2 3; do
+            limit=480; [ "$attempt" = 1 ] && limit=900
+            echo "playwright install attempt ${attempt} (limit ${limit}s) started $(date -u +%T)"
+            if timeout -k 10 "$limit" scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium; then
+              echo "playwright install finished $(date -u +%T)"
+              exit 0
+            fi
+            echo "playwright install attempt ${attempt} failed or timed out $(date -u +%T)" >&2
+            sudo pkill -x apt-get || true
+            sudo pkill -x dpkg || true
+            for _ in $(seq 1 30); do sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || break; sleep 2; done
+            sudo dpkg --configure -a || true
+          done
+          exit 1
       - name: Plan exact product coverage and build shared test binaries
         id: plan
         run: |
@@ -162,11 +177,26 @@ jobs:
       - name: Set product-test environment
         run: echo "GLADE_ROOT=$(realpath ../glade)" >> "$GITHUB_ENV"
       - name: Install product browser dependencies
+        timeout-minutes: 30
         working-directory: glade
         run: |
           npm ci --prefix third_party/lwc
           npm ci --prefix lwcruntime
-          scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium
+          printf '%s\n' 'Acquire::http::Timeout "30";' 'Acquire::https::Timeout "30";' 'Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/99glade-network >/dev/null
+          for attempt in 1 2 3; do
+            limit=480; [ "$attempt" = 1 ] && limit=900
+            echo "playwright install attempt ${attempt} (limit ${limit}s) started $(date -u +%T)"
+            if timeout -k 10 "$limit" scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium; then
+              echo "playwright install finished $(date -u +%T)"
+              exit 0
+            fi
+            echo "playwright install attempt ${attempt} failed or timed out $(date -u +%T)" >&2
+            sudo pkill -x apt-get || true
+            sudo pkill -x dpkg || true
+            for _ in $(seq 1 30); do sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || break; sleep 2; done
+            sudo dpkg --configure -a || true
+          done
+          exit 1
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: salesforce-product-plan
@@ -254,11 +284,26 @@ jobs:
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli@2.145.6
       - name: Install Glade browser test dependencies
+        timeout-minutes: 30
         working-directory: glade
         run: |
           set -euo pipefail
           npm ci --prefix lwcruntime
-          scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium
+          printf '%s\n' 'Acquire::http::Timeout "30";' 'Acquire::https::Timeout "30";' 'Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/99glade-network >/dev/null
+          for attempt in 1 2 3; do
+            limit=480; [ "$attempt" = 1 ] && limit=900
+            echo "playwright install attempt ${attempt} (limit ${limit}s) started $(date -u +%T)"
+            if timeout -k 10 "$limit" scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium; then
+              echo "playwright install finished $(date -u +%T)"
+              exit 0
+            fi
+            echo "playwright install attempt ${attempt} failed or timed out $(date -u +%T)" >&2
+            sudo pkill -x apt-get || true
+            sudo pkill -x dpkg || true
+            for _ in $(seq 1 30); do sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || break; sleep 2; done
+            sudo dpkg --configure -a || true
+          done
+          exit 1
       - name: Build release-shaped Linux candidate
         working-directory: glade
         run: |
