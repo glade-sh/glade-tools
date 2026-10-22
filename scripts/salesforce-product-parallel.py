@@ -161,9 +161,21 @@ def read_events(path):
             yield json.loads(line, object_pairs_hook=unique)
 
 
+# Glade defers these optional DataWeave Apex tests when no toolchain is installed
+# (DataWeave is excluded, D45). Only these exact tests, skipping with exactly this
+# message, may skip in an Apex shard; every other Apex test must pass.
+DEFERRED_DATAWEAVE_APEX = frozenset({
+    'TestRunDataWeaveSourceSourceNames', 'TestRunDataWeaveSourceChangedSource',
+    'TestRunDataWeaveSourceBuiltinImports', 'TestRunDataWeaveSourceRestrictedWordsInLiterals',
+    'TestRunDataWeaveSourceLocalFunctionShadow',
+})
+DEFERRED_DATAWEAVE_MESSAGE = 'requires explicitly installed DataWeave toolchain'
+
+
 def validate_events(path, shard):
     terminals = {}
     tests = {}
+    outputs = {}
     packages_with_tests = set()
     for event in read_events(path):
         require(isinstance(event, dict) and event.get('Package') in shard['packages'], 'unexpected event package')
@@ -176,6 +188,8 @@ def validate_events(path, shard):
                 require(name.split('/')[0] in shard['selection']['tests'], 'unselected test event')
             if '/' not in name and action in {'pass', 'skip', 'fail'}:
                 tests.setdefault(name, []).append(action)
+            if '/' not in name and action == 'output':
+                outputs.setdefault(name, []).append(event.get('Output', ''))
         elif action in {'pass', 'fail', 'skip'}:
             terminals.setdefault(package, []).append(action)
     require(set(terminals) == set(shard['packages']), 'missing package terminals')
@@ -183,9 +197,12 @@ def validate_events(path, shard):
         require(actions == ['pass'] or (shard['kind'] == 'packages' and actions == ['skip'] and package not in packages_with_tests), 'invalid package terminal')
     if shard['kind'] != 'packages':
         require(set(tests) == set(shard['selection']['tests']), 'test terminal union mismatch')
-        for actions in tests.values():
-            # Preserve Go's existing non-Apex skip semantics; Apex requires every test pass.
-            require(actions == ['pass'] or (shard['kind'] != 'apextest' and actions == ['skip']), 'invalid test terminal')
+        for name, actions in tests.items():
+            # Preserve Go's existing non-Apex skip semantics; Apex requires every test pass,
+            # except the deferred DataWeave tests above, which must carry their exact skip message.
+            deferred = (shard['kind'] == 'apextest' and actions == ['skip'] and name in DEFERRED_DATAWEAVE_APEX
+                        and DEFERRED_DATAWEAVE_MESSAGE in ''.join(outputs.get(name, [])))
+            require(actions == ['pass'] or (shard['kind'] != 'apextest' and actions == ['skip']) or deferred, 'invalid test terminal')
 
 
 def run_shard(root, directory, shard_id, output):
