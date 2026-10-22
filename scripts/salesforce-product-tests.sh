@@ -148,7 +148,9 @@ for index in {0..15}; do
 		exit 1
 	fi
 	set +e
-	"$binary" -test.v=test2json -test.count=1 -test.timeout=120m -test.run="$regex" | \
+	# go test runs a package's test binary in the package directory; the Apex
+	# conformance tests read testdata by relative path, so do the same here.
+	(cd "$glade_root/internal/apextest" && "$binary" -test.v=test2json -test.count=1 -test.timeout=120m -test.run="$regex") | \
 		go -C "$glade_root" tool test2json -p "$package_name" >"$shard_dir/events.jsonl"
 	statuses=("${PIPESTATUS[@]}")
 	set -e

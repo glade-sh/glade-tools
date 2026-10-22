@@ -45,6 +45,9 @@ func TestSalesforceProductTestsBuildOnceAndShardSerially(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(gladeRoot, "scripts", "internal", "cishard", "main.go"), []byte("package main\n"), 0o644); err != nil {
 				t.Fatal(err)
 			}
+			if err := os.MkdirAll(filepath.Join(gladeRoot, "internal", "apextest"), 0o755); err != nil {
+				t.Fatal(err)
+			}
 			if err := os.MkdirAll(binDir, 0o755); err != nil {
 				t.Fatal(err)
 			}
@@ -176,6 +179,11 @@ fi
 regex=""
 for arg in "$@"; do case "$arg" in -test.run=*) regex="${arg#-test.run=}" ;; esac; done
 name="$(printf '%s' "$regex" | sed -E 's/^\^\(\?://; s/\)\$$//')"
+# go test starts a test binary in its package directory; relative testdata paths depend on it.
+if [[ "$(basename "$(pwd)")" != apextest || "$(basename "$(dirname "$(pwd)")")" != internal ]]; then
+  echo "Apex test binary started outside internal/apextest: $(pwd)" >&2
+  exit 3
+fi
 printf 'apex-shard %s\n' "$name" >> "$FAKE_GO_CALLS"
 printf '{"Action":"run","Package":"github.com/glade-sh/glade/internal/apextest","Test":"%s"}\n' "$name"
 if [[ "${FAKE_FAIL_MODE:-}" == shard && "$name" == Test07 ]]; then
