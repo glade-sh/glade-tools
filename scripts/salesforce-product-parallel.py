@@ -161,18 +161,26 @@ def read_events(path):
             yield json.loads(line, object_pairs_hook=unique)
 
 
-# Glade defers these optional DataWeave Apex tests when no toolchain is installed
-# (DataWeave is excluded, D45). Only these exact tests, skipping with exactly this
-# message, may skip in an Apex shard; every other Apex test must pass.
-DEFERRED_DATAWEAVE_APEX = frozenset({
-    'TestRunDataWeaveSourceSourceNames', 'TestRunDataWeaveSourceChangedSource',
-    'TestRunDataWeaveSourceBuiltinImports', 'TestRunDataWeaveSourceRestrictedWordsInLiterals',
-    'TestRunDataWeaveSourceLocalFunctionShadow',
-})
+# Glade defers some optional DataWeave Apex tests when no toolchain is installed
+# (DataWeave is excluded, D45). The list lives in the candidate's own
+# scripts/ci-go-test.sh so it has one source of truth. Only those exact tests,
+# skipping with exactly this message and with no DataWeave toolchain configured,
+# may skip in an Apex shard; every other Apex test must pass.
 DEFERRED_DATAWEAVE_MESSAGE = 'requires explicitly installed DataWeave toolchain'
+DEFERRED_ENTRY = re.compile(
+    r'\(module \+ "/internal/apextest", "(Test\w+)"\): \(\("GLADE_DATAWEAVE_APEX_TEST_HOME",\), "' + re.escape(DEFERRED_DATAWEAVE_MESSAGE) + r'"\)')
 
 
-def validate_events(path, shard):
+def load_deferred(root):
+    if os.environ.get('GLADE_DATAWEAVE_APEX_TEST_HOME'):
+        return frozenset()  # a configured toolchain must execute these tests
+    script = Path(root) / 'scripts' / 'ci-go-test.sh'
+    if not script.is_file():
+        return frozenset()
+    return frozenset(DEFERRED_ENTRY.findall(script.read_text(encoding='utf-8')))
+
+
+def validate_events(path, shard, deferred=frozenset()):
     terminals = {}
     tests = {}
     outputs = {}
@@ -200,9 +208,9 @@ def validate_events(path, shard):
         for name, actions in tests.items():
             # Preserve Go's existing non-Apex skip semantics; Apex requires every test pass,
             # except the deferred DataWeave tests above, which must carry their exact skip message.
-            deferred = (shard['kind'] == 'apextest' and actions == ['skip'] and name in DEFERRED_DATAWEAVE_APEX
+            deferred_skip = (shard['kind'] == 'apextest' and actions == ['skip'] and name in deferred
                         and DEFERRED_DATAWEAVE_MESSAGE in ''.join(outputs.get(name, [])))
-            require(actions == ['pass'] or (shard['kind'] != 'apextest' and actions == ['skip']) or deferred, 'invalid test terminal')
+            require(actions == ['pass'] or (shard['kind'] != 'apextest' and actions == ['skip']) or deferred_skip, 'invalid test terminal')
 
 
 def run_shard(root, directory, shard_id, output):
@@ -224,7 +232,7 @@ def run_shard(root, directory, shard_id, output):
                 process.stdout.close()
                 status = process.wait()
                 require(status == 0 and converter.returncode == 0, 'test binary or converter failed')
-    validate_events(events, shard)
+    validate_events(events, shard, load_deferred(root))
     write_json(output / 'result.json', {**plan['identity'], 'shardID': shard_id, 'status': 'pass',
                                       'planSHA256': digest(directory / 'parallel-plan.json'), 'eventsSHA256': digest(events)})
 
@@ -242,6 +250,7 @@ def aggregate(root, directory, results, output):
         require(all(n.startswith(prefix) for n in entries), 'unexpected product artifact')
         entries = {n.removeprefix(prefix): p for n, p in entries.items()}
     require(set(entries) == {s['id'] for s in plan['shards']}, 'missing, duplicate or unexpected shard artifact')
+    deferred = load_deferred(root)
     for shard in plan['shards']:
         entry = entries[shard['id']]
         require(not entry.is_symlink() and entry.is_dir(), 'invalid shard directory')
@@ -251,7 +260,7 @@ def aggregate(root, directory, results, output):
         expected = {**plan['identity'], 'shardID': shard['id'], 'status': 'pass',
                     'planSHA256': digest(directory / 'parallel-plan.json'), 'eventsSHA256': digest(entry / 'events.jsonl')}
         require(receipt == expected, 'shard status, identity or checksum mismatch')
-        validate_events(entry / 'events.jsonl', shard)
+        validate_events(entry / 'events.jsonl', shard, deferred)
     output.mkdir(exist_ok=True)
     evidence = output / 'product-test-evidence'
     evidence.mkdir()
