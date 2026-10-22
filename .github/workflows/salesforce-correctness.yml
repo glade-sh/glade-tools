@@ -192,7 +192,6 @@ jobs:
       # Match Glade CI: plain Babel code frames and the installed Playwright module.
       NO_COLOR: "1"
       GLADE_LWC_PLAYWRIGHT_MODULE: ${{ github.workspace }}/glade/lwcruntime/node_modules/playwright
-      SALESFORCE_PRODUCT_SHARDS: ${{ runner.temp }}/product-results
     needs: [product-plan, product-shards]
     if: ${{ needs.product-plan.result == 'success' && needs.product-shards.result == 'success' }}
     defaults:
@@ -329,6 +328,8 @@ jobs:
           path: ${{ runner.temp }}/product-results
           merge-multiple: false
       - name: Run correctness gate
+        env:
+          SALESFORCE_PRODUCT_SHARDS: ${{ runner.temp }}/product-results
         run: |
           scripts/salesforce-correctness-gate.sh \
             "$TOOLS_BIN" \
