@@ -152,7 +152,7 @@ func TestMVPReportIncludesApexNamespaceResolutionGate(t *testing.T) {
 
 func TestStdlibCatalogHasNoPartialRows(t *testing.T) {
 	for _, row := range StdlibMatrix() {
-		if row.Status == StatusPartial && row.API != "Blob.toPdf, PageReference.getContent and getContentAsPDF" {
+		if row.Status == StatusPartial && !(row.Area == "Blob / PageReference" && row.API == "Blob.toPdf, PageReference.getContent and getContentAsPDF") {
 			t.Fatalf("%s %s is partial: %s", row.Area, row.API, row.Notes)
 		}
 	}
