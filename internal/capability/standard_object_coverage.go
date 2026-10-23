@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strings"
 
 	"github.com/glade-sh/glade/internal/storage"
 )
@@ -84,11 +85,18 @@ func BuildStandardObjectCoverageReport() StandardObjectCoverageReport {
 		SchemaVersion: StandardObjectCoverageSchemaVersion,
 		Objects:       make([]StandardObjectCoverageEntry, 0, len(names)),
 	}
+	seen := make(map[string]bool, len(names))
 	for _, name := range names {
 		definition, ok := storage.StandardObjectDefinition(name)
 		if !ok {
 			continue
 		}
+		// Catalog lookup aliases can resolve to the same canonical definition.
+		key := strings.ToLower(definition.APIName)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
 		entry := StandardObjectCoverageEntry{
 			Object:        definition.APIName,
 			Label:         definition.Label,
