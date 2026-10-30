@@ -47,7 +47,7 @@ func renderAssuranceHTML(report []byte) ([]byte, error) {
 	if !json.Valid(report) {
 		return nil, fmt.Errorf("assurance JSON is invalid")
 	}
-	if bytes.Contains(bytes.ToLower(report), []byte("</script")) || containsPrivateReportPath(report) {
+	if bytes.Contains(bytes.ToLower(report), []byte("</script")) || containsPrivateReportPath(report) || validatePublicUsageJSON(report) != nil {
 		return nil, fmt.Errorf("assurance JSON is not safe for public HTML")
 	}
 	page := "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Glade assurance</title>" +
