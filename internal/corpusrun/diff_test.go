@@ -464,3 +464,22 @@ func TestCompareDetectsDependencyPinChanges(t *testing.T) {
 		t.Fatalf("dependency pin change accepted: %+v", got)
 	}
 }
+
+func TestCompareDetectsSourceOverlayIdentityChanges(t *testing.T) {
+	for _, kind := range []string{"archive", "component"} {
+		t.Run(kind, func(t *testing.T) {
+			g := baseGolden()
+			observed := baseObserved()
+			if kind == "archive" {
+				g.Overlay.SourceArchiveSHA256 = strings.Repeat("a", 64)
+				observed.Overlay.SourceArchiveSHA256 = strings.Repeat("b", 64)
+			} else {
+				g.Overlay.ComponentPins = map[string]string{"source": "aaa"}
+				observed.Overlay.ComponentPins = map[string]string{"source": "bbb"}
+			}
+			if got := Compare(g, observed); got.Infra == "" {
+				t.Fatalf("source identity change accepted: %+v", got)
+			}
+		})
+	}
+}
