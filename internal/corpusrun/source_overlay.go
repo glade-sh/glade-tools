@@ -22,8 +22,8 @@ func safeRelative(path string) (string, error) {
 		return "", fmt.Errorf("path escapes root")
 	}
 	for _, part := range strings.Split(clean, string(filepath.Separator)) {
-		if part == ".git" || part == depsDir {
-			return "", fmt.Errorf("path enters runner or Git metadata")
+		if part == ".git" || part == depsDir || part == ".glade" || part == ".glade-cache" || part == ".sfdx" || part == ".sf" || part == "node_modules" {
+			return "", fmt.Errorf("path enters runner metadata or cache")
 		}
 	}
 	return clean, nil
