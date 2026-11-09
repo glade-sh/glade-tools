@@ -47,10 +47,13 @@ type Overlay struct {
 
 // DepSource says where a dependency's source lives.
 type DepSource struct {
-	Paths PathList `json:"paths,omitempty"`
-	Dirs  []string `json:"dirs,omitempty"`
-	Mode  string   `json:"mode,omitempty"`
-	Note  string   `json:"note,omitempty"`
+	Paths       PathList `json:"paths,omitempty"`
+	Dirs        []string `json:"dirs,omitempty"`
+	Mode        string   `json:"mode,omitempty"`
+	Note        string   `json:"note,omitempty"`
+	Packages    []string `json:"packages,omitempty"`
+	Namespace   string   `json:"namespace,omitempty"`
+	MarkDefault []string `json:"markDefault,omitempty"`
 }
 
 // Repo is one pinned corpus repo.
@@ -94,6 +97,9 @@ func LoadConfig(dir string) (*Config, error) {
 		return nil, fmt.Errorf("%s: schemaVersion %d is not supported", TiersFile, config.SchemaVersion)
 	}
 	for name, dep := range config.DepSources {
+		if name == "" || strings.ContainsAny(name, `/\`) || strings.Contains(name, "..") {
+			return nil, fmt.Errorf("%s: invalid dependency name %q", TiersFile, name)
+		}
 		switch dep.Mode {
 		case "", "source", "managed", "stub":
 		default:

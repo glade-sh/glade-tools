@@ -174,14 +174,103 @@ func cloneTree(src, dst string) error {
 // dependency whose paths all miss is skipped; managed and stub modes are not
 // supported yet and fail the repo.
 func applyOverlay(config *Config, repo Repo, root string) error {
-	var extra []string
+	var extra, managed, dependencyPaths []string
 	for _, name := range repo.Overlay.Deps {
 		spec := config.DepSources[name]
-		if spec.Mode == "managed" || spec.Mode == "stub" {
-			return fmt.Errorf("dependency mode %q is not supported by the runner", spec.Mode)
+		dest := filepath.Join(root, depsDir, name)
+		rel := filepath.ToSlash(filepath.Join(depsDir, name))
+		if spec.Mode == "stub" {
+			data, err := os.ReadFile(filepath.Join(root, "sfdx-project.json"))
+			if err != nil {
+				return err
+			}
+			var project struct {
+				PackageDirectories []struct {
+					Dependencies []struct {
+						Package string `json:"package"`
+					} `json:"dependencies"`
+				} `json:"packageDirectories"`
+			}
+			if err := json.Unmarshal(data, &project); err != nil {
+				return err
+			}
+			declared := map[string]bool{}
+			for _, d := range project.PackageDirectories {
+				for _, p := range d.Dependencies {
+					declared[p.Package] = true
+				}
+			}
+			if len(spec.Packages) == 0 {
+				return fmt.Errorf("stub packages must be explicitly declared by the consumer")
+			}
+			var dirs []map[string]any
+			for i, p := range spec.Packages {
+				if !declared[p] {
+					return fmt.Errorf("stub packages must be explicitly declared by the consumer")
+				}
+				sub := fmt.Sprintf("src%d", i)
+				if err := os.MkdirAll(filepath.Join(dest, sub), 0755); err != nil {
+					return err
+				}
+				dirs = append(dirs, map[string]any{"path": sub, "default": true, "package": p})
+			}
+			data, err = json.Marshal(map[string]any{"namespace": "", "packageDirectories": dirs})
+			if err != nil {
+				return err
+			}
+			if err := os.WriteFile(filepath.Join(dest, "sfdx-project.json"), data, 0644); err != nil {
+				return err
+			}
+			dependencyPaths = append(dependencyPaths, rel)
+			continue
 		}
 		src, ok := config.ResolvePath(spec.Paths)
 		if !ok {
+			return fmt.Errorf("dependency %q source unavailable", name)
+		}
+		if spec.Mode == "managed" {
+			if err := cloneTree(src, dest); err != nil {
+				return err
+			}
+			path := filepath.Join(dest, "sfdx-project.json")
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			var project map[string]any
+			if err := json.Unmarshal(data, &project); err != nil {
+				return err
+			}
+			ns := spec.Namespace
+			if ns == "" {
+				ns, _ = project["namespace"].(string)
+			}
+			if ns == "" {
+				return fmt.Errorf("managed dependency %q needs a namespace", name)
+			}
+			if len(spec.MarkDefault) > 0 {
+				dirs, _ := project["packageDirectories"].([]any)
+				for _, item := range dirs {
+					d, ok := item.(map[string]any)
+					if !ok {
+						continue
+					}
+					p, _ := d["path"].(string)
+					for _, mark := range spec.MarkDefault {
+						if filepath.Clean(p) == filepath.Clean(mark) {
+							d["default"] = true
+						}
+					}
+				}
+				data, err = json.MarshalIndent(project, "", "  ")
+				if err != nil {
+					return err
+				}
+				if err := os.WriteFile(path, data, 0644); err != nil {
+					return err
+				}
+			}
+			managed = append(managed, ns+":"+rel)
 			continue
 		}
 		dirs := spec.Dirs
@@ -221,10 +310,21 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 	}
 	cfg := repo.Overlay.Config
 	yml := filepath.Join(root, "glade.yml")
-	if _, err := os.Stat(yml); err == nil || (len(cfg.Features) == 0 && len(cfg.PermissionSets) == 0) {
+	if _, err := os.Stat(yml); err == nil && (len(managed) > 0 || len(dependencyPaths) > 0) {
+		return fmt.Errorf("cannot apply dependency overlay to existing glade.yml")
+	} else if err == nil || (len(cfg.Features) == 0 && len(cfg.PermissionSets) == 0 && len(managed) == 0 && len(dependencyPaths) == 0) {
 		return nil
 	}
 	var b strings.Builder
+	if len(managed) > 0 || len(dependencyPaths) > 0 {
+		b.WriteString("project:\n")
+		if len(managed) > 0 {
+			b.WriteString("  managedPackageDependencies: " + jsonList(managed) + "\n")
+		}
+		if len(dependencyPaths) > 0 {
+			b.WriteString("  dependencyPaths: " + jsonList(dependencyPaths) + "\n")
+		}
+	}
 	if len(cfg.Features) > 0 {
 		b.WriteString("org:\n  features: " + jsonList(cfg.Features) + "\n")
 	}
