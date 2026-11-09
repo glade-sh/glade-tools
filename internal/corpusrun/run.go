@@ -81,6 +81,13 @@ func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scrat
 	if err != nil || !strings.HasPrefix(head, repo.Pin) && !strings.HasPrefix(repo.Pin, head) {
 		return infra(repo, "clone is not at the config pin")
 	}
+	status, err := exec.CommandContext(ctx, "git", "-C", src, "status", "--porcelain", "--untracked-files=all").Output()
+	if err != nil {
+		return infra(repo, "cannot check clone cleanliness: %v", err)
+	}
+	if len(status) != 0 {
+		return infra(repo, "clone is dirty")
+	}
 	root := filepath.Join(scratch, repo.Name)
 	defer os.RemoveAll(root)
 	if err := cloneTree(src, root); err != nil {
