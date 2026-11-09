@@ -1,6 +1,7 @@
 package corpusrun
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -174,5 +175,13 @@ func TestPathListAcceptsStringOrList(t *testing.T) {
 	}
 	if !reflect.DeepEqual(single, PathList{"a"}) || !reflect.DeepEqual(many, PathList{"a", "b"}) {
 		t.Fatalf("single %v many %v", single, many)
+	}
+}
+
+func TestBlockedRepoReturnsInfraBeforeExecution(t *testing.T) {
+	repo := Repo{Name: "sample", Blocked: "source provenance not established"}
+	got := runRepo(context.Background(), &Config{}, repo, Options{}, t.TempDir())
+	if !strings.Contains(got.Diff.Infra, "source provenance not established") {
+		t.Fatalf("got %+v", got.Diff)
 	}
 }
