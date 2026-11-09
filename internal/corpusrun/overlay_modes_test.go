@@ -235,3 +235,25 @@ func TestOverlayPinnedDependencyRequiresCleanSource(t *testing.T) {
 		t.Fatalf("dirty pinned dependency accepted: %v", err)
 	}
 }
+
+func TestProjectDependencyPathsMustBePresentAndContained(t *testing.T) {
+	for _, tc := range []struct {
+		name, entry string
+		wantErr     bool
+	}{{"contained", "sample:deps/source", false}, {"missing", "sample:deps/missing", true}, {"escape", "sample:../outside", true}} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			if err := os.MkdirAll(filepath.Join(root, "deps", "source"), 0755); err != nil {
+				t.Fatal(err)
+			}
+			cfg := "project:\n  managedPackageDependencies: [\"" + tc.entry + "\"]\n"
+			if err := os.WriteFile(filepath.Join(root, "glade.yml"), []byte(cfg), 0644); err != nil {
+				t.Fatal(err)
+			}
+			err := validateProjectDependencyPaths(root)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("got error %v, want error %v", err, tc.wantErr)
+			}
+		})
+	}
+}
