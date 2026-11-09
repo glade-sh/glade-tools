@@ -3,6 +3,7 @@ package corpusrun
 import (
 	"archive/tar"
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestSourceOverlayVerifiesAndConfinesArchive(t *testing.T) {
@@ -129,5 +131,55 @@ func TestSourceOverlayRejectsSymlinkAndComponentOverlap(t *testing.T) {
 				t.Fatal("unsafe archive accepted")
 			}
 		})
+	}
+}
+
+func TestRunRepoAppliesPinnedSourceOverlay(t *testing.T) {
+	dir := t.TempDir()
+	source := filepath.Join(dir, "source")
+	if err := os.Mkdir(source, 0755); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{{"init", "-q"}, {"-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-q", "--allow-empty", "-m", "initial"}} {
+		cmd := exec.Command("git", append([]string{"-C", source}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git: %v %s", err, out)
+		}
+	}
+	out, err := exec.Command("git", "-C", source, "rev-parse", "HEAD").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var b bytes.Buffer
+	tw := tar.NewWriter(&b)
+	content := []byte("overlay-present")
+	if err := tw.WriteHeader(&tar.Header{Name: "marker.txt", Mode: 0644, Size: int64(len(content))}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := tw.Write(content); err != nil {
+		t.Fatal(err)
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	archive := filepath.Join(dir, "overlay.tar")
+	if err := os.WriteFile(archive, b.Bytes(), 0600); err != nil {
+		t.Fatal(err)
+	}
+	bin := filepath.Join(dir, "glade")
+	script := `#!/bin/sh
+[ "$(cat marker.txt)" = "overlay-present" ] || exit 2
+case "$1" in
+check) while [ "$#" -gt 0 ]; do if [ "$1" = "--output" ]; then printf '{"summary":{"types":1},"diagnostics":[]}' > "$2"; exit 0; fi; shift; done;;
+test) printf '{"summary":{"total":1,"passed":1},"tests":[{"name":"Synthetic.test","status":"pass"}]}' ;;
+esac
+`
+	if err := os.WriteFile(bin, []byte(script), 0755); err != nil {
+		t.Fatal(err)
+	}
+	repo := Repo{Name: "sample", Clone: PathList{source}, Pin: strings.TrimSpace(string(out)), SourceArchive: archive, Overlay: Overlay{SourceArchiveSHA256: fmt.Sprintf("%x", sha256.Sum256(b.Bytes()))}}
+	got := runRepo(context.Background(), &Config{dir: dir}, repo, Options{Glade: bin, StepTimeout: time.Minute}, filepath.Join(dir, "scratch"))
+	if !got.Complete || got.Observed.Counts.Tests != 1 || got.Diff.Infra != "no golden" {
+		t.Fatalf("result: %+v", got)
 	}
 }
