@@ -113,7 +113,11 @@ func normOverlay(o Overlay) Overlay {
 		sort.Strings(out)
 		return out
 	}
-	return Overlay{Deps: norm(o.Deps), Config: OverlayConfig{Features: norm(o.Config.Features), PermissionSets: norm(o.Config.PermissionSets), ExternalNamespaces: norm(o.Config.ExternalNamespaces), ProjectNamespace: o.Config.ProjectNamespace, UserLocale: o.Config.UserLocale}}
+	pins := o.DependencyPins
+	if len(pins) == 0 {
+		pins = nil
+	}
+	return Overlay{Deps: norm(o.Deps), Config: OverlayConfig{Features: norm(o.Config.Features), PermissionSets: norm(o.Config.PermissionSets), ExternalNamespaces: norm(o.Config.ExternalNamespaces), ProjectNamespace: o.Config.ProjectNamespace, UserLocale: o.Config.UserLocale}, DependencyPins: pins}
 }
 
 func short(pin string) string {

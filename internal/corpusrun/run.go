@@ -3,6 +3,7 @@ package corpusrun
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -265,9 +266,28 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 	var extra, managed, dependencyPaths []string
 	for _, name := range repo.Overlay.Deps {
 		spec := config.DepSources[name]
+		expected, pinned := repo.Overlay.DependencyPins[name]
+		if repo.Overlay.DependencyPins != nil && !pinned {
+			return fmt.Errorf("dependency %q has no pin", name)
+		}
+		if spec.Mode == "absent" {
+			if pinned && expected != "absent" {
+				return fmt.Errorf("dependency %q pin differs from absent mode", name)
+			}
+			continue
+		}
 		dest := filepath.Join(root, depsDir, name)
 		rel := filepath.ToSlash(filepath.Join(depsDir, name))
 		if spec.Mode == "stub" {
+			if pinned {
+				data, err := json.Marshal(spec.Packages)
+				if err != nil {
+					return err
+				}
+				if expected != fmt.Sprintf("stub:%x", sha256.Sum256(data)) {
+					return fmt.Errorf("dependency %q stub pin differs", name)
+				}
+			}
 			data, err := os.ReadFile(filepath.Join(root, "sfdx-project.json"))
 			if err != nil {
 				return err
@@ -331,6 +351,16 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 		}
 		if !ok {
 			return fmt.Errorf("dependency %q source unavailable", name)
+		}
+		if pinned {
+			head, err := gitHead(context.Background(), src)
+			if err != nil || expected != "git:"+head {
+				return fmt.Errorf("dependency %q pin differs from source", name)
+			}
+			status, err := exec.Command("git", "-C", src, "status", "--porcelain", "--untracked-files=all", "--", ".").Output()
+			if err != nil || len(status) != 0 {
+				return fmt.Errorf("dependency %q pinned source is not clean", name)
+			}
 		}
 		if spec.Mode == "project" {
 			relative, err := filepath.Rel(src, dest)

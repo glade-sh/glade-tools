@@ -44,8 +44,9 @@ type OverlayConfig struct {
 
 // Overlay is what the runner adds to a clone before it runs.
 type Overlay struct {
-	Deps   []string      `json:"deps,omitempty"`
-	Config OverlayConfig `json:"config"`
+	Deps           []string          `json:"deps,omitempty"`
+	Config         OverlayConfig     `json:"config"`
+	DependencyPins map[string]string `json:"dependencyPins,omitempty"`
 }
 
 // DepSource says where a dependency's source lives.
@@ -106,7 +107,7 @@ func LoadConfig(dir string) (*Config, error) {
 			return nil, fmt.Errorf("%s: invalid dependency name %q", TiersFile, name)
 		}
 		switch dep.Mode {
-		case "", "source", "managed", "stub", "project":
+		case "", "source", "managed", "stub", "project", "absent":
 		default:
 			return nil, fmt.Errorf("%s: dependency %q has unknown mode %q", TiersFile, name, dep.Mode)
 		}
@@ -132,6 +133,21 @@ func LoadConfig(dir string) (*Config, error) {
 		for _, dep := range repo.Overlay.Deps {
 			if _, ok := config.DepSources[dep]; !ok {
 				return nil, fmt.Errorf("%s: repo %q uses undeclared dependency %q", TiersFile, repo.Name, dep)
+			}
+			if repo.Overlay.DependencyPins != nil && repo.Overlay.DependencyPins[dep] == "" {
+				return nil, fmt.Errorf("%s: repo %q has no identity for dependency %q", TiersFile, repo.Name, dep)
+			}
+		}
+		for dep := range repo.Overlay.DependencyPins {
+			found := false
+			for _, name := range repo.Overlay.Deps {
+				if dep == name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return nil, fmt.Errorf("%s: repo %q has an identity for unused dependency %q", TiersFile, repo.Name, dep)
 			}
 		}
 	}
