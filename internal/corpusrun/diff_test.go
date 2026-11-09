@@ -414,3 +414,22 @@ func TestWriteReportPutsVerdictFirstAndOneLinePerRepo(t *testing.T) {
 		t.Fatalf("ExitCode = %d", report.ExitCode)
 	}
 }
+
+func TestCompareRejectsUnclassifiedGoldenEntries(t *testing.T) {
+	for _, kind := range []string{"failing", "timeout", "diagnostic"} {
+		t.Run(kind, func(t *testing.T) {
+			g := baseGolden()
+			switch kind {
+			case "failing":
+				g.Failing = []TestEntry{{Test: "Example.test", Status: StatusUnclassified}}
+			case "timeout":
+				g.Timeouts = []TestEntry{{Test: "Example.test", Status: StatusUnclassified}}
+			case "diagnostic":
+				g.Diagnostics = []DiagnosticEntry{{Code: "EXAMPLE", Status: StatusUnclassified}}
+			}
+			if got := Compare(g, baseObserved()); got.Infra == "" {
+				t.Fatalf("unclassified %s accepted: %+v", kind, got)
+			}
+		})
+	}
+}
