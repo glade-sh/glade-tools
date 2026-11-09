@@ -58,7 +58,7 @@ test("CI has exactly core and release executing test lanes plus stable test aggr
   );
   for (const name of ["core", "release"]) {
     const lane = job(name);
-    assert.match(lane, /runs-on: ubuntu-latest\n\s+timeout-minutes: (15|25)/);
+    assert.match(lane, /runs-on: ubuntu-24.04\n\s+timeout-minutes: (15|25)/);
     for (const step of [
       "actions/checkout@v6",
       "actions/create-github-app-token@v3",
@@ -180,7 +180,7 @@ test("full fixtures is a single bounded weekly and manual lane", () => {
   );
   assert.match(
     fixtureJobs,
-    /full-fixtures:\n    name: full-fixtures\n    runs-on: ubuntu-latest\n    timeout-minutes: 30/,
+    /full-fixtures:\n    name: full-fixtures\n    runs-on: ubuntu-24.04\n    timeout-minutes: 30/,
   );
   const fixtureJob = fixtureJobs.slice(fixtureJobs.indexOf("  full-fixtures:\n"));
   const setup = catalogPinnedSetup(fixtureJob);

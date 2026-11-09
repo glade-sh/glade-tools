@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   core:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     defaults:
       run:
@@ -53,7 +53,7 @@ jobs:
       - run: scripts/release-check.sh core
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -100,7 +100,7 @@ jobs:
       - release
       - macos-release-upload
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - run: test "${{ needs.core.result }}" = success && test "${{ needs.release.result }}" = success && test "${{ needs.macos-release-upload.result }}" = success
 
