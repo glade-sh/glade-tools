@@ -105,7 +105,7 @@ jobs:
       - run: test "${{ needs.core.result }}" = success && test "${{ needs.release.result }}" = success && test "${{ needs.macos-release-upload.result }}" = success
 
   macos-release-upload:
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 25
     defaults:
       run:
