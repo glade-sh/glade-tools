@@ -161,3 +161,20 @@ func TestOverlayAdditionalProjectSettings(t *testing.T) {
 		}
 	}
 }
+
+func TestOverlayExplicitAbsentDependency(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tiers.json")
+	data := `{"schemaVersion":1,"depSources":{"missing":{"mode":"absent"}},"repos":[{"name":"sample","tier":"C","clone":"source","pin":"abc","overlay":{"deps":["missing"],"config":{}}}]}`
+	if err := os.WriteFile(path, []byte(data), 0644); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := LoadConfig(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	if err := applyOverlay(cfg, cfg.Repos[0], root); err != nil {
+		t.Fatal(err)
+	}
+}
