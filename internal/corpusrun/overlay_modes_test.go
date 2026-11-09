@@ -126,3 +126,38 @@ func TestOverlayRejectsInvalidDependencyDeclarations(t *testing.T) {
 		}
 	})
 }
+
+func TestOverlayAdditionalProjectSettings(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "sfdx-project.json")
+	if err := os.WriteFile(path, []byte(`{"namespace":"old","packageDirectories":[]}`), 0644); err != nil {
+		t.Fatal(err)
+	}
+	var overlay Overlay
+	if err := json.Unmarshal([]byte(`{"config":{"projectNamespace":"","userLocale":"fr_CA","externalNamespaces":["sample"]}}`), &overlay); err != nil {
+		t.Fatal(err)
+	}
+	if err := applyOverlay(&Config{}, Repo{Overlay: overlay}, root); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var p map[string]any
+	if err := json.Unmarshal(data, &p); err != nil {
+		t.Fatal(err)
+	}
+	if p["namespace"] != "" {
+		t.Fatalf("namespace = %v", p["namespace"])
+	}
+	data, err = os.ReadFile(filepath.Join(root, "glade.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, s := range []string{"externalNamespaces", "locale", "fr_CA"} {
+		if !strings.Contains(string(data), s) {
+			t.Fatalf("missing %s: %s", s, data)
+		}
+	}
+}
