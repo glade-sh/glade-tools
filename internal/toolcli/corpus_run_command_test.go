@@ -63,7 +63,19 @@ func TestCorpusRunVerdicts(t *testing.T) {
 	if code := Run(context.Background(), []string{"corpus", "golden", "--config", config, "--repo", "sample", "--from-run", filepath.Join(root, "run.json")}, &gout, &gerr); code != 0 {
 		t.Fatalf("golden: %d %s", code, gerr.String())
 	}
-	// The golden is unclassified but present: the same run is clean.
+	// A newly seeded golden must be classified before it can gate a run.
+	if out, code = run(); code != 2 || !strings.Contains(out, "unclassified") {
+		t.Fatalf("unclassified: %d %q", code, out)
+	}
+	goldenPath := filepath.Join(config, "goldens", "sample.json")
+	data, err := os.ReadFile(goldenPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data = bytes.ReplaceAll(data, []byte(`"unclassified"`), []byte(`"known-gap"`))
+	if err := os.WriteFile(goldenPath, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
 	if out, code = run(); code != 0 || !strings.HasPrefix(out, "CORPUS-CLEAN\nsample OK") {
 		t.Fatalf("same run: %d %q", code, out)
 	}

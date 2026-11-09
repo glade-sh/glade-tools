@@ -172,7 +172,7 @@ func TestBuildGoldenThenCompareIsOK(t *testing.T) {
 	observed.Diagnostics = []DiagnosticEntry{entry, entry}
 
 	golden, _ := BuildGolden(nil, "sample-app", observed)
-	if diff := Compare(golden, observed); diff.Line() != "OK" {
+	if diff := Compare(golden, observed); diff.Infra == "" {
 		t.Fatalf("Line() = %q, diff %+v", diff.Line(), diff)
 	}
 }

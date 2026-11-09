@@ -143,6 +143,18 @@ func testSet(entries []TestEntry) map[string]bool {
 // produces is GONE, except flaky ones.
 func Compare(golden Golden, observed Observed) Diff {
 	var diff Diff
+	for _, entries := range [][]TestEntry{golden.Failing, golden.Timeouts} {
+		for _, entry := range entries {
+			if entry.Status == StatusUnclassified {
+				return Diff{Infra: "golden contains unclassified entries"}
+			}
+		}
+	}
+	for _, entry := range golden.Diagnostics {
+		if entry.Status == StatusUnclassified {
+			return Diff{Infra: "golden contains unclassified entries"}
+		}
+	}
 	switch {
 	case golden.Pin != observed.Pin:
 		diff.Infra = fmt.Sprintf("golden pin %s differs from run pin %s", short(golden.Pin), short(observed.Pin))
