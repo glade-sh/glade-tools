@@ -183,3 +183,26 @@ esac
 		t.Fatalf("result: %+v", got)
 	}
 }
+
+func TestSourceOverlayRejectsWarmCache(t *testing.T) {
+	var b bytes.Buffer
+	w := tar.NewWriter(&b)
+	content := []byte("cached")
+	if err := w.WriteHeader(&tar.Header{Name: ".glade/cache/state.gob", Mode: 0644, Size: int64(len(content))}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.Write(content); err != nil {
+		t.Fatal(err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	path := filepath.Join(t.TempDir(), "overlay.tar")
+	if err := os.WriteFile(path, b.Bytes(), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := applySourceArchive(root, path, fmt.Sprintf("%x", sha256.Sum256(b.Bytes())), nil); err == nil {
+		t.Fatal("warm cache archive accepted")
+	}
+}
