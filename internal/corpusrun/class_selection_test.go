@@ -28,7 +28,7 @@ exit 2
 	if err := os.WriteFile(bin, []byte(script), 0755); err != nil {
 		t.Fatal(err)
 	}
-	file, err := selectProjectClasses(context.Background(), Options{Glade: bin}, root)
+	file, err := selectProjectClasses(context.Background(), Options{Glade: bin}, root, []string{dep})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -96,7 +96,22 @@ func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scrat
 	if err != nil {
 		return infra(repo, "check: %v", err)
 	}
-	testJSON, err := runGlade(ctx, opts, root, "test", "--project", root, "--json", "--no-serve", "--no-progress", "--parallelism", strconv.Itoa(opts.Parallelism), "--gc-aggressive", "--test-timeout", "0")
+	testArgs := []string{"test", "--project", root, "--json", "--no-serve", "--no-progress", "--parallelism", strconv.Itoa(opts.Parallelism), "--gc-aggressive", "--test-timeout", "0"}
+	var sourceDeps []string
+	for _, name := range repo.Overlay.Deps {
+		mode := config.DepSources[name].Mode
+		if mode == "" || mode == "source" {
+			sourceDeps = append(sourceDeps, filepath.Join(root, depsDir, name))
+		}
+	}
+	if len(sourceDeps) > 0 {
+		classFile, err := selectProjectClasses(ctx, opts, root, sourceDeps)
+		if err != nil {
+			return infra(repo, "class selection: %v", err)
+		}
+		testArgs = append(testArgs, "--class-file", classFile)
+	}
+	testJSON, err := runGlade(ctx, opts, root, testArgs...)
 	if err != nil {
 		return infra(repo, "test: %v", err)
 	}
@@ -130,6 +145,66 @@ func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scrat
 		res.Diff = Compare(golden, observed)
 	}
 	return res
+}
+
+// selectProjectClasses follows the runner's own discovery and removes classes
+// supplied by source overlays, as those are dependencies rather than tests of
+// the project under evaluation.
+func selectProjectClasses(ctx context.Context, opts Options, root string, depRoots []string) (string, error) {
+	excluded := map[string]bool{}
+	for _, dep := range depRoots {
+		if err := filepath.WalkDir(dep, func(path string, entry os.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if !entry.IsDir() && strings.EqualFold(filepath.Ext(entry.Name()), ".cls") {
+				excluded[strings.ToLower(strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name())))] = true
+			}
+			return nil
+		}); err != nil {
+			return "", err
+		}
+	}
+	dir, err := os.MkdirTemp(root, ".corpus-classes-")
+	if err != nil {
+		return "", err
+	}
+	timeout := opts.StepTimeout
+	if timeout <= 0 {
+		timeout = 2 * time.Hour
+	}
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, opts.Glade, "test", "--project", root, "--shard-count", "1", "--write-class-shards", dir)
+	cmd.Dir = root
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return "", fmt.Errorf("discovery failed: %w: %s", err, out)
+	}
+	files, err := filepath.Glob(filepath.Join(dir, "*.txt"))
+	if err != nil || len(files) == 0 {
+		return "", fmt.Errorf("discovery produced no class shard")
+	}
+	var names []string
+	for _, file := range files {
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return "", err
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			name := strings.TrimSpace(line)
+			if name != "" && !excluded[strings.ToLower(name)] {
+				names = append(names, name)
+			}
+		}
+	}
+	if len(names) == 0 {
+		return "", fmt.Errorf("class selection is empty")
+	}
+	file := filepath.Join(dir, "selected.classes")
+	if err := os.WriteFile(file, []byte(strings.Join(names, "\n")+"\n"), 0644); err != nil {
+		return "", err
+	}
+	return file, nil
 }
 
 func gitHead(ctx context.Context, dir string) (string, error) {
