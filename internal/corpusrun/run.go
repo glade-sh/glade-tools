@@ -119,6 +119,9 @@ func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scrat
 	if err := applyOverlay(config, repo, root); err != nil {
 		return infra(repo, "overlay: %v", err)
 	}
+	if err := validateProjectDependencyPaths(root); err != nil {
+		return infra(repo, "project dependencies: %v", err)
+	}
 
 	start := time.Now()
 	checkJSON, err := runGlade(ctx, opts, root, "check", "--project", root, "--format", "json", "--output", filepath.Join(root, ".glade-check.json"), "--no-progress", "--no-cache")
@@ -177,6 +180,57 @@ func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scrat
 		res.Diff = Compare(golden, observed)
 	}
 	return res
+}
+
+// validateProjectDependencyPaths prevents a fresh clone from silently losing
+// dependencies that were only available as siblings of the source checkout.
+func validateProjectDependencyPaths(root string) error {
+	data, err := os.ReadFile(filepath.Join(root, "glade.yml"))
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	var config struct {
+		Project struct {
+			DependencyPaths            []string `yaml:"dependencyPaths"`
+			ManagedPackageDependencies []string `yaml:"managedPackageDependencies"`
+		} `yaml:"project"`
+	}
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return fmt.Errorf("parse glade.yml: %w", err)
+	}
+	paths := append([]string(nil), config.Project.DependencyPaths...)
+	for _, entry := range config.Project.ManagedPackageDependencies {
+		_, path, ok := strings.Cut(entry, ":")
+		if !ok || path == "" {
+			return fmt.Errorf("invalid managed dependency entry")
+		}
+		paths = append(paths, path)
+	}
+	resolvedRoot, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return err
+	}
+	for _, path := range paths {
+		if filepath.IsAbs(path) {
+			return fmt.Errorf("dependency path is outside the project")
+		}
+		resolved, err := filepath.EvalSymlinks(filepath.Join(root, path))
+		if err != nil {
+			return fmt.Errorf("dependency path is unavailable: %w", err)
+		}
+		rel, err := filepath.Rel(resolvedRoot, resolved)
+		if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+			return fmt.Errorf("dependency path is outside the project")
+		}
+		info, err := os.Stat(resolved)
+		if err != nil || !info.IsDir() {
+			return fmt.Errorf("dependency path is not a directory")
+		}
+	}
+	return nil
 }
 
 // selectProjectClasses follows the runner's own discovery and removes classes
