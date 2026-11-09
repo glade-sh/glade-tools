@@ -305,8 +305,9 @@ func runGlade(ctx context.Context, opts Options, dir string, args ...string) ([]
 	defer cancel()
 	cmd := exec.CommandContext(ctx, opts.Glade, args...)
 	cmd.Dir = dir
-	var stdout bytes.Buffer
+	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if ctx.Err() != nil {
 		return nil, fmt.Errorf("timeout after %s", opts.StepTimeout)
@@ -316,7 +317,25 @@ func runGlade(ctx context.Context, opts Options, dir string, args ...string) ([]
 		return nil, err
 	}
 	if exit != nil && exit.ExitCode() != 1 {
-		return nil, fmt.Errorf("glade exited with status %d", exit.ExitCode())
+		return nil, fmt.Errorf("glade exited with status %d: %s", exit.ExitCode(), oneLine(stderr.String(), dir))
+	}
+	if exit != nil && stdout.Len() == 0 {
+		hasOutput := false
+		for i := 0; i+1 < len(args); i++ {
+			if args[i] != "--output" {
+				continue
+			}
+			path := args[i+1]
+			if !filepath.IsAbs(path) {
+				path = filepath.Join(dir, path)
+			}
+			if info, err := os.Stat(path); err == nil && info.Mode().IsRegular() && info.Size() > 0 {
+				hasOutput = true
+			}
+		}
+		if !hasOutput {
+			return nil, fmt.Errorf("glade exited with status 1 without output: %s", oneLine(stderr.String(), dir))
+		}
 	}
 	return stdout.Bytes(), nil
 }
