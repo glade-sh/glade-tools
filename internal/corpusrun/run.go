@@ -400,7 +400,7 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 			extra = append(extra, rel)
 		}
 	}
-	if len(extra) > 0 {
+	if len(extra) > 0 || repo.Overlay.Config.ProjectNamespace != nil {
 		path := filepath.Join(root, "sfdx-project.json")
 		data, err := os.ReadFile(path)
 		if err != nil {
@@ -414,7 +414,12 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 		for _, rel := range extra {
 			dirs = append(dirs, map[string]any{"path": rel})
 		}
-		project["packageDirectories"] = dirs
+		if len(extra) > 0 {
+			project["packageDirectories"] = dirs
+		}
+		if repo.Overlay.Config.ProjectNamespace != nil {
+			project["namespace"] = *repo.Overlay.Config.ProjectNamespace
+		}
 		out, _ := json.MarshalIndent(project, "", "  ")
 		if err := os.WriteFile(path, append(out, '\n'), 0o644); err != nil {
 			return err
@@ -422,16 +427,16 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 	}
 	cfg := repo.Overlay.Config
 	yml := filepath.Join(root, "glade.yml")
-	if len(cfg.Features) == 0 && len(cfg.PermissionSets) == 0 && len(managed) == 0 && len(dependencyPaths) == 0 {
+	if len(cfg.Features) == 0 && len(cfg.PermissionSets) == 0 && len(cfg.ExternalNamespaces) == 0 && cfg.UserLocale == "" && len(managed) == 0 && len(dependencyPaths) == 0 {
 		return nil
 	}
 	return mergeOverlayYAML(yml, map[string]map[string][]string{
-		"project": {"managedPackageDependencies": managed, "dependencyPaths": dependencyPaths},
+		"project": {"managedPackageDependencies": managed, "dependencyPaths": dependencyPaths, "externalNamespaces": cfg.ExternalNamespaces},
 		"org":     {"features": cfg.Features}, "test": {"permissionSets": cfg.PermissionSets},
-	})
+	}, cfg.UserLocale)
 }
 
-func mergeOverlayYAML(path string, additions map[string]map[string][]string) error {
+func mergeOverlayYAML(path string, additions map[string]map[string][]string, locale string) error {
 	config := map[string]any{}
 	data, err := os.ReadFile(path)
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -479,6 +484,29 @@ func mergeOverlayYAML(path string, additions map[string]map[string][]string) err
 			}
 			m[key] = values
 		}
+	}
+	if locale != "" {
+		if config["test"] == nil {
+			config["test"] = map[string]any{}
+		}
+		test, ok := config["test"].(map[string]any)
+		if !ok {
+			return fmt.Errorf("glade.yml test is not a mapping")
+		}
+		if test["user"] == nil {
+			test["user"] = map[string]any{}
+		}
+		user, ok := test["user"].(map[string]any)
+		if !ok {
+			return fmt.Errorf("glade.yml test.user is not a mapping")
+		}
+		if old, ok := user["locale"]; ok {
+			s, valid := old.(string)
+			if !valid || s != locale {
+				return fmt.Errorf("glade.yml test.user.locale conflicts with overlay")
+			}
+		}
+		user["locale"] = locale
 	}
 	data, err = yaml.Marshal(config)
 	if err != nil {

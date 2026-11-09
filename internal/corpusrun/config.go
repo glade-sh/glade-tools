@@ -35,8 +35,11 @@ func (p *PathList) UnmarshalJSON(data []byte) error {
 
 // OverlayConfig is the glade.yml content the runner writes into the copy.
 type OverlayConfig struct {
-	Features       []string `json:"features,omitempty"`
-	PermissionSets []string `json:"permissionSets,omitempty"`
+	Features           []string `json:"features,omitempty"`
+	PermissionSets     []string `json:"permissionSets,omitempty"`
+	ExternalNamespaces []string `json:"externalNamespaces,omitempty"`
+	ProjectNamespace   *string  `json:"projectNamespace,omitempty"`
+	UserLocale         string   `json:"userLocale,omitempty"`
 }
 
 // Overlay is what the runner adds to a clone before it runs.
