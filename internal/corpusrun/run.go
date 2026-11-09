@@ -225,7 +225,7 @@ func gitHead(ctx context.Context, dir string) (string, error) {
 }
 
 // runGlade runs the binary and returns stdout. A non-zero exit is normal when
-// tests fail, so only a missing start, a timeout or empty output is an error.
+// tests fail with exit 1, while a higher exit code is an infrastructure error.
 func runGlade(ctx context.Context, opts Options, dir string, args ...string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(ctx, opts.StepTimeout)
 	defer cancel()
@@ -240,6 +240,9 @@ func runGlade(ctx context.Context, opts Options, dir string, args ...string) ([]
 	var exit *exec.ExitError
 	if err != nil && !errors.As(err, &exit) {
 		return nil, err
+	}
+	if exit != nil && exit.ExitCode() != 1 {
+		return nil, fmt.Errorf("glade exited with status %d", exit.ExitCode())
 	}
 	return stdout.Bytes(), nil
 }
