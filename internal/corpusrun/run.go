@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 // Options configures Run.
@@ -385,33 +387,69 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 	}
 	cfg := repo.Overlay.Config
 	yml := filepath.Join(root, "glade.yml")
-	if _, err := os.Stat(yml); err == nil && (len(managed) > 0 || len(dependencyPaths) > 0) {
-		return fmt.Errorf("cannot apply dependency overlay to existing glade.yml")
-	} else if err == nil || (len(cfg.Features) == 0 && len(cfg.PermissionSets) == 0 && len(managed) == 0 && len(dependencyPaths) == 0) {
+	if len(cfg.Features) == 0 && len(cfg.PermissionSets) == 0 && len(managed) == 0 && len(dependencyPaths) == 0 {
 		return nil
 	}
-	var b strings.Builder
-	if len(managed) > 0 || len(dependencyPaths) > 0 {
-		b.WriteString("project:\n")
-		if len(managed) > 0 {
-			b.WriteString("  managedPackageDependencies: " + jsonList(managed) + "\n")
-		}
-		if len(dependencyPaths) > 0 {
-			b.WriteString("  dependencyPaths: " + jsonList(dependencyPaths) + "\n")
-		}
-	}
-	if len(cfg.Features) > 0 {
-		b.WriteString("org:\n  features: " + jsonList(cfg.Features) + "\n")
-	}
-	if len(cfg.PermissionSets) > 0 {
-		b.WriteString("test:\n  permissionSets: " + jsonList(cfg.PermissionSets) + "\n")
-	}
-	return os.WriteFile(yml, []byte(b.String()), 0o644)
+	return mergeOverlayYAML(yml, map[string]map[string][]string{
+		"project": {"managedPackageDependencies": managed, "dependencyPaths": dependencyPaths},
+		"org":     {"features": cfg.Features}, "test": {"permissionSets": cfg.PermissionSets},
+	})
 }
 
-func jsonList(items []string) string {
-	data, _ := json.Marshal(items)
-	return string(data)
+func mergeOverlayYAML(path string, additions map[string]map[string][]string) error {
+	config := map[string]any{}
+	data, err := os.ReadFile(path)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	if err == nil {
+		if err := yaml.Unmarshal(data, &config); err != nil {
+			return fmt.Errorf("parse glade.yml: %w", err)
+		}
+		if config == nil {
+			config = map[string]any{}
+		}
+	}
+	for section, fields := range additions {
+		for key, items := range fields {
+			if len(items) == 0 {
+				continue
+			}
+			if config[section] == nil {
+				config[section] = map[string]any{}
+			}
+			m, ok := config[section].(map[string]any)
+			if !ok {
+				return fmt.Errorf("glade.yml %s is not a mapping", section)
+			}
+			var values []any
+			if m[key] != nil {
+				var ok bool
+				values, ok = m[key].([]any)
+				if !ok {
+					return fmt.Errorf("glade.yml %s.%s is not a list", section, key)
+				}
+			}
+			for _, item := range items {
+				found := false
+				for _, existing := range values {
+					if s, ok := existing.(string); ok && s == item {
+						found = true
+						break
+					}
+				}
+				if !found {
+					values = append(values, item)
+				}
+			}
+			m[key] = values
+		}
+	}
+	data, err = yaml.Marshal(config)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, data, 0644)
 }
 
 func projectDirs(src string) []string {
