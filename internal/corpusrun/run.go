@@ -73,6 +73,9 @@ func infra(repo Repo, format string, args ...any) RepoResult {
 }
 
 func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scratch string) RepoResult {
+	if repo.Blocked != "" {
+		return infra(repo, "blocked: %s", repo.Blocked)
+	}
 	src, ok := config.ResolvePath(repo.Clone)
 	if !ok {
 		return infra(repo, "clone not found")

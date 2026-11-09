@@ -60,6 +60,7 @@ type DepSource struct {
 // Repo is one pinned corpus repo.
 type Repo struct {
 	Name      string   `json:"name"`
+	Blocked   string   `json:"blocked,omitempty"`
 	Tier      string   `json:"tier"`
 	Clone     PathList `json:"clone"`
 	Pin       string   `json:"pin"`
