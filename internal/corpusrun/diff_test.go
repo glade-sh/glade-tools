@@ -433,3 +433,24 @@ func TestCompareRejectsUnclassifiedGoldenEntries(t *testing.T) {
 		})
 	}
 }
+
+func TestCompareDetectsAdditionalOverlayChanges(t *testing.T) {
+	for _, kind := range []string{"namespace", "locale", "external"} {
+		t.Run(kind, func(t *testing.T) {
+			golden := baseGolden()
+			observed := baseObserved()
+			switch kind {
+			case "namespace":
+				s := ""
+				observed.Overlay.Config.ProjectNamespace = &s
+			case "locale":
+				observed.Overlay.Config.UserLocale = "fr_CA"
+			case "external":
+				observed.Overlay.Config.ExternalNamespaces = []string{"sample"}
+			}
+			if got := Compare(golden, observed); got.Infra == "" {
+				t.Fatalf("overlay change accepted: %+v", got)
+			}
+		})
+	}
+}
