@@ -454,3 +454,13 @@ func TestCompareDetectsAdditionalOverlayChanges(t *testing.T) {
 		})
 	}
 }
+
+func TestCompareDetectsDependencyPinChanges(t *testing.T) {
+	g := baseGolden()
+	observed := baseObserved()
+	g.Overlay.DependencyPins = map[string]string{"dependency": "git:aaa"}
+	observed.Overlay.DependencyPins = map[string]string{"dependency": "git:bbb"}
+	if got := Compare(g, observed); got.Infra == "" {
+		t.Fatalf("dependency pin change accepted: %+v", got)
+	}
+}
