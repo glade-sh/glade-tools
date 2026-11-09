@@ -3,6 +3,7 @@ package corpusrun
 import (
 	"encoding/json"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -176,5 +177,21 @@ func TestOverlayExplicitAbsentDependency(t *testing.T) {
 	root := t.TempDir()
 	if err := applyOverlay(cfg, cfg.Repos[0], root); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestOverlayRejectsMismatchedDependencyPin(t *testing.T) {
+	root := t.TempDir()
+	dep := t.TempDir()
+	for _, args := range [][]string{{"init", "-q"}, {"-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-q", "--allow-empty", "-m", "initial"}} {
+		cmd := exec.Command("git", append([]string{"-C", dep}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git: %v %s", err, out)
+		}
+	}
+	cfg := &Config{DepSources: map[string]DepSource{"sample": {Mode: "source", Paths: PathList{dep}}}}
+	repo := Repo{Overlay: Overlay{Deps: []string{"sample"}, DependencyPins: map[string]string{"sample": "git:wrong"}}}
+	if err := applyOverlay(cfg, repo, root); err == nil || !strings.Contains(err.Error(), "pin") {
+		t.Fatalf("mismatched pin: %v", err)
 	}
 }
