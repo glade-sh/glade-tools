@@ -102,3 +102,27 @@ func TestOverlayProjectDependencyInsideRepo(t *testing.T) {
 		t.Fatalf("project dependency not registered: %s", data)
 	}
 }
+
+func TestOverlayRejectsInvalidDependencyDeclarations(t *testing.T) {
+	t.Run("stub is not declared", func(t *testing.T) {
+		root := t.TempDir()
+		if err := os.WriteFile(filepath.Join(root, "sfdx-project.json"), []byte(`{"packageDirectories":[]}`), 0644); err != nil {
+			t.Fatal(err)
+		}
+		cfg := &Config{DepSources: map[string]DepSource{"sample": {Mode: "stub", Packages: []string{"undeclared"}}}}
+		if err := applyOverlay(cfg, Repo{Overlay: Overlay{Deps: []string{"sample"}}}, root); err == nil {
+			t.Fatal("undeclared stub accepted")
+		}
+	})
+	t.Run("managed namespace is absent", func(t *testing.T) {
+		root := t.TempDir()
+		dep := t.TempDir()
+		if err := os.WriteFile(filepath.Join(dep, "sfdx-project.json"), []byte(`{"packageDirectories":[]}`), 0644); err != nil {
+			t.Fatal(err)
+		}
+		cfg := &Config{DepSources: map[string]DepSource{"sample": {Mode: "managed", Paths: PathList{dep}}}}
+		if err := applyOverlay(cfg, Repo{Overlay: Overlay{Deps: []string{"sample"}}}, root); err == nil {
+			t.Fatal("managed dependency without namespace accepted")
+		}
+	})
+}

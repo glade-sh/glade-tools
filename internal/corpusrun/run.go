@@ -246,10 +246,8 @@ func cloneTree(src, dst string) error {
 	return exec.Command("cp", "-R", src, dst).Run()
 }
 
-// applyOverlay wires source dependencies in as extra package directories and
-// writes glade.yml for features and permission sets, as the v1 sweep did. A
-// dependency whose paths all miss is skipped; managed and stub modes are not
-// supported yet and fail the repo.
+// applyOverlay wires dependencies and merges the requested project settings
+// into the copied project. Missing or invalid dependencies fail closed.
 func applyOverlay(config *Config, repo Repo, root string) error {
 	var extra, managed, dependencyPaths []string
 	for _, name := range repo.Overlay.Deps {
