@@ -92,3 +92,42 @@ func TestVerifyComponentPinsDetectsChanges(t *testing.T) {
 		t.Fatal("escaping component accepted")
 	}
 }
+
+func TestSourceOverlayRejectsSymlinkAndComponentOverlap(t *testing.T) {
+	for _, kind := range []string{"symlink", "component"} {
+		t.Run(kind, func(t *testing.T) {
+			var b bytes.Buffer
+			w := tar.NewWriter(&b)
+			content := []byte("synthetic")
+			if err := w.WriteHeader(&tar.Header{Name: "nested/file.txt", Mode: 0644, Size: int64(len(content))}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := w.Write(content); err != nil {
+				t.Fatal(err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatal(err)
+			}
+			dir := t.TempDir()
+			root := filepath.Join(dir, "root")
+			if err := os.Mkdir(root, 0755); err != nil {
+				t.Fatal(err)
+			}
+			archive := filepath.Join(dir, "overlay.tar")
+			if err := os.WriteFile(archive, b.Bytes(), 0600); err != nil {
+				t.Fatal(err)
+			}
+			components := map[string]string{}
+			if kind == "symlink" {
+				if err := os.Symlink(t.TempDir(), filepath.Join(root, "nested")); err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				components["nested"] = "sample"
+			}
+			if err := applySourceArchive(root, archive, fmt.Sprintf("%x", sha256.Sum256(b.Bytes())), components); err == nil {
+				t.Fatal("unsafe archive accepted")
+			}
+		})
+	}
+}
