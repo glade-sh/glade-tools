@@ -195,3 +195,43 @@ func TestOverlayRejectsMismatchedDependencyPin(t *testing.T) {
 		t.Fatalf("mismatched pin: %v", err)
 	}
 }
+
+func TestOverlayPinnedDependencyRequiresCleanSource(t *testing.T) {
+	dep := t.TempDir()
+	source := filepath.Join(dep, "src")
+	if err := os.Mkdir(source, 0755); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(source, "Example.cls")
+	if err := os.WriteFile(path, []byte("original"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{{"init", "-q"}, {"add", "src/Example.cls"}, {"-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-q", "-m", "initial"}} {
+		cmd := exec.Command("git", append([]string{"-C", dep}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git: %v %s", err, out)
+		}
+	}
+	out, err := exec.Command("git", "-C", dep, "rev-parse", "HEAD").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg := &Config{DepSources: map[string]DepSource{"sample": {Mode: "source", Paths: PathList{dep}, Dirs: []string{"src"}}}}
+	repo := Repo{Overlay: Overlay{Deps: []string{"sample"}, DependencyPins: map[string]string{"sample": "git:" + strings.TrimSpace(string(out))}}}
+	makeRoot := func() string {
+		root := t.TempDir()
+		if err := os.WriteFile(filepath.Join(root, "sfdx-project.json"), []byte(`{"packageDirectories":[]}`), 0644); err != nil {
+			t.Fatal(err)
+		}
+		return root
+	}
+	if err := applyOverlay(cfg, repo, makeRoot()); err != nil {
+		t.Fatalf("clean pinned dependency: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("changed"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := applyOverlay(cfg, repo, makeRoot()); err == nil || !strings.Contains(err.Error(), "not clean") {
+		t.Fatalf("dirty pinned dependency accepted: %v", err)
+	}
+}
