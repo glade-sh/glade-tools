@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -53,5 +54,41 @@ func TestSourceOverlayVerifiesAndConfinesArchive(t *testing.T) {
 				t.Fatal("wrong archive hash accepted")
 			}
 		})
+	}
+}
+
+func TestVerifyComponentPinsDetectsChanges(t *testing.T) {
+	root := t.TempDir()
+	component := filepath.Join(root, "component")
+	if err := os.Mkdir(component, 0755); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(component, "Example.cls")
+	if err := os.WriteFile(path, []byte("synthetic"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{{"init", "-q"}, {"add", "Example.cls"}, {"-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-q", "-m", "initial"}} {
+		cmd := exec.Command("git", append([]string{"-C", component}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git: %v %s", err, out)
+		}
+	}
+	out, err := exec.Command("git", "-C", component, "rev-parse", "HEAD").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	pins := map[string]string{"component": strings.TrimSpace(string(out))}
+	if err := verifyComponentPins(root, pins); err != nil {
+		t.Fatalf("clean: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("changed"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyComponentPins(root, pins); err == nil {
+		t.Fatal("dirty component accepted")
+	}
+	pins["../outside"] = "bad"
+	if err := verifyComponentPins(root, pins); err == nil {
+		t.Fatal("escaping component accepted")
 	}
 }
