@@ -54,6 +54,7 @@ type DepSource struct {
 	Packages    []string `json:"packages,omitempty"`
 	Namespace   string   `json:"namespace,omitempty"`
 	MarkDefault []string `json:"markDefault,omitempty"`
+	RepoPath    string   `json:"repoPath,omitempty"`
 }
 
 // Repo is one pinned corpus repo.
@@ -101,7 +102,7 @@ func LoadConfig(dir string) (*Config, error) {
 			return nil, fmt.Errorf("%s: invalid dependency name %q", TiersFile, name)
 		}
 		switch dep.Mode {
-		case "", "source", "managed", "stub":
+		case "", "source", "managed", "stub", "project":
 		default:
 			return nil, fmt.Errorf("%s: dependency %q has unknown mode %q", TiersFile, name, dep.Mode)
 		}

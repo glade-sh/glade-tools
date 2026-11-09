@@ -302,8 +302,35 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 			continue
 		}
 		src, ok := config.ResolvePath(spec.Paths)
+		if spec.RepoPath != "" {
+			candidate := filepath.Join(root, spec.RepoPath)
+			resolvedRoot, err := filepath.EvalSymlinks(root)
+			if err != nil {
+				return err
+			}
+			resolved, err := filepath.EvalSymlinks(candidate)
+			if err != nil {
+				return fmt.Errorf("dependency %q repoPath unavailable: %w", name, err)
+			}
+			relative, err := filepath.Rel(resolvedRoot, resolved)
+			if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) || filepath.IsAbs(spec.RepoPath) {
+				return fmt.Errorf("dependency %q repoPath escapes the project", name)
+			}
+			src, ok = resolved, true
+		}
 		if !ok {
 			return fmt.Errorf("dependency %q source unavailable", name)
+		}
+		if spec.Mode == "project" {
+			relative, err := filepath.Rel(src, dest)
+			if err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+				return fmt.Errorf("dependency %q destination lies inside its source", name)
+			}
+			if err := cloneTree(src, dest); err != nil {
+				return err
+			}
+			dependencyPaths = append(dependencyPaths, rel)
+			continue
 		}
 		if spec.Mode == "managed" {
 			if err := cloneTree(src, dest); err != nil {
