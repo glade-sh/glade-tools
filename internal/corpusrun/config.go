@@ -44,9 +44,11 @@ type OverlayConfig struct {
 
 // Overlay is what the runner adds to a clone before it runs.
 type Overlay struct {
-	Deps           []string          `json:"deps,omitempty"`
-	Config         OverlayConfig     `json:"config"`
-	DependencyPins map[string]string `json:"dependencyPins,omitempty"`
+	Deps                []string          `json:"deps,omitempty"`
+	Config              OverlayConfig     `json:"config"`
+	DependencyPins      map[string]string `json:"dependencyPins,omitempty"`
+	ComponentPins       map[string]string `json:"componentPins,omitempty"`
+	SourceArchiveSHA256 string            `json:"sourceArchiveSha256,omitempty"`
 }
 
 // DepSource says where a dependency's source lives.
@@ -63,14 +65,15 @@ type DepSource struct {
 
 // Repo is one pinned corpus repo.
 type Repo struct {
-	Name      string   `json:"name"`
-	Blocked   string   `json:"blocked,omitempty"`
-	Tier      string   `json:"tier"`
-	Clone     PathList `json:"clone"`
-	Pin       string   `json:"pin"`
-	SourceAPI string   `json:"sourceApi,omitempty"`
-	License   string   `json:"license,omitempty"`
-	Overlay   Overlay  `json:"overlay"`
+	Name          string   `json:"name"`
+	Blocked       string   `json:"blocked,omitempty"`
+	SourceArchive string   `json:"sourceArchive,omitempty"`
+	Tier          string   `json:"tier"`
+	Clone         PathList `json:"clone"`
+	Pin           string   `json:"pin"`
+	SourceAPI     string   `json:"sourceApi,omitempty"`
+	License       string   `json:"license,omitempty"`
+	Overlay       Overlay  `json:"overlay"`
 }
 
 // Config is the parsed tiers file.

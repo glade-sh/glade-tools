@@ -92,10 +92,29 @@ func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scrat
 	if len(status) != 0 {
 		return infra(repo, "clone is dirty")
 	}
+	if err := verifyComponentPins(src, repo.Overlay.ComponentPins); err != nil {
+		return infra(repo, "components: %v", err)
+	}
 	root := filepath.Join(scratch, repo.Name)
 	defer os.RemoveAll(root)
 	if err := cloneTree(src, root); err != nil {
 		return infra(repo, "copy failed: %v", err)
+	}
+	if err := verifyComponentPins(root, repo.Overlay.ComponentPins); err != nil {
+		return infra(repo, "copied components: %v", err)
+	}
+	if repo.SourceArchive != "" || repo.Overlay.SourceArchiveSHA256 != "" {
+		archive := repo.SourceArchive
+		if strings.HasPrefix(archive, "~/") {
+			if home, err := os.UserHomeDir(); err == nil {
+				archive = filepath.Join(home, archive[2:])
+			}
+		} else if !filepath.IsAbs(archive) {
+			archive = filepath.Join(config.dir, archive)
+		}
+		if err := applySourceArchive(root, archive, repo.Overlay.SourceArchiveSHA256, repo.Overlay.ComponentPins); err != nil {
+			return infra(repo, "source overlay: %v", err)
+		}
 	}
 	if err := applyOverlay(config, repo, root); err != nil {
 		return infra(repo, "overlay: %v", err)
