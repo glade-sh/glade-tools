@@ -71,3 +71,29 @@ esac
 		})
 	}
 }
+
+func TestRunRepoRejectsUnavailableProjectDependency(t *testing.T) {
+	root := t.TempDir()
+	source := filepath.Join(root, "source")
+	if err := os.Mkdir(source, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(source, "glade.yml"), []byte("project:\n  managedPackageDependencies: [\"sample:../missing\"]\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{{"init", "-q"}, {"add", "glade.yml"}, {"-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-q", "-m", "initial"}} {
+		cmd := exec.Command("git", append([]string{"-C", source}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git: %v %s", err, out)
+		}
+	}
+	sha, err := exec.Command("git", "-C", source, "rev-parse", "HEAD").Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	repo := Repo{Name: "sample", Clone: PathList{source}, Pin: strings.TrimSpace(string(sha))}
+	got := runRepo(context.Background(), &Config{dir: root}, repo, Options{Glade: "missing", StepTimeout: time.Minute}, filepath.Join(root, "scratch"))
+	if got.Complete || !strings.HasPrefix(got.Diff.Infra, "project dependencies:") {
+		t.Fatalf("unavailable dependency: %+v", got)
+	}
+}
