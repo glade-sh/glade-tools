@@ -72,3 +72,27 @@ func TestManagedOverlayAcceptsMetadataWithoutManifest(t *testing.T) {
 		})
 	}
 }
+
+func TestManagedOverlayRejectsUnsafeManifestlessSources(t *testing.T) {
+	for _, tc := range []struct{ name, namespace, dir string }{
+		{"missing namespace", "", "."},
+		{"escaping directory", "example", "../outside"},
+		{"missing directory", "example", "absent"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			base := t.TempDir()
+			root, dep := filepath.Join(base, "root"), filepath.Join(base, "dep")
+			if err := os.MkdirAll(root, 0755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.MkdirAll(dep, 0755); err != nil {
+				t.Fatal(err)
+			}
+			spec := DepSource{Mode: "managed", Namespace: tc.namespace, Paths: PathList{dep}, Dirs: []string{tc.dir}}
+			cfg := &Config{DepSources: map[string]DepSource{"sample": spec}}
+			if err := applyOverlay(cfg, Repo{Overlay: Overlay{Deps: []string{"sample"}}}, root); err == nil {
+				t.Fatal("unsafe source accepted")
+			}
+		})
+	}
+}
