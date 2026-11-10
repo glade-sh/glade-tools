@@ -46,3 +46,11 @@ class UpdateWorkflow(unittest.TestCase):
         self.assertEqual(result['fixed'],['A'])
         self.assertEqual(result['new'],['C'])
         self.assertEqual(ops.compare_results({'failed':2},{'failed_tests':['C'],'failed':1})['mode'],'counts')
+
+    def test_compare_details_classifies_changed_files(self):
+        data = {'commits':[{'sha':'c'*40,'commit':{'message':'Change','author':{'date':'2026-01-01'}},'html_url':'https://example.invalid/commit'}],
+                'files':[{'filename':'src/Thing.cls'}, {'filename':'ui/main.js','status':'modified'}, {'filename':'pages/home.page'}, {'filename':'meta/object.object-meta.xml'}, {'filename':'README.md'}]}
+        out=ops.compare_details(data)
+        self.assertEqual({k:len(v) for k,v in out['files'].items()}, {'Apex':1,'LWC':1,'Visualforce':1,'Metadata':1,'Other':1})
+        self.assertTrue(out['touches_code'])
+        self.assertFalse(ops.compare_details({'files':[{'filename':'README.md'}]})['touches_code'])
