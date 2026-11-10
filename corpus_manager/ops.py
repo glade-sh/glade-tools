@@ -132,7 +132,6 @@ print(json.dumps({'rows':rows,'errors':errors}))
 SNAPSHOT = r'''
 import json, os, shutil, signal, socket, subprocess, tempfile, time, uuid
 from pathlib import Path
-if socket.gethostname() == DATA.get('local_node'): raise ValueError('Cannot clone onto the dashboard host')
 root = Path(DATA['root']).expanduser().resolve()
 if 'BACKUP' in root.parts:
     raise ValueError('Protected directory')
@@ -176,6 +175,7 @@ class Operations:
         self.github = GitHub()
         self.tiers_snapshot = lambda: {"repos": []}
         self.tier_entry = lambda repo, entries: None
+        self.tier_ambiguous = lambda repo, entries: False
 
     @staticmethod
     def is_private(repo):
@@ -242,6 +242,9 @@ class Operations:
         try:
             if self.is_private(repo):
                 raise ValueError("Private checkout; GitHub was not contacted.")
+            entries = self.tiers_snapshot().get("repos", [])
+            if self.tier_ambiguous(repo, entries):
+                raise ValueError("Ambiguous tiers entry; upstream comparison requires a unique pin.")
             url = repo.get("url") or ""
             if not url:
                 candidate = str(repo.get("name") or "").replace("__", "/")
@@ -254,7 +257,7 @@ class Operations:
             commit = self.github.get("repos/" + name + "/commits/" + urllib.parse.quote(branch, safe=""))
             upstream = {"status": "unknown", "checked_at": now(), "sha": commit["sha"], "default_branch": branch, "stars": meta["stargazers_count"], "pushed_at": meta["pushed_at"], "archived": meta["archived"], "size_kb": meta["size"], "description": meta.get("description") or ""}
             location = next((x for x in repo["locations"] if x["id"] == repo.get("tracked_location_id")), None)
-            entry = self.tier_entry(repo, self.tiers_snapshot().get("repos", [])) or {}
+            entry = self.tier_entry(repo, entries) or {}
             base = entry.get("pin") or (location or {}).get("head")
             if base:
                 upstream["base_sha"] = base
@@ -263,12 +266,18 @@ class Operations:
                 if base == commit["sha"]:
                     upstream.update(status="current", behind=0)
                 else:
-                    comparison = self.github.get("repos/" + name + "/compare/" + base + "..." + commit["sha"], {"per_page": 1})
+                    previous = repo.get("upstream", {})
+                    cached = previous.get("comparison") if previous.get("base_sha") == base and previous.get("sha") == commit["sha"] else None
+                    comparison = cached or self.github.get("repos/" + name + "/compare/" + base + "..." + commit["sha"], {"per_page": 100})
+                    upstream["comparison"] = comparison
+                    upstream["changes"] = compare_details(comparison)
                     state = comparison["status"]
                     upstream.update(status={"ahead": "updates", "identical": "current", "diverged": "diverged", "behind": "local-ahead"}.get(state, "unknown"), behind=comparison.get("ahead_by", 0), compare_url=comparison["html_url"])
             else:
                 upstream["status"] = "uncloned"
             repo = self.store.get("repositories", repo_id)
+            if repo.get("upstream", {}).get("sha") != upstream.get("sha"):
+                self.store.event("upstream observed", repo_id, upstream.get("sha", ""))
             repo["upstream"] = upstream
             if not repo.get("url"):
                 repo["url"] = "https://github.com/" + name
@@ -346,17 +355,41 @@ class Operations:
 
     def snapshot(self, repo_id, host_id):
         host = self.store.get("hosts", host_id)
-        if not host.get("ssh") or not host.get("managed_root"):
-            raise ValueError("Choose a remote host with a managed snapshot directory; corpus payloads are not copied to this Mac.")
+        if not host.get("managed_root"):
+            raise ValueError("Choose a host with a managed checkout directory.")
+        if "casper" in (host.get("ssh") or "").lower() and not host["managed_root"].startswith("/Volumes/Photos/"):
+            raise ValueError("Casper managed checkouts must stay under /Volumes/Photos.")
         self.check(repo_id)
         repo = self.store.get("repositories", repo_id)
         up = repo["upstream"]
         result = host_python(host, SNAPSHOT, {"root": host["managed_root"], "url": repo["url"], "name": github_name(repo["url"]), "sha": up["sha"], "size_kb": up.get("size_kb", 0), "local_node": socket.gethostname()}, timeout=900)
-        result.update(id=identifier(host_id, result["path"]), host=host_id, scanned_at=now(), managed=True)
+        result.update(id=identifier(host_id, result["path"]), host=host_id, scanned_at=now(), pulled_at=now(), managed=True, pulled=True, tested=False)
         repo = self.store.get("repositories", repo_id)
         repo["locations"].append(result)
-        repo["tracked_location_id"] = result["id"]
-        repo["upstream"].update(status="current", behind=0, base_sha=result["head"], base_location_id=result["id"])
         self.store.put("repositories", repo)
-        self.store.event("snapshot prepared", repo_id, result["head"])
-        return "Prepared a pinned checkout on the remote host. Existing checkouts and runs were preserved."
+        self.store.event("pull", repo_id, result["head"])
+        return "Prepared an untested checkout. The tracked checkout and pin remain unchanged."
+
+
+def compare_results(baseline, update):
+    result = {"mode": "counts", "baseline": baseline, "update": update}
+    if isinstance(baseline.get("failed_tests"), list) and isinstance(update.get("failed_tests"), list):
+        before, after = set(baseline["failed_tests"]), set(update["failed_tests"])
+        result.update(mode="tests", fixed=sorted(before-after), new=sorted(after-before))
+    return result
+
+
+def compare_details(comparison):
+    groups = {name: [] for name in ("Apex", "LWC", "Visualforce", "Metadata", "Other")}
+    files = comparison.get("files", [])
+    for row in files:
+        name = str(row.get("filename", ""))
+        lower = name.lower()
+        if lower.endswith((".cls", ".trigger")): group = "Apex"
+        elif "/lwc/" in "/" + lower or lower.endswith((".js", ".html", ".css")): group = "LWC"
+        elif lower.endswith((".page", ".component")): group = "Visualforce"
+        elif lower.endswith((".xml", ".object", ".field")): group = "Metadata"
+        else: group = "Other"
+        groups[group].append({"name": name, "status": row.get("status", "")})
+    commits = [{"sha": row.get("sha"), "message": (row.get("commit", {}).get("message") or "").split("\n")[0], "date": row.get("commit", {}).get("author", {}).get("date"), "url": row.get("html_url")} for row in comparison.get("commits", [])]
+    return {"commits": commits, "files": groups, "touches_code": any(groups[k] for k in ("Apex", "LWC", "Visualforce", "Metadata")), "incomplete": len(files) >= 300 or len(commits) < comparison.get("ahead_by", len(commits))}

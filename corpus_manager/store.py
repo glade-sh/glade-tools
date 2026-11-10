@@ -78,7 +78,8 @@ class Store:
             if not full:
                 repo["runs"] = repo["runs"]
         data["runs"].sort(key=lambda x: x.get("started_at") or "", reverse=True)
-        data["jobs"] = data["jobs"][-40:]
+        jobs = data["jobs"]
+        data["jobs"] = [j for j in jobs[:-40] if j.get("status") == "failed" and not j.get("dismissed")] + jobs[-40:]
         data["events"] = data["events"][-100:]
         data["settings"] = {"data_directory": str(self.directory), "automatic_checks": False, "total_runs": sum(r.get("phase") == "test" for r in data["runs"])}
         if not full:

@@ -27,6 +27,7 @@ class App:
         self.ops = Operations(self.store)
         self.ops.tiers_snapshot = self.tiers_snapshot
         self.ops.tier_entry = self.tier_entry
+        self.ops.tier_ambiguous = self.tier_ambiguous
         self.token = secrets.token_urlsafe(32)
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="corpus")
         self.job_context = threading.local()
@@ -86,14 +87,33 @@ class App:
             return {"path": locals().get("path", ""), "repos": [], "revision": "", "error": str(exc)}
 
     @staticmethod
-    def tier_entry(repo, entries):
+    def repo_tier_names(repo):
         names = {str(repo.get("name") or "").lower().replace("/", "__")}
         names.update(Path(x.get("path", "")).name.lower() for x in repo.get("locations", []))
-        matches = [x for x in entries if str(x.get("name", "")).lower() in names]
-        return matches[0] if len(matches) == 1 else None
+        names.discard("")
+        return names
 
-    def move_tier(self, repo, tier, revision):
-        if tier not in ("A", "B", "C", "unassigned"):
+    def tier_index(self, repos=None):
+        index = {}
+        for repo in self.store.all("repositories") if repos is None else repos:
+            for name in self.repo_tier_names(repo):
+                index.setdefault(name, set()).add(repo["id"])
+        return index
+
+    def tier_entry(self, repo, entries, index=None):
+        names = self.repo_tier_names(repo)
+        matches = [x for x in entries if str(x.get("name", "")).lower() in names]
+        index = self.tier_index() if index is None else index
+        if len(matches) != 1 or len(index.get(str(matches[0].get("name", "")).lower(), ())) != 1:
+            return None
+        return matches[0]
+
+    def tier_ambiguous(self, repo, entries):
+        possible = [x for x in entries if str(x.get("name", "")).lower() in self.repo_tier_names(repo)]
+        return bool(possible) and self.tier_entry(repo, entries) is None
+
+    def move_tier(self, repo, tier, revision, pin=None):
+        if pin is None and tier not in ("A", "B", "C", "unassigned"):
             raise ValueError("Invalid group.")
         with self.store.lock:
             snapshot = self.tiers_snapshot()
@@ -107,12 +127,22 @@ class App:
                 raise ValueError("The tiers file changed on disk. Reload and try again.")
             doc = json.loads(raw)
             entry = self.tier_entry(repo, doc["repos"])
-            if tier == "unassigned":
+            possible = [x for x in doc["repos"] if str(x.get("name", "")).lower() in self.repo_tier_names(repo)]
+            if possible and not entry:
+                raise ValueError("Ambiguous tiers entry; resolve its identity before editing.")
+            if pin is not None:
+                if not entry:
+                    raise ValueError("This repository has no unambiguous tiers entry.")
+                entry["pin"] = pin
+                entry["blocked"] = "needs golden; rebuild in a reviewed PR"
+            elif tier == "unassigned":
                 if entry: doc["repos"].remove(entry)
             elif entry:
                 entry["tier"] = tier
             else:
-                loc = next((x for x in repo.get("locations", []) if x.get("id") == repo.get("tracked_location_id")), None) or next(iter(repo.get("locations", [])), {})
+                loc = next((x for x in repo.get("locations", []) if x.get("id") == repo.get("tracked_location_id")), None)
+                if not loc or not loc.get("path") or not loc.get("head"):
+                    raise ValueError("Track a checkout with a known revision before assigning a new group.")
                 doc["repos"].append({"name": str(repo.get("name") or Path(loc.get("path", "")).name).replace("/", "__"), "tier": tier, "clone": loc.get("path", ""), "pin": loc.get("head") or "", "overlay": {}, "blocked": "added from dashboard; needs golden"})
             fd, temporary = tempfile.mkstemp(prefix=".tiers-", dir=path.parent)
             try:
@@ -127,25 +157,32 @@ class App:
                 os.replace(temporary, path)
             finally:
                 if os.path.exists(temporary): os.unlink(temporary)
+        self.store.event("pin accepted" if pin is not None else "tier move", repo["id"], pin if pin is not None else tier)
         return {"ok": True}
+
+    def accept_pin(self, repo, pin, revision):
+        if not isinstance(pin, str) or not __import__("re").fullmatch(r"[0-9a-fA-F]{40}", pin):
+            raise ValueError("A full checkout SHA is required.")
+        return self.move_tier(repo, None, revision, pin=pin)
 
     def state(self, full=False):
         data = self.store.state(full=full)
         tiers = self.tiers_snapshot()
         data["settings"]["tiers"] = tiers
+        tier_index = self.tier_index(data["repositories"])
         for repo in data["repositories"]:
             repo["private"] = self.ops.is_private(repo)
             if repo["private"] and not repo.get("url"):
                 repo["upstream"] = {"status": "private"}
             elif not repo.get("url") and "__" not in repo.get("name", ""):
                 repo["upstream"] = {"status": "no-remote"}
-            entry = self.tier_entry(repo, tiers["repos"])
+            entry = self.tier_entry(repo, tiers["repos"], tier_index)
             repo["tier"] = entry.get("tier", "unassigned") if entry else "unassigned"
             repo["pin"] = entry.get("pin") if entry else None
         return data
 
-    def job(self, kind, function, *args):
-        job = self.store.put("jobs", {"kind": kind, "status": "queued", "message": "Waiting for the current operation.", "started_at": now()})
+    def job(self, kind, function, *args, host=None):
+        job = self.store.put("jobs", {"kind": kind, "host": host, "status": "queued", "message": "Waiting for the current operation.", "started_at": now()})
         def run():
             self.job_context.current = job
             job.update(status="running", message="Working…")
@@ -284,6 +321,19 @@ print(json.dumps(rows))
             return {"ok": True}
         if path == "/api/scan":
             return self.job("Inventory", self.ops.scan, data.get("host"))
+        if path == "/api/pull-many":
+            ids = data.get("repo_ids")
+            host = data.get("host")
+            if not isinstance(ids, list) or not ids or len(ids) > 500:
+                raise ValueError("Select between one and 500 repositories.")
+            def pull_many():
+                errors = 0
+                for i, repo_id in enumerate(ids):
+                    self.progress("Pulling %s of %s" % (i + 1, len(ids)))
+                    try: self.ops.snapshot(repo_id, host)
+                    except ValueError: errors += 1
+                return "Prepared %s checkouts; %s failed." % (len(ids)-errors, errors)
+            return self.job("Pull checkouts", pull_many, host=host)
         if path == "/api/check":
             return self.job("Upstream checks", self.ops.check_all)
         if path == "/api/import":
@@ -312,15 +362,25 @@ print(json.dumps(rows))
                 else:
                     row[key] = None
             row.update(repo_id=repo["id"], repo_name=repo["name"], provenance="Manually recorded; not an executed validation", started_at=row.get("started_at") or now())
+            self.store.event("test recorded", repo["id"], row.get("status") or "unknown")
             return self.store.put("runs", row)
+        if len(parts) == 4 and parts[1] == "jobs" and parts[3] == "dismiss":
+            job = self.store.get("jobs", parts[2])
+            if job.get("status") != "failed": raise ValueError("Only failed jobs can be dismissed.")
+            job["dismissed"] = True
+            return self.store.put("jobs", job)
         if len(parts) >= 3 and parts[1] == "repos":
             repo = self.store.get("repositories", parts[2])
+            if len(parts) == 4 and parts[3] == "accept-pin":
+                loc = next((x for x in repo.get("locations", []) if x.get("id") == data.get("location_id") and x.get("pulled")), None)
+                if not loc: raise ValueError("Choose a dashboard-created checkout.")
+                return self.accept_pin(repo, loc.get("head"), data.get("revision"))
             if len(parts) == 4 and parts[3] == "tier":
                 return self.move_tier(repo, data.get("tier"), data.get("revision"))
             if len(parts) == 4 and parts[3] == "check":
                 return self.job("Upstream check", self.ops.check, repo["id"])
             if len(parts) == 4 and parts[3] == "snapshot":
-                return self.job("Prepare checkout", self.ops.snapshot, repo["id"], data.get("host"))
+                return self.job("Prepare checkout", self.ops.snapshot, repo["id"], data.get("host"), host=data.get("host"))
             if len(parts) == 3:
                 for key in ("notes", "status", "tags", "tracked_location_id"):
                     if key in data:
@@ -334,7 +394,7 @@ print(json.dumps(rows))
                         raise ValueError("Choose one of this repository's known checkouts.")
                     repo["upstream"] = {"status": "unknown"}
                 self.store.put("repositories", repo)
-                self.store.event("catalog updated", repo["id"], repo["status"])
+                self.store.event("note updated" if "notes" in data else "catalog updated", repo["id"], "" if "notes" in data else repo["status"])
                 return repo
         if len(parts) >= 3 and parts[1] == "queries":
             query = self.store.get("queries", parts[2])
@@ -348,7 +408,8 @@ print(json.dumps(rows))
             if len(parts) == 4 and parts[3] == "project-check":
                 return self.job("Salesforce project check", self.ops.check_candidate, candidate["id"])
             if len(parts) == 4 and parts[3] == "add":
-                self.ops.add(candidate["url"])
+                added = self.ops.add(candidate["url"])
+                self.store.event("candidate added", added["id"])
                 candidate["status"] = "added"
             elif len(parts) == 3 and data.get("status") in ("new", "dismissed"):
                 candidate["status"] = data["status"]

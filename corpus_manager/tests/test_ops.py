@@ -108,8 +108,11 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual(candidate["first_seen"], first_seen)
         self.assertEqual(len(self.store.all("candidates")), 1)
 
-    def test_snapshot_refuses_local_payload_copy(self):
+    def test_snapshot_requires_managed_root(self):
         self.host("local", ssh="")
+        host = self.store.get("hosts", "local")
+        host["managed_root"] = ""
+        self.store.put("hosts", host)
         repo = self.ops.add("synthetic/example")
         with patch.object(self.ops, "check") as check, patch.object(ops, "host_python") as execute:
             with self.assertRaises(ValueError):
@@ -131,7 +134,9 @@ class OperationsTests(unittest.TestCase):
         saved = self.store.get("repositories", repo["id"])
         self.assertEqual(saved["locations"][0], old)
         self.assertEqual(len(saved["locations"]), 2)
-        self.assertEqual(saved["tracked_location_id"], saved["locations"][1]["id"])
+        self.assertNotEqual(saved.get("tracked_location_id"), saved["locations"][1]["id"])
+        self.assertTrue(saved["locations"][1]["pulled"])
+        self.assertEqual(saved["upstream"]["status"], "updates")
         self.assertEqual(self.store.get("runs", "historical"), run)
         self.assertEqual(remote.call_args.args[0]["ssh"], "runner.local")
         self.assertEqual(remote.call_args.args[2]["sha"], "b" * 40)
