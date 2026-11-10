@@ -94,3 +94,16 @@ class UpdateWorkflow(unittest.TestCase):
         self.assertEqual((rows[0]['repo_sha'],rows[0]['glade_sha'],rows[0]['failed_tests']),('b'*40,'c'*40,['Example.test']))
         self.assertEqual(invoke.call_args.args[2]['repo']['pin'],'b'*40)
         self.assertEqual(json.loads(p.read_text())['repos'][0]['pin'],'a'*40)
+
+    def test_delete_refuses_existing_checkout_and_unowned_path(self):
+        with patch.object(ops, 'host_python') as invoke:
+            with self.assertRaises(ValueError): self.app.delete_pull(self.repo['id'], 'old')
+        invoke.assert_not_called()
+
+    def test_keep_pin_records_dismissal_without_modifying_pin(self):
+        self.repo['locations'].append({'id':'pulled','host':'local','path':'/scratch/update','head':'b'*40,'pulled':True})
+        self.app.store.put('repositories',self.repo)
+        self.app.mutate('/api/repos/'+self.repo['id']+'/keep-pin',{'location_id':'pulled'})
+        repo=self.app.store.get('repositories',self.repo['id'])
+        self.assertTrue(repo['locations'][1]['dismissed'])
+        self.assertEqual(repo['tracked_location_id'],'old')
