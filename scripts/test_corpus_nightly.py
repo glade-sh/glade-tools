@@ -40,6 +40,17 @@ class CorpusNightlyTest(unittest.TestCase):
                 log.seek(0)
                 self.assertIn('CORPUS-INFRA', log.read())
 
+    def test_summary_starts_with_verdict_and_rejects_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            report, summary = root / 'run.json', root / 'run.txt'
+            report.write_text(json.dumps({'first': 'CORPUS-NEW 1 in 1 repos', 'exitCode': 1}))
+            self.assertEqual(nightly.write_summary(summary, report, 1), 1)
+            self.assertEqual(summary.read_text().splitlines()[0], 'CORPUS-NEW 1 in 1 repos')
+            summary.unlink()
+            self.assertEqual(nightly.write_summary(summary, report, 0), 2)
+            self.assertTrue(summary.read_text().startswith('CORPUS-INFRA'))
+
     def test_config_fingerprint_covers_golden_contents(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
