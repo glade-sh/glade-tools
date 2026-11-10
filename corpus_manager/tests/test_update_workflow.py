@@ -119,3 +119,10 @@ class UpdateWorkflow(unittest.TestCase):
         self.app.executor.shutdown(wait=True)
         self.assertEqual(ran,[])
         self.assertEqual(self.app.store.get('jobs',second['job'])['status'],'cancelled')
+
+    def test_trend_prefers_complete_observation_over_newer_shard(self):
+        import subprocess
+        source=(Path(__file__).parents[1]/'static'/'app.js').read_text()
+        fn=next(x for x in source.splitlines() if x.startswith('function trendRows('))
+        js=fn+"\nconst r=trendRows({runs:[{phase:'test',gate_label:'g',status:'partial',started_at:'2026-02'},{phase:'test',gate_label:'g',status:'failed',started_at:'2026-01'}]});if(r[0].status!=='failed')process.exit(1);"
+        subprocess.run(['node','-e',js],check=True)
