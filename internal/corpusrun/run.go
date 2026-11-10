@@ -633,11 +633,37 @@ func mergeOverlayYAML(path string, additions map[string]map[string][]string, loc
 		}
 		user["locale"] = locale
 	}
-	data, err = yaml.Marshal(config)
+	var node yaml.Node
+	if err := node.Encode(config); err != nil {
+		return err
+	}
+	inlineScalarLists(&node)
+	data, err = yaml.Marshal(&node)
 	if err != nil {
 		return err
 	}
 	return os.WriteFile(path, data, 0644)
+}
+
+// Glade's configuration parser accepts scalar lists in inline form, rather
+// than the block sequences emitted by yaml.Marshal by default. Keep sequences
+// of mappings in block form for the separate structured-dependency parser.
+func inlineScalarLists(node *yaml.Node) {
+	if node.Kind == yaml.SequenceNode {
+		allScalar := true
+		for _, item := range node.Content {
+			if item.Kind != yaml.ScalarNode {
+				allScalar = false
+				break
+			}
+		}
+		if allScalar {
+			node.Style = yaml.FlowStyle
+		}
+	}
+	for _, child := range node.Content {
+		inlineScalarLists(child)
+	}
 }
 
 func projectDirs(src string) []string {
