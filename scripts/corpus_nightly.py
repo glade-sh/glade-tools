@@ -39,6 +39,10 @@ def preflight(config_dir):
     return {'selected': selected, 'blocked': blocked, 'missing': missing}
 
 
+def has_runnable_entries(check):
+    return check['selected'] > check['blocked'] + check['missing']
+
+
 def config_fingerprint(root):
     digest = hashlib.sha256()
     paths = [root / 'tiers.json', *sorted((root / 'goldens').glob('*.json'))]
@@ -51,9 +55,11 @@ def config_fingerprint(root):
 
 def run(log, state, config, runner, go, ref):
     check = preflight(config)
-    if check['blocked'] or check['missing']:
-        print('CORPUS-INFRA: tier B has %d blocked and %d missing-golden entries' % (check['blocked'], check['missing']), file=log, flush=True)
+    if not has_runnable_entries(check):
+        print('CORPUS-INFRA: tier B has no runnable entries', file=log, flush=True)
         return 2
+    if check['blocked'] or check['missing']:
+        print('tier B includes %d blocked and %d missing-golden entries' % (check['blocked'], check['missing']), file=log, flush=True)
     with tempfile.TemporaryDirectory(prefix='run-', dir=state / 'work') as tmp:
         root = pathlib.Path(tmp)
         clone = root / 'glade'
@@ -63,7 +69,7 @@ def run(log, state, config, runner, go, ref):
         frozen_hash = config_fingerprint(frozen_config)
         after = config_fingerprint(config)
         frozen_check = preflight(frozen_config)
-        if before != frozen_hash or before != after or frozen_check != check or frozen_check['blocked'] or frozen_check['missing']:
+        if before != frozen_hash or before != after or frozen_check != check or not has_runnable_entries(frozen_check):
             print('CORPUS-INFRA: configuration changed during snapshot', file=log, flush=True)
             return 2
         print('configuration sha256 ' + frozen_hash, file=log, flush=True)
