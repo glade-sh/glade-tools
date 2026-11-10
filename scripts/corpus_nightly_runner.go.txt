@@ -18,6 +18,7 @@ func main() {
 	report, err := corpusrun.Run(context.Background(), corpusrun.Options{
 		Glade: os.Args[1], ConfigDir: os.Args[2], Tier: "B",
 		StepTimeout: 2 * time.Hour, Parallelism: 2,
+		Progress: func(message string) { fmt.Fprintln(os.Stderr, message) },
 	})
 	if err != nil {
 		fmt.Println("CORPUS-INFRA: runner failed")
