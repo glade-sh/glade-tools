@@ -54,3 +54,18 @@ class UpdateWorkflow(unittest.TestCase):
         self.assertEqual({k:len(v) for k,v in out['files'].items()}, {'Apex':1,'LWC':1,'Visualforce':1,'Metadata':1,'Other':1})
         self.assertTrue(out['touches_code'])
         self.assertFalse(ops.compare_details({'files':[{'filename':'README.md'}]})['touches_code'])
+
+    def test_ambiguous_tier_does_not_create_or_modify_entry(self):
+        import json
+        other=self.app.ops.add('other/beta')
+        self.repo['locations']=[{'id':'x','host':'local','path':'/one/shared'}]
+        other['locations']=[{'id':'y','host':'local','path':'/two/shared'}]
+        self.app.store.put('repositories',self.repo)
+        self.app.store.put('repositories',other)
+        p=Path(self.temp.name)/'tiers.json'
+        original={'repos':[{'name':'shared','tier':'A','pin':'a'*40}]}
+        p.write_text(json.dumps(original))
+        self.app.set_tiers_file(str(p))
+        with self.assertRaises(ValueError):
+            self.app.move_tier(self.repo,'B',self.app.tiers_snapshot()['revision'])
+        self.assertEqual(json.loads(p.read_text()),original)
