@@ -95,8 +95,19 @@ func runRepo(ctx context.Context, config *Config, repo Repo, opts Options, scrat
 	if err := verifyComponentPins(src, repo.Overlay.ComponentPins); err != nil {
 		return infra(repo, "components: %v", err)
 	}
-	root := filepath.Join(scratch, repo.Name)
-	defer os.RemoveAll(root)
+	// Glade may discover local packages in a project's parent or grandparent.
+	// Give each run a fresh two-level workspace whose only child is this
+	// project; otherwise unrelated siblings of the caller's scratch directory
+	// can silently become dependencies outside the recorded overlay.
+	if err := os.MkdirAll(scratch, 0755); err != nil {
+		return infra(repo, "scratch unavailable: %v", err)
+	}
+	workspace, err := os.MkdirTemp(scratch, "corpus-isolated-")
+	if err != nil {
+		return infra(repo, "scratch unavailable: %v", err)
+	}
+	defer os.RemoveAll(workspace)
+	root := filepath.Join(workspace, "work", repo.Name)
 	if err := cloneTree(src, root); err != nil {
 		return infra(repo, "copy failed: %v", err)
 	}
