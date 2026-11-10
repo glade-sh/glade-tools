@@ -67,6 +67,20 @@ class CorpusNightlyTest(unittest.TestCase):
                 log.seek(0)
                 self.assertIn('CORPUS-INFRA', log.read())
 
+    def test_overlap_records_infra_without_starting_external_commands(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            args = ['nightly', '--state', str(root), '--config', str(root / 'config'),
+                    '--runner', str(root / 'runner'), '--go', str(root / 'go')]
+            with mock.patch('sys.argv', args), \
+                 mock.patch.object(nightly.fcntl, 'flock', side_effect=BlockingIOError), \
+                 mock.patch.object(nightly.subprocess, 'run') as run:
+                self.assertEqual(nightly.main(), 2)
+                run.assert_not_called()
+            summaries = list((root / 'results').glob('*.txt'))
+            self.assertEqual(len(summaries), 1)
+            self.assertTrue(summaries[0].read_text().startswith('CORPUS-INFRA'))
+
     def test_summary_starts_with_verdict_and_rejects_mismatch(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
