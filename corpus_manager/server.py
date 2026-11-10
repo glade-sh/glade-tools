@@ -537,7 +537,7 @@ print(json.dumps(rows))
                         raise ValueError("Choose one of this repository's known checkouts.")
                     repo["upstream"] = {"status": "unknown"}
                 self.store.put("repositories", repo)
-                self.store.event("note updated" if "notes" in data else "catalog updated", repo["id"], "" if "notes" in data else repo["status"])
+                self.store.event("note updated" if "notes" in data else "catalog updated", repo["id"], str(data.get("notes") or "") if "notes" in data else repo["status"])
                 return repo
         if len(parts) >= 3 and parts[1] == "queries":
             query = self.store.get("queries", parts[2])
