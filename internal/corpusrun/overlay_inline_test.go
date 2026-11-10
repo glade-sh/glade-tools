@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestOverlayListsUseGladeInlineFormat(t *testing.T) {
@@ -94,5 +96,32 @@ func TestManagedOverlayRejectsUnsafeManifestlessSources(t *testing.T) {
 				t.Fatal("unsafe source accepted")
 			}
 		})
+	}
+}
+
+func TestOverlayPreservesStructuredManagedDependencies(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "glade.yml")
+	original := "project:\n  managedPackageDependencies:\n    - namespace: existing\n      sourceRoot: vendor/existing\n"
+	if err := os.WriteFile(path, []byte(original), 0644); err != nil {
+		t.Fatal(err)
+	}
+	add := map[string]map[string][]string{"project": {"managedPackageDependencies": {"extra:deps/extra"}}}
+	if err := mergeOverlayYAML(path, add, ""); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cfg struct {
+		Project struct {
+			Managed []map[string]string `yaml:"managedPackageDependencies"`
+		} `yaml:"project"`
+	}
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		t.Fatalf("structured dependencies must stay mappings: %v\n%s", err, data)
+	}
+	if len(cfg.Project.Managed) != 2 || cfg.Project.Managed[1]["namespace"] != "extra" || cfg.Project.Managed[1]["sourceRoot"] != "deps/extra" {
+		t.Fatalf("unexpected managed entries: %+v", cfg.Project.Managed)
 	}
 }
