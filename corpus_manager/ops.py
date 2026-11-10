@@ -10,6 +10,7 @@ import textwrap
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from pathlib import Path
 from .store import identifier, now
 
@@ -141,6 +142,8 @@ reserve = 50 * 1024**3
 if shutil.disk_usage(existing).free < reserve + max(DATA['size_kb']*2048, 2*1024**3):
     raise ValueError('Insufficient disk reserve')
 root.mkdir(parents=True,exist_ok=True)
+cancel = root / ('.dashboard-cancel-' + DATA['cancel_token']) if DATA.get('cancel_token') else None
+if cancel and cancel.exists(): raise ValueError('Cancelled')
 target = root / (DATA['name'].replace('/','__') + '-' + DATA['sha'][:12] + '-' + uuid.uuid4().hex[:6])
 env = {**os.environ,'GIT_TERMINAL_PROMPT':'0','GIT_LFS_SKIP_SMUDGE':'1'}
 def git(*args):
@@ -150,11 +153,11 @@ def git(*args):
         deadline = time.monotonic()+240
         try:
             while p.poll() is None:
-                if shutil.disk_usage(root).free < reserve+1024**3 or time.monotonic()>deadline:
+                if (cancel and cancel.exists()) or shutil.disk_usage(root).free < reserve+1024**3 or time.monotonic()>deadline:
                     os.killpg(p.pid, signal.SIGTERM)
                     try: p.wait(timeout=3)
                     except subprocess.TimeoutExpired: os.killpg(p.pid,signal.SIGKILL); p.wait()
-                    raise ValueError('Snapshot stopped; disk reserve or time limit reached. Partial checkout preserved at '+str(target))
+                    raise ValueError('Snapshot stopped; disk reserve or time limit reached, or cancelled. Partial checkout preserved at '+str(target))
                 time.sleep(0.1)
             if p.returncode: raise ValueError('Git snapshot failed; incomplete directory preserved at '+str(target))
             output.seek(0)
@@ -165,7 +168,11 @@ git('clone','--depth','1','--no-checkout','--',DATA['url'],str(target))
 git('-C',str(target),'fetch','--depth','1','origin',DATA['sha'])
 git('-C',str(target),'checkout','--detach',DATA['sha'])
 if shutil.disk_usage(root).free < reserve: raise ValueError('Disk reserve reached; snapshot preserved for inspection at '+str(target))
-print(json.dumps({'path':str(target),'head':git('-C',str(target),'rev-parse','HEAD'),'branch':'','dirty':False}))
+token=DATA.get('ownership_token')
+if token:
+    (root / ('.'+target.name+'.dashboard-owner')).write_text(token)
+size=sum((Path(d)/f).lstat().st_size for d,_,files in os.walk(target,followlinks=False) for f in files if not (Path(d)/f).is_symlink())
+print(json.dumps({'path':str(target),'head':git('-C',str(target),'rev-parse','HEAD'),'branch':'','dirty':False,'size_bytes':size}))
 '''
 
 
@@ -176,6 +183,7 @@ class Operations:
         self.tiers_snapshot = lambda: {"repos": []}
         self.tier_entry = lambda repo, entries: None
         self.tier_ambiguous = lambda repo, entries: False
+        self.cancel_token = lambda: ""
 
     @staticmethod
     def is_private(repo):
@@ -353,6 +361,30 @@ class Operations:
         self.store.put("candidates", candidate)
         return "Project check complete."
 
+    def host_busy(self, host):
+        alias = (host.get("ssh") or "local").split("@")[-1]
+        if alias in ("razor", "casper", "bmo"): alias += ".local"
+        slots = Path("/tmp/rtest-slots")
+        if alias not in ("razor.local", "casper.local", "bmo.local", "local"):
+            raise ValueError("Cannot verify shared test lanes for this host alias.")
+        if alias in ("razor.local", "casper.local", "bmo.local", "local"):
+            if not slots.is_dir():
+                raise ValueError("Cannot verify the shared test-lane state.")
+            flags = {"razor.local":"RAZOR_QUIET", "casper.local":"CASPER_BUSY", "bmo.local":"BMO_BUSY", "local":"LOCAL_OFF"}
+            if (slots / flags[alias]).exists() or any(slots.glob(alias + ".[0-9]*")):
+                return True
+        status = host_python(host, r"""
+import json, os, subprocess
+load=os.getloadavg()[0]
+cpu=os.cpu_count() or 1
+p=subprocess.run(['ps','-eo','args'],capture_output=True,text=True,timeout=5)
+if p.returncode: raise ValueError('Cannot verify host activity')
+lines=p.stdout.splitlines()
+busy=any(('val2.sh' in x or 'gate-dispatch.sh' in x or 'corpus-sweep.sh' in x or 'rtest-remote.sh' in x) and 'python3 -' not in x for x in lines)
+print(json.dumps({'busy':busy or load>cpu*0.8}))
+""", {}, timeout=15)
+        return bool(status.get("busy"))
+
     def snapshot(self, repo_id, host_id):
         host = self.store.get("hosts", host_id)
         if not host.get("managed_root"):
@@ -362,8 +394,9 @@ class Operations:
         self.check(repo_id)
         repo = self.store.get("repositories", repo_id)
         up = repo["upstream"]
-        result = host_python(host, SNAPSHOT, {"root": host["managed_root"], "url": repo["url"], "name": github_name(repo["url"]), "sha": up["sha"], "size_kb": up.get("size_kb", 0), "local_node": socket.gethostname()}, timeout=900)
-        result.update(id=identifier(host_id, result["path"]), host=host_id, scanned_at=now(), pulled_at=now(), managed=True, pulled=True, tested=False)
+        token = uuid.uuid4().hex
+        result = host_python(host, SNAPSHOT, {"root": host["managed_root"], "url": repo["url"], "name": github_name(repo["url"]), "sha": up["sha"], "size_kb": up.get("size_kb", 0), "ownership_token": token, "cancel_token": self.cancel_token()}, timeout=900)
+        result.update(id=identifier(host_id, result["path"]), host=host_id, scanned_at=now(), pulled_at=now(), managed=True, pulled=True, tested=False, ownership_token=token)
         repo = self.store.get("repositories", repo_id)
         repo["locations"].append(result)
         self.store.put("repositories", repo)
@@ -386,10 +419,62 @@ def compare_details(comparison):
         name = str(row.get("filename", ""))
         lower = name.lower()
         if lower.endswith((".cls", ".trigger")): group = "Apex"
-        elif "/lwc/" in "/" + lower or lower.endswith((".js", ".html", ".css")): group = "LWC"
+        elif "/lwc/" in "/" + lower: group = "LWC"
         elif lower.endswith((".page", ".component")): group = "Visualforce"
         elif lower.endswith((".xml", ".object", ".field")): group = "Metadata"
         else: group = "Other"
         groups[group].append({"name": name, "status": row.get("status", "")})
     commits = [{"sha": row.get("sha"), "message": (row.get("commit", {}).get("message") or "").split("\n")[0], "date": row.get("commit", {}).get("author", {}).get("date"), "url": row.get("html_url")} for row in comparison.get("commits", [])]
     return {"commits": commits, "files": groups, "touches_code": any(groups[k] for k in ("Apex", "LWC", "Visualforce", "Metadata")), "incomplete": len(files) >= 300 or len(commits) < comparison.get("ahead_by", len(commits))}
+
+
+UPDATE_RUNNER = r'''
+import json, os, shutil, signal, subprocess, tempfile, time
+from pathlib import Path
+root=Path(DATA['root']).expanduser().resolve()
+if 'BACKUP' in root.parts or not root.is_dir(): raise ValueError('Managed checkout directory is unavailable or protected')
+if shutil.disk_usage(root).free < 51*1024**3: raise ValueError('Insufficient disk reserve for test scratch')
+repo=dict(DATA['repo'])
+repo['clone']=DATA['checkout']
+repo['pin']=DATA['sha']
+repo['blocked']=''
+config={'schemaVersion':1,'depSources':DATA['depSources'],'repos':[repo]}
+with tempfile.TemporaryDirectory(prefix='dashboard-test-',dir=root) as tmp:
+    tmp=Path(tmp)
+    (tmp/'tiers.json').write_text(json.dumps(config))
+    output=tmp/'report.json'
+    command=[DATA['runner'],'corpus','run','--tier',repo['tier'],'--only',repo['name'],'--config',str(tmp),'--glade',DATA['glade'],'--json',str(output),'--scratch',str(tmp/'work'),'--step-timeout','15m']
+    cancel=root / ('.dashboard-cancel-'+DATA['cancel_token']) if DATA.get('cancel_token') else None
+    if cancel and cancel.exists(): raise ValueError('Cancelled')
+    process=subprocess.Popen(command,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)
+    deadline=time.monotonic()+1900
+    while process.poll() is None:
+        if (cancel and cancel.exists()) or time.monotonic()>deadline or shutil.disk_usage(root).free < 50*1024**3:
+            os.killpg(process.pid,signal.SIGTERM)
+            try: process.wait(timeout=3)
+            except subprocess.TimeoutExpired: os.killpg(process.pid,signal.SIGKILL); process.wait()
+            raise ValueError('Update runner cancelled or timed out')
+        time.sleep(.25)
+    if not output.is_file(): raise ValueError('Update runner did not produce a report')
+    report=json.loads(output.read_text())
+    rows=report.get('results',[])
+    if len(rows)!=1 or not rows[0].get('complete'):
+        raise ValueError('Update runner did not complete check and test; inspect runner configuration')
+    print(json.dumps(rows[0]))
+'''
+
+
+DELETE_PULL = r'''
+import json, shutil
+from pathlib import Path
+root=Path(DATA['root']).expanduser().resolve()
+raw=Path(DATA['path']).expanduser()
+if raw.is_symlink(): raise ValueError('Checkout must not be a symlink')
+target=raw.resolve()
+if 'BACKUP' in root.parts or target.parent != root or not target.is_dir(): raise ValueError('Checkout is outside its managed root')
+marker=root / ('.'+target.name+'.dashboard-owner')
+if marker.is_symlink() or not marker.is_file() or marker.read_text()!=DATA['token']: raise ValueError('Checkout ownership could not be verified')
+shutil.rmtree(target)
+marker.unlink()
+print(json.dumps({'deleted':True}))
+'''

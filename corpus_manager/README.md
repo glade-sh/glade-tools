@@ -102,6 +102,28 @@ If `history-sources.json` includes a `dispatch_dir`, each import also discovers
 new dispatch records there. Only enabled routes with explicitly recorded Glade
 commits and timestamps are added. Existing and manually configured routes remain.
 
+## Groups and update testing
+
+In Settings, choose the tiers JSON file, the default host, the Glade binary,
+the full source commit used to build it, and an executable that implements
+`glade-tools corpus run` from the corpus v2 runner. Binary paths must be valid
+on the selected host. The commit is recorded as supplied; the dashboard cannot
+verify that it matches the binary. The runner executes against a temporary
+configuration and a scratch copy, applies the configured overlay, and never
+changes the tier pin or the pulled checkout. A missing pin baseline on the same
+Glade commit is reported explicitly.
+
+Pulling makes a separate checkout under the host's managed root. Testing is
+explicit; it checks shared-lane markers and host load before starting. Active
+pulls and tests can be cancelled. Only checkouts created with a dashboard
+ownership marker can be deleted through the dashboard. Accepting a new pin
+requires rebuilding its golden in a reviewed change.
+
+Tier writes re-read the file and reject a changed revision immediately before
+atomic replacement. The check is not an interprocess compare-and-swap: editors
+that do not cooperate with a lock can still write in the interval before the
+replacement. Coordinate concurrent edits to that file.
+
 ## Validation
 
 ```sh

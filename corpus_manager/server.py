@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from .history import parse_history
-from .ops import Operations, host_python, validate_host
+from .ops import Operations, UPDATE_RUNNER, host_python, validate_host
 from .store import Store, identifier, now
 
 
@@ -31,6 +31,7 @@ class App:
         self.token = secrets.token_urlsafe(32)
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="corpus")
         self.job_context = threading.local()
+        self.ops.cancel_token = lambda: getattr(self.job_context, "current", {}).get("id", "")
         config = self.store.directory / "config.json"
         if config.exists() and not self.store.all("hosts"):
             for host in json.loads(config.read_text()).get("hosts", []):
@@ -63,14 +64,26 @@ class App:
         if changed:
             self.store.put_many("runs", changed)
 
-    def set_tiers_file(self, path):
-        path = str(path).strip()
-        config_path = self.store.directory / "dashboard-settings.json"
+    def settings(self):
+        try: return json.loads((self.store.directory / "dashboard-settings.json").read_text())
+        except (OSError, ValueError): return {}
+
+    def save_settings(self, data):
+        settings = self.settings()
+        for key in ("tiers_file", "glade_binary", "runner_binary", "glade_sha", "default_host"):
+            if key in data: settings[key] = str(data[key]).strip()
+        path = settings.get("tiers_file", "")
         if path:
             document = json.loads(Path(path).expanduser().read_text())
             if not isinstance(document, dict) or not isinstance(document.get("repos"), list):
                 raise ValueError("Tiers file must contain a repos array.")
-        config_path.write_text(json.dumps({"tiers_file": path}))
+        sha = settings.get("glade_sha", "")
+        if sha and not __import__("re").fullmatch(r"[0-9a-fA-F]{40}", sha):
+            raise ValueError("Glade commit must be a full 40-character SHA.")
+        (self.store.directory / "dashboard-settings.json").write_text(json.dumps(settings))
+
+    def set_tiers_file(self, path):
+        self.save_settings({"tiers_file": path})
 
     def tiers_snapshot(self):
         try:
@@ -168,6 +181,7 @@ class App:
     def state(self, full=False):
         data = self.store.state(full=full)
         tiers = self.tiers_snapshot()
+        data["settings"].update(self.settings())
         data["settings"]["tiers"] = tiers
         tier_index = self.tier_index(data["repositories"])
         for repo in data["repositories"]:
@@ -181,18 +195,88 @@ class App:
             repo["pin"] = entry.get("pin") if entry else None
         return data
 
+    def delete_pull(self, repo_id, location_id):
+        from . import ops
+        repo = self.store.get("repositories", repo_id)
+        location = next((x for x in repo.get("locations", []) if x.get("id") == location_id), None)
+        if not location or not location.get("pulled") or not location.get("ownership_token"):
+            raise ValueError("Only dashboard-created checkouts with verified ownership can be deleted.")
+        if location_id == repo.get("tracked_location_id"):
+            raise ValueError("Cannot delete the tracked checkout.")
+        host = self.store.get("hosts", location["host"])
+        ops.host_python(host, ops.DELETE_PULL, {"root":host.get("managed_root"), "path":location["path"], "token":location["ownership_token"]}, timeout=120)
+        repo["locations"] = [x for x in repo["locations"] if x.get("id") != location_id]
+        self.store.put("repositories", repo)
+        self.store.event("deleted pulled checkout", repo_id, location.get("head", ""))
+        return "Deleted the dashboard-created checkout."
+
+    def test_update(self, repo_id, location_id):
+        repo = self.store.get("repositories", repo_id)
+        location = next((x for x in repo.get("locations", []) if x.get("id") == location_id and x.get("pulled")), None)
+        if not location: raise ValueError("Choose a dashboard-created checkout.")
+        host = self.store.get("hosts", location["host"])
+        job = getattr(self.job_context, "current", None)
+        if job:
+            with self.store.lock:
+                current = self.store.get("jobs", job["id"])
+                if current.get("cancel_requested"): raise ValueError("Cancelled")
+                current["host"] = location["host"]
+                self.store.put("jobs", current)
+                job.update(current)
+        if self.ops.host_busy(host): raise ValueError("Host is busy with a gate, test lane, or high load.")
+        settings = self.settings()
+        if not all(settings.get(x) for x in ("glade_binary", "runner_binary", "glade_sha")):
+            raise ValueError("Configure the Glade binary, its commit, and the corpus runner binary.")
+        tiers = self.tiers_snapshot()
+        entry = self.tier_entry(repo, tiers.get("repos", []))
+        if not entry: raise ValueError("A unique tiers entry is required for its overlay.")
+        source = json.loads(Path(tiers["path"]).expanduser().read_text())
+        dependencies = source.get("depSources", {})
+        base = Path(tiers["path"]).expanduser().parent
+        for spec in dependencies.values():
+            paths = spec.get("paths")
+            if paths:
+                def absolute(path):
+                    return str(base / path) if not path.startswith(("/", "~/")) else path
+                spec["paths"] = [absolute(p) for p in paths] if isinstance(paths, list) else absolute(paths)
+        from . import ops
+        run_entry = dict(entry, pin=location["head"], clone=location["path"], blocked="")
+        result = ops.host_python(host, UPDATE_RUNNER, {"root":host.get("managed_root"), "repo":run_entry, "depSources":dependencies, "checkout":location["path"], "sha":location["head"], "glade":settings["glade_binary"], "runner":settings["runner_binary"], "cancel_token":self.ops.cancel_token()}, timeout=1950)
+        if not result.get("complete"): raise ValueError("Runner did not complete both phases.")
+        observed = result.get("observed", {})
+        counts = observed.get("counts", {})
+        failures = [x.get("test") for x in observed.get("failing", []) if x.get("test")]
+        timeouts = [x.get("test") for x in observed.get("timeouts", []) if x.get("test")]
+        diagnostics = [d for d in observed.get("diagnostics", []) if str(d.get("severity", "")).lower() == "error"]
+        row = {"repo_id":repo_id,"repo_name":repo["name"],"repo_sha":location["head"],"glade_sha":settings["glade_sha"],"gate_label":"update-"+location["head"][:10],"phase":"test","host":location["host"],"started_at":now(),"status":"failed" if failures or timeouts or diagnostics else "passed","passed":counts.get("passed"),"total":counts.get("tests"),"failed":len(failures),"failed_tests":failures,"timeouts":len(timeouts),"compile_errors":len(diagnostics),"wall_s":observed.get("wallSeconds"),"provenance":"Corpus runner update observation"}
+        self.store.put("runs", row)
+        repo = self.store.get("repositories", repo_id)
+        for loc in repo.get("locations", []):
+            if loc.get("id") == location_id: loc["tested"] = True
+        self.store.put("repositories", repo)
+        self.store.event("update test", repo_id, row["status"])
+        return "Update check and test completed."
+
     def job(self, kind, function, *args, host=None):
         job = self.store.put("jobs", {"kind": kind, "host": host, "status": "queued", "message": "Waiting for the current operation.", "started_at": now()})
         def run():
             self.job_context.current = job
-            job.update(status="running", message="Working…")
-            self.store.put("jobs", job)
+            with self.store.lock:
+                current = self.store.get("jobs", job["id"])
+                if current.get("cancel_requested"):
+                    current.update(status="cancelled", message="Cancelled before starting.", finished_at=now())
+                    self.store.put("jobs", current)
+                    return
+                current.update(status="running", message="Working…")
+                self.store.put("jobs", current)
+                job.update(current)
             try:
                 message = function(*args)
-                job.update(status="completed", message=str(message or "Done"))
+                cancelled = self.store.get("jobs", job["id"]).get("cancel_requested")
+                job.update(status="cancelled" if cancelled else "completed", message="Cancelled." if cancelled else str(message or "Done"))
             except Exception as exc:
-                # Only controlled errors enter the UI. Never expose subprocess output.
-                job.update(status="failed", message=str(exc) if isinstance(exc, ValueError) else "Operation failed. Check host connectivity and input format.")
+                cancelled = self.store.get("jobs", job["id"]).get("cancel_requested")
+                job.update(status="cancelled" if cancelled else "failed", message="Cancelled; partial checkout may remain." if cancelled else str(exc) if isinstance(exc, ValueError) else "Operation failed. Check host connectivity and input format.")
             job["finished_at"] = now()
             self.store.put("jobs", job)
         self.executor.submit(run)
@@ -201,8 +285,36 @@ class App:
     def progress(self, message):
         job = getattr(self.job_context, "current", None)
         if job:
-            job["message"] = message
+            with self.store.lock:
+                current = self.store.get("jobs", job["id"])
+                if current.get("cancel_requested"): raise ValueError("Cancelled")
+                current["message"] = message
+                self.store.put("jobs", current)
+                job.update(current)
+
+    def cancel_job(self, job_id):
+        with self.store.lock:
+            job = self.store.get("jobs", job_id)
+            if job.get("status") not in ("queued", "running"):
+                raise ValueError("Job is not running or queued.")
+            if job.get("status") == "running" and job.get("kind") not in ("Pull checkouts", "Prepare checkout", "Test update", "Test updates"):
+                raise ValueError("This running job cannot be cancelled.")
+            job["cancel_requested"] = True
             self.store.put("jobs", job)
+        if job.get("status") == "running" and job.get("host"):
+            host = self.store.get("hosts", job["host"])
+            root = host.get("managed_root")
+            if root:
+                host_python(host, r"""
+import json, re
+from pathlib import Path
+root=Path(DATA['root']).expanduser().resolve()
+if 'BACKUP' in root.parts or not re.fullmatch(r'[0-9a-f]{32}',DATA['id']): raise ValueError('Cannot signal this job')
+root.mkdir(parents=True, exist_ok=True)
+(root / ('.dashboard-cancel-'+DATA['id'])).write_text('cancel')
+print(json.dumps({'ok':True}))
+""", {"root":root, "id":job_id}, timeout=15)
+        return {"ok": True}
 
     def match_run(self, row, repos=None):
         repos = self.store.all("repositories") if repos is None else repos
@@ -317,10 +429,25 @@ print(json.dumps(rows))
     def mutate(self, path, data):
         parts = path.strip("/").split("/")
         if path == "/api/settings":
-            self.set_tiers_file(data.get("tiers_file", ""))
+            self.save_settings(data)
             return {"ok": True}
         if path == "/api/scan":
             return self.job("Inventory", self.ops.scan, data.get("host"))
+        if path == "/api/test-many":
+            ids = data.get("repo_ids")
+            if not isinstance(ids, list) or not ids or len(ids) > 500: raise ValueError("Select between one and 500 repositories.")
+            def test_many():
+                failures = 0
+                for i, repo_id in enumerate(ids):
+                    self.progress("Testing %s of %s" % (i+1, len(ids)))
+                    repo = self.store.get("repositories", repo_id)
+                    loc = next((x for x in reversed(repo.get("locations", [])) if x.get("pulled") and not x.get("dismissed")), None)
+                    if not loc: failures += 1; continue
+                    try: self.test_update(repo_id, loc["id"])
+                    except ValueError: failures += 1
+                if failures: raise ValueError("Completed %s update tests; %s unavailable or failed." % (len(ids)-failures, failures))
+                return "Completed %s update tests." % len(ids)
+            return self.job("Test updates", test_many)
         if path == "/api/pull-many":
             ids = data.get("repo_ids")
             host = data.get("host")
@@ -332,7 +459,8 @@ print(json.dumps(rows))
                     self.progress("Pulling %s of %s" % (i + 1, len(ids)))
                     try: self.ops.snapshot(repo_id, host)
                     except ValueError: errors += 1
-                return "Prepared %s checkouts; %s failed." % (len(ids)-errors, errors)
+                if errors: raise ValueError("Prepared %s checkouts; %s failed." % (len(ids)-errors, errors))
+                return "Prepared %s checkouts." % len(ids)
             return self.job("Pull checkouts", pull_many, host=host)
         if path == "/api/check":
             return self.job("Upstream checks", self.ops.check_all)
@@ -364,6 +492,8 @@ print(json.dumps(rows))
             row.update(repo_id=repo["id"], repo_name=repo["name"], provenance="Manually recorded; not an executed validation", started_at=row.get("started_at") or now())
             self.store.event("test recorded", repo["id"], row.get("status") or "unknown")
             return self.store.put("runs", row)
+        if len(parts) == 4 and parts[1] == "jobs" and parts[3] == "cancel":
+            return self.cancel_job(parts[2])
         if len(parts) == 4 and parts[1] == "jobs" and parts[3] == "dismiss":
             job = self.store.get("jobs", parts[2])
             if job.get("status") != "failed": raise ValueError("Only failed jobs can be dismissed.")
@@ -371,6 +501,19 @@ print(json.dumps(rows))
             return self.store.put("jobs", job)
         if len(parts) >= 3 and parts[1] == "repos":
             repo = self.store.get("repositories", parts[2])
+            if len(parts) == 4 and parts[3] == "delete-pull":
+                return self.job("Delete pulled checkout", self.delete_pull, repo["id"], data.get("location_id"))
+            if len(parts) == 4 and parts[3] == "keep-pin":
+                loc = next((x for x in repo.get("locations", []) if x.get("id") == data.get("location_id") and x.get("pulled")), None)
+                if not loc: raise ValueError("Choose a dashboard-created checkout.")
+                loc["dismissed"] = True
+                self.store.put("repositories", repo)
+                self.store.event("kept pin", repo["id"], loc.get("head", ""))
+                return {"ok": True}
+            if len(parts) == 4 and parts[3] == "test-update":
+                location = next((x for x in repo.get("locations", []) if x.get("id") == data.get("location_id") and x.get("pulled")), None)
+                if not location: raise ValueError("Choose a dashboard-created checkout.")
+                return self.job("Test update", self.test_update, repo["id"], location["id"], host=location["host"])
             if len(parts) == 4 and parts[3] == "accept-pin":
                 loc = next((x for x in repo.get("locations", []) if x.get("id") == data.get("location_id") and x.get("pulled")), None)
                 if not loc: raise ValueError("Choose a dashboard-created checkout.")
@@ -465,7 +608,7 @@ def handler(app):
                 needle = query.get("q", [""])[0].lower()
                 status = query.get("status", [""])[0]
                 phase = query.get("phase", [""])[0]
-                rows = [r for r in app.store.all("runs") if (not phase or r.get("phase") == phase) and (not repo_id or r.get("repo_id") == repo_id) and (not status or r.get("status") == status) and (not needle or needle in " ".join(str(r.get(k) or "") for k in ("repo_name", "glade_sha", "glade_version", "repo_sha", "host", "status")).lower())]
+                rows = [r for r in app.store.all("runs") if (not phase or r.get("phase") == phase) and (not repo_id or r.get("repo_id") == repo_id) and (not status or r.get("status") == status) and (not needle or needle in " ".join(str(r.get(k) or "") for k in ("repo_name", "gate_label", "glade_sha", "glade_version", "repo_sha", "host", "status")).lower())]
                 rows.sort(key=lambda r: r.get("started_at") or "", reverse=True)
                 return self.respond(200, {"runs": rows[offset:offset+limit], "total": len(rows), "offset": offset, "limit": limit})
             assets = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"), "/style.css": ("style.css", "text/css")}
