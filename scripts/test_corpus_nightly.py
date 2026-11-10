@@ -27,6 +27,11 @@ class CorpusNightlyTest(unittest.TestCase):
             (root / 'goldens' / 'synthetic-a.json').write_text('{}')
             self.assertEqual(nightly.preflight(root), {'selected': 2, 'blocked': 1, 'missing': 0})
 
+    def test_partial_tier_runs_while_all_blocked_tier_does_not(self):
+        self.assertTrue(nightly.has_runnable_entries({'selected': 59, 'blocked': 4, 'missing': 0}))
+        self.assertFalse(nightly.has_runnable_entries({'selected': 4, 'blocked': 4, 'missing': 0}))
+        self.assertFalse(nightly.has_runnable_entries({'selected': 1, 'blocked': 0, 'missing': 1}))
+
     def test_blocked_preflight_does_not_start_external_commands(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
