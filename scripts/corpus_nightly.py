@@ -120,13 +120,14 @@ def main():
     state = args.state.resolve()
     for directory in (state, state / 'work', state / 'results'):
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    stamp = datetime.datetime.now(ZoneInfo('America/Los_Angeles')).strftime('%Y%m%d-%H%M%S-%f')
     with open(state / 'nightly.lock', 'a+') as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            print('CORPUS-INFRA: another nightly is running', file=sys.stderr)
+            with (state / 'results' / (stamp + '.txt')).open('x', encoding='utf-8') as summary:
+                summary.write('CORPUS-INFRA: another nightly is running\n')
             return 2
-        stamp = datetime.datetime.now(ZoneInfo('America/Los_Angeles')).strftime('%Y%m%d-%H%M%S-%f')
         with open(state / 'results' / (stamp + '.log'), 'x', encoding='utf-8') as log:
             try:
                 code = run(log, state, args.config.resolve(), args.runner.resolve(strict=True),
