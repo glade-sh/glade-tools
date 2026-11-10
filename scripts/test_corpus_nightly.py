@@ -26,6 +26,17 @@ class CorpusNightlyTest(unittest.TestCase):
             (root / 'goldens' / 'synthetic-a.json').write_text('{}')
             self.assertEqual(nightly.preflight(root), {'selected': 2, 'blocked': 1, 'missing': 0})
 
+    def test_config_fingerprint_covers_golden_contents(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / 'goldens').mkdir()
+            (root / 'tiers.json').write_text('{}')
+            golden = root / 'goldens' / 'synthetic-a.json'
+            golden.write_text('{}')
+            before = nightly.config_fingerprint(root)
+            golden.write_text('{"changed": true}')
+            self.assertNotEqual(before, nightly.config_fingerprint(root))
+
     def test_rejects_empty_or_unsafe_config(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)

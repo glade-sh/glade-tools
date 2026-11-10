@@ -1,0 +1,33 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/glade-sh/glade/tools/internal/corpusrun"
+)
+
+func main() {
+	if len(os.Args) != 4 {
+		fmt.Println("CORPUS-INFRA: expected binary, config and report")
+		os.Exit(corpusrun.ExitInfra)
+	}
+	report, err := corpusrun.Run(context.Background(), corpusrun.Options{
+		Glade: os.Args[1], ConfigDir: os.Args[2], Tier: "B",
+		StepTimeout: 2 * time.Hour, Parallelism: 2,
+	})
+	if err != nil {
+		fmt.Println("CORPUS-INFRA: runner failed")
+		os.Exit(corpusrun.ExitInfra)
+	}
+	data, err := json.MarshalIndent(report, "", "  ")
+	if err != nil || os.WriteFile(os.Args[3], append(data, '\n'), 0600) != nil {
+		fmt.Println("CORPUS-INFRA: report could not be saved")
+		os.Exit(corpusrun.ExitInfra)
+	}
+	report.WriteText(os.Stdout)
+	os.Exit(report.ExitCode)
+}
