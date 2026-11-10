@@ -107,3 +107,15 @@ class UpdateWorkflow(unittest.TestCase):
         repo=self.app.store.get('repositories',self.repo['id'])
         self.assertTrue(repo['locations'][1]['dismissed'])
         self.assertEqual(repo['tracked_location_id'],'old')
+
+    def test_cancel_queued_job_does_not_execute(self):
+        import threading
+        gate=threading.Event()
+        first=self.app.job('wait',lambda:gate.wait(3))
+        ran=[]
+        second=self.app.job('pull',lambda:ran.append(True))
+        self.app.cancel_job(second['job'])
+        gate.set()
+        self.app.executor.shutdown(wait=True)
+        self.assertEqual(ran,[])
+        self.assertEqual(self.app.store.get('jobs',second['job'])['status'],'cancelled')
