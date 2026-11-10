@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Glade · Corpus</title>
+  <link rel="icon" href="/assets/logo-mark-topo.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#repositories" aria-label="Glade Corpus home"><img class="brand-mark" src="/assets/logo-mark-topo.svg" alt=""><span>glade<span class="brand-domain">.sh</span><span class="brand-sub">CORPUS MANAGER</span></span></a>
+      <div class="workspace-label">YOUR WORKSPACE</div>
+      <nav aria-label="Main navigation">
+        <a href="#repositories" data-nav="repositories"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h6l2 2h10v12H3zM3 6V4h6l2 2"/></svg> Repositories <span class="nav-count" id="repo-count">—</span></a>
+        <a href="#discover" data-nav="discover"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg> Discover <span class="nav-count" id="candidate-count">—</span></a>
+        <a href="#history" data-nav="history"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.7 7M3 4v7h7M12 7v5l3 2"/></svg> Run history</a>
+        <a href="#settings" data-nav="settings"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7m0-4V3m8 18v-4m0-4V3m8 18V10m0-4V3M1 10h6m2 7h6m2-11h6"/></svg> Settings</a>
+      </nav>
+      <div class="sidebar-bottom"><span class="local-dot"></span> Local workspace<span>Metadata here. Checkouts stay on host.</span><button class="sidebar-activity" data-action="activity">View activity <span id="activity-count"></span></button></div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <div class="loading-state">Connecting to your corpus…</div>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="modal" aria-labelledby="modal-title"><div id="modal-content"></div></dialog>
+  <dialog id="detail" class="detail-dialog" aria-labelledby="detail-title"><div id="detail-content"></div></dialog>
+</body>
+</html>
