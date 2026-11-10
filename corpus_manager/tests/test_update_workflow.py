@@ -167,3 +167,12 @@ class UpdateWorkflow(unittest.TestCase):
         with patch.object(ops,'Path',return_value=slots),patch.object(ops,'host_python') as probe:
             self.assertTrue(self.app.ops.host_busy({'ssh':''}))
             probe.assert_not_called()
+
+    def test_existing_upstream_result_is_stale_when_pin_differs(self):
+        import json
+        p=Path(self.temp.name)/'tiers.json'
+        p.write_text(json.dumps({'repos':[{'name':'example__alpha','tier':'A','pin':'c'*40}]}))
+        self.app.set_tiers_file(str(p))
+        repo=next(x for x in self.app.state()['repositories'] if x['id']==self.repo['id'])
+        self.assertTrue(repo['upstream']['stale_pin'])
+        self.assertEqual(repo['upstream']['status'],'unknown')
