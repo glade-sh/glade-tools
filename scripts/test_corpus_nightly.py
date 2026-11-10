@@ -32,6 +32,28 @@ class CorpusNightlyTest(unittest.TestCase):
         self.assertFalse(nightly.has_runnable_entries({'selected': 4, 'blocked': 4, 'missing': 0}))
         self.assertFalse(nightly.has_runnable_entries({'selected': 1, 'blocked': 0, 'missing': 1}))
 
+    def test_partial_preflight_runs_and_preserves_infra_exit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            config = root / 'config'
+            (config / 'goldens').mkdir(parents=True)
+            (root / 'work').mkdir()
+            (root / 'results').mkdir()
+            (config / 'tiers.json').write_text(json.dumps({'schemaVersion': 1, 'repos': [
+                {'name': 'synthetic-a', 'tier': 'A'},
+                {'name': 'synthetic-b', 'tier': 'B', 'blocked': 'source unavailable'}]}))
+            (config / 'goldens' / 'synthetic-a.json').write_text('{}')
+            with (root / 'results' / 'run.log').open('w+') as log, \
+                 mock.patch.object(nightly.subprocess, 'run') as run, \
+                 mock.patch.object(nightly.subprocess, 'check_output', return_value='a' * 40):
+                runner = root / 'runner'
+                runner.write_text('synthetic runner')
+                run.return_value.returncode = 2
+                self.assertEqual(nightly.run(log, root, config, runner, root / 'go', 'main'), 2)
+                self.assertGreaterEqual(run.call_count, 3)
+                log.seek(0)
+                self.assertIn('1 blocked', log.read())
+
     def test_blocked_preflight_does_not_start_external_commands(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
