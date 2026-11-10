@@ -633,7 +633,35 @@ func mergeOverlayYAML(path string, additions map[string]map[string][]string, loc
 					return fmt.Errorf("glade.yml %s.%s is not a list", section, key)
 				}
 			}
+			structured := false
+			if section == "project" && key == "managedPackageDependencies" && len(values) > 0 {
+				_, structured = values[0].(map[string]any)
+			}
 			for _, item := range items {
+				if structured {
+					ns, source, ok := strings.Cut(item, ":")
+					if !ok || ns == "" || source == "" {
+						return fmt.Errorf("invalid managed dependency overlay")
+					}
+					found := false
+					for _, existing := range values {
+						entry, ok := existing.(map[string]any)
+						if !ok {
+							return fmt.Errorf("glade.yml %s.%s mixes structured and scalar entries", section, key)
+						}
+						previous, _ := entry["namespace"].(string)
+						if strings.EqualFold(previous, ns) {
+							if entry["sourceRoot"] != source {
+								return fmt.Errorf("managed dependency namespace %q conflicts with existing configuration", ns)
+							}
+							found = true
+						}
+					}
+					if !found {
+						values = append(values, map[string]any{"namespace": ns, "sourceRoot": source})
+					}
+					continue
+				}
 				found := false
 				for _, existing := range values {
 					if s, ok := existing.(string); ok && s == item {
