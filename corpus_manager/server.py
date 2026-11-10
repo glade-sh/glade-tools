@@ -193,6 +193,10 @@ class App:
             entry = self.tier_entry(repo, tiers["repos"], tier_index)
             repo["tier"] = entry.get("tier", "unassigned") if entry else "unassigned"
             repo["pin"] = entry.get("pin") if entry else None
+            upstream = repo.get("upstream") or {}
+            pin, base = repo.get("pin"), upstream.get("base_sha")
+            if pin and (upstream.get("checked_at") or base) and (not base or not (base.startswith(pin) or pin.startswith(base))):
+                repo["upstream"] = dict(upstream, status="unknown", stale_pin=True)
         return data
 
     def delete_pull(self, repo_id, location_id):
