@@ -49,7 +49,7 @@ class UpdateWorkflow(unittest.TestCase):
 
     def test_compare_details_classifies_changed_files(self):
         data = {'commits':[{'sha':'c'*40,'commit':{'message':'Change','author':{'date':'2026-01-01'}},'html_url':'https://example.invalid/commit'}],
-                'files':[{'filename':'src/Thing.cls'}, {'filename':'ui/main.js','status':'modified'}, {'filename':'pages/home.page'}, {'filename':'meta/object.object-meta.xml'}, {'filename':'README.md'}]}
+                'files':[{'filename':'src/Thing.cls'}, {'filename':'lwc/widget/main.js','status':'modified'}, {'filename':'pages/home.page'}, {'filename':'meta/object.object-meta.xml'}, {'filename':'README.md'}]}
         out=ops.compare_details(data)
         self.assertEqual({k:len(v) for k,v in out['files'].items()}, {'Apex':1,'LWC':1,'Visualforce':1,'Metadata':1,'Other':1})
         self.assertTrue(out['touches_code'])
@@ -126,3 +126,44 @@ class UpdateWorkflow(unittest.TestCase):
         fn=next(x for x in source.splitlines() if x.startswith('function trendRows('))
         js=fn+"\nconst r=trendRows({runs:[{phase:'test',gate_label:'g',status:'partial',started_at:'2026-02'},{phase:'test',gate_label:'g',status:'failed',started_at:'2026-01'}]});if(r[0].status!=='failed')process.exit(1);"
         subprocess.run(['node','-e',js],check=True)
+
+    def test_runner_wrapper_uses_temporary_config_and_preserves_checkout(self):
+        import contextlib, io, json
+        root=Path(self.temp.name)/'managed';root.mkdir()
+        checkout=root/'checkout';checkout.mkdir();marker=checkout/'keep.txt';marker.write_text('untouched')
+        runner=root/'runner'
+        runner.write_text("#!/usr/bin/env python3\nimport json, pathlib, sys\na=sys.argv; config=pathlib.Path(a[a.index('--config')+1]); out=pathlib.Path(a[a.index('--json')+1]); d=json.loads((config/'tiers.json').read_text()); assert d['repos'][0]['pin']=='b'*40; assert d['repos'][0]['overlay']=={'deps':[]}; out.write_text(json.dumps({'results':[{'complete':True,'observed':{'counts':{'tests':1,'passed':1}}}]}))\n")
+        runner.chmod(0o755)
+        data={'root':str(root),'repo':{'name':'example__alpha','tier':'A','pin':'a'*40,'overlay':{'deps':[]}},'depSources':{},'checkout':str(checkout),'sha':'b'*40,'glade':'/bin/true','runner':str(runner)}
+        output=io.StringIO()
+        with contextlib.redirect_stdout(output): exec(ops.UPDATE_RUNNER,{'DATA':data})
+        self.assertTrue(json.loads(output.getvalue())['complete'])
+        self.assertEqual(marker.read_text(),'untouched')
+        self.assertEqual(sorted(x.name for x in root.iterdir()),['checkout','runner'])
+
+    def test_delete_script_checks_ownership_and_containment(self):
+        import contextlib, io
+        root=Path(self.temp.name)/'managed';root.mkdir()
+        target=root/'owned';target.mkdir();(target/'keep').write_text('owned')
+        marker=root/'.owned.dashboard-owner';marker.write_text('token')
+        with self.assertRaises(ValueError):
+            exec(ops.DELETE_PULL,{'DATA':{'root':str(root),'path':str(target),'token':'wrong'}})
+        self.assertTrue(target.exists())
+        with contextlib.redirect_stdout(io.StringIO()):
+            exec(ops.DELETE_PULL,{'DATA':{'root':str(root),'path':str(target),'token':'token'}})
+        self.assertFalse(target.exists());self.assertFalse(marker.exists())
+
+    def test_runner_cancel_signal_prevents_execution(self):
+        root=Path(self.temp.name)/'managed';root.mkdir()
+        (root/('.dashboard-cancel-'+'a'*32)).write_text('cancel')
+        data={'root':str(root),'repo':{'name':'example__alpha','tier':'A','pin':'a'*40},'depSources':{},'checkout':'/unused','sha':'b'*40,'glade':'/unused','runner':'/unused','cancel_token':'a'*32}
+        with patch('subprocess.Popen') as process:
+            with self.assertRaisesRegex(ValueError,'Cancelled'):
+                exec(ops.UPDATE_RUNNER,{'DATA':data})
+        process.assert_not_called()
+
+    def test_existing_lane_prevents_host_probe(self):
+        slots=Path(self.temp.name)/'slots';slots.mkdir();(slots/'local.0').mkdir()
+        with patch.object(ops,'Path',return_value=slots),patch.object(ops,'host_python') as probe:
+            self.assertTrue(self.app.ops.host_busy({'ssh':''}))
+            probe.assert_not_called()
