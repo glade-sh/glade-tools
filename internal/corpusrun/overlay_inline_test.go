@@ -125,3 +125,49 @@ func TestOverlayPreservesStructuredManagedDependencies(t *testing.T) {
 		t.Fatalf("unexpected managed entries: %+v", cfg.Project.Managed)
 	}
 }
+
+func TestStructuredManagedOverlayDeduplicatesAndRejectsConflict(t *testing.T) {
+	for _, tc := range []struct {
+		name, item string
+		wantErr    bool
+	}{
+		{"same source", "existing:vendor/existing", false},
+		{"conflicting source", "existing:vendor/other", true},
+		{"different namespace", "other:vendor/other", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "glade.yml")
+			original := "project:\n  managedPackageDependencies:\n    - namespace: existing\n      sourceRoot: vendor/existing\n"
+			if err := os.WriteFile(path, []byte(original), 0644); err != nil {
+				t.Fatal(err)
+			}
+			add := map[string]map[string][]string{"project": {"managedPackageDependencies": {tc.item}}}
+			err := mergeOverlayYAML(path, add, "")
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("error = %v, want error %v", err, tc.wantErr)
+			}
+			if err != nil {
+				return
+			}
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var cfg struct {
+				Project struct {
+					Managed []map[string]string `yaml:"managedPackageDependencies"`
+				} `yaml:"project"`
+			}
+			if err := yaml.Unmarshal(data, &cfg); err != nil {
+				t.Fatal(err)
+			}
+			want := 2
+			if tc.name == "same source" {
+				want = 1
+			}
+			if len(cfg.Project.Managed) != want {
+				t.Fatalf("got %d dependencies, want %d", len(cfg.Project.Managed), want)
+			}
+		})
+	}
+}
