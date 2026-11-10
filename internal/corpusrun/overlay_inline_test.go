@@ -1,6 +1,8 @@
 package corpusrun
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -28,5 +30,45 @@ func TestOverlayListsUseGladeInlineFormat(t *testing.T) {
 		if !regexp.MustCompile(pattern).Match(data) {
 			t.Errorf("%s must use the inline list syntax accepted by Glade: %s", key, data)
 		}
+	}
+}
+
+func TestManagedOverlayAcceptsMetadataWithoutManifest(t *testing.T) {
+	for _, dirs := range [][]string{nil, {"src"}} {
+		t.Run(fmt.Sprint(dirs), func(t *testing.T) {
+			base := t.TempDir()
+			root, dep := filepath.Join(base, "root"), filepath.Join(base, "dep")
+			if err := os.MkdirAll(root, 0755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.MkdirAll(filepath.Join(dep, "src"), 0755); err != nil {
+				t.Fatal(err)
+			}
+			spec := DepSource{Mode: "managed", Namespace: "example", Paths: PathList{dep}, Dirs: dirs}
+			cfg := &Config{DepSources: map[string]DepSource{"sample": spec}}
+			if err := applyOverlay(cfg, Repo{Overlay: Overlay{Deps: []string{"sample"}}}, root); err != nil {
+				t.Fatal(err)
+			}
+			data, err := os.ReadFile(filepath.Join(root, depsDir, "sample", "sfdx-project.json"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			var project struct {
+				Namespace          string `json:"namespace"`
+				PackageDirectories []struct {
+					Path string `json:"path"`
+				} `json:"packageDirectories"`
+			}
+			if err := json.Unmarshal(data, &project); err != nil {
+				t.Fatal(err)
+			}
+			want := "."
+			if len(dirs) > 0 {
+				want = dirs[0]
+			}
+			if project.Namespace != "example" || len(project.PackageDirectories) != 1 || project.PackageDirectories[0].Path != want {
+				t.Fatalf("unexpected project: %+v", project)
+			}
+		})
 	}
 }
