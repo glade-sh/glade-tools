@@ -3,6 +3,7 @@ import json
 import pathlib
 import tempfile
 import unittest
+from unittest import mock
 
 SCRIPT = pathlib.Path(__file__).with_name('corpus_nightly.py')
 spec = importlib.util.spec_from_file_location('corpus_nightly', SCRIPT)
@@ -25,6 +26,19 @@ class CorpusNightlyTest(unittest.TestCase):
             self.assertEqual(result, {'selected': 2, 'blocked': 1, 'missing': 1})
             (root / 'goldens' / 'synthetic-a.json').write_text('{}')
             self.assertEqual(nightly.preflight(root), {'selected': 2, 'blocked': 1, 'missing': 0})
+
+    def test_blocked_preflight_does_not_start_external_commands(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            config = root / 'config'
+            config.mkdir()
+            (config / 'tiers.json').write_text(json.dumps({'schemaVersion': 1, 'repos': [
+                {'name': 'synthetic-b', 'tier': 'B', 'blocked': 'source unavailable'}]}))
+            with (root / 'run.log').open('w+') as log, mock.patch.object(nightly.subprocess, 'run') as run:
+                self.assertEqual(nightly.run(log, root, config, root / 'runner', root / 'go', 'main'), 2)
+                run.assert_not_called()
+                log.seek(0)
+                self.assertIn('CORPUS-INFRA', log.read())
 
     def test_config_fingerprint_covers_golden_contents(self):
         with tempfile.TemporaryDirectory() as tmp:
