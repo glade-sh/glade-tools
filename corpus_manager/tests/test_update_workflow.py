@@ -176,3 +176,10 @@ class UpdateWorkflow(unittest.TestCase):
         repo=next(x for x in self.app.state()['repositories'] if x['id']==self.repo['id'])
         self.assertTrue(repo['upstream']['stale_pin'])
         self.assertEqual(repo['upstream']['status'],'unknown')
+
+    def test_update_comparison_displays_names_only_on_same_glade(self):
+        import subprocess
+        source=(Path(__file__).parents[1]/'static'/'app.js').read_text()
+        fn=next(x for x in source.splitlines() if x.startswith('function updateComparison('))
+        js="const esc=x=>String(x),num=x=>String(x);\n"+fn+"\nconst repo={pin:'a',runs:[{repo_sha:'a',glade_sha:'g',phase:'test',failed_tests:['old']},{repo_sha:'b',glade_sha:'g',phase:'test',gate_label:'update-b',failed_tests:['new']}]};const html=updateComparison(repo,{head:'b'});if(!html.includes('old')||!html.includes('new')||!html.includes('fixes 1, breaks 1'))process.exit(1);repo.runs[0].glade_sha='other';if(!updateComparison(repo,{head:'b'}).includes('No pin baseline'))process.exit(2);"
+        subprocess.run(['node','-e',js],check=True)
