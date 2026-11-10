@@ -471,11 +471,49 @@ func applyOverlay(config *Config, repo Repo, root string) error {
 			}
 			path := filepath.Join(dest, "sfdx-project.json")
 			data, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
 			var project map[string]any
-			if err := json.Unmarshal(data, &project); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				if spec.Namespace == "" {
+					return fmt.Errorf("managed dependency %q without a manifest needs a namespace", name)
+				}
+				dirs := spec.Dirs
+				if len(dirs) == 0 {
+					dirs = []string{"."}
+				}
+				packages := make([]map[string]any, 0, len(dirs))
+				for _, dir := range dirs {
+					clean := filepath.Clean(dir)
+					if filepath.IsAbs(dir) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
+						return fmt.Errorf("managed dependency %q directory escapes its source", name)
+					}
+					resolved, err := filepath.EvalSymlinks(filepath.Join(dest, clean))
+					if err != nil {
+						return fmt.Errorf("managed dependency %q directory unavailable: %w", name, err)
+					}
+					base, err := filepath.EvalSymlinks(dest)
+					if err != nil {
+						return err
+					}
+					rel, err := filepath.Rel(base, resolved)
+					if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+						return fmt.Errorf("managed dependency %q directory escapes its source", name)
+					}
+					if info, err := os.Stat(resolved); err != nil || !info.IsDir() {
+						return fmt.Errorf("managed dependency %q directory unavailable", name)
+					}
+					packages = append(packages, map[string]any{"path": filepath.ToSlash(clean), "default": true})
+				}
+				project = map[string]any{"namespace": spec.Namespace, "packageDirectories": packages}
+				data, err = json.MarshalIndent(project, "", "  ")
+				if err != nil {
+					return err
+				}
+				if err := os.WriteFile(path, append(data, '\n'), 0644); err != nil {
+					return err
+				}
+			} else if err != nil {
+				return err
+			} else if err := json.Unmarshal(data, &project); err != nil {
 				return err
 			}
 			ns := spec.Namespace
