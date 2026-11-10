@@ -84,6 +84,25 @@ def run(log, state, config, runner, go, ref):
         return result.returncode
 
 
+def write_summary(path, report_path, code):
+    first = 'CORPUS-INFRA: nightly did not produce a valid report'
+    effective = 2
+    if report_path.is_file():
+        try:
+            report = json.loads(report_path.read_text())
+            candidate = report.get('first')
+            expected = {0: 'CORPUS-CLEAN', 1: 'CORPUS-NEW ', 2: 'CORPUS-INFRA '}.get(code)
+            if (report.get('exitCode') == code and isinstance(candidate, str) and expected and
+                    '\n' not in candidate and '\r' not in candidate and
+                    (candidate == expected if code == 0 else candidate.startswith(expected))):
+                first, effective = candidate, code
+        except (OSError, ValueError, TypeError):
+            pass
+    with path.open('x', encoding='utf-8') as summary:
+        summary.write(first + '\n')
+    return effective
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--state', type=pathlib.Path, required=True)
@@ -104,11 +123,13 @@ def main():
         stamp = datetime.datetime.now(ZoneInfo('America/Los_Angeles')).strftime('%Y%m%d-%H%M%S-%f')
         with open(state / 'results' / (stamp + '.log'), 'x', encoding='utf-8') as log:
             try:
-                return run(log, state, args.config.resolve(), args.runner.resolve(strict=True),
+                code = run(log, state, args.config.resolve(), args.runner.resolve(strict=True),
                            args.go.resolve(strict=True), args.ref)
             except (OSError, ValueError, json.JSONDecodeError, subprocess.SubprocessError) as exc:
                 print('CORPUS-INFRA: ' + str(exc), file=log, flush=True)
-                return 2
+                code = 2
+        return write_summary(state / 'results' / (stamp + '.txt'),
+                             state / 'results' / (stamp + '.json'), code)
 
 
 if __name__ == '__main__':
