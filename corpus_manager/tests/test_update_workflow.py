@@ -69,3 +69,28 @@ class UpdateWorkflow(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.app.move_tier(self.repo,'B',self.app.tiers_snapshot()['revision'])
         self.assertEqual(json.loads(p.read_text()),original)
+
+    def test_busy_host_refuses_before_runner(self):
+        self.repo['locations'].append({'id':'pulled','host':'local','path':'/scratch/update','head':'b'*40,'pulled':True})
+        self.app.store.put('repositories',self.repo)
+        with patch.object(self.app.ops, 'host_busy', return_value=True), patch.object(ops, 'host_python') as invoke:
+            with self.assertRaisesRegex(ValueError, 'busy'):
+                self.app.test_update(self.repo['id'],'pulled')
+        invoke.assert_not_called()
+
+    def test_update_runner_records_result_and_preserves_pin(self):
+        import json
+        p=Path(self.temp.name)/'tiers.json'
+        p.write_text(json.dumps({'schemaVersion':1,'depSources':{},'repos':[{'name':'example__alpha','tier':'A','clone':'/work/alpha','pin':'a'*40,'overlay':{},'blocked':''}]}))
+        self.app.set_tiers_file(str(p))
+        self.app.save_settings({'glade_binary':'/bin/glade','runner_binary':'/bin/glade-tools','glade_sha':'c'*40})
+        self.repo['locations'].append({'id':'pulled','host':'local','path':'/scratch/update','head':'b'*40,'pulled':True})
+        self.app.store.put('repositories',self.repo)
+        result={'observed':{'counts':{'tests':4,'passed':3},'failing':[{'test':'Example.test'}], 'timeouts':[], 'diagnostics':[], 'wallSeconds':2.5}, 'complete':True}
+        with patch.object(self.app.ops,'host_busy',return_value=False), patch.object(ops,'host_python',return_value=result) as invoke:
+            self.app.test_update(self.repo['id'],'pulled')
+        rows=self.app.store.all('runs')
+        self.assertEqual(len(rows),1)
+        self.assertEqual((rows[0]['repo_sha'],rows[0]['glade_sha'],rows[0]['failed_tests']),('b'*40,'c'*40,['Example.test']))
+        self.assertEqual(invoke.call_args.args[2]['repo']['pin'],'b'*40)
+        self.assertEqual(json.loads(p.read_text())['repos'][0]['pin'],'a'*40)
