@@ -174,6 +174,14 @@ class Operations:
     def __init__(self, store):
         self.store = store
         self.github = GitHub()
+        self.tiers_snapshot = lambda: {"repos": []}
+        self.tier_entry = lambda repo, entries: None
+
+    @staticmethod
+    def is_private(repo):
+        return bool(repo.get("private")) or any(
+            any("priv" in component.lower() for component in Path(loc.get("path", "")).parts)
+            for loc in repo.get("locations", []))
 
     def add(self, url):
         name = github_name(url)
@@ -230,17 +238,28 @@ class Operations:
 
     def check(self, repo_id):
         repo = self.store.get("repositories", repo_id)
+        metadata_request = False
         try:
-            name = github_name(repo["url"])
+            if self.is_private(repo):
+                raise ValueError("Private checkout; GitHub was not contacted.")
+            url = repo.get("url") or ""
+            if not url:
+                candidate = str(repo.get("name") or "").replace("__", "/")
+                url = "https://github.com/" + github_name(candidate)
+            name = github_name(url)
+            metadata_request = True
             meta = self.github.get("repos/" + name)
+            metadata_request = False
             branch = meta["default_branch"]
             commit = self.github.get("repos/" + name + "/commits/" + urllib.parse.quote(branch, safe=""))
             upstream = {"status": "unknown", "checked_at": now(), "sha": commit["sha"], "default_branch": branch, "stars": meta["stargazers_count"], "pushed_at": meta["pushed_at"], "archived": meta["archived"], "size_kb": meta["size"], "description": meta.get("description") or ""}
             location = next((x for x in repo["locations"] if x["id"] == repo.get("tracked_location_id")), None)
-            if location and location.get("head"):
-                base = location["head"]
+            entry = self.tier_entry(repo, self.tiers_snapshot().get("repos", [])) or {}
+            base = entry.get("pin") or (location or {}).get("head")
+            if base:
                 upstream["base_sha"] = base
-                upstream["base_location_id"] = location["id"]
+                upstream["base_location_id"] = (location or {}).get("id")
+                upstream["base_kind"] = "pin" if entry.get("pin") else "tracked checkout"
                 if base == commit["sha"]:
                     upstream.update(status="current", behind=0)
                 else:
@@ -251,18 +270,20 @@ class Operations:
                 upstream["status"] = "uncloned"
             repo = self.store.get("repositories", repo_id)
             repo["upstream"] = upstream
+            if not repo.get("url"):
+                repo["url"] = "https://github.com/" + name
             self.store.put("repositories", repo)
             return "Upstream metadata refreshed."
         except Exception as exc:
             repo = self.store.get("repositories", repo_id)
             previous = repo.get("upstream", {})
-            previous.update(status="error", error=str(exc), checked_at=now())
+            previous.update(status="gone" if metadata_request and "HTTP 404" in str(exc) else "error", error=str(exc), checked_at=now())
             repo["upstream"] = previous
             self.store.put("repositories", repo)
             raise
 
     def check_all(self):
-        repos = [r for r in self.store.all("repositories") if r["status"] == "active" and r["url"]]
+        repos = [r for r in self.store.all("repositories") if r["status"] == "active" and (r.get("url") or "__" in r.get("name", "")) and not self.is_private(r)]
         failed = 0
         for repo in repos:
             try:
@@ -288,7 +309,7 @@ class Operations:
                 status = existing.get("status", "new")
                 if any(r.get("url", "").lower() == row["html_url"].lower() for r in self.store.all("repositories")):
                     status = "added"
-                self.store.put("candidates", {"id": key, "full_name": row["full_name"], "url": row["html_url"], "description": row.get("description") or "", "stars": row["stargazers_count"], "language": row.get("language"), "pushed_at": row["pushed_at"], "query_id": query_id, "status": status, "first_seen": existing.get("first_seen", now()), "checked_at": now(), "archived": row["archived"], "license": (row.get("license") or {}).get("spdx_id", "Unknown")})
+                self.store.put("candidates", {"id": key, "full_name": row["full_name"], "url": row["html_url"], "description": row.get("description") or "", "stars": row["stargazers_count"], "language": row.get("language"), "pushed_at": row["pushed_at"], "query_id": query_id, "status": status, "first_seen": existing.get("first_seen", now()), "checked_at": now(), "archived": row["archived"], "license": (row.get("license") or {}).get("spdx_id", "Unknown"), "salesforce_project": existing.get("salesforce_project", "unknown")})
             try:
                 current_query = self.store.get("queries", query_id)
                 if current_query["query"] == query["query"]:
@@ -305,6 +326,23 @@ class Operations:
             except ValueError:
                 pass
             raise
+
+    def check_candidate(self, candidate_id):
+        candidate = self.store.get("candidates", candidate_id)
+        if candidate.get("salesforce_project") in ("confirmed", "absent"):
+            return "Cached project check."
+        try:
+            self.github.get("repos/" + github_name(candidate["url"]) + "/contents/sfdx-project.json")
+            candidate["salesforce_project"] = "confirmed"
+        except ValueError as exc:
+            if "HTTP 404" in str(exc):
+                candidate["salesforce_project"] = "absent"
+            else:
+                candidate["salesforce_project"] = "unknown"
+                self.store.put("candidates", candidate)
+                raise
+        self.store.put("candidates", candidate)
+        return "Project check complete."
 
     def snapshot(self, repo_id, host_id):
         host = self.store.get("hosts", host_id)

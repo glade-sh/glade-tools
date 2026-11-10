@@ -339,3 +339,9 @@ h1 { font-size:32px; font-weight:600; letter-spacing:-1.1px; }
 .detail-section>h3,.section-kicker,.workspace-label { font-family:var(--font-mono); color:var(--glade-subtle); }
 @media(max-width:850px) { .sidebar{border-right:0;border-bottom:1px solid var(--line)} .nav-icon{width:15px;height:15px} }
 @media(max-width:560px) { .brand{font-size:25px}.nav-icon{display:none}h1{font-size:27px}.stat-foot{font-size:10px} }
+
+.group-board { display:grid; grid-template-columns:repeat(4,minmax(200px,1fr)); gap:12px; overflow-x:auto; margin:16px 0; }
+.group-column { background:var(--surface, #1c2028); border:1px solid #39404b; border-radius:10px; padding:12px; min-height:160px; }
+.group-column h2 { font-size:1rem; }
+.group-card { background:#242b35; border:1px solid #3a4654; border-radius:8px; margin:10px 0; padding:12px; display:grid; gap:8px; }
+.group-card label { display:flex; justify-content:space-between; align-items:center; }
