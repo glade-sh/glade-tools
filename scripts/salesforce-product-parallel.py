@@ -213,6 +213,94 @@ def validate_events(path, shard, deferred=frozenset()):
             require(actions == ['pass'] or (shard['kind'] != 'apextest' and actions == ['skip']) or deferred_skip, 'invalid test terminal')
 
 
+# Tests that measure real time or CPU can fail on a shared runner without any
+# product change. Only the tests listed in scripts/timing-retry-tests.txt get one
+# rerun. Any other failure, any second failure, and any failed test outside the
+# list still fails the shard. Every retry is logged and annotated.
+TIMING_RETRY_FILE = TOOLS / 'scripts' / 'timing-retry-tests.txt'
+
+
+def load_timing_retry(path=None):
+    entries = set()
+    for number, line in enumerate(Path(path or TIMING_RETRY_FILE).read_text(encoding='utf-8').splitlines(), 1):
+        line = line.split('#', 1)[0].strip()
+        if not line:
+            continue
+        fields = line.split()
+        require(len(fields) == 2 and re.fullmatch(r'Test\w+', fields[1]) is not None, f'invalid timing retry entry at line {number}')
+        package = fields[0] if fields[0].startswith(PREFIX) else PREFIX + fields[0]
+        entries.add((package, fields[1]))
+    return frozenset(entries)
+
+
+def failed_tests(path):
+    """Return (package, top-level test) pairs with a fail event, or None when
+    the stream cannot be read, so the caller fails closed."""
+    failures = set()
+    try:
+        for event in read_events(path):
+            if isinstance(event, dict) and event.get('Action') == 'fail' and event.get('Test'):
+                failures.add((event['Package'], event['Test'].split('/')[0]))
+    except (ValueError, KeyError, OSError):
+        return None
+    return failures
+
+
+def retryable(failures, shard, allowed):
+    return bool(failures) and all(pair in allowed and pair[0] in shard['packages'] for pair in failures)
+
+
+def report_retry(failures, output):
+    names = ', '.join(sorted(f'{package.removeprefix(PREFIX)} {name}' for package, name in failures))
+    message = f'timing-sensitive test(s) failed once and are retried once: {names}'
+    print('TIMING RETRY: ' + message, file=sys.stderr, flush=True)
+    print('::warning title=Timing test retry::' + message, flush=True)
+    summary = os.environ.get('GITHUB_STEP_SUMMARY')
+    if summary:
+        with open(summary, 'a', encoding='utf-8') as target:
+            target.write(f'### Timing test retry\n\n{message}\n\nShard output: `{output.name}`\n')
+
+
+def run_shard_events(root, directory, plan, shard, target, only=None):
+    """Write test2json events for the shard. only maps package to test names."""
+    if shard['kind'] == 'packages':
+        for package in shard['packages']:
+            if only is not None and package not in only:
+                continue
+            command = ['go', '-C', str(root), 'test', '-json', '-count=1', '-p', '1', '-timeout=60m']
+            if only is not None:
+                command.append('-run=^(?:' + '|'.join(sorted(only[package])) + ')$')
+            # A failing test exits nonzero; the events say which one failed.
+            subprocess.run([*command, package], stdout=target, check=False)
+        return
+    binary = check_binary(directory, plan, shard['kind'])
+    binary.chmod(0o755)  # Artifact downloads do not preserve executable bits.
+    regex = shard['selection']['regex']
+    if only is not None:
+        regex = '^(?:' + '|'.join(sorted(only[shard['packages'][0]])) + ')$'
+    command = [str(binary), '-test.v=test2json', '-test.count=1', '-test.timeout=60m', '-test.run=' + regex]
+    with subprocess.Popen(command, cwd=root / KINDS[shard['kind']][0], stdout=subprocess.PIPE) as process:
+        converter = subprocess.run(['go', '-C', str(root), 'tool', 'test2json', '-p', shard['packages'][0]], stdin=process.stdout, stdout=target)
+        process.stdout.close()
+        status = process.wait()
+        require(converter.returncode == 0 and status in (0, 1), 'test binary or converter failed')
+
+
+def merge_retry(first, retry, merged, retried, packages):
+    """First run minus the retried tests' events and their package terminals,
+    plus the retry run's events."""
+    with merged.open('wb') as target:
+        for event in read_events(first):
+            test = event.get('Test')
+            if test and (event['Package'], test.split('/')[0]) in retried:
+                continue
+            if not test and event['Package'] in packages and event.get('Action') in {'pass', 'fail', 'skip'}:
+                continue
+            target.write(json.dumps(event, separators=(',', ':')).encode() + b'\n')
+        for event in read_events(retry):
+            target.write(json.dumps(event, separators=(',', ':')).encode() + b'\n')
+
+
 def run_shard(root, directory, shard_id, output):
     plan = load_plan(root, directory)
     selected = [s for s in plan['shards'] if s['id'] == shard_id]
@@ -221,17 +309,23 @@ def run_shard(root, directory, shard_id, output):
     output.mkdir()
     events = output / 'events.jsonl'
     with events.open('wb') as target:
-        if shard['kind'] == 'packages':
-            subprocess.run(['go', '-C', str(root), 'test', '-json', '-count=1', '-p', '1', '-timeout=60m', *shard['packages']], stdout=target, check=True)
-        else:
-            binary = check_binary(directory, plan, shard['kind'])
-            binary.chmod(0o755)  # Artifact downloads do not preserve executable bits.
-            command = [str(binary), '-test.v=test2json', '-test.count=1', '-test.timeout=60m', '-test.run=' + shard['selection']['regex']]
-            with subprocess.Popen(command, cwd=root / KINDS[shard['kind']][0], stdout=subprocess.PIPE) as process:
-                converter = subprocess.run(['go', '-C', str(root), 'tool', 'test2json', '-p', shard['packages'][0]], stdin=process.stdout, stdout=target)
-                process.stdout.close()
-                status = process.wait()
-                require(status == 0 and converter.returncode == 0, 'test binary or converter failed')
+        run_shard_events(root, directory, plan, shard, target)
+    failures = failed_tests(events)
+    require(failures is not None, 'unreadable test events')
+    if failures:
+        require(retryable(failures, shard, load_timing_retry()), 'failed test event')
+        report_retry(failures, output)
+        by_package = {}
+        for package, name in failures:
+            by_package.setdefault(package, set()).add(name)
+        retry_events = output / 'retry-events.jsonl'
+        with retry_events.open('wb') as target:
+            run_shard_events(root, directory, plan, shard, target, by_package)
+        require(failed_tests(retry_events) == set(), 'timing-sensitive test failed again on retry')
+        merged = output / 'merged-events.jsonl'
+        merge_retry(events, retry_events, merged, failures, set(by_package))
+        merged.replace(events)
+        retry_events.unlink()
     validate_events(events, shard, load_deferred(root))
     write_json(output / 'result.json', {**plan['identity'], 'shardID': shard_id, 'status': 'pass',
                                       'planSHA256': digest(directory / 'parallel-plan.json'), 'eventsSHA256': digest(events)})
