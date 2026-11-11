@@ -101,6 +101,17 @@ These private configuration files must stay outside the source repository.
 If `history-sources.json` includes a `dispatch_dir`, each import also discovers
 new dispatch records there. Only enabled routes with explicitly recorded Glade
 commits and timestamps are added. Existing and manually configured routes remain.
+Dispatch routes come from a private file outside the repository, found at
+`$GLADE_CORPUS_MANAGER_ROUTES` or `~/.config/glade-corpus-manager/routes.json`.
+It maps each dispatch output key to a gate flag and a configured host ID:
+
+```json
+{"routes":{"output-a":{"gate":"private","host":"host-a"},
+  "output-b":{"gate":"public","host":"host-b"}}}
+```
+
+An output path containing one `{x,y}` group expands to one source per choice.
+Without this file no dispatch routes are generated and a warning is shown.
 
 ## Groups and update testing
 

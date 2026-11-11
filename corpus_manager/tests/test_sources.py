@@ -5,7 +5,15 @@ from copy import deepcopy
 from pathlib import Path
 from unittest.mock import patch
 
-from corpus_manager.sources import refresh_sources
+from corpus_manager import sources
+from corpus_manager.sources import load_routes
+
+ROUTES = {"route_a": ("private", "host-a"), "route_b": ("public", "host-b"),
+          "route_c": ("broad3", "host-b"), "route_d": ("split", "host-b")}
+
+
+def refresh_sources(config):
+    return sources.refresh_sources(config, ROUTES)
 
 
 class SourcesTests(unittest.TestCase):
@@ -17,9 +25,9 @@ class SourcesTests(unittest.TestCase):
     def dispatch(self, name="synthetic", **changes):
         document = {
             "label": "SYNTHETIC", "sha": "a" * 40, "dispatched": "2026-11-09T00:00:00Z",
-            "gates": {"private": True, "public": False, "broad3": False, "bmo": True},
-            "outputs": {"casper_priv": "/synthetic/private-run", "razor_public": "~/synthetic/public-run",
-                        "razor_b3": "~/synthetic/broad-run", "bmo": "~/synthetic/{BUCKET2,BROAD}-run"},
+            "gates": {"private": True, "public": False, "broad3": False, "split": True},
+            "outputs": {"route_a": "/synthetic/private-run", "route_b": "~/synthetic/public-run",
+                        "route_c": "~/synthetic/broad-run", "route_d": "~/synthetic/{one,two}-run"},
             **changes,
         }
         path = self.directory / (name + ".json")
@@ -30,9 +38,9 @@ class SourcesTests(unittest.TestCase):
         self.dispatch()
         result = refresh_sources({"dispatch_dir": str(self.directory), "sources": []})
         self.assertEqual(len(result["sources"]), 3)
-        self.assertEqual({row["host"] for row in result["sources"]}, {"casper", "bmo"})
+        self.assertEqual({row["host"] for row in result["sources"]}, {"host-a", "host-b"})
         self.assertEqual({row["path"] for row in result["sources"]}, {
-            "/synthetic/private-run/results.jsonl", "~/synthetic/BUCKET2-run/results.jsonl", "~/synthetic/BROAD-run/results.jsonl"})
+            "/synthetic/private-run/results.jsonl", "~/synthetic/one-run/results.jsonl", "~/synthetic/two-run/results.jsonl"})
         for row in result["sources"]:
             self.assertEqual(row["glade_sha"], "a" * 40)
             self.assertEqual(row["started_at"], "2026-11-09T00:00:00Z")
@@ -51,7 +59,7 @@ class SourcesTests(unittest.TestCase):
 
     def test_manual_entries_survive_and_duplicate_keys_do_not_multiply(self):
         self.dispatch()
-        manual = {"host": "casper", "path": "/synthetic/private-run/results.jsonl", "glade_sha": "a" * 40,
+        manual = {"host": "host-a", "path": "/synthetic/private-run/results.jsonl", "glade_sha": "a" * 40,
                   "started_at": "2026-11-09T00:00:00Z", "provenance": "Manual source", "note": "keep this"}
         extra = {"host": "custom", "path": "/synthetic/extra/results.jsonl", "glade_sha": "c" * 40,
                  "started_at": "2026-11-08T00:00:00Z"}
@@ -87,6 +95,17 @@ class SourcesTests(unittest.TestCase):
         with patch("corpus_manager.sources.MAX_DISPATCH_BYTES", 10):
             result = refresh_sources({"dispatch_dir": str(self.directory), "sources": existing})
         self.assertEqual(result["sources"], existing)
+        self.assertTrue(result["warnings"])
+
+    def test_routes_load_from_env_path_and_missing_file_yields_none(self):
+        path = self.directory / "routes.json"
+        path.write_text(json.dumps({"routes": {"k": {"gate": "g", "host": "host-a"}, "bad": {"gate": 1}}}))
+        with patch.dict("os.environ", {sources.ROUTES_ENV: str(path)}):
+            self.assertEqual(load_routes(), ({"k": ("g", "host-a")}, None))
+        self.dispatch()
+        with patch.dict("os.environ", {sources.ROUTES_ENV: str(self.directory / "absent.json")}):
+            result = sources.refresh_sources({"dispatch_dir": str(self.directory), "sources": []})
+        self.assertEqual(result["sources"], [])
         self.assertTrue(result["warnings"])
 
 

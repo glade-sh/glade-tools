@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import stat
 from datetime import datetime
@@ -11,12 +12,41 @@ from pathlib import Path
 
 MAX_DISPATCH_BYTES = 1024 * 1024
 MAX_DISPATCH_RECORDS = 10_000
-ROUTES = {
-    "casper_priv": ("private", "casper"),
-    "razor_public": ("public", "razor"),
-    "razor_b3": ("broad3", "razor"),
-    "bmo": ("bmo", "bmo"),
-}
+ROUTES_ENV = "GLADE_CORPUS_MANAGER_ROUTES"
+DEFAULT_ROUTES_FILE = Path("~/.config/glade-corpus-manager/routes.json")
+_BRACE = re.compile(r"\{([^{},]+(?:,[^{},]+)+)\}")
+
+
+def routes_path():
+    return Path(os.environ.get(ROUTES_ENV) or DEFAULT_ROUTES_FILE).expanduser()
+
+
+def load_routes(path=None):
+    """Read route definitions from a private file kept outside the repository.
+
+    Format: {"routes": {"<output key>": {"gate": "<gate flag>", "host": "<host id>"}}}
+    Returns (routes, warning). Missing or invalid files yield no routes.
+    """
+    path = Path(path).expanduser() if path else routes_path()
+    try:
+        document = json.loads(path.read_text(encoding="utf-8-sig"))
+    except FileNotFoundError:
+        return {}, "No dispatch routes file at %s; set %s. No dispatch routes were generated." % (path, ROUTES_ENV)
+    except (OSError, ValueError):
+        return {}, "Dispatch routes file is unreadable; no dispatch routes were generated."
+    routes = {}
+    raw = document.get("routes") if isinstance(document, dict) else None
+    for kind, entry in (raw.items() if isinstance(raw, dict) else []):
+        if isinstance(entry, dict) and isinstance(entry.get("gate"), str) and isinstance(entry.get("host"), str):
+            routes[kind] = (entry["gate"], entry["host"])
+    return routes, None if routes else "Dispatch routes file defines no valid routes."
+
+
+def _expand(output):
+    match = _BRACE.search(output)
+    if not match:
+        return [output]
+    return [output[:match.start()] + choice + output[match.end():] for choice in match.group(1).split(",")]
 
 
 def _key(source):
@@ -37,7 +67,7 @@ def _timestamp(value):
     return value
 
 
-def _extract(document, filename):
+def _extract(document, filename, routes):
     if not isinstance(document, dict):
         return None
     sha = document.get("sha")
@@ -49,16 +79,13 @@ def _extract(document, filename):
     if not isinstance(gates, dict) or not isinstance(outputs, dict):
         return None
     sources = []
-    for kind, (flag, host) in ROUTES.items():
+    for kind, (flag, host) in routes.items():
         if gates.get(flag) is not True:
             continue
         output = outputs.get(kind)
         if not isinstance(output, str) or not output.startswith(("/", "~/")) or "\0" in output:
             continue
-        paths = [output]
-        if kind == "bmo" and "{BUCKET2,BROAD}" in output:
-            paths = [output.replace("{BUCKET2,BROAD}", group) for group in ("BUCKET2", "BROAD")]
-        for path in paths:
+        for path in _expand(output):
             sources.append({
                 "host": host,
                 "path": path.rstrip("/") + "/results.jsonl",
@@ -73,13 +100,15 @@ def _extract(document, filename):
     return sources
 
 
-def refresh_sources(config: dict) -> dict:
+def refresh_sources(config: dict, routes=None) -> dict:
     """Return current dispatch routes plus retained history and manual sources.
 
     Generated routes use the dispatch's recorded SHA, timestamp and output
     directory. No binary or repository HEAD is consulted. Existing routes are
     retained because the original dispatch file can disappear before its saved
     aggregate does. Manual entries take precedence for an identical source key.
+    Routes map dispatch output keys to gate flags and host IDs; when not given
+    they come from the private routes file (see load_routes).
     """
     refreshed = dict(config)
     existing = [dict(source) for source in config.get("sources", []) if isinstance(source, dict)]
@@ -88,6 +117,11 @@ def refresh_sources(config: dict) -> dict:
     directory = config.get("dispatch_dir")
     if not directory:
         return refreshed
+    route_warning = None
+    if routes is None:
+        routes, route_warning = load_routes()
+    if route_warning:
+        refreshed["warnings"].append(route_warning)
     try:
         directory = Path(directory).expanduser()
         if not directory.is_dir():
@@ -108,7 +142,7 @@ def refresh_sources(config: dict) -> dict:
                 raw = stream.read(MAX_DISPATCH_BYTES + 1)
             if len(raw) > MAX_DISPATCH_BYTES:
                 raise ValueError("Dispatch metadata too large")
-            entries = _extract(json.loads(raw.decode("utf-8-sig")), file.name)
+            entries = _extract(json.loads(raw.decode("utf-8-sig")), file.name, routes)
             if entries is None:
                 raise ValueError("Missing explicit dispatch identity")
             generated.extend(entries)
