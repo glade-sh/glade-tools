@@ -43,7 +43,7 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual(host["ssh"], "")
         self.assertEqual(host["managed_root"], "")
         for fields in ({"ssh": "-oProxyCommand=bad"}, {"ssh": "runner; command"}, {"roots": ["relative/path"]},
-                       {"managed_root": "/Volumes/Photos/BACKUP/new"}):
+                       {"managed_root": "/synthetic/BACKUP/new"}):
             with self.subTest(fields=fields), self.assertRaises(ValueError):
                 ops.validate_host(fields)
 

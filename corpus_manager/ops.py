@@ -389,8 +389,6 @@ print(json.dumps({'busy':busy or load>cpu*0.8}))
         host = self.store.get("hosts", host_id)
         if not host.get("managed_root"):
             raise ValueError("Choose a host with a managed checkout directory.")
-        if "casper" in (host.get("ssh") or "").lower() and not host["managed_root"].startswith("/Volumes/Photos/"):
-            raise ValueError("Casper managed checkouts must stay under /Volumes/Photos.")
         self.check(repo_id)
         repo = self.store.get("repositories", repo_id)
         up = repo["upstream"]
