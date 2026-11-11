@@ -655,13 +655,16 @@ func TestCorpusAssuranceOrchestratorProductionBuildCLI(t *testing.T) {
 	ldflags := "-X github.com/glade-sh/glade/tools/internal/corpusassurance.testApprovedSalesforceFilterSHA256=" + filterSHA
 	command := exec.Command("go", "run", "-ldflags", ldflags, "./cmd/glade-tools", "corpus", "assurance", "orchestrator", "production-build", "--request", requestPath)
 	command.Dir = repositoryRoot
-	stdout, err := command.CombinedOutput()
-	if err != nil {
-		t.Fatalf("production-build CLI: %v: %s", err, stdout)
+	var stdoutBuf, stderrBuf bytes.Buffer
+	command.Stdout = &stdoutBuf
+	command.Stderr = &stderrBuf
+	if err := command.Run(); err != nil {
+		t.Fatalf("production-build CLI: %v: stdout: %s stderr: %s", err, stdoutBuf.Bytes(), stderrBuf.Bytes())
 	}
+	stdout := stdoutBuf.Bytes()
 	var manifest ProductionRuntimeBatch
 	if err := decodeExactJSON(stdout, &manifest); err != nil {
-		t.Fatalf("production-build stdout: %s (%v)", stdout, err)
+		t.Fatalf("production-build stdout: %s stderr: %s (%v)", stdout, stderrBuf.Bytes(), err)
 	}
 	validated, err := validateOrchestratorProductionBatch(inputs.build.OutputPath, inputs.fixture.plan, inputs.fixture.lease)
 	if err != nil || !reflect.DeepEqual(validated.manifest, manifest) {
