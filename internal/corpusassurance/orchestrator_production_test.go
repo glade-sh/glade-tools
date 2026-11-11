@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
