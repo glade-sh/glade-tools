@@ -92,3 +92,30 @@ func TestCorpusRunUsageIsExit2(t *testing.T) {
 		t.Fatalf("code = %d", code)
 	}
 }
+
+func TestCorpusClassifyCommand(t *testing.T) {
+	dir := t.TempDir()
+	tiers := `{"schemaVersion":1,"repos":[{"name":"sample","tier":"B","clone":"c","pin":"p"},{"name":"nogolden","tier":"B","clone":"c","pin":"p"}]}`
+	golden := `{"repo":"sample","pin":"p","overlay":{"config":{}},"glade":{"sourceApi":"67.0"},"counts":{"classes":1,"tests":2,"passed":1},"failing":[{"test":"T.b","status":"unclassified"}],"wallSeconds":1}`
+	if err := os.MkdirAll(filepath.Join(dir, "goldens"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for name, data := range map[string]string{"tiers.json": tiers, "goldens/sample.json": golden} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(data), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	var out, errOut bytes.Buffer
+	code := Run(context.Background(), []string{"corpus", "classify", "--config", dir, "--status", "known-gap", "--reason", "baseline", "--ticket", "T-1"}, &out, &errOut)
+	if code != 0 || !strings.Contains(out.String(), "classified 1 entries in 1 goldens") {
+		t.Fatalf("code %d out %q err %q", code, out.String(), errOut.String())
+	}
+	data, _ := os.ReadFile(filepath.Join(dir, "goldens", "sample.json"))
+	if !strings.Contains(string(data), `"status": "known-gap"`) || !strings.Contains(string(data), `"ticket": "T-1"`) {
+		t.Fatalf("golden not classified: %s", data)
+	}
+	code = Run(context.Background(), []string{"corpus", "classify", "--config", dir, "--status", "known-gap"}, &out, &errOut)
+	if code != 2 {
+		t.Fatalf("missing reason exit = %d", code)
+	}
+}

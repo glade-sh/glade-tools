@@ -13,11 +13,11 @@ import (
 	"github.com/glade-sh/glade/tools/internal/corpusrun"
 )
 
-// runCorpusV2 handles `corpus run` and `corpus golden`. It returns the exit
+// runCorpusV2 handles `corpus run`, `corpus golden` and `corpus classify`. It returns the exit
 // code: 0 clean, 1 NEW, 2 infrastructure or usage.
 func runCorpusV2(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if len(args) == 0 {
-		fmt.Fprintln(stderr, "glade-tools: corpus run|golden ...")
+		fmt.Fprintln(stderr, "glade-tools: corpus run|golden|classify ...")
 		return corpusrun.ExitInfra
 	}
 	fail := func(err error) int {
@@ -82,6 +82,44 @@ func runCorpusV2(ctx context.Context, args []string, stdout, stderr io.Writer) i
 			return fail(err)
 		}
 		fmt.Fprintf(stdout, "golden written: %d unclassified, %d dropped\n", stats.Unclassified, stats.Dropped)
+		return corpusrun.ExitClean
+	case "classify":
+		fs := flag.NewFlagSet("corpus classify", flag.ContinueOnError)
+		fs.SetOutput(stderr)
+		config := fs.String("config", "", "private corpus config directory")
+		repos := fs.String("repo", "", "comma-separated repos to classify (default: every golden)")
+		status := fs.String("status", "", "known-gap, intended, env or flaky")
+		reason := fs.String("reason", "", "reason recorded on each entry")
+		ticket := fs.String("ticket", "", "ticket recorded on each entry")
+		if err := fs.Parse(args[1:]); err != nil {
+			return corpusrun.ExitInfra
+		}
+		if *config == "" {
+			return fail(fmt.Errorf("--config is required"))
+		}
+		var names []string
+		if *repos != "" {
+			names = strings.Split(*repos, ",")
+		} else {
+			cfg, err := corpusrun.LoadConfig(*config)
+			if err != nil {
+				return fail(err)
+			}
+			for _, repo := range cfg.Repos {
+				if _, err := os.Stat(corpusrun.GoldenPath(*config, repo.Name)); err == nil {
+					names = append(names, repo.Name)
+				}
+			}
+		}
+		total := 0
+		for _, name := range names {
+			n, err := corpusrun.ClassifyUnclassified(*config, name, corpusrun.Classification{Status: *status, Reason: *reason, Ticket: *ticket})
+			if err != nil {
+				return fail(fmt.Errorf("%s: %w", name, err))
+			}
+			total += n
+		}
+		fmt.Fprintf(stdout, "classified %d entries in %d goldens\n", total, len(names))
 		return corpusrun.ExitClean
 	}
 	return fail(fmt.Errorf("unknown corpus subcommand %q", args[0]))

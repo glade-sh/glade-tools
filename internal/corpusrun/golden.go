@@ -226,3 +226,45 @@ func BuildFromRun(config, repo, runPath string) (BuildStats, error) {
 	golden, stats := BuildGolden(existing, repo, result.Observed)
 	return stats, WriteGolden(config, golden)
 }
+
+// Classification is the status, reason and ticket given to unclassified entries.
+type Classification struct {
+	Status string
+	Reason string
+	Ticket string
+}
+
+// ClassifyUnclassified gives every unclassified entry of a golden the same
+// classification and returns how many entries changed. Classified entries are
+// never touched. A golden with nothing unclassified is not rewritten.
+func ClassifyUnclassified(config, repo string, c Classification) (int, error) {
+	if !validStatus(c.Status) || c.Status == StatusUnclassified {
+		return 0, fmt.Errorf("status %q is not a classification", c.Status)
+	}
+	if c.Reason == "" || c.Ticket == "" {
+		return 0, fmt.Errorf("a classification needs a reason and a ticket")
+	}
+	g, err := LoadGolden(config, repo)
+	if err != nil {
+		return 0, err
+	}
+	changed := 0
+	set := func(status *string, reason, ticket *string) {
+		if *status == StatusUnclassified {
+			*status, *reason, *ticket = c.Status, c.Reason, c.Ticket
+			changed++
+		}
+	}
+	for _, list := range [][]TestEntry{g.Failing, g.Timeouts} {
+		for i := range list {
+			set(&list[i].Status, &list[i].Reason, &list[i].Ticket)
+		}
+	}
+	for i := range g.Diagnostics {
+		set(&g.Diagnostics[i].Status, &g.Diagnostics[i].Reason, &g.Diagnostics[i].Ticket)
+	}
+	if changed == 0 {
+		return 0, nil
+	}
+	return changed, WriteGolden(config, g)
+}

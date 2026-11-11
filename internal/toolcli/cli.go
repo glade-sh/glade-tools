@@ -36,7 +36,7 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if args[0] == "compat" {
 		args = args[1:]
 	}
-	if len(args) >= 2 && args[0] == "corpus" && (args[1] == "run" || args[1] == "golden") {
+	if len(args) >= 2 && args[0] == "corpus" && (args[1] == "run" || args[1] == "golden" || args[1] == "classify") {
 		return runCorpusV2(ctx, args[1:], stdout, stderr)
 	}
 	if len(args) >= 2 && args[0] == "corpus" && args[1] == "assurance" {
@@ -97,7 +97,7 @@ Commands:
   server-examples    Probe checked server route examples.
   surface            Refresh and inspect the Salesforce surface ledger.
 	corpus             Run Glade over a public corpus and classify diagnostics.
-	corpus run         Run a tier against golden files (corpus v2); golden refreshes a golden.
+	corpus run         Run a tier against golden files (corpus v2); golden refreshes a golden, classify labels new entries.
 	corpus assurance   Run sealed private-corpus daily-development assurance.
   visualforce        Capture scratch-org Visualforce rendering evidence.
   lwc                Capture LWC shell evidence and native API parity.

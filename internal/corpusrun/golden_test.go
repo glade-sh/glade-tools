@@ -376,3 +376,55 @@ func TestBuildFromRunRefusals(t *testing.T) {
 		t.Fatalf("a refused build must not write a golden: %v", err)
 	}
 }
+
+func TestClassifyUnclassifiedLeavesClassifiedEntriesAlone(t *testing.T) {
+	dir := t.TempDir()
+	g := baseGolden()
+	g.Repo = "sample-app"
+	g.Failing = []TestEntry{
+		{Test: "SampleTest.kept", Status: StatusIntended, Reason: "old reason", Ticket: "ISSUE-1"},
+		{Test: "SampleTest.open", Status: StatusUnclassified},
+	}
+	g.Timeouts = []TestEntry{{Test: "SampleTest.hangs", Status: StatusUnclassified}}
+	g.Diagnostics = []DiagnosticEntry{{Code: "GLADESEMA001", File: "src/A.cls", Line: 3, Status: StatusUnclassified}}
+	if err := WriteGolden(dir, g); err != nil {
+		t.Fatal(err)
+	}
+	n, err := ClassifyUnclassified(dir, "sample-app", Classification{Status: StatusKnownGap, Reason: "baseline", Ticket: "ISSUE-9"})
+	if err != nil || n != 3 {
+		t.Fatalf("changed %d, err %v", n, err)
+	}
+	got, err := LoadGolden(dir, "sample-app")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if e := got.Failing[0]; e.Status != StatusIntended || e.Reason != "old reason" || e.Ticket != "ISSUE-1" {
+		t.Fatalf("classified entry changed: %+v", e)
+	}
+	if e := got.Failing[1]; e.Status != StatusKnownGap || e.Reason != "baseline" || e.Ticket != "ISSUE-9" {
+		t.Fatalf("open entry = %+v", e)
+	}
+	if e := got.Timeouts[0]; e.Status != StatusKnownGap {
+		t.Fatalf("timeout = %+v", e)
+	}
+	if e := got.Diagnostics[0]; e.Status != StatusKnownGap || e.Ticket != "ISSUE-9" {
+		t.Fatalf("diagnostic = %+v", e)
+	}
+	if n, err := ClassifyUnclassified(dir, "sample-app", Classification{Status: StatusEnv, Reason: "r", Ticket: "T"}); err != nil || n != 0 {
+		t.Fatalf("second pass changed %d, err %v", n, err)
+	}
+}
+
+func TestClassifyUnclassifiedRejectsIncompleteClassification(t *testing.T) {
+	dir := t.TempDir()
+	for _, c := range []Classification{
+		{Status: StatusUnclassified, Reason: "r", Ticket: "T"},
+		{Status: "bogus", Reason: "r", Ticket: "T"},
+		{Status: StatusKnownGap, Ticket: "T"},
+		{Status: StatusKnownGap, Reason: "r"},
+	} {
+		if _, err := ClassifyUnclassified(dir, "sample-app", c); err == nil {
+			t.Fatalf("accepted %+v", c)
+		}
+	}
+}
