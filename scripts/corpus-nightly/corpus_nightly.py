@@ -3,7 +3,7 @@
 
 The script names no corpus repo. The tier list, overlays and goldens live in a
 private config directory that --config points at. It builds Glade from --ref,
-builds `glade-tools` from the checkout this script lives in, runs
+builds `glade-tools` from the committed HEAD of the checkout this script lives in (next to the Glade clone, which its go.mod needs), runs
 `glade-tools corpus run --tier <tier>`, and writes a summary whose first line is
 CORPUS-CLEAN, CORPUS-NEW n in k repos, or CORPUS-INFRA ... . The exit code is
 0, 1 or 2 like the runner's.
@@ -95,7 +95,12 @@ def run(log, args, stamp):
         glade = root / 'glade-bin'
         tools = root / 'glade-tools-bin'
         command([str(args.go), 'build', '-o', str(glade), './cmd/glade'], cwd=clone)
-        command([str(args.go), 'build', '-o', str(tools), './cmd/glade-tools'], cwd=tools_root)
+        # glade-tools replaces the glade module with ../glade, so build it next to the clone.
+        tools_src = root / 'glade-tools'
+        tools_src.mkdir()
+        archive = subprocess.run(['git', '-C', str(tools_root), 'archive', 'HEAD'], env=env, stdout=subprocess.PIPE, check=True)
+        subprocess.run(['tar', '-x', '-C', str(tools_src)], input=archive.stdout, check=True)
+        command([str(args.go), 'build', '-o', str(tools), './cmd/glade-tools'], cwd=tools_src)
         report = args.state / 'results' / (stamp + '.json')
         result = subprocess.run(
             [str(tools), 'corpus', 'run', '--tier', args.tier, '--glade', str(glade), '--config', str(args.config),
