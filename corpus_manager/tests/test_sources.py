@@ -34,7 +34,7 @@ class SourcesTests(unittest.TestCase):
         path.write_text(json.dumps(document))
         return path
 
-    def test_enabled_routes_and_bmo_expansion_use_explicit_metadata(self):
+    def test_enabled_routes_and_brace_expansion_use_explicit_metadata(self):
         self.dispatch()
         result = refresh_sources({"dispatch_dir": str(self.directory), "sources": []})
         self.assertEqual(len(result["sources"]), 3)

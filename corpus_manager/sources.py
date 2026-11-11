@@ -42,6 +42,22 @@ def load_routes(path=None):
     return routes, None if routes else "Dispatch routes file defines no valid routes."
 
 
+def load_lanes(path=None):
+    """Return shared test-lane settings from the private routes file, or None.
+
+    Format: {"lanes": {"slots_dir": "<dir>", "hosts": {"<ssh alias>":
+    {"flag": "<busy marker file>", "prefix": "<slot directory prefix>"}}}}
+    """
+    path = Path(path).expanduser() if path else routes_path()
+    try:
+        lanes = json.loads(path.read_text(encoding="utf-8-sig")).get("lanes")
+    except (OSError, ValueError, AttributeError):
+        return None
+    if not isinstance(lanes, dict) or not isinstance(lanes.get("slots_dir"), str) or not isinstance(lanes.get("hosts"), dict):
+        return None
+    return lanes
+
+
 def _expand(output):
     match = _BRACE.search(output)
     if not match:

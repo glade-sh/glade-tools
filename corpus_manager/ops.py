@@ -362,17 +362,17 @@ class Operations:
         return "Project check complete."
 
     def host_busy(self, host):
+        from .sources import load_lanes
         alias = (host.get("ssh") or "local").split("@")[-1]
-        if alias in ("razor", "casper", "bmo"): alias += ".local"
-        slots = Path("/tmp/rtest-slots")
-        if alias not in ("razor.local", "casper.local", "bmo.local", "local"):
-            raise ValueError("Cannot verify shared test lanes for this host alias.")
-        if alias in ("razor.local", "casper.local", "bmo.local", "local"):
-            if not slots.is_dir():
-                raise ValueError("Cannot verify the shared test-lane state.")
-            flags = {"razor.local":"RAZOR_QUIET", "casper.local":"CASPER_BUSY", "bmo.local":"BMO_BUSY", "local":"LOCAL_OFF"}
-            if (slots / flags[alias]).exists() or any(slots.glob(alias + ".[0-9]*")):
-                return True
+        lanes = load_lanes()
+        entry = (lanes or {}).get("hosts", {}).get(alias)
+        if not isinstance(entry, dict) or not isinstance(entry.get("flag"), str) or not isinstance(entry.get("prefix"), str):
+            raise ValueError("Cannot verify shared test lanes for this host alias; configure lanes in the routes file.")
+        slots = Path(lanes["slots_dir"]).expanduser()
+        if not slots.is_dir():
+            raise ValueError("Cannot verify the shared test-lane state.")
+        if (slots / entry["flag"]).exists() or any(slots.glob(entry["prefix"] + ".[0-9]*")):
+            return True
         status = host_python(host, r"""
 import json, os, subprocess
 load=os.getloadavg()[0]
@@ -380,9 +380,9 @@ cpu=os.cpu_count() or 1
 p=subprocess.run(['ps','-eo','args'],capture_output=True,text=True,timeout=5)
 if p.returncode: raise ValueError('Cannot verify host activity')
 lines=p.stdout.splitlines()
-busy=any(('val2.sh' in x or 'gate-dispatch.sh' in x or 'corpus-sweep.sh' in x or 'rtest-remote.sh' in x) and 'python3 -' not in x for x in lines)
+busy=any(any(n in x for n in DATA['names']) and 'python3 -' not in x for x in lines)
 print(json.dumps({'busy':busy or load>cpu*0.8}))
-""", {}, timeout=15)
+""", {"names": [n for n in lanes.get("busy_processes", []) if isinstance(n, str) and n]}, timeout=15)
         return bool(status.get("busy"))
 
     def snapshot(self, repo_id, host_id):

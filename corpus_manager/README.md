@@ -111,6 +111,8 @@ It maps each dispatch output key to a gate flag and a configured host ID:
 ```
 
 An output path containing one `{x,y}` group expands to one source per choice.
+The same file may hold `lanes` (`slots_dir` plus per-SSH-alias `flag` and `prefix`)
+and optional `busy_processes` (command-line substrings) so the dashboard can check shared test-lane markers before testing.
 Without this file no dispatch routes are generated and a warning is shown.
 
 ## Groups and update testing

@@ -164,7 +164,9 @@ class UpdateWorkflow(unittest.TestCase):
 
     def test_existing_lane_prevents_host_probe(self):
         slots=Path(self.temp.name)/'slots';slots.mkdir();(slots/'local.0').mkdir()
-        with patch.object(ops,'Path',return_value=slots),patch.object(ops,'host_python') as probe:
+        cfg=Path(self.temp.name)/'routes.json'
+        cfg.write_text(__import__('json').dumps({'lanes':{'slots_dir':str(slots),'hosts':{'local':{'flag':'LOCAL_OFF','prefix':'local'}}}}))
+        with patch.dict('os.environ',{'GLADE_CORPUS_MANAGER_ROUTES':str(cfg)}),patch.object(ops,'host_python') as probe:
             self.assertTrue(self.app.ops.host_busy({'ssh':''}))
             probe.assert_not_called()
 
