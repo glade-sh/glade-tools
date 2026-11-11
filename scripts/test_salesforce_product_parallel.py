@@ -1,4 +1,5 @@
 """Synthetic CLI contracts for planning, worker execution, and aggregation."""
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -23,8 +24,25 @@ elif args[0] == 'test' and '-c' in args:
     output.write_text('#!/usr/bin/env python3\nPACKAGE=' + repr(package) + '\n' + os.environ['FAKE_BINARY_SOURCE'])
     output.chmod(0o755)
 elif args[0] == 'test':
+    retry = any(a.startswith('-run=') for a in args)
+    marker = pathlib.Path(os.environ['FLAKY_MARKER']) if os.environ.get('FLAKY_MARKER') else None
     for p in args:
         if p.startswith(prefix):
+            flaky = os.environ.get('FLAKY_TEST') if p.endswith('/internal/vm') else None
+            if flaky and not retry:
+                print(json.dumps({'Action':'pass', 'Package':p, 'Test':'TestProduct'}))
+                print(json.dumps({'Action':'fail', 'Package':p, 'Test':flaky}))
+                print(json.dumps({'Action':'fail', 'Package':p}))
+                sys.exit(1)
+            if flaky and retry:
+                if marker: marker.write_text('x')
+                if os.environ.get('FLAKY_AGAIN'):
+                    print(json.dumps({'Action':'fail', 'Package':p, 'Test':flaky}))
+                    print(json.dumps({'Action':'fail', 'Package':p}))
+                    sys.exit(1)
+                print(json.dumps({'Action':'pass', 'Package':p, 'Test':flaky}))
+                print(json.dumps({'Action':'pass', 'Package':p}))
+                continue
             print(json.dumps({'Action':'pass', 'Package':p, 'Test':'TestProduct'}))
             print(json.dumps({'Action':'pass', 'Package':p}))
 elif args[0] == 'run':
@@ -216,6 +234,56 @@ class ParallelProductTests(unittest.TestCase):
         # The gate's original two-argument route must consume downloaded artifacts.
         self.run_script(self.glade,destination)
         self.assertEqual(json.loads((destination / 'product-test-evidence/validation.json').read_text())['status'],'pass')
+
+    def vm_shard(self):
+        self.run_script('prepare',self.glade,self.plan)
+        plan = json.loads((self.plan / 'parallel-plan.json').read_text())
+        return next(s for s in plan['shards'] if s['kind']=='packages' and PREFIX+'internal/vm' in s['packages'])
+
+    def test_tagged_timing_test_is_retried_once_and_logged(self):
+        shard = self.vm_shard()
+        self.env['FLAKY_TEST'] = 'TestRegexRetryRealCPUBudget'
+        self.env['FLAKY_MARKER'] = str(self.root / 'retried')
+        out = self.results / 'retry'
+        result = self.run_script('shard',self.glade,self.plan,shard['id'],out)
+        self.assertIn('TIMING RETRY', result.stdout)
+        self.assertIn('internal/vm TestRegexRetryRealCPUBudget', result.stdout)
+        self.assertTrue((self.root / 'retried').exists())
+        self.assertEqual({p.name for p in out.iterdir()}, {'result.json','events.jsonl'})
+        events = [json.loads(l) for l in (out / 'events.jsonl').read_text().splitlines()]
+        self.assertFalse([e for e in events if e['Action']=='fail'])
+        self.assertEqual([e['Action'] for e in events if e.get('Test')=='TestRegexRetryRealCPUBudget'], ['pass'])
+        self.assertEqual([e['Action'] for e in events if not e.get('Test') and e['Package']==PREFIX+'internal/vm'], ['pass'])
+
+    def test_tagged_timing_test_failing_twice_fails_the_shard(self):
+        shard = self.vm_shard()
+        self.env['FLAKY_TEST'] = 'TestRegexRetryRealCPUBudget'
+        self.env['FLAKY_AGAIN'] = '1'
+        out = self.results / 'twice'
+        result = self.run_script('shard',self.glade,self.plan,shard['id'],out,passes=False)
+        self.assertIn('failed again on retry', result.stdout)
+        self.assertFalse((out / 'result.json').exists())
+
+    def test_untagged_failure_is_never_retried(self):
+        shard = self.vm_shard()
+        self.env['FLAKY_TEST'] = 'TestSomethingElse'
+        self.env['FLAKY_MARKER'] = str(self.root / 'retried')
+        out = self.results / 'untagged'
+        self.run_script('shard',self.glade,self.plan,shard['id'],out,passes=False)
+        self.assertFalse((self.root / 'retried').exists())
+        self.assertFalse((out / 'result.json').exists())
+
+    def test_timing_retry_list_is_well_formed(self):
+        module = importlib.util.spec_from_file_location('sfparallel', SCRIPT.with_name('salesforce-product-parallel.py'))
+        loaded = importlib.util.module_from_spec(module)
+        module.loader.exec_module(loaded)
+        entries = loaded.load_timing_retry()
+        self.assertIn((PREFIX+'internal/vm','TestRegexRetryRealCPUBudget'), entries)
+        shard = {'packages':[PREFIX+'internal/vm']}
+        self.assertTrue(loaded.retryable({(PREFIX+'internal/vm','TestRegexRetryRealCPUBudget')}, shard, entries))
+        self.assertFalse(loaded.retryable({(PREFIX+'internal/vm','TestOther')}, shard, entries))
+        self.assertFalse(loaded.retryable({(PREFIX+'internal/vm','TestRegexRetryRealCPUBudget'),(PREFIX+'internal/vm','TestOther')}, shard, entries))
+        self.assertFalse(loaded.retryable(set(), shard, entries))
 
     def test_worker_rejects_wrong_checkout_and_converter_failure(self):
         self.run_script('prepare',self.glade,self.plan)
