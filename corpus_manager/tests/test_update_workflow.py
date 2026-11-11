@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -127,7 +128,8 @@ class UpdateWorkflow(unittest.TestCase):
         js=fn+"\nconst r=trendRows({runs:[{phase:'test',gate_label:'g',status:'partial',started_at:'2026-02'},{phase:'test',gate_label:'g',status:'failed',started_at:'2026-01'}]});if(r[0].status!=='failed')process.exit(1);"
         subprocess.run(['node','-e',js],check=True)
 
-    def test_runner_wrapper_uses_temporary_config_and_preserves_checkout(self):
+    @patch('shutil.disk_usage', return_value=SimpleNamespace(free=200 * 1024**3))
+    def test_runner_wrapper_uses_temporary_config_and_preserves_checkout(self, _disk):
         import contextlib, io, json
         root=Path(self.temp.name)/'managed';root.mkdir()
         checkout=root/'checkout';checkout.mkdir();marker=checkout/'keep.txt';marker.write_text('untouched')
@@ -153,7 +155,8 @@ class UpdateWorkflow(unittest.TestCase):
             exec(ops.DELETE_PULL,{'DATA':{'root':str(root),'path':str(target),'token':'token'}})
         self.assertFalse(target.exists());self.assertFalse(marker.exists())
 
-    def test_runner_cancel_signal_prevents_execution(self):
+    @patch('shutil.disk_usage', return_value=SimpleNamespace(free=200 * 1024**3))
+    def test_runner_cancel_signal_prevents_execution(self, _disk):
         root=Path(self.temp.name)/'managed';root.mkdir()
         (root/('.dashboard-cancel-'+'a'*32)).write_text('cancel')
         data={'root':str(root),'repo':{'name':'example__alpha','tier':'A','pin':'a'*40},'depSources':{},'checkout':'/unused','sha':'b'*40,'glade':'/unused','runner':'/unused','cancel_token':'a'*32}
