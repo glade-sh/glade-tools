@@ -1,0 +1,11 @@
+# Go tests whose result depends on real elapsed time or process CPU.
+# Salesforce Correctness reruns each of these once when it is the only kind of
+# failure in its shard, and logs the retry. One "<package> <TestName>" per line.
+# Add a test here only after making it as robust as it can be in glade.
+internal/vm TestRegexRetryRealCPUBudget
+internal/vm TestXMLTokenLocationLongPrefixLinearShapeRoutes
+internal/repoguard TestPrivateNamespaceContextPrefilterCost
+internal/pluginhost TestLoadManifestFromExecutableCancellationCleansUpDescendant
+internal/pluginhost TestManifestExecutableBusy
+internal/gladecli TestPluginsListJSONCancellationCleansUpLinkedExecutableDescendant
+internal/apextest TestCorpusShape
