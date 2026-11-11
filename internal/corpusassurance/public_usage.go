@@ -3,18 +3,90 @@ package corpusassurance
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+	"sync"
+
+	"github.com/glade-sh/glade/internal/storage"
+	"github.com/glade-sh/glade/internal/typesys"
 )
 
-// Only exact, reviewed Salesforce keys may be published. Unknown keys are
-// org-defined even when they contain no custom-name suffix.
-var publicUsageKeys = map[string]struct{}{
-	"System.debug": {},
-}
-
+// A usage key is published only when it names Salesforce-defined surface that
+// the shipped Glade catalogs list: Apex platform types and members, and
+// standard sObjects and their fields. Matching is exact and case-insensitive,
+// as Apex is. Anything else, including names without a custom suffix, is
+// org-defined and is not published.
 const orgDefinedUsage = "org-defined"
 
+var (
+	platformUsageOnce sync.Once
+	platformUsageKeys map[string]struct{}
+)
+
+func loadPlatformUsageKeys() map[string]struct{} {
+	platformUsageOnce.Do(func() {
+		keys := map[string]struct{}{}
+		schemaNames := map[string]bool{}
+		for _, name := range typesys.StandardSchemaNamespaceTypeNames() {
+			schemaNames[strings.ToLower(name)] = true
+		}
+		add := func(prefixes []string, name string, members []typesys.MemberSymbol) {
+			for _, prefix := range prefixes {
+				base := strings.ToLower(prefix + name)
+				keys[base] = struct{}{}
+				for _, member := range members {
+					keys[base+"."+strings.ToLower(member.Name)] = struct{}{}
+				}
+			}
+		}
+		for _, symbol := range typesys.StandardPlatformSymbolView() {
+			if symbol.Name == "" {
+				continue
+			}
+			switch {
+			case symbol.Namespace != "":
+				add([]string{symbol.Namespace + "."}, symbol.Name, symbol.Members)
+			case schemaNames[strings.ToLower(symbol.Name)]:
+				add([]string{"", "Schema."}, symbol.Name, symbol.Members)
+			default:
+				add([]string{"", "System."}, symbol.Name, symbol.Members)
+			}
+		}
+		platformUsageKeys = keys
+	})
+	return platformUsageKeys
+}
+
+func standardSObjectUsageKey(key string) bool {
+	parts := strings.Split(key, ".")
+	if len(parts) > 1 && strings.EqualFold(parts[0], "Schema") {
+		parts = parts[1:]
+	}
+	if len(parts) == 0 || len(parts) > 2 {
+		return false
+	}
+	definition, ok := storage.StandardObjectDefinition(parts[0])
+	if !ok {
+		return false
+	}
+	if len(parts) == 1 {
+		return true
+	}
+	_, ok = storage.ResolveFieldName(definition, "", parts[1])
+	return ok
+}
+
+func isSalesforceDefinedUsage(key string) bool {
+	if key == "" || strings.Contains(key, "__") || strings.TrimSpace(key) != key {
+		return false
+	}
+	if _, ok := loadPlatformUsageKeys()[strings.ToLower(key)]; ok {
+		return true
+	}
+	return standardSObjectUsageKey(key)
+}
+
 func publicUsageKey(key string) string {
-	if _, ok := publicUsageKeys[key]; ok {
+	if isSalesforceDefinedUsage(key) {
 		return key
 	}
 	return orgDefinedUsage

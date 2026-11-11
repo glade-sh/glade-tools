@@ -108,3 +108,35 @@ func TestRoad127RepositoryRowsAndAllowlist(t *testing.T) {
 		t.Fatal("projection mutated its input")
 	}
 }
+
+func TestRoad127CatalogPublishesSalesforceDefinedKeys(t *testing.T) {
+	for _, key := range []string{
+		"System.debug", "system.DEBUG", "Database.query", "System.String", "String",
+		"Account.Name", "account.name", "Account", "Schema.Account", "Schema.Account.Name",
+		"Contact.Id",
+	} {
+		if got := publicUsageKey(key); got != key {
+			t.Errorf("publicUsageKey(%q) = %q, want it published", key, got)
+		}
+		report := `{"schemaVersion":1,"rows":[{"usageKeys":["` + key + `"]}]}`
+		if _, err := renderAssuranceHTML([]byte(report)); err != nil {
+			t.Errorf("renderer refused Salesforce-defined %q: %v", key, err)
+		}
+	}
+}
+
+func TestRoad127CatalogRefusesOrgDefinedKeysWithoutCustomSuffix(t *testing.T) {
+	for _, key := range []string{
+		"Flow.InvoiceApproval", "Component.WidgetPanel", "Schema.Account.FieldSets.OrderFields",
+		"Account.NoSuchStandardField", "Database.noSuchMethod", "InvoiceService.run",
+		"System.NoSuchType", "Widget__c.Name", "Label.Greeting", "Page.Home", "",
+	} {
+		if got := publicUsageKey(key); got != orgDefinedUsage {
+			t.Errorf("publicUsageKey(%q) = %q, want org-defined", key, got)
+		}
+		report := `{"schemaVersion":1,"rows":[{"usageKeys":["` + key + `"]}]}`
+		if _, err := renderAssuranceHTML([]byte(report)); err == nil {
+			t.Errorf("renderer accepted org-defined %q", key)
+		}
+	}
+}
