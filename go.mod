@@ -1,6 +1,6 @@
 module github.com/glade-sh/glade/tools
 
-go 1.26.10
+go 1.26.11
 
 require github.com/glade-sh/glade v0.0.0
 

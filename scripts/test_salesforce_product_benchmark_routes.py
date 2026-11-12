@@ -53,7 +53,7 @@ class BenchmarkDiscoveryRoutes(unittest.TestCase):
             root = Path(temporary)
             glade = root / 'glade'
             glade.mkdir()
-            (glade / 'go.mod').write_text('module github.com/glade-sh/glade\n\ngo 1.26.10\n')
+            (glade / 'go.mod').write_text('module github.com/glade-sh/glade\n\ngo 1.26.11\n')
             # Use the candidate's actual planner with owned, synthetic Go packages.
             module = subprocess.check_output(
                 ['go', 'list', '-m', '-f', '{{.Dir}}', 'github.com/glade-sh/glade'],
