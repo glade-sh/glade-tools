@@ -945,7 +945,7 @@ func writeAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receipt
 			return AssuranceReceipt{}, fmt.Errorf("assurance receipt input is not public-safe")
 		}
 	}
-	reportJSON, err := json.Marshal(report)
+	reportJSON, err := json.Marshal(redactAssuranceUsage(report))
 	if err != nil {
 		return AssuranceReceipt{}, err
 	}
