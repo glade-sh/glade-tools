@@ -551,7 +551,7 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`repository: glade-sh/glade
           path: glade
           ref: ${{ inputs.glade_sha }}`,
-		`node-version: "22"`, `go-version: "1.26.10"`,
+		`node-version: "22"`, `go-version: "1.26.11"`,
 		`NO_COLOR: "1"`, "GLADE_LWC_PLAYWRIGHT_MODULE: ${{ github.workspace }}/glade/lwcruntime/node_modules/playwright",
 		"npm ci --prefix lwcruntime", "scripts/ci-install-playwright.sh ./lwcruntime/node_modules/.bin/playwright install --with-deps chromium", "@salesforce/cli@2.145.6",
 		`AUTH_URL: ${{ secrets.SF_SFDX_AUTH_URL }}`, `AUTH_FILE="$RUNNER_TEMP/sfdx-auth-url.txt"`,
