@@ -10,6 +10,8 @@ require (
 	modernc.org/sqlite v1.50.0
 )
 
+require github.com/dlclark/metaphone3 v0.0.0-20190903202417-5fe87fcdd547 // indirect
+
 require (
 	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
