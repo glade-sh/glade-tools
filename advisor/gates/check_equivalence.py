@@ -19,6 +19,8 @@ def compare(parallel, serial, parallel_exit, serial_exit, procs, diff_path):
             raise ValueError('comparison requires parallel workers and two completed checks')
         a, b = canonical(parallel), canonical(serial)
         diff = ''.join(difflib.unified_diff(b, a, fromfile='serial', tofile='parallel'))
+        if parallel_exit != serial_exit:
+            diff = 'exit status: serial=%s parallel=%s\n' % (serial_exit, parallel_exit) + diff
         diff_path.write_text(diff)
         receipt['verdict'] = 'match' if not diff and parallel_exit == serial_exit else 'mismatch'
     except (ValueError, TypeError, OSError) as error:

@@ -215,6 +215,11 @@ def main():
     exclude = {k: v.split(',') for k, v in kv(args.exclude_class, '--exclude-class').items()}
     rprocs = kv(args.repo_procs, '--repo-procs')
     log('label=%s bin=%s procs=%s repos=%s' % (args.label, args.bin, args.procs, ' '.join(repos)))
+    planned = [repo for repo in repos if (repo not in shards or 0 in shards[repo][0])
+               and (repo not in include or repo in exclude or repo in shards)]
+    log('check plan=' + json.dumps(planned))
+    for repo in planned:
+        (out / (repo + '.check-equivalence.json')).unlink(missing_ok=True)
 
     def history_for(repo):
         """Path of a {class: ms} file for REPO, or None. Deterministic content so lanes agree."""

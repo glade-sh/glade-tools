@@ -68,11 +68,21 @@ for spec in sys.argv[2:]:
         last = last.replace(r, m)
     state = 'FINISHED' if nlane and ndone >= nlane and not running(name) else ('running x%d' % running(name))
     print('%-5s %-28s %s  repos %d/%d%s  %s' % (kind, name, state, len(done), len(expected) or len(done),
-          ('  (+%d partial)' % len(parts)) if parts else '', time.strftime('%H:%MZ', time.gmtime(os.path.getmtime(os.path.join(d, 'run.log'))))))
+          ('  (+%d partial)' % len(parts)) if parts else '', time.strftime('%H:%MZ', time.gmtime(os.path.getmtime(os.path.join(d, 'run.log') if log else d)))))
     print('      last: %s' % last[:150])
-    # A missing receipt is not a pass, including while a check is running.
+    # The planner records all lanes before launch; direct runners also log their plan.
     checks = set()
+    try:
+        with open(os.path.join(d, 'check-plan.json')) as f:
+            checks.update(json.load(f))
+    except (OSError, ValueError, TypeError):
+        pass
     for line in log:
+        if ' check plan=' in line:
+            try:
+                checks.update(json.loads(line.split(' check plan=', 1)[1]))
+            except (ValueError, TypeError):
+                pass
         m = re.search(r'^\S+ (.+) check start$', line)
         if m:
             checks.add(m.group(1))
@@ -86,7 +96,7 @@ for spec in sys.argv[2:]:
             verdicts['incomplete'] += 1
     print('      check equivalence: match=%d mismatch=%d incomplete=%d%s' % (
         verdicts['match'], verdicts['mismatch'], verdicts['incomplete'],
-        ' (no checks observed)' if not checks else ''))
+        ' (no checks planned or observed)' if not checks else ''))
     for b in baselines(kind, name):
         bn = os.path.basename(b)
         tot_new = tot_fixed = tot_to = tot_acc = 0; bad = []; cmp_n = 0; longs = []
