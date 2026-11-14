@@ -5,11 +5,12 @@
                 [--outdir ~/advisor-broad/lanes] [--dry]
 
 Sets (label prefix -> source clone) and history come from out/<SET>-<hist>/results.jsonl + <repo>.test.stdout.
-Splits (all automatic from the history, nothing hard-coded to a repo name except SHARD3):
-  * kerndx-like repos: SHARD3 = repos matching 'kerndx' run as 3 class shards (one per lane)
+Splits (all automatic from the history, nothing hard-coded to a repo name; SHARD3 comes from --shard3 or the
+operational corpus-config.json key "shard3", empty by default):
+  * SHARD3 repos (name fragments) run as 3 class shards (one per lane)
   * a repo with test wall >= 600 s whose top class alone takes >= 70% of that wall (the critical path) is split into
     --include-class <topclass> (own unit, gets full method parallelism) + --exclude-class <topclass> (the rest);
-    Portwood (DocGenChartRasterizerTest) and Funraise (frDonationTest) both fall out of this rule.
+    Repos dominated by one long class fall out of this rule.
 Every lane runs run2.py once per set with its own cloned repos; output lands in out/<SET>-<label>/ as before.
 """
 import argparse, json, os, sys
@@ -17,7 +18,7 @@ from pathlib import Path
 
 SETS = [('BUCKET2', '~/advisor-bucket2-src/clone'), ('BROAD', '~/advisor-broad-src/clone-public-new')]
 # a set's label is <name>-<label> unless the name contains '{L}' (e.g. '{L}-public')
-SHARD3 = ('kerndx',)
+SHARD3 = ()
 
 
 def lab(name, L):
@@ -31,10 +32,10 @@ def load_hist(out, hist):
         rj = d / 'results.jsonl'
         if not rj.exists():
             continue
-        # 10-25: a repo that ran as parts (inc/exc split or kerndx shards) has only part rows in results.jsonl.
-        # Skipping them (the old behaviour) left Funraise, Portwood and kerndx at the median default, so every
-        # FPGATE-history plan put ~3.5 h of real work into one lane (lane2 ran 45-70 min past the others, Portwood
-        # unsplit hit its 3600 s timeout). Now: whole-repo row if it finished; else the sum of its part walls
+        # 10-25: a repo that ran as parts (inc/exc split or class shards) has only part rows in results.jsonl.
+        # Skipping them (the old behaviour) left such repos at the median default, so every
+        # FPGATE-history plan put ~3.5 h of real work into one lane (one lane ran 45-70 min past the others and an
+        # unsplit long repo hit its 3600 s timeout). Now: whole-repo row if it finished; else the sum of its part walls
         # (serial-equivalent, the same convention merge_shards uses); else the timed-out whole-repo wall.
         whole, whole_to, parts = {}, {}, {}
         for line in rj.read_text().splitlines():
@@ -84,7 +85,7 @@ def main():
     a.add_argument('--dry', action='store_true')
     a.add_argument('--only', default='', help='comma list: plan only these repos (testing)')
     a.add_argument('--set', action='append', default=[], help="NAME=SRC_CLONE (repeatable; NAME may contain {L}); default BMO sets")
-    a.add_argument('--shard3', default='kerndx', help="comma list of repo-name fragments to run as 3 shards ('' for none)")
+    a.add_argument('--shard3', default=None, help="comma list of repo-name fragments to run as 3 shards ('' for none); default: \"shard3\" list in corpus-config.json (--cfg, else $W/corpus-config.json), else none")
     a.add_argument('--runner', default='run2.py', help='path of run2.py relative to --w')
     a.add_argument('--cfg', default='', help='corpus-config.json: use run3.py and pass --corpus-config (per-repo overlay on the run-clone copies)')
     a.add_argument('--min-split', type=float, default=600.0, help='split a repo whose test wall >= this and one class is >=70%% of it')
@@ -94,6 +95,12 @@ def main():
         args.runner = 'run3.py'
     if args.set:
         SETS = [tuple(x.split('=', 1)) for x in args.set]
+    if args.shard3 is None:
+        cp = Path(os.path.expanduser(args.cfg or os.path.join(args.w, 'corpus-config.json')))
+        try:
+            args.shard3 = ','.join(json.loads(cp.read_text()).get('shard3', []))
+        except (OSError, ValueError, AttributeError):
+            args.shard3 = ''
     SHARD3 = tuple(x for x in args.shard3.split(',') if x)
     out = Path(args.out); N = args.lanes; P = float(args.procs)
     check, tdur, classes = load_hist(out, args.hist)

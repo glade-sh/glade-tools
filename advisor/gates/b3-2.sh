@@ -1,12 +1,14 @@
 #!/bin/bash
-# b3-2.sh <bin> <label>   broad3 = kerndx + apex-query + force-framework (Razor ~/advisor-corpus/pubgate or Casper advisor-pubgate)
-# kerndx runs as LANES (default 2) class shards, one per lane (history = newest other *-B3 run); apex-query and
-# force-framework ride on the first/last lane. Output out/<label>-B3/<repo>.test.stdout as before, then diff2 vs
+# b3-2.sh <bin> <label>   broad3 = three configured repos (Razor ~/advisor-corpus/pubgate or Casper advisor-pubgate)
+# The first configured repo runs as LANES (default 2) class shards, one per lane (history = newest other *-B3 run); the
+# other two ride on the first/last lane. Repo directory names come from $W/corpus-config.json key "b3Repos" (list of 3; not in this repo). Output out/<label>-B3/<repo>.test.stdout as before, then diff2 vs
 # BASE (default: newest other *-B3 dir) -> out/DIFF2-<label>-B3.txt. Env: LANES=2 (1 on Casper), SRC=<clone dir>, PROCS=3, BASE=<dir name>, CFG=1 (apply ./corpus-config.json overlays via run3.py).
 W=$(cd "$(dirname "$0")" && pwd); cd $W; RUNNER=run2.py; [ -n "${CFG:-}" ] && RUNNER=run3.py; BIN=$1; L=$2; LANES=${LANES:-2}; PROCS=${PROCS:-3}
 SRC=${SRC:-$([ -d $HOME/advisor-corpus/broad/clone-public-new ] && echo $HOME/advisor-corpus/broad/clone-public-new || echo $W/broad3-src)}
 exec > $W/b3v2-$L.log 2>&1
-K=JVB-Consulting__kerndx; A=berehovskyi__apex-query; F=markbrennand__force-framework
+B3R=$(python3 -c 'import json,sys; print(" ".join(json.load(open(sys.argv[1])).get("b3Repos", [])))' "$W/corpus-config.json" 2>/dev/null)
+set -- $B3R; [ $# -eq 3 ] || { echo "corpus-config.json needs b3Repos with 3 repo directory names" >&2; exit 2; }
+K=$1; A=$2; F=$3
 if [ -z "${BASE:-}" ]; then
   for d in $(ls -td $W/out/*-B3); do
     if [ "$(basename $d)" != "$L-B3" ] && [ -f $d/$K.test.stdout ]; then BASE=$(basename $d); break; fi
