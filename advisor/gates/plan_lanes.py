@@ -76,7 +76,7 @@ def load_hist(out, hist):
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('--lanes', type=int, default=3); a.add_argument('--label', required=True)
-    a.add_argument('--bin', required=True); a.add_argument('--hist', required=True)
+    a.add_argument('--bin', required=True); a.add_argument('--hist', default='', help='history label; empty = no history (every repo at the median default)')
     a.add_argument('--exclude', default=''); a.add_argument('--procs', default='3'); a.add_argument('--memlimit', default='4GiB')
     a.add_argument('--out', default=os.path.expanduser('~/advisor-broad/out'))
     a.add_argument('--outdir', default=os.path.expanduser('~/advisor-broad/lanes'))
@@ -111,7 +111,7 @@ def main():
             args.shard3 = ','.join(lst)
     SHARD3 = tuple(x for x in args.shard3.split(',') if x)
     out = Path(args.out); N = args.lanes; P = float(args.procs)
-    check, tdur, classes = load_hist(out, args.hist)
+    check, tdur, classes = load_hist(out, args.hist) if args.hist else ({}, {}, {})
     excl = [x for x in args.exclude.split(',') if x]
     default = sorted(tdur.values())[len(tdur) // 2] if tdur else 30.0
 
@@ -180,8 +180,8 @@ def main():
             lines += ['SRC=%s; SL=%s; PD=$RUN/lane%d/run-$SL' % (src, slab, k),
                       'rm -rf $PD; mkdir -p $PD; for r in %s; do cp -R $SRC/$r $PD/; done; for d in $SRC/*/; do b=$(basename $d); [ -e $PD/$b ] || cp -R $SRC/$b $PD/$b; done' % ' '.join("'%s'" % r for r in repos),
                       'python3 $W/%s --bin $BIN --label $SL --clone $PD --out $W/out --procs %s --memlimit %s --no-cache-check '
-                      '--test-timeout 3600 --history-from %s %s %s --repos %s 2>$W/$SL-lane%d.err' % (
-                          args.runner, args.procs, args.memlimit, lab(s, args.hist), ' '.join(extra) + (' --corpus-config ' + args.cfg if args.cfg else ''), '', ' '.join("'%s'" % r for r in repos), k),
+                      '--test-timeout 3600 %s %s %s --repos %s 2>$W/$SL-lane%d.err' % (
+                          args.runner, args.procs, args.memlimit, ('--history-from ' + lab(s, args.hist)) if args.hist else '', ' '.join(extra) + (' --corpus-config ' + args.cfg if args.cfg else ''), '', ' '.join("'%s'" % r for r in repos), k),
                       'rc=$?; echo "$SL lane%d rc=$rc $(date -u +%%FT%%TZ)"; [ $rc -eq 0 ] || status=1; rm -rf $PD' % k]
         lines.append('echo "lane%d done $(date -u +%%FT%%TZ)"; exit $status' % k)
         if not args.dry:

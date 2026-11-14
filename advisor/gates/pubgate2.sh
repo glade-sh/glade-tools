@@ -31,7 +31,7 @@ if [ $# -gt 0 ]; then   # explicit repos: single lane, no planning
   rc=$?; [ $rc -eq 0 ] || status=1
   rm -rf $P
 else
-  python3 $W/plan_lanes.py --lanes $LANES --label $L --bin $BIN --hist $HIST --w $W --out $W/out --outdir $W/lanes --runroot $W/runs \
+  python3 $W/plan_lanes.py --lanes $LANES --label $L --bin $BIN ${HIST:+--hist $HIST} --w $W --out $W/out --outdir $W/lanes --runroot $W/runs \
     --set "{L}-public=$W/clone-curated" ${CFG:+--cfg $W/corpus-config.json} --shard3 '' --min-split ${MINSPLIT:-150} --procs $PROCS ${ONLY:+--only $ONLY} || { echo plan failed; exit 1; }
   pids=()
   for k in $(seq 0 $((LANES-1))); do nice -n 10 bash $W/lanes/$L-lane$k.sh > $W/lanes/$L-lane$k.log 2>&1 & pids+=("$!"); done

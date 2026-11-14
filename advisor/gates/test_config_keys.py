@@ -79,6 +79,23 @@ class ConfigKeys(unittest.TestCase):
         r, w = run('pubgate2.sh', None, 'bin', 'lbl', env={'GATE_NO_CONFIG': '1'})
         self.assertNotIn('not found', r.stderr); shutil.rmtree(w)
 
+    def test_pubgate_planned_path_without_history(self):
+        # GATE_NO_CONFIG=1, no HIST: pubgate2.sh -> plan_lanes (no --hist) -> lane script -> runner -> merge.
+        w = Path(tempfile.mkdtemp())
+        try:
+            for f in ('plan_lanes.py', 'pubgate2.sh', 'merge_shards.py', 'check_plan.py'):
+                shutil.copy(HERE / f, w / f)
+            (w / 'clone-curated' / 'r1').mkdir(parents=True)
+            (w / 'run2.py').write_text('import sys\nopen(%r, "w").write(" ".join(sys.argv))\n' % str(w / 'runner.args'))
+            env = dict(os.environ, GATE_NO_CONFIG='1', LANES='1')
+            env.pop('HIST', None)
+            r = subprocess.run(['bash', str(w / 'pubgate2.sh'), 'bin', 'lbl'], capture_output=True, text=True, cwd=w, timeout=60, env=env)
+            self.assertEqual(r.returncode, 0, (r.stdout, r.stderr, (w / 'pub2-lbl.log').read_text() if (w / 'pub2-lbl.log').exists() else ''))
+            args = (w / 'runner.args').read_text()
+            self.assertIn('--repos r1', args); self.assertNotIn('--history-from', args)
+        finally:
+            shutil.rmtree(w)
+
 
 if __name__ == '__main__':
     unittest.main()
