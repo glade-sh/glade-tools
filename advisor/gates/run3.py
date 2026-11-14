@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import merge_shards
 import check_equivalence
 import corpus_cfg
+import incremental
 
 IS_LINUX = platform.system() == 'Linux'
 LOCK = threading.Lock()
@@ -194,6 +195,10 @@ def main():
     a.add_argument('--no-cache-check', action='store_true', help='pass --no-cache to glade check')
     a.add_argument('--no-overlap', action='store_true', help='do not overlap next check with current test')
     a.add_argument('--corpus-config', help='JSON overlay (corpus_cfg.py) applied to each repo COPY in --clone before check/test')
+    a.add_argument('--unit-timeout-history', help='LABEL|DIR whose results.jsonl sets each repo timeout (train mode)')
+    a.add_argument('--unit-timeout-factor', type=float, default=3.0)
+    a.add_argument('--unit-timeout-min', type=int, default=300)
+    a.add_argument('--unit-timeout-known-timeout', type=int, default=1200)
     a.add_argument('--procs', default='3'); a.add_argument('--memlimit', default='4GiB')
     args = a.parse_args()
     clone, out = Path(args.clone), Path(args.out) / args.label
@@ -202,6 +207,16 @@ def main():
                                  key=lambda n: sum(1 for _ in (clone / n).rglob('*.cls')))
     env = dict(os.environ, GOMAXPROCS=args.procs, GOMEMLIMIT=args.memlimit)
     results = out / 'results.jsonl'
+    unit_hist = {}
+    if args.unit_timeout_history:
+        src = Path(args.unit_timeout_history)
+        unit_hist = incremental.history_walls(src if src.is_dir() else Path(args.out) / args.unit_timeout_history)
+
+    def timeout_for(repo, phase, default):
+        if not args.unit_timeout_history:
+            return default
+        return incremental.unit_timeout(unit_hist.get((repo, phase)), args.unit_timeout_factor,
+                                        args.unit_timeout_min, default, args.unit_timeout_known_timeout)
 
     def log(msg):
         line = time.strftime('%H:%M:%SZ', time.gmtime()) + ' ' + msg
@@ -220,6 +235,10 @@ def main():
     log('check plan=' + json.dumps(planned))
     for repo in planned:
         (out / (repo + '.check-equivalence.json')).unlink(missing_ok=True)
+    if args.unit_timeout_history:
+        for repo in repos:
+            log('%s unit timeouts check=%ds test=%ds' % (repo, timeout_for(repo, 'check', args.check_timeout),
+                                                          timeout_for(repo, 'test', args.test_timeout)))
 
     def history_for(repo):
         """Path of a {class: ms} file for REPO, or None. Deterministic content so lanes agree."""
@@ -334,6 +353,7 @@ def main():
         return row
 
     check_failed = []
+    test_timed_out = []
 
     def run_check(job):
         repo = job['repo']; root = clone / repo
@@ -347,7 +367,7 @@ def main():
             cmd.append('--no-cache')
         log('%s check start' % repo)
         with open(so, 'w') as fo, open(se, 'w') as fe:
-            code, wall, paused = guarded(cmd, env, args.check_timeout, fo, fe, log)
+            code, wall, paused = guarded(cmd, env, timeout_for(repo, 'check', args.check_timeout), fo, fe, log)
         record(job, 'check', code, wall, paused, se, so)
         serial = out / (repo + '.check.serial.json')
         parallel = out / (repo + '.check.json')
@@ -359,7 +379,7 @@ def main():
         serial_cmd = list(cmd)
         serial_cmd[serial_cmd.index('--output') + 1] = str(serial)
         with open(out / (repo + '.check.serial.stdout'), 'w') as fo, open(out / (repo + '.check.serial.stderr'), 'w') as fe:
-            serial_code, _, _ = guarded(serial_cmd, dict(env, GOMAXPROCS='1'), args.check_timeout, fo, fe, log)
+            serial_code, _, _ = guarded(serial_cmd, dict(env, GOMAXPROCS='1'), timeout_for(repo, 'check', args.check_timeout), fo, fe, log)
         receipt = check_equivalence.compare(parallel, serial, code, serial_code, args.procs, diff_path)
         receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
         log('%s check equivalence=%s' % (repo, receipt['verdict']))
@@ -378,8 +398,10 @@ def main():
         log('%s test%s start' % (repo, ('[%s]' % part) if part else ''))
         tenv = dict(env, GOMAXPROCS=procs) if procs != args.procs else env
         with open(so, 'w') as fo, open(se, 'w') as fe:
-            code, wall, paused = guarded(cmd, tenv, args.test_timeout, fo, fe, log)
+            code, wall, paused = guarded(cmd, tenv, timeout_for(repo, 'test', args.test_timeout), fo, fe, log)
         record(job, 'test', code, wall, paused, se, so)
+        if args.unit_timeout_history and code == 'timeout':
+            test_timed_out.append((repo, part))
         exp = expected_parts(job)
         if exp and all((out / ('%s.test.%s.part' % (repo, p))).exists() for p in exp):
             try:
@@ -419,7 +441,7 @@ def main():
                 submit_next_check(i + 1)
     pool.shutdown(wait=True)
     log('done')
-    if check_failed:
+    if check_failed or test_timed_out:
         sys.exit(1)
 
 
