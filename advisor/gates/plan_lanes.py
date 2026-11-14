@@ -13,7 +13,7 @@ operational corpus-config.json key "shard3", empty by default):
     Repos dominated by one long class fall out of this rule.
 Every lane runs run2.py once per set with its own cloned repos; output lands in out/<SET>-<label>/ as before.
 """
-import argparse, json, os, sys
+import argparse, hashlib, json, os, sys
 from pathlib import Path
 
 SETS = [('BUCKET2', '~/advisor-bucket2-src/clone'), ('BROAD', '~/advisor-broad-src/clone-public-new')]
@@ -73,6 +73,38 @@ def load_hist(out, hist):
     return check, tdur, classes
 
 
+def split_names(value):
+    """Comma list of names and @file items (one name per line, # comments)."""
+    names = []
+    for item in value.split(','):
+        item = item.strip()
+        if item.startswith('@'):
+            for line in Path(item[1:]).read_text().splitlines():
+                line = line.split('#', 1)[0].strip()
+                if line:
+                    names.append(line)
+        elif item:
+            names.append(item)
+    return names
+
+
+def train_config_digest(a, cfg, w):
+    """Train mode runs only against the installed public config. Returns its sha256 or stops the plan."""
+    if not cfg:
+        a.error('--train requires --cfg')
+    want = Path(w).resolve() / 'corpus-config.json'
+    if Path(cfg).resolve() != want:
+        a.error('--train: --cfg must be %s' % want)
+    try:
+        actual = hashlib.sha256(want.read_bytes()).hexdigest()
+        pinned = Path(str(want) + '.sha256').read_text().strip()
+    except OSError as error:
+        a.error('--train: cannot read public config or its .sha256: %s' % error)
+    if actual != pinned:
+        a.error('--train: corpus-config.json does not match corpus-config.json.sha256')
+    return actual
+
+
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('--lanes', type=int, default=3); a.add_argument('--label', required=True)
@@ -84,7 +116,9 @@ def main():
     a.add_argument('--w', default=os.path.expanduser('~/advisor-broad'))
     a.add_argument('--dry', action='store_true')
     a.add_argument('--no-config', action='store_true', help='run without corpus-config.json (same as GATE_NO_CONFIG=1)')
-    a.add_argument('--only', default='', help='comma list: plan only these repos (testing)')
+    a.add_argument('--only', default='', help='comma list of names or @file: plan only these repos')
+    a.add_argument('--train', action='store_true', help='per-train gate: needs --only and the installed public --cfg; '
+                   'repos outside --only are listed as not_run; unit timeouts come from --hist')
     a.add_argument('--set', action='append', default=[], help="NAME=SRC_CLONE (repeatable; NAME may contain {L}); default BMO sets")
     a.add_argument('--shard3', default=None, help="comma list of repo-name fragments to run as 3 shards ('' for none); default: \"shard3\" list in corpus-config.json (--cfg, else $W/corpus-config.json), else none")
     a.add_argument('--runner', default='run2.py', help='path of run2.py relative to --w')
@@ -110,6 +144,18 @@ def main():
                 sys.exit('plan_lanes.py: %s is not valid JSON: %s' % (cp, e))
             args.shard3 = ','.join(lst)
     SHARD3 = tuple(x for x in args.shard3.split(',') if x)
+    only = split_names(args.only) if args.train else args.only.split(',')
+    cfg_digest = None
+    if args.train:
+        if not only:
+            a.error('--train requires a non-empty --only')
+        cfg_digest = train_config_digest(a, args.cfg, args.w)
+        if Path(args.out).resolve() != (Path(args.w).resolve() / 'out'):
+            a.error('--train: --out must be <w>/out, where lane scripts write results')
+        known = {p.name for _, src in SETS for p in Path(os.path.expanduser(src)).iterdir() if p.is_dir()}
+        unknown = sorted(set(only) - known)
+        if unknown:
+            a.error('--train: not in any set clone: %s' % ', '.join(unknown))
     out = Path(args.out); N = args.lanes; P = float(args.procs)
     check, tdur, classes = load_hist(out, args.hist) if args.hist else ({}, {}, {})
     excl = [x for x in args.exclude.split(',') if x]
@@ -119,7 +165,7 @@ def main():
     for s, src in SETS:
         d = Path(os.path.expanduser(src))
         for repo in sorted(p.name for p in d.iterdir() if p.is_dir()):
-            if any(x and x in repo for x in excl) or (args.only and repo not in args.only.split(',')):
+            if any(x and x in repo for x in excl) or (args.only and repo not in only):
                 continue
             ck, tw = check.get(repo, 5.0), tdur.get(repo, default)
             cl = classes.get(repo, {}); tot = sum(cl.values())
@@ -141,6 +187,19 @@ def main():
         l = min(cand, key=lambda l: l['load'])
         l['load'] += u['w']; l['units'].append(u)
 
+    if args.train and not units:
+        a.error('--train: no repo is left to run after --only and --exclude')
+
+    # A train label must be fresh: downstream scans all results in each output directory.
+    # Check every set before creating any receipt or script so a failed plan is inert.
+    if args.train and not args.dry:
+        targets = [out / lab(s, args.label) for s, _ in SETS]
+        if len({p.resolve() for p in targets}) != len(targets):
+            a.error('--train: set output directories collide')
+        for target in targets:
+            if target.is_symlink() or (target.exists() and (not target.is_dir() or any(target.iterdir()))):
+                a.error('--train: output directory is not empty: %s' % target)
+
     # Write the complete plan before any lane starts, including lanes that never launch.
     if not args.dry:
         for s, _ in SETS:
@@ -152,6 +211,13 @@ def main():
             for repo in planned:
                 (target / (repo + '.check-equivalence.json')).unlink(missing_ok=True)
             (target / 'check-plan.json').write_text(json.dumps(planned) + '\n')
+            if args.train:
+                allr = sorted(p.name for p in Path(os.path.expanduser(dict(SETS)[s])).iterdir() if p.is_dir())
+                # A plan, not a record of execution: `incremental.py scope <dir>` derives what ran from results.jsonl.
+                planned_all = sorted({u['repo'] for u in units if u['set'] == s})
+                (target / 'train-scope.json').write_text(json.dumps(
+                    {'planned': planned_all, 'not_planned': [r for r in allr if r not in planned_all],
+                     'config_sha256': cfg_digest}, indent=1) + '\n')
 
     outdir = Path(args.outdir); outdir.mkdir(parents=True, exist_ok=True)
     print('units=%d total_est=%.0fs lanes=%d' % (len(units), sum(u['w'] for u in units), N))
@@ -181,7 +247,8 @@ def main():
                       'rm -rf $PD; mkdir -p $PD; for r in %s; do cp -R $SRC/$r $PD/; done; for d in $SRC/*/; do b=$(basename $d); [ -e $PD/$b ] || cp -R $SRC/$b $PD/$b; done' % ' '.join("'%s'" % r for r in repos),
                       'python3 $W/%s --bin $BIN --label $SL --clone $PD --out $W/out --procs %s --memlimit %s --no-cache-check '
                       '--test-timeout 3600 %s %s %s --repos %s 2>$W/$SL-lane%d.err' % (
-                          args.runner, args.procs, args.memlimit, ('--history-from ' + lab(s, args.hist)) if args.hist else '', ' '.join(extra) + (' --corpus-config ' + args.cfg if args.cfg else ''), '', ' '.join("'%s'" % r for r in repos), k),
+                          args.runner, args.procs, args.memlimit, ('--history-from ' + lab(s, args.hist)) if args.hist else '', ' '.join(extra) + (' --corpus-config ' + args.cfg if args.cfg else ''),
+                          ('--unit-timeout-history ' + lab(s, args.hist)) if args.train and args.hist else '', ' '.join("'%s'" % r for r in repos), k),
                       'rc=$?; echo "$SL lane%d rc=$rc $(date -u +%%FT%%TZ)"; [ $rc -eq 0 ] || status=1; rm -rf $PD' % k]
         lines.append('echo "lane%d done $(date -u +%%FT%%TZ)"; exit $status' % k)
         if not args.dry:

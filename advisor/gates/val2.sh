@@ -14,6 +14,30 @@ echo "start $(date -u +%FT%TZ) bin=$BIN label=$L lanes=$LANES hist=$HIST"
 for d in ${RUNROOT:-$HOME/advisor-val-run}/lane*/run-*; do [ -d "$d" ] && echo "clearing stale $d" && rm -rf "$d"; done
 python3 $W/plan_lanes.py --lanes $LANES --label $L --bin $BIN --hist $HIST ${EXCL:+--exclude $EXCL} --w $W --out $W/out --outdir $W/lanes --runroot ${RUNROOT:-$HOME/advisor-val-run} ${CFG:+--cfg $W/corpus-config.json} $PLAN_ARGS || { echo plan failed; echo done; exit 1; }
 status=0; pids=()
+# Train mode (the planner's own word-split view of PLAN_ARGS): report actual coverage on every exit path.
+TRAIN=; set -f; for _a in $PLAN_ARGS; do [ "$_a" = --train ] && TRAIN=1; done; set +f
+if [ -n "$TRAIN" ]; then
+  train_report() {
+    [ -n "$REPORTED" ] && return; REPORTED=1
+    for s in BUCKET2 BROAD; do
+      [ -f $W/out/$s-$L/train-scope.json ] || continue
+      echo "train scope $s-$L:"
+      python3 $W/incremental.py scope $W/out/$s-$L || status=1
+    done
+  }
+  kill_tree() { local c; for c in $(pgrep -P $1 2>/dev/null); do kill_tree $c; done; kill $1 2>/dev/null; }
+  on_signal() {  # interrupted: stop the lanes, then report what finished. An uncatchable kill leaves results.jsonl;
+    # run `incremental.py scope OUT/SET-LABEL` by hand to recover the report.
+    trap '' TERM INT
+    echo "interrupted by $1; stopping lanes"
+    for pid in "${pids[@]}"; do kill_tree $pid; done
+    wait 2>/dev/null
+    status=1; train_report
+    echo "done $(date -u +%FT%TZ)"
+    exit $2
+  }
+  trap 'on_signal TERM 143' TERM; trap 'on_signal INT 130' INT; trap 'train_report' EXIT
+fi
 for k in $(seq 0 $((LANES-1))); do nice -n 5 bash $W/lanes/$L-lane$k.sh > $W/lanes/$L-lane$k.log 2>&1 & pids+=("$!"); done
 for pid in "${pids[@]}"; do wait "$pid" || status=1; done
 for s in BUCKET2 BROAD; do python3 $W/merge_shards.py --scan $W/out/$s-$L; done
@@ -23,5 +47,6 @@ for s in BUCKET2 BROAD; do
     [ -f $b ] && echo "$s $r $(python3 $W/diff2.py $b $f 2>&1 | grep -E '^(new|timeout)' | tr '\n' ' ')" >> $W/out/DIFF2-$L.txt; done
 done
 echo "new total: $(awk '{for(i=1;i<NF;i++) if($i=="new") n+=$(i+1)} END{print n+0}' $W/out/DIFF2-$L.txt)"
+[ -n "$TRAIN" ] && train_report
 echo "done $(date -u +%FT%TZ)"
 exit $status
