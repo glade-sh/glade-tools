@@ -1,7 +1,7 @@
 #!/bin/bash
 # val2.sh <bin> <label> [--lanes 3] [--hist B70] [--exclude a,b]   (BMO; run from anywhere; d12 #3)
-# 118 public repos (BUCKET2 30 + BROAD 88) in N LPT-balanced lanes, kerndx as 3 class shards, one-class-bound
-# repos (Portwood, Funraise) split into include/exclude parts. Output layout unchanged:
+# 118 public repos (BUCKET2 30 + BROAD 88) in N LPT-balanced lanes, configured repos (corpus-config.json "shard3") as 3 class shards, one-class-bound
+# repos split into include/exclude parts. Output layout unchanged:
 #   ~/advisor-broad/out/{BUCKET2,BROAD}-<label>/<repo>.test.stdout; then diff2 vs the --hist label -> out/DIFF2-<label>.txt
 # Env: W=<workdir> (default ~/advisor-broad), PLAN_ARGS=<extra plan_lanes.py args>, RUNROOT, CFG=1 (apply $W/corpus-config.json overlays via run3.py).
 # Binary must already exist (gate-dispatch.sh builds it); never reuse a binary name an active gate uses.
