@@ -1,15 +1,18 @@
 #!/bin/bash
 # pubgate2.sh <bin> <label> [repo...]   (Razor ~/advisor-corpus/pubgate, Casper /Volumes/Photos/advisor-pubgate)
 # Public 18 (or the listed repos) in LANES (default 2) LPT lanes from the newest *-public history; the one
-# class-bound repo (NebulaLogger) is split include/exclude. Output: out/<label>-public/<repo>.test.stdout as before,
+# class-bound repos (found automatically by plan_lanes.py) are split include/exclude. Output: out/<label>-public/<repo>.test.stdout as before,
 # then diff2 vs $BASELINES (default FB59FINAL-public B60C88C5-public) -> out/DIFF2-<label>-public.txt and the log.
+# Needs corpus-config.json key "splitRepos" (optional list of repo directory names; not in this repo).
 # Env: ONLY=a,b (plan lanes over just these repos, testing), MINSPLIT=150, LANES=2 (use 1 on Casper), HIST=<label dir>, PROCS=3, BASELINES="a b", CFG=1 (apply ./corpus-config.json overlays via run3.py).
 W=$(cd "$(dirname "$0")" && pwd); cd $W; RUNNER=run2.py; [ -n "${CFG:-}" ] && RUNNER=run3.py; BIN=$1; L=$2; shift 2
 LANES=${LANES:-2}; PROCS=${PROCS:-3}; BASELINES=${BASELINES:-FB59FINAL-public B60C88C5-public}
 exec > $W/pub2-$L.log 2>&1
-if [ -z "${HIST:-}" ]; then
+# History probe: the first repo in corpus-config.json "splitRepos" (a repo present in every full run); none -> no history.
+PROBE=$(python3 -c 'import json,sys; print((json.load(open(sys.argv[1])).get("splitRepos") or [""])[0])' "$W/corpus-config.json" 2>/dev/null)
+if [ -z "${HIST:-}" ] && [ -n "$PROBE" ]; then
   for d in $(ls -td $W/out/*-public); do
-    if [ "$(basename $d)" != "$L-public" ] && [ -f $d/NebulaLogger.test.stdout ]; then HIST=$(basename $d | sed 's/-public$//'); break; fi
+    if [ "$(basename $d)" != "$L-public" ] && [ -f $d/$PROBE.test.stdout ]; then HIST=$(basename $d | sed 's/-public$//'); break; fi
   done
 fi
 echo "start $(date -u +%FT%TZ) $L bin=$BIN lanes=$LANES hist=$HIST"
