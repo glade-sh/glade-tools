@@ -8,8 +8,11 @@
 W=$(cd "$(dirname "$0")" && pwd); cd $W; RUNNER=run2.py; [ -n "${CFG:-}" ] && RUNNER=run3.py; BIN=$1; L=$2; shift 2
 LANES=${LANES:-2}; PROCS=${PROCS:-3}; BASELINES=${BASELINES:-FB59FINAL-public B60C88C5-public}
 # History probe: the first repo in corpus-config.json "splitRepos" (a repo present in every full run). The key is
-# required when the config file exists; [] opts out of the probe. No config file -> no probe.
+# required when the config file exists; [] opts out of the probe. A missing file is an error unless GATE_NO_CONFIG=1 (then no probe).
 PROBE=""
+if [ ! -f "$W/corpus-config.json" ] && [ -z "${GATE_NO_CONFIG:-}" ]; then
+  echo "pubgate2.sh: $W/corpus-config.json not found (set GATE_NO_CONFIG=1 to run without it)" >&2; exit 2
+fi
 if [ -f "$W/corpus-config.json" ]; then
   PROBE=$(python3 -c 'import json,sys; print((json.load(open(sys.argv[1]))["splitRepos"] or [""])[0])' "$W/corpus-config.json") || { echo "pubgate2.sh: $W/corpus-config.json is unreadable or has no \"splitRepos\" key (use [] to opt out)" >&2; exit 2; }
 fi

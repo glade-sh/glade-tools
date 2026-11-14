@@ -83,6 +83,7 @@ def main():
     a.add_argument('--runroot', default=os.path.expanduser('~/advisor-val-run'))
     a.add_argument('--w', default=os.path.expanduser('~/advisor-broad'))
     a.add_argument('--dry', action='store_true')
+    a.add_argument('--no-config', action='store_true', help='run without corpus-config.json (same as GATE_NO_CONFIG=1)')
     a.add_argument('--only', default='', help='comma list: plan only these repos (testing)')
     a.add_argument('--set', action='append', default=[], help="NAME=SRC_CLONE (repeatable; NAME may contain {L}); default BMO sets")
     a.add_argument('--shard3', default=None, help="comma list of repo-name fragments to run as 3 shards ('' for none); default: \"shard3\" list in corpus-config.json (--cfg, else $W/corpus-config.json), else none")
@@ -98,6 +99,8 @@ def main():
     if args.shard3 is None:
         cp = Path(os.path.expanduser(args.cfg or os.path.join(args.w, 'corpus-config.json')))
         args.shard3 = ''
+        if not cp.exists() and not (args.no_config or os.environ.get('GATE_NO_CONFIG')):
+            sys.exit('plan_lanes.py: %s not found (pass --shard3, --no-config or set GATE_NO_CONFIG=1 to run without it)' % cp)
         if cp.exists():
             try:
                 lst = json.loads(cp.read_text())['shard3']

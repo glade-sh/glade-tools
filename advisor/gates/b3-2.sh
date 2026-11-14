@@ -5,8 +5,12 @@
 # BASE (default: newest other *-B3 dir) -> out/DIFF2-<label>-B3.txt. Env: LANES=2 (1 on Casper), SRC=<clone dir>, PROCS=3, BASE=<dir name>, CFG=1 (apply ./corpus-config.json overlays via run3.py).
 W=$(cd "$(dirname "$0")" && pwd); cd $W; RUNNER=run2.py; [ -n "${CFG:-}" ] && RUNNER=run3.py; BIN=$1; L=$2; LANES=${LANES:-2}; PROCS=${PROCS:-3}
 SRC=${SRC:-$([ -d $HOME/advisor-corpus/broad/clone-public-new ] && echo $HOME/advisor-corpus/broad/clone-public-new || echo $W/broad3-src)}
-B3R=$(python3 -c 'import json,sys; print(" ".join(json.load(open(sys.argv[1]))["b3Repos"]))' "$W/corpus-config.json") || { echo "b3-2.sh: $W/corpus-config.json is missing or has no \"b3Repos\" key" >&2; exit 2; }
-set -- $B3R; [ $# -eq 3 ] || { echo "b3-2.sh: corpus-config.json \"b3Repos\" must list exactly 3 repo directory names" >&2; exit 2; }
+if [ -n "${GATE_NO_CONFIG:-}" ]; then B3R=${B3_REPOS:-}   # opt-out: repos come from env B3_REPOS (3 names)
+else
+  [ -f "$W/corpus-config.json" ] || { echo "b3-2.sh: $W/corpus-config.json not found (set GATE_NO_CONFIG=1 and B3_REPOS=\"a b c\" to run without it)" >&2; exit 2; }
+  B3R=$(python3 -c 'import json,sys; print(" ".join(json.load(open(sys.argv[1]))["b3Repos"]))' "$W/corpus-config.json") || { echo "b3-2.sh: $W/corpus-config.json is unreadable or has no \"b3Repos\" key" >&2; exit 2; }
+fi
+set -- $B3R; [ $# -eq 3 ] || { echo "b3-2.sh: corpus-config.json \"b3Repos\" (or B3_REPOS under GATE_NO_CONFIG=1) must list exactly 3 repo directory names" >&2; exit 2; }
 exec > $W/b3v2-$L.log 2>&1
 K=$1; A=$2; F=$3
 if [ -z "${BASE:-}" ]; then
