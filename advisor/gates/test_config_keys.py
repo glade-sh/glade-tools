@@ -64,6 +64,31 @@ class ConfigKeys(unittest.TestCase):
             r, w = run('pubgate2.sh', cfg, 'bin', 'lbl')
             self.assertEqual(r.returncode, 2); self.assertIn('no history found', r.stderr); shutil.rmtree(w)
 
+    def test_pubgate_explicit_repos_without_history(self):
+        for mode in ('only', 'positional'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as tmp:
+                w = Path(tmp)
+                for f in ('plan_lanes.py', 'pubgate2.sh', 'merge_shards.py', 'check_plan.py'):
+                    shutil.copy(HERE / f, w / f)
+                (w / 'corpus-config.json').write_text(json.dumps({'splitRepos': ['r1']}))
+                (w / 'clone-curated' / 'r1').mkdir(parents=True)
+                (w / 'clone-curated' / 'r2').mkdir()
+                (w / 'run2.py').write_text('import sys\nopen(%r, "w").write(" ".join(sys.argv))\n' % str(w / 'runner.args'))
+                env = dict(os.environ, LANES='1', BASELINES='unused')
+                for key in ('HIST', 'GATE_NO_CONFIG', 'ONLY', 'CFG'):
+                    env.pop(key, None)
+                if mode == 'only':
+                    env['ONLY'] = 'r1'
+                cmd = ['bash', str(w / 'pubgate2.sh'), 'bin', 'lbl']
+                if mode == 'positional':
+                    cmd.append('r1')
+                r = subprocess.run(cmd, capture_output=True, text=True, cwd=w, timeout=60, env=env)
+                self.assertEqual(r.returncode, 0, (r.stdout, r.stderr))
+                args = (w / 'runner.args').read_text()
+                self.assertIn('--repos r1', args)
+                self.assertNotIn('r2', args)
+                self.assertNotIn('--history-from', args)
+
     def test_plan_lanes_no_file_fails(self):
         r = plan(None)
         self.assertNotEqual(r.returncode, 0); self.assertIn('corpus-config.json', r.stderr)
