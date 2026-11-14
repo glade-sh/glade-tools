@@ -56,8 +56,13 @@ class ConfigKeys(unittest.TestCase):
         self.assertEqual(r.returncode, 2); self.assertIn('"splitRepos"', r.stderr); shutil.rmtree(w)
 
     def test_pubgate_empty_list_passes_key_check(self):
-        r, w = run('pubgate2.sh', {'splitRepos': []}, 'bin', 'lbl')
-        self.assertNotIn('splitRepos', r.stderr); shutil.rmtree(w)
+        r, w = run('pubgate2.sh', {'splitRepos': []}, 'bin', 'lbl', env={'HIST': 'h'})
+        self.assertNotIn('has no', r.stderr); shutil.rmtree(w)
+
+    def test_pubgate_configured_without_history_fails(self):
+        for cfg in ({'splitRepos': ['r1']}, {'splitRepos': []}):
+            r, w = run('pubgate2.sh', cfg, 'bin', 'lbl')
+            self.assertEqual(r.returncode, 2); self.assertIn('no history found', r.stderr); shutil.rmtree(w)
 
     def test_plan_lanes_no_file_fails(self):
         r = plan(None)
