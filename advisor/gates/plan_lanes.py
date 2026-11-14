@@ -97,10 +97,15 @@ def main():
         SETS = [tuple(x.split('=', 1)) for x in args.set]
     if args.shard3 is None:
         cp = Path(os.path.expanduser(args.cfg or os.path.join(args.w, 'corpus-config.json')))
-        try:
-            args.shard3 = ','.join(json.loads(cp.read_text()).get('shard3', []))
-        except (OSError, ValueError, AttributeError):
-            args.shard3 = ''
+        args.shard3 = ''
+        if cp.exists():
+            try:
+                lst = json.loads(cp.read_text())['shard3']
+            except KeyError:
+                sys.exit('plan_lanes.py: %s has no "shard3" key (use [] to opt out)' % cp)
+            except ValueError as e:
+                sys.exit('plan_lanes.py: %s is not valid JSON: %s' % (cp, e))
+            args.shard3 = ','.join(lst)
     SHARD3 = tuple(x for x in args.shard3.split(',') if x)
     out = Path(args.out); N = args.lanes; P = float(args.procs)
     check, tdur, classes = load_hist(out, args.hist)

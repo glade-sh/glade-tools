@@ -7,9 +7,13 @@
 # Env: ONLY=a,b (plan lanes over just these repos, testing), MINSPLIT=150, LANES=2 (use 1 on Casper), HIST=<label dir>, PROCS=3, BASELINES="a b", CFG=1 (apply ./corpus-config.json overlays via run3.py).
 W=$(cd "$(dirname "$0")" && pwd); cd $W; RUNNER=run2.py; [ -n "${CFG:-}" ] && RUNNER=run3.py; BIN=$1; L=$2; shift 2
 LANES=${LANES:-2}; PROCS=${PROCS:-3}; BASELINES=${BASELINES:-FB59FINAL-public B60C88C5-public}
+# History probe: the first repo in corpus-config.json "splitRepos" (a repo present in every full run). The key is
+# required when the config file exists; [] opts out of the probe. No config file -> no probe.
+PROBE=""
+if [ -f "$W/corpus-config.json" ]; then
+  PROBE=$(python3 -c 'import json,sys; print((json.load(open(sys.argv[1]))["splitRepos"] or [""])[0])' "$W/corpus-config.json") || { echo "pubgate2.sh: $W/corpus-config.json is unreadable or has no \"splitRepos\" key (use [] to opt out)" >&2; exit 2; }
+fi
 exec > $W/pub2-$L.log 2>&1
-# History probe: the first repo in corpus-config.json "splitRepos" (a repo present in every full run); none -> no history.
-PROBE=$(python3 -c 'import json,sys; print((json.load(open(sys.argv[1])).get("splitRepos") or [""])[0])' "$W/corpus-config.json" 2>/dev/null)
 if [ -z "${HIST:-}" ] && [ -n "$PROBE" ]; then
   for d in $(ls -td $W/out/*-public); do
     if [ "$(basename $d)" != "$L-public" ] && [ -f $d/$PROBE.test.stdout ]; then HIST=$(basename $d | sed 's/-public$//'); break; fi
