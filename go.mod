@@ -2,7 +2,7 @@ module github.com/glade-sh/glade/tools
 
 go 1.26.11
 
-require github.com/glade-sh/glade v0.0.0
+require github.com/glade-sh/glade v0.3.10
 
 require (
 	golang.org/x/mod v0.41.0
