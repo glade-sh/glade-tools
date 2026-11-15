@@ -12,6 +12,7 @@ import (
 )
 
 func BuildGladeSnapshot() []SurfaceLedgerRow {
+	typesys.RequestAllGatedNamespaces()
 	byID := map[string]SurfaceLedgerRow{}
 	for _, symbol := range typesys.StandardPlatformSymbolView() {
 		namespace, typeName := splitTypeName(symbol.Namespace, symbol.Name)

@@ -24,6 +24,7 @@ var (
 
 func loadPlatformUsageKeys() map[string]struct{} {
 	platformUsageOnce.Do(func() {
+		typesys.RequestAllGatedNamespaces()
 		keys := map[string]struct{}{}
 		schemaNames := map[string]bool{}
 		for _, name := range typesys.StandardSchemaNamespaceTypeNames() {

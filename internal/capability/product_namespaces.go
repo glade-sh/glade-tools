@@ -241,6 +241,7 @@ func BuildProductNamespaceReportWithDeclarations(catalog Catalog, declarations P
 }
 
 func ProductNamespaceDeclarationsFromStandardSymbols() ProductNamespaceDeclarations {
+	typesys.RequestAllGatedNamespaces()
 	out := ProductNamespaceDeclarations{Types: map[string]ProductNamespaceDeclaredType{}}
 	for _, symbol := range typesys.StandardPlatformSymbolView() {
 		if symbol.Namespace == "" {

@@ -56,6 +56,7 @@ type StubBehaviorEntry struct {
 }
 
 func BuildStubBehaviorReport() StubBehaviorReport {
+	typesys.RequestAllGatedNamespaces()
 	evidence := buildStubBehaviorEvidence()
 	report := StubBehaviorReport{
 		SchemaVersion: StubBehaviorSchemaVersion,
