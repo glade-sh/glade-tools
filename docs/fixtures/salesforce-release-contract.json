@@ -478,7 +478,7 @@
         "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_elastic_async_limit.htm&language=en_US&release=262&type=5"
       ],
       "productTests": [
-        "internal/vm/execution_policy_test.go:TestElasticAsyncLimitKeysAPI67"
+        "internal/vm/execution_policy_test.go:TestElasticAsyncLimitKeysAbsentByDefault"
       ]
     },
     {
