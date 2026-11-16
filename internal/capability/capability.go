@@ -130,7 +130,7 @@ func WriteMarkdown(w io.Writer, report Report) error {
 	if _, err := fmt.Fprintf(w, "## Tracked local capability checks\n\n"); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprintf(w, "This internal checklist does not establish complete Salesforce parity.\n\n"); err != nil {
+	if _, err := fmt.Fprintf(w, "This checklist does not establish complete Salesforce parity.\n\n"); err != nil {
 		return err
 	}
 	if _, err := fmt.Fprintf(w, "- Target: %s\n", report.Target); err != nil {
@@ -215,7 +215,7 @@ func WriteKnownGapsMarkdown(w io.Writer, report Report) error {
 	if _, err := fmt.Fprintf(w, "## Known limits of the local runtime\n\n"); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprintf(w, "This internal checklist does not establish complete Salesforce parity.\n\n"); err != nil {
+	if _, err := fmt.Fprintf(w, "This checklist does not establish complete Salesforce parity.\n\n"); err != nil {
 		return err
 	}
 	if _, err := fmt.Fprintf(w, "- Required complete: %d/%d\n", report.Complete, report.Required); err != nil {
@@ -242,13 +242,9 @@ func WriteKnownGapsMarkdown(w io.Writer, report Report) error {
 			limits = append(limits, feature)
 		}
 	}
-	currentArea := ""
 	for i, feature := range limits {
-		if feature.Area != currentArea {
-			currentArea = feature.Area
-			if _, err := fmt.Fprintf(w, "## %s\n\n", currentArea); err != nil {
-				return err
-			}
+		if _, err := fmt.Fprintf(w, "## %s\n\n", feature.Area); err != nil {
+			return err
 		}
 		if _, err := fmt.Fprintf(w, "### `%s`: %s\n\n", feature.ID, feature.Name); err != nil {
 			return err
@@ -346,5 +342,13 @@ var mvpFeatures = []Feature{
 	{ID: "server.rest-breadth.hosted-auth-live-org-deploy", Area: "Local API server", Name: "Hosted auth, live-org Tooling, and deployment services", Status: StatusUnsupported, Required: false, Notes: "OAuth token issuance, live org-only Tooling objects, live metadata deploy/retrieve, and broader hosted REST namespaces require Salesforce services."},
 	{ID: "compat.fixture-expansion", Area: "Release", Name: "Compatibility fixture expansion", Status: StatusSupported, Required: false, Notes: "Fixture evidence coverage is gated by the first-party compat tooling and generated fixture reports."},
 	{ID: "release.distribution-automation", Area: "Release", Name: "Package-manager distribution, signing, and promotion automation", Status: StatusSupported, Required: false, Notes: "Release scripts build installable archives, checksums, manifests, smoke checks, and promotion metadata for the local binary distribution path."},
+	{ID: "automation.assignment.scope", Area: "Automation", Name: "Assignment rule scope", Status: StatusUnsupported, Required: false, Notes: "The local assignment rule implementation is bounded to the supported Lead and Case metadata and checked selection paths; it does not establish full hosted assignment behavior."},
+	{ID: "automation.duplicate.matching", Area: "Automation", Name: "Duplicate matching scope", Status: StatusUnsupported, Required: false, Notes: "Local duplicate matching enforces custom same-object rules with Exact items and the First Name, Last Name, Company Name, Phone, City, Street, ZIP and Title fuzzy methods, reproducing native verdicts and match confidences for the captured rows. It does not enforce cross-object or Person Account rules, and it leaves standard Account, Contact and Lead fuzzy equations, fuzzy items under OR and rules with three or more fuzzy items unenforced. Metaphone 3 and Syllable Alignment are approximated, so some native matches are missed. See [DUPLICATE_FUZZY_MATCHING.md](DUPLICATE_FUZZY_MATCHING.md)."},
+	{ID: "automation.flow.hosted", Area: "Automation", Name: "Hosted Flow and unsupported nodes", Status: StatusUnsupported, Required: false, Notes: "Screen and wait nodes, after-delete Flow and hosted scheduling are outside the local Flow contract."},
+	{ID: "events.change.delivery", Area: "Events", Name: "Change-event hosted delivery", Status: StatusUnsupported, Required: false, Notes: "Local change-event journal and subscriber execution do not establish hosted event streaming or delivery timing."},
+	{ID: "platform.exclusions", Area: "Platform", Name: "Excluded platforms", Status: StatusUnsupported, Required: false, Notes: "DataWeave and Slack are excluded and unsupported. ConnectApi types are passive\n  shapes; its hosted services are not implemented (see release policy)."},
+	{ID: "security.default-permissions.scope", Area: "Security", Name: "Default permission scope", Status: StatusUnsupported, Required: false, Notes: "Local default permission behavior covers the checked configurations and does not establish full hosted permission parity."},
 	{ID: "stdlib.platform-breadth", Area: "Runtime", Name: "Broader System stdlib and platform service parity", Status: StatusSupported, Required: false, Notes: "All locally pursuable stdlib rows are modeled as supported local behavior or split into exact hosted-service unsupported rows with stable diagnostics."},
+	{ID: "soql.default-order.scope", Area: "SOQL", Name: "Default order without ORDER BY", Status: StatusUnsupported, Required: false, Notes: "Only the captured shapes return index order: an Account query whose entire WHERE clause is a Name prefix LIKE (ascending Name), and an Account to Contacts child subquery whose entire WHERE clause is a LastName prefix LIKE (descending LastName). Compound filters, other child objects, Name on children, GROUP BY, custom objects and describe order keep Id order and are not fitted."},
+	{ID: "dml.text-write-trim.scope", Area: "DML", Name: "Text write trimming set", Status: StatusUnsupported, Required: false, Notes: "Plain Text writes trim space and tab, and a value empty afterwards becomes null (captured on Account Name and Site and custom Name). Base already trims spaces on STRING fields. Other control characters (CR, LF, VT, FF, NUL) were not captured and keep base behavior. A blank Name was not captured; Glade keeps REQUIRED_FIELD_MISSING."},
 }
