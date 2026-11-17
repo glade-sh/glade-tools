@@ -1790,6 +1790,7 @@ type platformCallResolver struct {
 }
 
 func newPlatformCallResolver(index typesys.Index) *platformCallResolver {
+	typesys.RequestAllGatedNamespaces()
 	resolver := &platformCallResolver{typesByName: map[string]typesys.TypeSymbol{}}
 	for _, typ := range index.Types {
 		if typ.Name == "" {

@@ -480,7 +480,7 @@ func replayRequest(t *testing.T, host, exit string) (ReplayRequest, string) {
 	}
 	cacheIdentity := semanticcache.Identity{
 		ProjectContentSHA256: strings.Repeat("a", 64), SchemaContentSHA256: strings.Repeat("b", 64), DependencySHA256: strings.Repeat("c", 64),
-		SemanticABI: sema.SemanticABI, PlatformABI: sema.PlatformABI, OptionsFingerprint: strings.Repeat("d", 64),
+		BuildFingerprint: strings.Repeat("e", 64), SemanticABI: sema.SemanticABI, PlatformABI: sema.PlatformABI, OptionsFingerprint: strings.Repeat("d", 64),
 	}
 	if err := semanticcache.Store(cacheTemplateRoot, filepath.Join(replaySemanticCachePath, "result-proof.json"), cacheIdentity, sema.Result{}); err != nil {
 		t.Fatal(err)

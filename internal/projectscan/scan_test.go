@@ -1862,6 +1862,29 @@ func TestScanTextFileHandlesLongLines(t *testing.T) {
 	}
 }
 
+// Glade now loads a valid PlatformEvent flow, so the scan reports nothing for
+// it. The classifier still applies to a flow the loader rejects, so this
+// fixture points the start connector at a node that does not exist.
+func TestScanSkipsResolvedPlatformEventFlow(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "sfdx-project.json"), `{"packageDirectories":[{"path":"force-app","default":true}]}`)
+	writeFile(t, filepath.Join(root, "force-app/main/default/flows/LogEvent.flow-meta.xml"), `<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+  <processType>AutoLaunchedFlow</processType>
+  <status>Active</status>
+  <start>
+    <object>LogEvent__e</object>
+    <triggerType>PlatformEvent</triggerType>
+  </start>
+</Flow>`)
+	report, err := Scan(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if findSurface(report, "flow.platform-event-trigger") != nil || findSurface(report, "flow.save-order") != nil {
+		t.Fatalf("resolved PlatformEvent flow should produce no flow finding: %#v", report.Findings)
+	}
+}
+
 func TestScanClassifiesPlatformEventFlowAsNonTestBlocking(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, filepath.Join(root, "sfdx-project.json"), `{"packageDirectories":[{"path":"force-app","default":true}]}`)
@@ -1871,6 +1894,7 @@ func TestScanClassifiesPlatformEventFlowAsNonTestBlocking(t *testing.T) {
   <start>
     <object>LogEvent__e</object>
     <triggerType>PlatformEvent</triggerType>
+    <connector><targetReference>MissingNode</targetReference></connector>
   </start>
 </Flow>`)
 
