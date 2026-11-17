@@ -102,30 +102,58 @@ func TestDatabaseAbsentObjectSignaturesAreLocalOnly(t *testing.T) {
 		}
 	}
 
-	path := filepath.Join(root, localFile)
-	fixture := loadDatabaseSuccessor47Fixture(t, path)
-	assertDatabaseSuccessor47CommandSource(t, fixture, "test")
-	if got := databaseSuccessor47SurfaceIDs(fixture); !reflect.DeepEqual(got, absent) {
-		t.Fatalf("%s evidence = %v, want %v", localFile, got, absent)
-	}
-	policy := loadDatabaseSuccessor47Policy(t, path)
-	if policy.EvidenceOnly || policy.Mode != "local-runtime" || policy.SalesforceEligible == nil || *policy.SalesforceEligible || policy.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(policy.SalesforceExclusionReason, "zero Salesforce parity") || policy.SelectedRowCount != len(absent) {
-		t.Fatalf("%s local-only policy = %#v", localFile, policy)
-	}
-	for _, token := range []string{
-		"Object insertedObject",
-		"Database.insert(insertedObject, false)",
-		"Database.update(updatedObject, false, AccessLevel.SYSTEM_MODE)",
-		"Database.delete(deletedObject, false)",
-		"Database.delete(accessDeletedObject, AccessLevel.SYSTEM_MODE)",
-		"Database.undelete(accessRestoredObject, AccessLevel.SYSTEM_MODE)",
+	for _, local := range []struct {
+		file   string
+		kind   string
+		ids    []string
+		tokens []string
+	}{
+		{
+			file: "data-database-object-boolean-local-only-api67.json",
+			kind: "exec",
+			ids: []string{
+				"apex:System.Database.insert(Object,Boolean)",
+				"apex:System.Database.delete(Object,Boolean)",
+			},
+			tokens: []string{
+				"Object insertedObject",
+				"Database.insert(insertedObject, false)",
+				"Database.delete(deletedObject, false)",
+			},
+		},
+		{
+			file: localFile,
+			kind: "test",
+			ids: []string{
+				"apex:System.Database.update(Object,Boolean,AccessLevel)",
+				"apex:System.Database.delete(Object,AccessLevel)",
+				"apex:System.Database.undelete(Object,AccessLevel)",
+			},
+			tokens: []string{
+				"Database.update(updatedObject, false, AccessLevel.SYSTEM_MODE)",
+				"Database.delete(accessDeletedObject, AccessLevel.SYSTEM_MODE)",
+				"Database.undelete(accessRestoredObject, AccessLevel.SYSTEM_MODE)",
+			},
+		},
 	} {
-		if !strings.Contains(fixture.Source[0].Content, token) {
-			t.Fatalf("%s source missing %q", localFile, token)
+		path := filepath.Join(root, local.file)
+		fixture := loadDatabaseSuccessor47Fixture(t, path)
+		assertDatabaseSuccessor47CommandSource(t, fixture, local.kind)
+		if got := databaseSuccessor47SurfaceIDs(fixture); !reflect.DeepEqual(got, local.ids) {
+			t.Fatalf("%s evidence = %v, want %v", local.file, got, local.ids)
 		}
-	}
-	if result, err := compat.Run(fixture); err != nil || !result.OK {
-		t.Fatalf("%s local execution = %#v, error = %v", localFile, result, err)
+		policy := loadDatabaseSuccessor47Policy(t, path)
+		if policy.EvidenceOnly || policy.Mode != "local-runtime" || policy.SalesforceEligible == nil || *policy.SalesforceEligible || policy.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(policy.SalesforceExclusionReason, "zero Salesforce parity") || policy.SelectedRowCount != len(local.ids) {
+			t.Fatalf("%s local-only policy = %#v", local.file, policy)
+		}
+		for _, token := range local.tokens {
+			if !strings.Contains(fixture.Source[0].Content, token) {
+				t.Fatalf("%s source missing %q", local.file, token)
+			}
+		}
+		if result, err := compat.Run(fixture); err != nil || !result.OK {
+			t.Fatalf("%s local execution = %#v, error = %v", local.file, result, err)
+		}
 	}
 
 	paths, err := filepath.Glob(filepath.Join(root, "*.json"))

@@ -731,7 +731,6 @@ func TestLWCStdlibIntegrationRowsArePromotedOrBounded(t *testing.T) {
 		"Test.getExternalService()":                        StatusSupported,
 		"Test.setMock":                                     StatusSupported,
 		"WebServiceCallout.invoke(Object,Object,Map,List)": StatusSupported,
-		"WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)": StatusSupported,
 	}
 	for _, entry := range StdlibMatrix() {
 		want, ok := watched[entry.API]
@@ -760,8 +759,7 @@ func TestLWCStdlibIntegrationRowsArePromotedOrBounded(t *testing.T) {
 
 func TestWebServiceCalloutStdlibRowsAreLocallyPromotedOrFenced(t *testing.T) {
 	watched := map[string]Status{
-		"WebServiceCallout.invoke(Object,Object,Map,List)":                        StatusSupported,
-		"WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)": StatusSupported,
+		"WebServiceCallout.invoke(Object,Object,Map,List)": StatusSupported,
 	}
 	for _, entry := range StdlibMatrix() {
 		want, ok := watched[entry.API]

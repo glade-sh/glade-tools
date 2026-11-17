@@ -1,0 +1,56 @@
+{
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "evidenceOnly": false,
+  "name": "data-database-object-boolean-local-only-api67",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Database.insert(Object,Boolean)",
+      "symbol": "Database.insert",
+      "kind": "exec",
+      "notes": "Glade locally executes the Object-typed insert overload with allOrNone=false."
+    },
+    {
+      "surfaceId": "apex:System.Database.delete(Object,Boolean)",
+      "symbol": "Database.delete",
+      "kind": "exec",
+      "notes": "Glade locally executes the Object-typed delete overload with allOrNone=false."
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Object insertedObject = new Account(Name = 'Local Object Signatures'); Database.SaveResult inserted = Database.insert(insertedObject, false); System.assert(inserted.isSuccess()); Object deletedObject = new Account(Id = inserted.getId()); Database.DeleteResult deleted = Database.delete(deletedObject, false); System.assert(deleted.isSuccess());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Object insertedObject = new Account(Name = 'Local Object Signatures'); Database.SaveResult inserted = Database.insert(insertedObject, false); System.assert(inserted.isSuccess()); Object deletedObject = new Account(Id = inserted.getId()); Database.DeleteResult deleted = Database.delete(deletedObject, false); System.assert(deleted.isSuccess());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "notes": "Local-runtime witness for two Object-typed Database overloads (insert and delete with allOrNone) absent from the Salesforce API 67 signature surface.",
+  "profile": {
+    "laneId": "database-object-boolean-local-only",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 does not expose these Object-typed overload signatures; this executable local fixture claims zero Salesforce parity."
+}
