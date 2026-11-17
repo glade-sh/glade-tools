@@ -187,6 +187,7 @@ var readinessSymbolPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`\b(JSON\.[A-Za-z0-9_$.]+)`),
 	regexp.MustCompile(`unsupported call "([^"]+)"`),
 	regexp.MustCompile(`unknown type "([^"]+)"`),
+	regexp.MustCompile(`Invalid type: ([A-Za-z0-9_$.<>]+)`),
 	regexp.MustCompile(`unknown SObject "([^"]+)"`),
 }
 

@@ -1,5 +1,5 @@
 {
-  "gladeCommit": "b974901a3e0ad48d6c517cff894601fa5e242000",
+  "gladeCommit": "b9f6d86e91e8ffd51eaab482bb0384a27c22a561",
   "rules": [
     {
       "id": "APEX-ABSTRACT-IMPLEMENTATION-MISSING-OVERRIDE",

@@ -396,6 +396,8 @@ func localRuntimeDatabaseTestSurface(surfaceID string) bool {
 	case "apex:System.Database.countQueryWithBinds",
 		"apex:System.Database.countQueryWithBinds(String,Map,AccessLevel)",
 		"apex:System.Database.delete(Id,AccessLevel)",
+		"apex:System.Database.delete(Object,Boolean)",
+		"apex:System.Database.insert(Object,Boolean)",
 		"apex:System.Database.delete(Id,Boolean,AccessLevel)",
 		"apex:System.Database.delete(List<Id>,AccessLevel)",
 		"apex:System.Database.delete(List<Id>,Boolean,AccessLevel)",

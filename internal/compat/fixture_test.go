@@ -428,7 +428,13 @@ func TestRunExecFixture(t *testing.T) {
 	}
 }
 
-func TestRunExecFixtureUsesProjectSourceAPIVersion(t *testing.T) {
+// At native API 62 and 67, System.requestVersion() in an unmanaged namespace is
+// a ProcedureException. The runtime keeps the Version DTO for namespaced code.
+// Anonymous Apex is unmanaged, so these fixtures pin the boundary at the
+// project and top-level API versions.
+const unmanagedRequestVersionMessage = "System.ProcedureException: Method is not supported from an unmanaged namespace"
+
+func TestRunExecFixtureRejectsUnmanagedRequestVersionAtProjectSourceAPIVersion(t *testing.T) {
 	fixture := Fixture{
 		Name:       "exec-project-api-version",
 		APIVersion: "65.0",
@@ -438,33 +444,33 @@ func TestRunExecFixtureUsesProjectSourceAPIVersion(t *testing.T) {
 		Source:  []SourceFile{{Path: "anonymous.apex", Content: "System.assertEquals('67.0.0', System.requestVersion().toString());"}},
 		Command: Invocation{Kind: "exec", Args: []string{"System.assertEquals('67.0.0', System.requestVersion().toString());"}},
 		Expected: ExpectedBehavior{
-			Result: json.RawMessage(`{"debug":null,"ok":true}`),
+			Error: &ExpectedError{Type: "Error", Message: unmanagedRequestVersionMessage},
 		},
 	}
 	result, err := Run(fixture)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !result.OK {
+	if !result.OK || result.Error == nil {
 		t.Fatalf("result = %#v", result)
 	}
 }
 
-func TestRunExecFixtureUsesTopLevelAPIVersion(t *testing.T) {
+func TestRunExecFixtureRejectsUnmanagedRequestVersionAtTopLevelAPIVersion(t *testing.T) {
 	fixture := Fixture{
 		Name:       "exec-release-api-version",
 		APIVersion: "67.0",
 		Source:     []SourceFile{{Path: "anonymous.apex", Content: "System.assertEquals('67.0.0', System.requestVersion().toString());"}},
 		Command:    Invocation{Kind: "exec", Args: []string{"System.assertEquals('67.0.0', System.requestVersion().toString());"}},
 		Expected: ExpectedBehavior{
-			Result: json.RawMessage(`{"debug":null,"ok":true}`),
+			Error: &ExpectedError{Type: "Error", Message: unmanagedRequestVersionMessage},
 		},
 	}
 	result, err := Run(fixture)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !result.OK {
+	if !result.OK || result.Error == nil {
 		t.Fatalf("result = %#v", result)
 	}
 }
@@ -583,7 +589,7 @@ Boolean strictCaught = false;
 try {
   JsonDTO bad = JSON.deserializeStrict('{"Name":"Ada","Primary":{"City":"Delta","Extra":"nope"}}', JsonDTO.class);
 } catch (JSONException e) {
-  strictCaught = e.getMessage().contains('unknown field "Extra"');
+  strictCaught = e.getMessage().contains('Unknown field: JsonDTOAddress.Extra');
 }
 System.assert(strictCaught);
 String roundtrip = JSON.serialize(dto, true);

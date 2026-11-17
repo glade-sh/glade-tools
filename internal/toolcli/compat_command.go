@@ -2289,6 +2289,7 @@ func runCompatReconcile(args []string, w io.Writer) error {
 		catalog = capability.BuildCatalog(inv)
 	}
 
+	typesys.RequestAllGatedNamespaces()
 	rec := capability.BuildReconciliation(catalog, typesys.StandardPlatformSymbols())
 
 	if maxUnknown >= 0 {

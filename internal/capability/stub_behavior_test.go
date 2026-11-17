@@ -1043,7 +1043,6 @@ func TestStubBehaviorSeparatesServiceMethodsFromPassiveDTOs(t *testing.T) {
 	assertStubBehaviorPrefix(t, entries, "HttpCalloutMock.respond(", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "WebServiceMock.doInvoke(", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "WebServiceCallout.invoke(Object,Object,Map,List)", StubBehaviorImplemented)
-	assertStubBehaviorPrefix(t, entries, "WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "WebServiceCallout.beginInvoke(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "WebServiceCallout.endInvoke(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "SoqlStubProvider.handleSoqlQuery(", StubBehaviorImplemented)

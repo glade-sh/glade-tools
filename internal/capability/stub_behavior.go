@@ -56,6 +56,7 @@ type StubBehaviorEntry struct {
 }
 
 func BuildStubBehaviorReport() StubBehaviorReport {
+	typesys.RequestAllGatedNamespaces()
 	evidence := buildStubBehaviorEvidence()
 	report := StubBehaviorReport{
 		SchemaVersion: StubBehaviorSchemaVersion,
@@ -141,7 +142,7 @@ func buildStubBehaviorMemberEntry(symbol typesys.TypeSymbol, typeName string, me
 	if member.Kind == apexast.DeclarationProperty && symbolHasZeroArgMethod(symbol, member.Name) {
 		entry.ID = typeName + "." + member.Name
 	}
-	if member.Kind == apexast.DeclarationConstructor || member.Kind == apexast.DeclarationProperty {
+	if member.Kind == apexast.DeclarationConstructor || member.Kind == apexast.DeclarationProperty || member.Kind == apexast.DeclarationField {
 		entry.Status = StubBehaviorPassiveDefault
 		entry.Notes = "shape is available; behavior is passive/default unless runtime code special-cases it"
 	}

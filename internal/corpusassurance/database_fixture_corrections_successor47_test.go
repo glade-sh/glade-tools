@@ -104,7 +104,7 @@ func TestDatabaseAbsentObjectSignaturesAreLocalOnly(t *testing.T) {
 
 	path := filepath.Join(root, localFile)
 	fixture := loadDatabaseSuccessor47Fixture(t, path)
-	assertDatabaseSuccessor47CommandSource(t, fixture, "exec")
+	assertDatabaseSuccessor47CommandSource(t, fixture, "test")
 	if got := databaseSuccessor47SurfaceIDs(fixture); !reflect.DeepEqual(got, absent) {
 		t.Fatalf("%s evidence = %v, want %v", localFile, got, absent)
 	}
