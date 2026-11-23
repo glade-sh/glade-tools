@@ -217,3 +217,29 @@ test("the generator checks --api-version against versions the captures carry", (
   assert.notEqual(generate(directory, twoOrgs({urls: {sobject: "/services/data/v67.0/sobjects/Account", describe: "/services/data/v66.0/sobjects/Account/describe"}})).result.status, 0);
   assert.equal(generate(directory, twoOrgs()).result.status, 0); // no version carried: the flag stands
 }));
+
+test("sanitizer keeps a picklist value that is bound at its exact slot, not elsewhere", () => inTemp((directory) => {
+  const {result, document} = generate(directory, twoOrgs());
+  assert.equal(result.status, 0, result.stderr);
+  const sha = document().sha256;
+  const labels = path.join(directory, "labels.json");
+  const input = describes({fields: [
+    {name: "Type", label: "Account Type", picklistValues: [
+      {value: "Prospect", label: "Prospect", active: true},
+      {value: "Org Only Value", label: "Org Only Value", active: true},
+    ]},
+    {name: "Rating", label: "Account Rating", picklistValues: [{value: "Prospect", label: "Prospect", active: true}]},
+  ]});
+  const kept = sanitize(directory, input, labels, sha, []);
+  assert.equal(kept.result.status, 0, kept.result.stderr);
+  const fields = kept.read().describes.Account.fields;
+  assert.deepEqual(fields[0].picklistValues.map((entry) => entry.value), ["Prospect"]);
+  assert.equal(fields[0].picklistValues[0].label, "Prospect");
+  assert.deepEqual(fields[1].picklistValues, []);
+  const removed = JSON.parse(kept.result.stdout).removed;
+  assert.equal(removed.picklistsBound, 1);
+  assert.equal(removed.picklists, 2);
+  // Without the reviewed file nothing is bound and an empty allowlist drops every value.
+  const plain = sanitize(directory, input, null, null, []).read().describes.Account.fields;
+  assert.deepEqual(plain[0].picklistValues, []);
+}));

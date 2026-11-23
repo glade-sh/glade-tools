@@ -18,6 +18,9 @@ import {boundLabel, customEntity, nameToken, validateReviewedLabels} from "./lib
 // position that accepts reviewed strings if it is in that set. It does not say
 // which object, field or slot the string belongs to.
 //
+// A picklist value outside that set also passes when the reviewed-labels file binds
+// it to its exact object, field and value slot (counted as picklistsBound).
+//
 // Labels (describe, plural, field, picklist entry, supportedScopes) are kept
 // only when they equal a reviewed public-catalog string; otherwise the key is
 // dropped. Org-renamed labels therefore never pass, and standard labels are
@@ -182,7 +185,7 @@ function sanitize(bundle, reviewedValues, reviewedLabels = null) {
   const reviewed = (value) => typeof value === "string" && !customEntity.test(value) && allowed.has(value);
   const label = (value) => { need(value === null || typeof value === "string"); return reviewed(value); };
   const describes = describesOf(bundle);
-  const counts = {objects: 0, fields: 0, references: 0, childRows: 0, recordTypes: 0, picklists: 0, labels: 0, labelsBound: 0, urls: 0, dropped: 0};
+  const counts = {objects: 0, fields: 0, references: 0, childRows: 0, recordTypes: 0, picklists: 0, picklistsBound: 0, labels: 0, labelsBound: 0, urls: 0, dropped: 0};
   const keepLabel = (out, key, value, ...slot) => {
     if (label(value)) out[key] = value;
     else if (slot.length && typeof value === "string" && boundLabel(reviewedLabels, ...slot) === value) { out[key] = value; counts.labelsBound++; }
@@ -296,6 +299,9 @@ function sanitize(bundle, reviewedValues, reviewedLabels = null) {
         if (row.picklistValues) {
           row.picklistValues = row.picklistValues.filter((entry) => {
             if (entry.value !== undefined && reviewed(entry.value)) return true;
+            // A value the reviewed-labels file binds to this exact slot sits at the
+            // same field and value, with the same reviewable label, in both captures.
+            if (entry.value !== undefined && boundLabel(reviewedLabels, objectName, "fields", field.name, "picklist", entry.value) !== undefined) { counts.picklistsBound++; return true; }
             counts.picklists++;
             return false;
           });
