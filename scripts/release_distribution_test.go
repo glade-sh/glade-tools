@@ -550,7 +550,7 @@ func validateDeterministicPluginArchive(t *testing.T, archivePath, plugin, binar
 			"github.com/dlclark/regexp2": "ATTRIB",
 			"golang.org/x/net":           "PATENTS",
 			"modernc.org/libc":           "LICENSE-3RD-PARTY.md",
-			"modernc.org/sqlite":         "SQLITE-LICENSE",
+			"modernc.org/sqlite":         "LICENSE-SQLITE",
 		} {
 			var found bool
 			for _, component := range notices.Components {
