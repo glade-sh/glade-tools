@@ -75,6 +75,20 @@ function slotsOf(bundle) {
   return slots;
 }
 
+// API versions the export itself carries, read from its describe urls.
+function versionsOf(bundle) {
+  const found = new Set();
+  if (!isObject(bundle) || !isObject(bundle.describes)) throw bad();
+  for (const describe of Object.values(bundle.describes)) {
+    if (!isObject(describe) || !isObject(describe.urls)) continue;
+    for (const url of Object.values(describe.urls)) {
+      const match = typeof url === "string" ? /^\/services\/data\/v(\d{2}\.\d)\//.exec(url) : null;
+      if (match) found.add(match[1]);
+    }
+  }
+  return found;
+}
+
 function checkIdentities(value) {
   if (!Array.isArray(value) || value.length !== 2) throw new Error("identities must list exactly two orgs");
   const keys = ["name", "id", "username"];
@@ -156,7 +170,15 @@ try {
   }
   if (fs.existsSync(destination) && !fs.statSync(destination).isFile()) throw new Error("output must be a regular file");
   if (fs.realpathSync(fileA) === fs.realpathSync(fileB)) throw new Error("the two captures must be different files");
-  const {objects, kept} = build(readJSON(fileA), readJSON(fileB), readJSON(identitiesFile));
+  const bundleA = readJSON(fileA);
+  const bundleB = readJSON(fileB);
+  if (!/^\d{2}\.0$/.test(apiVersion)) throw new Error("api version must look like NN.0");
+  for (const bundle of [bundleA, bundleB]) {
+    const carried = versionsOf(bundle);
+    // An export that carries a version must carry exactly the claimed one.
+    if (carried.size > 1 || (carried.size === 1 && !carried.has(apiVersion))) throw new Error("api version does not match the capture");
+  }
+  const {objects, kept} = build(bundleA, bundleB, readJSON(identitiesFile));
   const document = {
     format: REVIEWED_LABELS_FORMAT,
     provenance: {generator: REVIEWED_LABELS_GENERATOR, captureId, apiVersion, locale: "en_US", orgCount: 2, distinctSettingsAttested: true},

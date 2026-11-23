@@ -272,7 +272,7 @@ function sanitize(bundle, reviewedValues, reviewedLabels = null) {
             const item = project(entry, PICKLIST_SPEC);
             need(typeof entry.value === "string");
             item.value = entry.value;
-            if ("label" in entry) keepLabel(item, "label", entry.label, objectName, "fields", field.name, "picklist", entry.value, "label");
+            if ("label" in entry) keepLabel(item, "label", entry.label, objectName, "fields", field.name, "picklist", entry.value);
             if ("validFor" in entry) {
               need(entry.validFor === null || (typeof entry.validFor === "string" && /^[A-Za-z0-9+/=]*$/.test(entry.validFor)));
               item.validFor = entry.validFor;

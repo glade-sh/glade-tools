@@ -181,3 +181,39 @@ test("sanitizer rejects reviewed entries that fail the label filters", () => inT
     assert.notEqual(sanitize(directory, describes(), file, doc.sha256).result.status, 0);
   }
 }));
+
+test("a bound picklist label is kept at its exact slot and dropped elsewhere", () => inTemp((directory) => {
+  const fields = [{name: "Type", label: "Account Type", picklistValues: [
+    {value: "Gold", label: "Gold Tier", active: true}, {value: "Silver", label: "Silver Tier", active: true}]},
+  {name: "Rating", label: "Account Rating", picklistValues: [{value: "Gold", label: "Gold Tier", active: true}]}];
+  const {result, document} = generate(directory, twoOrgs({fields}, {fields}));
+  assert.equal(result.status, 0, result.stderr);
+  const doc = document();
+  assert.equal(doc.objects.Account.fields.Type.picklist.Gold, "Gold Tier");
+  const sha = doc.sha256;
+  const labels = path.join(directory, "labels.json");
+  // The allowlist holds the values only, so labels survive only through the bound slot.
+  const input = describes({fields: [
+    {name: "Type", picklistValues: [
+      {value: "Gold", label: "Gold Tier", active: true},      // exact slot
+      {value: "Silver", label: "Gold Tier", active: true},    // other value
+      {value: "Bronze", label: "Silver Tier", active: true}]}, // value not in the file
+    {name: "Phone", picklistValues: [{value: "Gold", label: "Gold Tier", active: true}]},   // other field
+  ]});
+  const outcome = sanitize(directory, input, labels, sha, ["Gold", "Silver", "Bronze"]);
+  assert.equal(outcome.result.status, 0, outcome.result.stderr);
+  const [type, phone] = outcome.read().describes.Account.fields;
+  assert.deepEqual(type.picklistValues.map((entry) => entry.label), ["Gold Tier", undefined, undefined]);
+  assert.equal("label" in phone.picklistValues[0], false);
+}));
+
+test("the generator checks --api-version against versions the captures carry", () => inTemp((directory) => {
+  const urls = (version) => ({urls: {sobject: `/services/data/v${version}/sobjects/Account`}});
+  assert.equal(generate(directory, twoOrgs(urls("67.0"), urls("67.0"))).result.status, 0);
+  const mismatch = generate(directory, twoOrgs(urls("66.0"), urls("66.0")));
+  assert.notEqual(mismatch.result.status, 0);
+  assert.equal(fs.existsSync(mismatch.output), false);
+  assert.notEqual(generate(directory, twoOrgs(urls("67.0"), urls("66.0"))).result.status, 0);
+  assert.notEqual(generate(directory, twoOrgs({urls: {sobject: "/services/data/v67.0/sobjects/Account", describe: "/services/data/v66.0/sobjects/Account/describe"}})).result.status, 0);
+  assert.equal(generate(directory, twoOrgs()).result.status, 0); // no version carried: the flag stands
+}));
