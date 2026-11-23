@@ -223,3 +223,66 @@ test("treats custom suffixes in any case as org data", () => inTemp((directory) 
   assert.deepEqual(fields[0].picklistValues.map((entry) => entry.value), ["Standard"]);
   assertClean(result, suffixed);
 }));
+
+// Free text in name slots aborts the run. One case per slot.
+const SECRET = "Acme secret";
+const slotCases = {
+  networkScopeFieldName: () => describeOf({networkScopeFieldName: SECRET}),
+  defaultImplementation: () => describeOf({defaultImplementation: SECRET}),
+  extendedBy: () => describeOf({extendedBy: [SECRET]}),
+  extendsInterfaces: () => describeOf({extendsInterfaces: SECRET}),
+  implementedBy: () => describeOf({implementedBy: [SECRET]}),
+  implementsInterfaces: () => describeOf({implementsInterfaces: [SECRET]}),
+  "field.referenceTo": () => describeOf({fields: [{name: "OwnerId", referenceTo: ["User", SECRET]}]}),
+  "child.junctionIdListNames": () => describeOf({childRelationships: [{childSObject: "Contact", field: "AccountId", junctionIdListNames: [SECRET]}]}),
+  "child.junctionReferenceTo": () => describeOf({childRelationships: [{childSObject: "Contact", field: "AccountId", junctionReferenceTo: [SECRET]}]}),
+};
+for (const [slot, make] of Object.entries(slotCases)) {
+  test(`aborts on free text in ${slot}`, () => inTemp((directory) => {
+    assertAborts(directory, {describes: {Account: make()}}, [SECRET, "Acme"]);
+  }));
+}
+
+test("drops custom names from every name slot", () => inTemp((directory) => {
+  const result = sanitized(directory, {describes: {Account: describeOf({
+    networkScopeFieldName: "Scope__c",
+    extendedBy: ["Standard_Impl", "Org_Impl__c"],
+    fields: [{name: "OwnerId", referenceTo: ["User", "Org_Thing__c"]}],
+    childRelationships: [{childSObject: "Contact", field: "AccountId", junctionIdListNames: ["Org_Junction__c", "Standard_Junction"], junctionReferenceTo: ["Org_Target__c", "Contact"]}],
+  })}});
+  assert.equal(result.run.status, 0, result.run.stderr);
+  const account = readJSON(result.output).describes.Account;
+  assert.equal("networkScopeFieldName" in account, false);
+  assert.deepEqual(account.extendedBy, ["Standard_Impl"]);
+  assert.deepEqual(account.fields[0].referenceTo, ["User"]);
+  assert.deepEqual(account.childRelationships[0].junctionIdListNames, ["Standard_Junction"]);
+  assert.deepEqual(account.childRelationships[0].junctionReferenceTo, ["Contact"]);
+  assertClean(result, ["Org_Impl__c", "Org_Thing__c", "Org_Junction__c", "Org_Target__c", "Scope__c"]);
+}));
+
+test("keeps only known describe url forms and no id-shaped segments", () => inTemp((directory) => {
+  const base = "/services/data/v67.0/sobjects/Account";
+  const sentinels = ["IdShaped0123456789", "secretsegment", "OrgLayoutName", "Org_Object_Sentinel"];
+  const result = sanitized(directory, {describes: {Account: describeOf({
+    urls: {
+      sobject: base,
+      describe: `${base}/describe`,
+      rowTemplate: `${base}/{ID}`,
+      layouts: `${base}/describe/layouts`,
+      namedLayouts: `${base}/describe/namedLayouts/{LayoutName}`,
+      compactLayouts: `${base}/describe/compactLayouts/${sentinels[0]}`,
+      listviews: `${base}/${sentinels[1]}`,
+      quickActions: `${base}/quickActions/${sentinels[2]}`,
+      approvalLayouts: `/services/data/v67.0/other/${sentinels[3]}`,
+      push: `${base}/{ID}/push/${sentinels[1]}`,
+    },
+    recordTypeInfos: [{master: true, recordTypeId: "012000000000000AAA", urls: {layout: `${base}/describe/layouts/012000000000000AAA`}}],
+  })}});
+  assert.equal(result.run.status, 0, result.run.stderr);
+  const account = readJSON(result.output).describes.Account;
+  assert.deepEqual(Object.keys(account.urls).sort(), ["describe", "layouts", "namedLayouts", "rowTemplate", "sobject"]);
+  assert.deepEqual(account.recordTypeInfos[0].urls, {layout: `${base}/describe/layouts/012000000000000AAA`});
+  assertClean(result, sentinels);
+  const other = sanitized(directory, {describes: {Account: describeOf({recordTypeInfos: [{master: true, recordTypeId: "012000000000000AAA", urls: {layout: `${base}/describe/layouts/012AAAAAAAAAAAAAAA`}}]})}});
+  assert.deepEqual(readJSON(other.output).describes.Account.recordTypeInfos[0].urls, {});
+}));

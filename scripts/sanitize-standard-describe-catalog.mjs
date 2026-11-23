@@ -7,6 +7,7 @@ import {
   STANDARD_DESCRIBE_MAX_COMPRESSED_INPUT_BYTES,
   STANDARD_DESCRIBE_MAX_RAW_INPUT_BYTES,
 } from "./lib/standard-describe-canonical.mjs";
+import {boundLabel, customEntity, nameToken, validateReviewedLabels} from "./lib/reviewed-labels.mjs";
 
 // Allowlist sanitizer. The output is rebuilt from scratch: only keys named in
 // the specs below are copied, and only after their shape and value pass.
@@ -24,11 +25,9 @@ import {
 //
 // Error messages are fixed text. They never include input.
 
-// Custom entity suffixes identify org additions even when no namespace is present,
-// in any letter case. A single namespace separator alone is also used by standard
-// platform values, so a value needs a known custom suffix or two separators.
-const customSuffix = /__(?:c|e|mdt|x|kav|b|r|s|share|history|feed|tag|ka|pe|changeevent|viewstat|votestat)$/i;
-const customEntity = {test: (value) => customSuffix.test(value) || (value.match(/__/g)?.length ?? 0) >= 2};
+// Custom entity values (see lib/reviewed-labels.mjs) identify org additions in any
+// letter case. A single namespace separator alone is also used by standard platform
+// values, so a value needs a known custom suffix or two separators.
 const customName = (value) => typeof value === "string" && value.includes("__");
 
 const TOP_DROP = new Set(["orgId", "instanceUrl", "username", "summary"]);
@@ -40,17 +39,20 @@ const isObject = (value) => value !== null && typeof value === "object" && !Arra
 const need = (condition) => { if (!condition) throw malformed(); };
 const needObject = (value) => need(isObject(value));
 const needArray = (value) => need(Array.isArray(value));
-const needStrings = (value) => { needArray(value); need(value.every((entry) => typeof entry === "string")); };
+const needStrings = (value, pattern = nameToken) => { needArray(value); need(value.every((entry) => typeof entry === "string" && pattern.test(entry))); };
 
-const identifier = /^[A-Za-z0-9_:.#\- ]{1,255}$/;
-const relativeURL = /^\/services\/data\/v\d{2}\.\d\/[A-Za-z0-9{}/._-]*$/;
+const identifier = /^[A-Za-z0-9_:.#-]{1,255}$/;
+// Relative urls pass only in the known describe forms. No other path segment,
+// and no id-shaped segment, is accepted.
+const relativeURL = /^\/services\/data\/v\d{2}\.\d\/sobjects\/[A-Za-z][A-Za-z0-9_]*(?:|\/\{ID\}|\/\{ID\}\/(?:suggestedArticles|push|password|fromThis[A-Za-z]+Onwards)|\/(?:describe|listviews|quickActions|eventSchema|suggestedArticles)|\/describe\/(?:compactLayouts|approvalLayouts|layouts|namedLayouts\/\{LayoutName\}))$/;
+const masterLayoutURL = /^\/services\/data\/v\d{2}\.\d\/sobjects\/[A-Za-z][A-Za-z0-9_]*\/describe\/layouts\/012000000000000AAA$/;
 const hostURL = /^https:\/\/[A-Za-z0-9.-]+(\/\{ID\}(?:\/e)?|\/[A-Za-z0-9]{3}\/e)$/;
 
 // Normalizes a url to a relative service path or the public placeholder host.
-function safeURL(value) {
+function safeURL(value, master = false) {
   need(typeof value === "string");
   if (value.includes("__")) return undefined;
-  if (relativeURL.test(value)) return value;
+  if (relativeURL.test(value) || (master && masterLayoutURL.test(value))) return value;
   const match = hostURL.exec(value);
   return match ? placeholderHost + match[1] : undefined;
 }
@@ -168,7 +170,7 @@ function extractAllowlist(bundle) {
   return [...values].sort((left, right) => Buffer.compare(Buffer.from(left), Buffer.from(right)));
 }
 
-function sanitize(bundle, reviewedValues) {
+function sanitize(bundle, reviewedValues, reviewedLabels = null) {
   if (!Array.isArray(reviewedValues) || reviewedValues.some((value) => typeof value !== "string" || customEntity.test(value))) {
     throw new Error("allowlist must contain reviewed standard string values only");
   }
@@ -180,10 +182,14 @@ function sanitize(bundle, reviewedValues) {
   const reviewed = (value) => typeof value === "string" && !customEntity.test(value) && allowed.has(value);
   const label = (value) => { need(value === null || typeof value === "string"); return reviewed(value); };
   const describes = describesOf(bundle);
-  const counts = {objects: 0, fields: 0, references: 0, childRows: 0, recordTypes: 0, picklists: 0, labels: 0, urls: 0, dropped: 0};
-  const keepLabel = (out, key, value) => { if (label(value)) out[key] = value; else counts.labels++; };
-  const keepURL = (value) => {
-    const url = safeURL(value);
+  const counts = {objects: 0, fields: 0, references: 0, childRows: 0, recordTypes: 0, picklists: 0, labels: 0, labelsBound: 0, urls: 0, dropped: 0};
+  const keepLabel = (out, key, value, ...slot) => {
+    if (label(value)) out[key] = value;
+    else if (slot.length && typeof value === "string" && boundLabel(reviewedLabels, ...slot) === value) { out[key] = value; counts.labelsBound++; }
+    else counts.labels++;
+  };
+  const keepURL = (value, master = false) => {
+    const url = safeURL(value, master);
     if (url === undefined) counts.urls++;
     return url;
   };
@@ -198,17 +204,17 @@ function sanitize(bundle, reviewedValues) {
       counts.objects++;
       continue;
     }
-    for (const key of ["label", "labelPlural"]) if (key in describe) keepLabel(out, key, describe[key]);
+    for (const key of ["label", "labelPlural"]) if (key in describe) keepLabel(out, key, describe[key], objectName, key);
     for (const key of NAME_LISTS) {
       if (!(key in describe)) continue;
       const value = describe[key];
       if (value === null) out[key] = null;
-      else if (typeof value === "string") out[key] = customName(value) ? null : value;
-      else { needStrings(value); out[key] = value.filter((entry) => !customName(entry)); }
+      else if (typeof value === "string") { need(identifier.test(value)); out[key] = customName(value) ? null : value; }
+      else { needStrings(value, identifier); out[key] = value.filter((entry) => !customName(entry)); }
     }
     if ("networkScopeFieldName" in describe) {
       const value = describe.networkScopeFieldName;
-      need(value === null || typeof value === "string");
+      need(value === null || (typeof value === "string" && nameToken.test(value)));
       if (customName(value)) counts.dropped++; else out.networkScopeFieldName = value;
     }
     if ("urls" in describe) {
@@ -225,7 +231,7 @@ function sanitize(bundle, reviewedValues) {
         needObject(scope);
         const row = {};
         for (const [key, value] of Object.entries(scope)) {
-          if (key === "label") keepLabel(row, key, value);
+          if (key === "label") keepLabel(row, key, value, objectName, "scopes", typeof scope.name === "string" ? scope.name : "");
           else if (key === "name") { need(KINDS.str(value)); row.name = value; }
           else throw unknownKey();
         }
@@ -258,7 +264,7 @@ function sanitize(bundle, reviewedValues) {
           need(field[key] === null);
           row[key] = null;
         }
-        if ("label" in field) keepLabel(row, "label", field.label);
+        if ("label" in field) keepLabel(row, "label", field.label, objectName, "fields", field.name, "label");
         if ("referenceTo" in field) { needStrings(field.referenceTo); row.referenceTo = field.referenceTo; }
         if ("picklistValues" in field) {
           needArray(field.picklistValues);
@@ -266,7 +272,7 @@ function sanitize(bundle, reviewedValues) {
             const item = project(entry, PICKLIST_SPEC);
             need(typeof entry.value === "string");
             item.value = entry.value;
-            if ("label" in entry) keepLabel(item, "label", entry.label);
+            if ("label" in entry) keepLabel(item, "label", entry.label, objectName, "fields", field.name, "picklist", entry.value, "label");
             if ("validFor" in entry) {
               need(entry.validFor === null || (typeof entry.validFor === "string" && /^[A-Za-z0-9+/=]*$/.test(entry.validFor)));
               item.validFor = entry.validFor;
@@ -334,7 +340,7 @@ function sanitize(bundle, reviewedValues) {
           const urls = {};
           for (const [key, value] of Object.entries(source.urls)) {
             if (key !== "layout") throw unknownKey();
-            const url = source.recordTypeId === MASTER_RECORD_TYPE_ID && typeof value === "string" && value.endsWith("/" + MASTER_RECORD_TYPE_ID) ? keepURL(value) : undefined;
+            const url = source.recordTypeId === MASTER_RECORD_TYPE_ID && typeof value === "string" && value.endsWith("/" + MASTER_RECORD_TYPE_ID) ? keepURL(value, true) : undefined;
             if (url !== undefined) urls.layout = url; else counts.urls++;
           }
           row.urls = urls;
@@ -350,9 +356,19 @@ function sanitize(bundle, reviewedValues) {
 }
 
 try {
-  const args = process.argv.slice(2);
-  if (args.length !== 3) {
-    throw new Error("usage: sanitize-standard-describe-catalog.mjs INPUT ALLOWLIST OUTPUT_GZ | --extract-allowlist PUBLIC_CATALOG OUTPUT_GZ");
+  let args = process.argv.slice(2);
+  const take = (flag) => {
+    const at = args.indexOf(flag);
+    if (at < 0) return undefined;
+    const value = args[at + 1];
+    if (value === undefined) throw new Error("missing option value");
+    args = [...args.slice(0, at), ...args.slice(at + 2)];
+    return value;
+  };
+  const reviewedFile = take("--reviewed-labels");
+  const reviewedPin = take("--reviewed-labels-sha256");
+  if (args.length !== 3 || (reviewedFile === undefined) !== (reviewedPin === undefined) || (reviewedFile !== undefined && args[0] === "--extract-allowlist")) {
+    throw new Error("usage: sanitize-standard-describe-catalog.mjs INPUT ALLOWLIST OUTPUT_GZ [--reviewed-labels FILE --reviewed-labels-sha256 HEX] | --extract-allowlist PUBLIC_CATALOG OUTPUT_GZ");
   }
   if (args[0] === "--extract-allowlist") {
     const destination = preflightOutput([args[1]], args[2]);
@@ -360,9 +376,11 @@ try {
     writeGzipJSON(destination, values);
     process.stdout.write(JSON.stringify({values: values.length}) + "\n");
   } else {
-    const destination = preflightOutput(args.slice(0, 2), args[2]);
+    const inputs = reviewedFile === undefined ? args.slice(0, 2) : [...args.slice(0, 2), reviewedFile];
+    const destination = preflightOutput(inputs, args[2]);
+    const reviewedLabels = reviewedFile === undefined ? null : validateReviewedLabels(readJSON(reviewedFile), reviewedPin);
     const bundle = readJSON(args[0]);
-    const counts = sanitize(bundle, readJSON(args[1]));
+    const counts = sanitize(bundle, readJSON(args[1]), reviewedLabels);
     writeGzipJSON(destination, bundle);
     process.stdout.write(JSON.stringify({removed: counts}) + "\n");
   }
