@@ -80,6 +80,20 @@ class HistoryTests(unittest.TestCase):
         partial = parse_history_data(json.dumps({"repo": "synthetic", "status": "fail", "part": "one", "summary": {"fail": 2, "compileGap": 1}}))['runs'][0]
         self.assertEqual((partial['status'], partial['result_status'], partial['blocker_types']), ('partial', 'failed', ['compile_gap']))
 
+    def test_imported_blocker_types_are_validated_and_combined(self):
+        cases = [
+            (["compile_gap", "parse_error", "parse_error", 1, None, {}, "unknown"], ["parse_error", "load_error", "compile_gap"]),
+            ("parse_error", ["load_error"]),
+            ({"parse_error": True}, ["load_error"]),
+            (None, ["load_error"]),
+        ]
+        for supplied, expected in cases:
+            with self.subTest(supplied=supplied):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "failed",
+                    "blocker_types": supplied, "summary": {"loadError": 1}}))["runs"][0]
+                self.assertEqual(row["status"], "failed")
+                self.assertEqual(row["blocker_types"], expected)
+
     def test_producer_failure_precedes_blockers(self):
         for ready in (False, True):
             with self.subTest(ready=ready):
