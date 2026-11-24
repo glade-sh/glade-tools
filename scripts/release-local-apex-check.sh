@@ -10,12 +10,21 @@ GLADE_BIN="$1"
 GLADE_SOURCE_ROOT="$2"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SUMMARY="${TMPDIR:-/tmp}/release-local-apex-summary.json"
+LOCK="${SUMMARY}.lock"
+# A shared receipt has a single writer. Reject overlapping runs before touching it.
+mkdir "$LOCK" 2>/dev/null || { echo "local Apex gate already running for $SUMMARY" >&2; exit 1; }
+trap 'rmdir "$LOCK"' EXIT
+rm -f "$SUMMARY"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/glade-release-local-apex.XXXXXX")"
-trap 'rm -rf "$WORK"' EXIT
+trap 'rm -rf "$WORK"; rmdir "$LOCK"' EXIT
 
 [[ -x "$GLADE_BIN" ]] || { echo "Glade binary is not executable: $GLADE_BIN" >&2; exit 2; }
-git -C "$GLADE_SOURCE_ROOT" rev-parse --verify HEAD >/dev/null
-rm -f "$SUMMARY"
+GLADE_HEAD="$(git -C "$GLADE_SOURCE_ROOT" rev-parse --verify HEAD)"
+[[ -z "$(git -C "$GLADE_SOURCE_ROOT" status --porcelain)" ]] || { echo "glade worktree must be clean" >&2; exit 1; }
+binary_info="$(go version -m "$GLADE_BIN" 2>/dev/null)" || { echo "cannot read glade binary build identity" >&2; exit 1; }
+binary_revision="$(printf '%s\n' "$binary_info" | sed -n 's/^[[:space:]]*build[[:space:]]*vcs\.revision=//p')"
+binary_modified="$(printf '%s\n' "$binary_info" | sed -n 's/^[[:space:]]*build[[:space:]]*vcs\.modified=//p')"
+[[ "$binary_revision" == "$GLADE_HEAD" && "$binary_modified" == false ]] || { echo "glade candidate is not built from clean commit $GLADE_HEAD" >&2; exit 1; }
 
 fixtures=(
 	enterprise-composed:2
@@ -32,14 +41,14 @@ for fixture in "${fixtures[@]}"; do
 	"$GLADE_BIN" test --project "$project" --json --no-progress >"$WORK/$name-test.json"
 done
 
-python3 - "$GLADE_BIN" "$GLADE_SOURCE_ROOT" "$ROOT" "$WORK" "$SUMMARY" "${fixtures[@]}" <<'PY'
+python3 - "$GLADE_BIN" "$GLADE_HEAD" "$ROOT" "$WORK" "$SUMMARY" "${fixtures[@]}" <<'PY'
 import hashlib
 import json
 import os
 import subprocess
 import sys
 
-binary, source_root, tools_root, work, output, *fixtures = sys.argv[1:]
+binary, source_commit, tools_root, work, output, *fixtures = sys.argv[1:]
 
 def commit(root):
     return subprocess.check_output(
@@ -75,14 +84,15 @@ with open(binary, "rb") as handle:
     binary_sha256 = hashlib.sha256(handle.read()).hexdigest()
 receipt = {
     "schemaVersion": 1,
-    "glade": {"binarySha256": binary_sha256, "commit": commit(source_root)},
+    "glade": {"binarySha256": binary_sha256, "commit": source_commit},
     "tools": {"commit": commit(tools_root)},
     "fixtures": rows,
     "summary": {"passed": sum(row["passed"] for row in rows), "total": sum(row["total"] for row in rows)},
 }
-with open(output + ".tmp", "w", encoding="utf-8") as handle:
+staged = os.path.join(work, "receipt.json")
+with open(staged, "w", encoding="utf-8") as handle:
     json.dump(receipt, handle, indent=2, sort_keys=True)
     handle.write("\n")
-os.replace(output + ".tmp", output)
+os.replace(staged, output)
 print(output)
 PY
