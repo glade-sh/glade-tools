@@ -105,6 +105,14 @@ class UIBehaviorTests(unittest.TestCase):
           assert.match(body, /<dt>Blockers<\/dt><dd>Compile gap, Load failure<\/dd>/);
         """)
 
+    def test_run_detail_omits_unrecorded_blocker_fields(self):
+        self.run_ui(r"""
+          historyData.runs=[{id:'plain',status:'passed'}];
+          let body='';openModal=(title,subtitle,content)=>{body=content;};
+          showRun('plain');
+          assert.doesNotMatch(body, /<dt>(Blockers|Compile gaps|Load failures)<\/dt>/);
+        """)
+
     def test_inline_settings_submit_reaches_api_without_modal_error_element(self):
         self.run_ui(r"""
           const form=settingsForm({tiers_file:'/synthetic/tiers.json',

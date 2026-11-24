@@ -102,6 +102,9 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
         "shard": _text(row.get("shard")),
         "source": source,
     })
+    for key in ("compile_gaps", "load_errors"):
+        if record[key] is None:
+            del record[key]
     status = str(row.get("status") or "unknown").lower()
     status = {"pass": "passed", "success": "passed", "fail": "failed", "failure": "failed"}.get(status, status)
     blockers = row.get("topOutcomeBlockers")
@@ -113,9 +116,9 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
             blocker_types.append("timeout")
         if row.get("parse_error") or parser_blocked:
             blocker_types.append("parse_error")
-        if (record["load_errors"] or 0) > 0 or any(item.get("outcome") == "load_error" for item in blockers):
+        if (record.get("load_errors") or 0) > 0 or any(item.get("outcome") == "load_error" for item in blockers):
             blocker_types.append("load_error")
-        if (record["compile_gaps"] or 0) > 0 or any(item.get("outcome") == "compile_gap" for item in blockers):
+        if (record.get("compile_gaps") or 0) > 0 or any(item.get("outcome") == "compile_gap" for item in blockers):
             blocker_types.append("compile_gap")
         if blocker_types:
             record["blocker_types"] = blocker_types
@@ -123,9 +126,9 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
         status = "timeout"
     elif row.get("parse_error") or parser_blocked:
         status = "parse_error"
-    elif (record["load_errors"] or 0) > 0 or any(item.get("outcome") == "load_error" for item in blockers):
+    elif (record.get("load_errors") or 0) > 0 or any(item.get("outcome") == "load_error" for item in blockers):
         status = "load_error"
-    elif (record["compile_gaps"] or 0) > 0 or any(item.get("outcome") == "compile_gap" for item in blockers):
+    elif (record.get("compile_gaps") or 0) > 0 or any(item.get("outcome") == "compile_gap" for item in blockers):
         status = "compile_gap"
     elif status == "unknown" and row.get("ready") is True:
         status = "passed"

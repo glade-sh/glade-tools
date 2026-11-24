@@ -80,6 +80,17 @@ class HistoryTests(unittest.TestCase):
         partial = parse_history_data(json.dumps({"repo": "synthetic", "status": "fail", "part": "one", "summary": {"fail": 2, "compileGap": 1}}))['runs'][0]
         self.assertEqual((partial['status'], partial['result_status'], partial['blocker_types']), ('partial', 'failed', ['compile_gap']))
 
+    def test_unaffected_result_matches_origin_record(self):
+        # Snapshot from origin/main for a report without blocker fields.
+        row = parse_history_data(json.dumps({"repo": "synthetic", "phase": "test", "status": "passed", "summary": {"pass": 1}}))["runs"][0]
+        expected = {"api_version": None, "compile_errors": None, "failed": None, "glade_sha": None,
+                    "glade_version": None, "host": "local", "part": None, "passed": 1, "phase": "test",
+                    "provenance": "Imported aggregate; repository revision unknown; Glade revision unknown",
+                    "repo_name": "synthetic", "repo_path": None, "repo_sha": None, "repo_url": None,
+                    "runtime_errors": None, "shard": None, "skipped": None, "source": "import:1",
+                    "started_at": None, "status": "passed", "timeouts": None, "total": None, "unsupported": None}
+        self.assertEqual(json.dumps(row, sort_keys=True), json.dumps(expected, sort_keys=True))
+
     def test_exported_runs_keep_recorded_revision_and_api(self):
         path = self.write("export.json", {"runs": [{
             "repo_url": "https://github.com/synthetic/example", "repo_sha": "c" * 40, "glade_sha": "d" * 40,
