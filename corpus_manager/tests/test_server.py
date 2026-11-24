@@ -121,6 +121,18 @@ class HTTPTests(AppTestCase):
         response = connection.getresponse()
         return response.status, json.loads(response.read())
 
+    def test_imported_baseline_is_visible_in_default_history_filter(self):
+        baseline = Path(__file__).resolve().parents[2] / "docs/fixtures/local-tests-example-projects.json"
+        self.app.import_history({"path": str(baseline)})
+        self.app.save_runs(parse_history_data(json.dumps({"repo": "synthetic", "phase": "check", "status": "passed"})))
+        status, result = self.request("GET", "/api/history?phase=test")
+        self.assertEqual(status, 200)
+        self.assertEqual(result["total"], 6)
+        self.assertEqual(sum(r["status"] == "compile_gap" for r in result["runs"]), 4)
+        self.assertTrue(all(r["phase"] is None for r in result["runs"]))
+        _, checks = self.request("GET", "/api/history?phase=check")
+        self.assertEqual(checks["total"], 1)
+
     def test_state_exposes_token_only_to_loopback_host(self):
         status, state = self.request("GET", "/api/state")
         self.assertEqual(status, 200)

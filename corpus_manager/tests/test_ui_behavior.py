@@ -87,6 +87,15 @@ class UIBehaviorTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_default_history_filter_includes_unrecorded_phase(self):
+        self.run_ui(r"""
+          let requested='';
+          api=async(path)=>{requested=path;return {runs:[],total:0};};
+          await loadHistory();
+          assert.equal(new URL(requested,'http://localhost').searchParams.get('phase'),'test');
+          assert.match(renderHistory(), /Test and unrecorded phase/);
+        """)
+
     def test_inline_settings_submit_reaches_api_without_modal_error_element(self):
         self.run_ui(r"""
           const form=settingsForm({tiers_file:'/synthetic/tiers.json',
