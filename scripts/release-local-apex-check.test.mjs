@@ -21,16 +21,23 @@ test('releases the lock after abrupt termination without allowing a surviving ca
     fs.writeFileSync(binary, `#!${process.execPath}\nrequire('fs').writeFileSync(process.env.MARKER, String(process.pid));\nif (process.env.WAIT_CANDIDATE) setInterval(() => {}, 1000); else process.exit(17);\n`, {mode: 0o755});
     fs.writeFileSync(path.join(bin, 'go'), '#!/bin/sh\nprintf "build vcs.revision=%s\\nbuild vcs.modified=false\\n" "$REVISION"\n', {mode: 0o755});
     const env = {...process.env, TMPDIR: output, PATH: `${bin}:${process.env.PATH}`, REVISION: sha, MARKER: marker};
+    // A directory left by an older interrupted invocation must not block the new lock.
+    fs.mkdirSync(path.join(output, 'release-local-apex-summary.json.lock'));
     gate = spawn('bash', [script, binary, source], {env: {...env, WAIT_CANDIDATE: '1'}, stdio: 'ignore'});
     const deadline = Date.now() + 10000;
     while (!fs.existsSync(marker) && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20));
     assert.ok(fs.existsSync(marker), 'candidate did not start');
     candidate = Number(fs.readFileSync(marker, 'utf8'));
+    const firstCandidate = candidate;
     gate.kill('SIGKILL');
     await new Promise(resolve => gate.once('exit', resolve));
     const overlap = spawnSync('bash', [script, binary, source], {env, encoding: 'utf8'});
     assert.match(overlap.stderr, /already running/);
     assert.equal(Number(fs.readFileSync(marker, 'utf8')), candidate);
+    const otherOutput = path.join(root, 'other-output');
+    fs.mkdirSync(otherOutput);
+    const independent = spawnSync('bash', [script, binary, source], {env: {...env, TMPDIR: otherOutput, MARKER: path.join(root, 'other-candidate')}, encoding: 'utf8'});
+    assert.equal(independent.status, 17, independent.stderr);
     process.kill(candidate, 'SIGKILL');
     candidate = undefined;
     let retry;
@@ -40,7 +47,7 @@ test('releases the lock after abrupt termination without allowing a surviving ca
       await new Promise(resolve => setTimeout(resolve, 20));
     } while (Date.now() < deadline);
     assert.equal(retry.status, 17, retry.stderr);
-    assert.notEqual(Number(fs.readFileSync(marker, 'utf8')), gate.pid);
+    assert.notEqual(Number(fs.readFileSync(marker, 'utf8')), firstCandidate);
   } finally {
     if (candidate) { try { process.kill(candidate, 'SIGKILL'); } catch {} }
     if (gate?.exitCode === null && gate?.signalCode === null) gate.kill('SIGKILL');

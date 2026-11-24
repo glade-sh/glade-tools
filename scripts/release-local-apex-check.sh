@@ -6,17 +6,33 @@ if [[ $# -ne 2 ]]; then
 	exit 2
 fi
 
-GLADE_BIN="$1"
-GLADE_SOURCE_ROOT="$2"
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SUMMARY="${TMPDIR:-/tmp}/release-local-apex-summary.json"
-LOCK="${SUMMARY}.lock"
-# A shared receipt has a single writer. Reject overlapping runs before touching it.
-mkdir "$LOCK" 2>/dev/null || { echo "local Apex gate already running for $SUMMARY" >&2; exit 1; }
-trap 'rmdir "$LOCK"' EXIT
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Keep the advisory lock open across exec and in children. A surviving candidate
+# still excludes another writer, and the OS releases it after the last exit.
+# The lock file must not be unlinked: waiters must always lock the same inode.
+exec python3 -c '
+import fcntl
+import os
+import sys
+
+summary, root, script, *args = sys.argv[1:]
+fd = os.open(summary + ".lockfile", os.O_CREAT | os.O_RDWR, 0o600)
+try:
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except BlockingIOError:
+    sys.exit("local Apex gate already running for " + summary)
+os.set_inheritable(fd, True)
+os.execvp("bash", ["bash", "-c", script, "--", summary, root, *args])
+' "$SUMMARY" "$ROOT" "$(cat <<'GATE'
+set -euo pipefail
+SUMMARY="$1"
+ROOT="$2"
+GLADE_BIN="$3"
+GLADE_SOURCE_ROOT="$4"
 rm -f "$SUMMARY"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/glade-release-local-apex.XXXXXX")"
-trap 'rm -rf "$WORK"; rmdir "$LOCK"' EXIT
+trap 'rm -rf "$WORK"' EXIT
 
 [[ -x "$GLADE_BIN" ]] || { echo "Glade binary is not executable: $GLADE_BIN" >&2; exit 2; }
 GLADE_HEAD="$(git -C "$GLADE_SOURCE_ROOT" rev-parse --verify HEAD)"
@@ -97,3 +113,5 @@ with open(staged, "w", encoding="utf-8") as handle:
 os.replace(staged, output)
 print(output)
 PY
+GATE
+)" "$@"
