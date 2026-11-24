@@ -288,6 +288,7 @@ function sanitize(bundle, reviewedValues, reviewedLabels = null) {
       const standard = rows.filter(({row, field}) => !(field.custom === true || customName(field.name) || customName(row.name)));
       counts.fields += rows.length - standard.length;
       const names = new Set(standard.map(({field}) => field.name));
+      const controllerIndexes = new Map();
       out.fields = standard.map(({row, field}) => {
         if ("controllerName" in field) {
           const controller = field.controllerName;
@@ -297,14 +298,18 @@ function sanitize(bundle, reviewedValues, reviewedLabels = null) {
           else row.controllerName = null;
         }
         if (row.picklistValues) {
-          row.picklistValues = row.picklistValues.filter((entry) => {
-            if (entry.value !== undefined && reviewed(entry.value)) return true;
+          const retained = [];
+          row.picklistValues = row.picklistValues.filter((entry, index) => {
+            let keep = false;
+            if (entry.value !== undefined && reviewed(entry.value)) keep = true;
             // A value the reviewed-labels file binds to this exact slot sits at the
             // same field and value, with the same reviewable label, in both captures.
-            if (entry.value !== undefined && boundLabel(reviewedLabels, objectName, "fields", field.name, "picklist", entry.value) !== undefined) { counts.picklistsBound++; return true; }
-            counts.picklists++;
-            return false;
+            else if (entry.value !== undefined && boundLabel(reviewedLabels, objectName, "fields", field.name, "picklist", entry.value) !== undefined) { counts.picklistsBound++; keep = true; }
+            if (keep) retained.push(index);
+            else counts.picklists++;
+            return keep;
           });
+          if (field.type === "picklist" && retained.length !== field.picklistValues.length) controllerIndexes.set(field.name, retained);
           // Dependency bitmaps only pass for fields with a standard controller.
           for (const entry of row.picklistValues) if (typeof entry.validFor === "string" && !row.controllerName) { delete entry.validFor; counts.dropped++; }
         }
@@ -317,6 +322,19 @@ function sanitize(bundle, reviewedValues, reviewedLabels = null) {
         }
         return row;
       });
+      for (const field of out.fields) {
+        const indexes = controllerIndexes.get(field.controllerName);
+        if (!indexes || !field.picklistValues) continue;
+        for (const entry of field.picklistValues) {
+          if (typeof entry.validFor !== "string") continue;
+          const original = Buffer.from(entry.validFor, "base64");
+          const remapped = Buffer.alloc(Math.ceil(indexes.length / 8));
+          indexes.forEach((oldIndex, newIndex) => {
+            if (original[oldIndex >> 3] & (0x80 >> (oldIndex % 8))) remapped[newIndex >> 3] |= 0x80 >> (newIndex % 8);
+          });
+          entry.validFor = remapped.toString("base64");
+        }
+      }
     }
     if ("childRelationships" in describe) {
       out.childRelationships = [];
