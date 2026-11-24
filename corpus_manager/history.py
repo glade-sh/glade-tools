@@ -77,7 +77,7 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
         return None
     summary = _object(row.get("summary"))
     # A repository registry or a dispatch record alone is not test evidence.
-    if not summary and not any(key in row for key in ("passed", "failed", "total", "status", "ready", "exit", "timedOut")):
+    if not summary and not any(key in row for key in ("passed", "failed", "total", "status", "ready", "exit", "exitCode", "timedOut", "topOutcomeBlockers")):
         return None
     record = dict(identity)
     own = _metadata(row)
@@ -92,6 +92,8 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
         "skipped": _count(row.get("skipped"), summary.get("skipped"), summary.get("skip")),
         "total": _count(row.get("total"), summary.get("total")),
         "compile_errors": _count(row.get("compile_errors"), summary.get("compileErrors"), summary.get("compileError")),
+        "compile_gaps": _count(row.get("compile_gaps"), summary.get("compileGap")),
+        "load_errors": _count(row.get("load_errors"), summary.get("loadError")),
         "runtime_errors": _count(row.get("runtime_errors"), summary.get("runtimeErrors"), summary.get("internalError")),
         "unsupported": _count(row.get("unsupported"), summary.get("unsupported")),
         "timeouts": _count(row.get("timeouts"), summary.get("timeouts"), summary.get("timeout")),
@@ -102,15 +104,22 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
     })
     status = str(row.get("status") or "unknown").lower()
     status = {"pass": "passed", "success": "passed", "fail": "failed", "failure": "failed"}.get(status, status)
+    blockers = row.get("topOutcomeBlockers")
+    blockers = [item for item in blockers if isinstance(item, dict)] if isinstance(blockers, list) else []
+    parser_blocked = any(item.get("key") == "parse_error" for item in blockers)
     if row.get("timedOut") is True or row.get("exit") == "timeout":
         status = "timeout"
-    elif row.get("parse_error"):
-        status = "error"
+    elif row.get("parse_error") or parser_blocked:
+        status = "parse_error"
+    elif (record["load_errors"] or 0) > 0 or any(item.get("outcome") == "load_error" for item in blockers):
+        status = "load_error"
+    elif (record["compile_gaps"] or 0) > 0 or any(item.get("outcome") == "compile_gap" for item in blockers):
+        status = "compile_gap"
     elif status == "unknown" and row.get("ready") is True:
         status = "passed"
     elif status == "unknown" and any((record[key] or 0) > 0 for key in ("failed", "compile_errors", "runtime_errors")):
         status = "failed"
-    elif status == "unknown" and row.get("exit") not in (None, 0, "0"):
+    elif status == "unknown" and _first(row.get("exit"), row.get("exitCode")) not in (None, 0, "0"):
         status = "error"
     if record["part"] or record["shard"]:
         record["result_status"] = status

@@ -48,6 +48,20 @@ class HistoryTests(unittest.TestCase):
         self.assertEqual(row["glade_version"], "0.1.0")
         self.assertEqual(row["glade_sha"], "b" * 40)
 
+    def test_blockers_keep_distinct_outcomes_without_assertion_failures(self):
+        baseline = Path(__file__).resolve().parents[2] / "docs/fixtures/local-tests-example-projects.json"
+        row = parse_history(baseline)["runs"][0]
+        self.assertEqual((row["status"], row["compile_gaps"], row["failed"]), ("compile_gap", 3986, 0))
+        cases = [
+            ({"exitCode": 2, "summary": {}, "topOutcomeBlockers": [{"key": "parse_error", "outcome": "internal_error", "phase": "baseline", "count": 1}]}, "parse_error"),
+            ({"exitCode": 0, "summary": {"loadError": 3, "fail": 0}}, "load_error"),
+        ]
+        for evidence, status in cases:
+            row = parse_history_data(json.dumps({"project": "synthetic", **evidence}))["runs"][0]
+            self.assertEqual(row["status"], status)
+            self.assertIn(row["failed"], (None, 0))
+        self.assertEqual(row["load_errors"], 3)
+
     def test_exported_runs_keep_recorded_revision_and_api(self):
         path = self.write("export.json", {"runs": [{
             "repo_url": "https://github.com/synthetic/example", "repo_sha": "c" * 40, "glade_sha": "d" * 40,
