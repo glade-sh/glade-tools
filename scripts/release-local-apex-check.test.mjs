@@ -31,3 +31,25 @@ test('rejects missing, mismatched and dirty build identity without leaving a sta
     }
   } finally { fs.rmSync(root, {recursive: true, force: true}); }
 });
+
+test('rejects an unreadable git index before running the candidate', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'local-gate-index-'));
+  try {
+    const source = path.join(root, 'source'), bin = path.join(root, 'bin'), output = path.join(root, 'output');
+    fs.mkdirSync(source); fs.mkdirSync(bin); fs.mkdirSync(output);
+    const git = (...args) => { const r = spawnSync('git', ['-C', source, ...args], {encoding: 'utf8'}); assert.equal(r.status, 0, r.stderr); return r.stdout.trim(); };
+    git('init', '-q');
+    git('-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '--allow-empty', '-qm', 'fixture');
+    const sha = git('rev-parse', 'HEAD');
+    fs.writeFileSync(path.join(source, '.git', 'index'), 'corrupt index');
+    const binary = path.join(bin, 'glade'), calls = path.join(root, 'calls');
+    fs.writeFileSync(binary, '#!/bin/sh\necho called >> "$CALLS"\nexit 1\n', {mode: 0o755});
+    fs.writeFileSync(path.join(bin, 'go'), '#!/bin/sh\nprintf "build vcs.revision=%s\\nbuild vcs.modified=false\\n" "$REVISION"\n', {mode: 0o755});
+    const receipt = path.join(output, 'release-local-apex-summary.json');
+    fs.writeFileSync(receipt, 'old receipt');
+    const result = spawnSync('bash', [script, binary, source], {env: {...process.env, TMPDIR: output, PATH: `${bin}:${process.env.PATH}`, REVISION: sha, CALLS: calls}, encoding: 'utf8'});
+    assert.notEqual(result.status, 0);
+    assert.equal(fs.existsSync(receipt), false);
+    assert.equal(fs.existsSync(calls), false, 'candidate must not run when git status fails');
+  } finally { fs.rmSync(root, {recursive: true, force: true}); }
+});

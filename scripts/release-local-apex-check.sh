@@ -20,7 +20,8 @@ trap 'rm -rf "$WORK"; rmdir "$LOCK"' EXIT
 
 [[ -x "$GLADE_BIN" ]] || { echo "Glade binary is not executable: $GLADE_BIN" >&2; exit 2; }
 GLADE_HEAD="$(git -C "$GLADE_SOURCE_ROOT" rev-parse --verify HEAD)"
-[[ -z "$(git -C "$GLADE_SOURCE_ROOT" status --porcelain)" ]] || { echo "glade worktree must be clean" >&2; exit 1; }
+worktree_status="$(git -C "$GLADE_SOURCE_ROOT" status --porcelain)" || { echo "cannot verify glade worktree status" >&2; exit 1; }
+[[ -z "$worktree_status" ]] || { echo "glade worktree must be clean" >&2; exit 1; }
 binary_info="$(go version -m "$GLADE_BIN" 2>/dev/null)" || { echo "cannot read glade binary build identity" >&2; exit 1; }
 binary_revision="$(printf '%s\n' "$binary_info" | sed -n 's/^[[:space:]]*build[[:space:]]*vcs\.revision=//p')"
 binary_modified="$(printf '%s\n' "$binary_info" | sed -n 's/^[[:space:]]*build[[:space:]]*vcs\.modified=//p')"
