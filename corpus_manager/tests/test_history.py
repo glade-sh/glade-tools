@@ -88,6 +88,46 @@ class HistoryTests(unittest.TestCase):
                 self.assertEqual((row["status"], row["failed"], row["blocker_types"]),
                                  ("failed", 2, ["compile_gap"]))
 
+    def test_producer_assertion_failures_are_counted_with_other_failures(self):
+        cases = [
+            ({"fail": 0, "assertFail": 2}, 2, None),
+            ({"fail": 0, "assertFail": 2, "compileGap": 1}, 2, ["compile_gap"]),
+            ({"fail": 3, "assertFail": 2}, 5, None),
+            ({"assertFail": 2}, 2, None),
+        ]
+        for summary, failed, blockers in cases:
+            with self.subTest(summary=summary):
+                row = parse_history_data(json.dumps({"project": "synthetic", "ready": True, "summary": summary}))["runs"][0]
+                self.assertEqual((row["status"], row["failed"], row.get("blocker_types")),
+                                 ("failed", failed, blockers))
+        for extra in ({"failed": 7}, {"summary": {"failed": 7, "fail": 3, "assertFail": 2}}):
+            report = {"project": "synthetic", "summary": {"fail": 3, "assertFail": 2}, **extra}
+            self.assertEqual(parse_history_data(json.dumps(report))["runs"][0]["failed"], 7)
+
+    def test_producer_timeout_counts_and_blockers_are_classified(self):
+        cases = [
+            ({"summary": {"timeout": 1}}, "timeout", ["timeout"]),
+            ({"summary": {"timeout": 1, "compileGap": 1}}, "timeout", ["timeout", "compile_gap"]),
+            ({"summary": {"fail": 1, "timeout": 1}}, "failed", ["timeout"]),
+            ({"topOutcomeBlockers": [{"outcome": "timeout"}, {"outcome": "compile_gap"}]},
+             "timeout", ["timeout", "compile_gap"]),
+        ]
+        for evidence, status, blockers in cases:
+            with self.subTest(evidence=evidence):
+                row = parse_history_data(json.dumps({"project": "synthetic", **evidence}))["runs"][0]
+                self.assertEqual((row["status"], row["blocker_types"]), (status, blockers))
+
+    def test_zero_producer_counts_match_origin_neighbor(self):
+        row = parse_history_data(json.dumps({"repo": "synthetic", "status": "passed",
+                                             "summary": {"fail": 0, "assertFail": 0, "timeout": 0}}))["runs"][0]
+        expected = {"api_version": None, "compile_errors": None, "failed": 0, "glade_sha": None,
+                    "glade_version": None, "host": "local", "part": None, "passed": None, "phase": None,
+                    "provenance": "Imported aggregate; repository revision unknown; Glade revision unknown",
+                    "repo_name": "synthetic", "repo_path": None, "repo_sha": None, "repo_url": None,
+                    "runtime_errors": None, "shard": None, "skipped": None, "source": "import:1",
+                    "started_at": None, "status": "passed", "timeouts": 0, "total": None, "unsupported": None}
+        self.assertEqual(json.dumps(row, sort_keys=True), json.dumps(expected, sort_keys=True))
+
     def test_producer_preserves_multiple_blockers_without_failure(self):
         row = parse_history_data(json.dumps({"project": "synthetic", "ready": False, "summary": {},
             "topOutcomeBlockers": [{"outcome": "load_error"}, {"outcome": "compile_gap"}]}))["runs"][0]
