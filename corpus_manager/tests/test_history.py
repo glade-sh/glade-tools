@@ -160,6 +160,24 @@ class HistoryTests(unittest.TestCase):
                     "started_at": None, "status": "passed", "timeouts": None, "total": None, "unsupported": None}
         self.assertEqual(json.dumps(row, sort_keys=True), json.dumps(expected, sort_keys=True))
 
+    def test_result_status_on_complete_run_matches_origin_neighbor(self):
+        row = parse_history_data(json.dumps({"repo": "synthetic", "status": "passed",
+                                             "result_status": "failed", "summary": {"pass": 1}}))["runs"][0]
+        expected = {"api_version": None, "compile_errors": None, "failed": None, "glade_sha": None,
+                    "glade_version": None, "host": "local", "part": None, "passed": 1, "phase": None,
+                    "provenance": "Imported aggregate; repository revision unknown; Glade revision unknown",
+                    "repo_name": "synthetic", "repo_path": None, "repo_sha": None, "repo_url": None,
+                    "runtime_errors": None, "shard": None, "skipped": None, "source": "import:1",
+                    "started_at": None, "status": "passed", "timeouts": None, "total": None, "unsupported": None}
+        self.assertEqual(json.dumps(row, sort_keys=True), json.dumps(expected, sort_keys=True))
+
+    def test_partial_invalid_observed_outcomes_fall_back_to_blockers(self):
+        for value in (None, "", "  ", 2, [], {}):
+            with self.subTest(value=value):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "partial",
+                    "result_status": value, "part": "one", "blocker_types": ["compile_gap"]}))["runs"][0]
+                self.assertEqual((row["status"], row["result_status"]), ("partial", "compile_gap"))
+
     def test_exported_runs_keep_recorded_revision_and_api(self):
         path = self.write("export.json", {"runs": [{
             "repo_url": "https://github.com/synthetic/example", "repo_sha": "c" * 40, "glade_sha": "d" * 40,

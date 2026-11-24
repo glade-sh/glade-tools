@@ -163,6 +163,31 @@ class HTTPTests(AppTestCase):
         reimported = [r for r in self.app.store.all("runs") if r["source"].startswith(str(exported_path))]
         self.assertEqual({r["repo_name"]: (r["status"], r.get("blocker_types")) for r in reimported}, expected)
 
+    def test_export_reimport_preserves_all_run_statuses(self):
+        # The exporter passes through open-ended statuses, including future ones.
+        outcomes = ("passed", "failed", "unknown", "error", "timeout", "parse_error",
+                    "load_error", "compile_gap", "future_outcome")
+        for partial in (False, True):
+            for outcome in outcomes:
+                name = f"synthetic-{partial}-{outcome}"
+                source = {"repo": name, "status": outcome}
+                if partial:
+                    source["part"] = "one"
+                if outcome == "failed":
+                    source.update(failed=2, parse_error=True, summary={"loadError": 1, "compileGap": 1})
+                self.app.save_runs(parse_history_data(json.dumps(source), source=name))
+        _, exported = self.request("GET", "/api/export")
+        fields = ("status", "result_status", "failed", "blocker_types")
+        expected = {r["repo_name"]: tuple(r.get(k) for k in fields) for r in exported["runs"]}
+        self.assertEqual(len(expected), 2 * len(outcomes))
+        self.assertEqual(expected["synthetic-True-failed"],
+                         ("partial", "failed", 2, ["parse_error", "load_error", "compile_gap"]))
+        exported_path = self.root / "all-statuses.json"
+        exported_path.write_text(json.dumps(exported))
+        self.app.import_history({"path": str(exported_path)})
+        reimported = [r for r in self.app.store.all("runs") if r["source"].startswith(str(exported_path))]
+        self.assertEqual({r["repo_name"]: tuple(r.get(k) for k in fields) for r in reimported}, expected)
+
     def test_failed_filter_keeps_producer_failure_with_blocker(self):
         path = self.root / "producer.json"
         path.write_text(json.dumps({"project": "synthetic", "ready": False, "summary": {"fail": 2, "compileGap": 1}}))
