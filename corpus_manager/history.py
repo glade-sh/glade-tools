@@ -86,9 +86,15 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
         api = _first(own.get("api_version"), metadata.get("api_version"))
         if isinstance(api, (int, float)) and not isinstance(api, bool) and math.isfinite(api):
             record["api_version"] = str(api)
+    failed = _count(row.get("failed"), summary.get("failed"))
+    if failed is None:
+        failed = _count(summary.get("fail"))
+        assert_failures = _count(summary.get("assertFail"))
+        if assert_failures:
+            failed = (failed or 0) + assert_failures
     record.update({
         "passed": _count(row.get("passed"), summary.get("passed"), summary.get("pass")),
-        "failed": _count(row.get("failed"), summary.get("failed"), summary.get("fail")),
+        "failed": failed,
         "skipped": _count(row.get("skipped"), summary.get("skipped"), summary.get("skip")),
         "total": _count(row.get("total"), summary.get("total")),
         "compile_errors": _count(row.get("compile_errors"), summary.get("compileErrors"), summary.get("compileError")),
@@ -111,7 +117,9 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
     blockers = [item for item in blockers if isinstance(item, dict)] if isinstance(blockers, list) else []
     parser_blocked = any(item.get("key") == "parse_error" for item in blockers)
     blocker_types = []
-    if row.get("timedOut") is True or row.get("exit") == "timeout":
+    if (row.get("timedOut") is True or row.get("exit") == "timeout"
+            or (_count(summary.get("timeout")) or 0) > 0
+            or any(item.get("outcome") == "timeout" for item in blockers)):
         blocker_types.append("timeout")
     if row.get("parse_error") or parser_blocked:
         blocker_types.append("parse_error")
