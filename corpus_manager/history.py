@@ -143,7 +143,11 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
         status = "failed"
     elif status == "unknown" and _first(row.get("exit"), row.get("exitCode")) not in (None, 0, "0"):
         status = "error"
-    if record["part"] or record["shard"]:
+    observed = _text(row.get("result_status")) if str(row.get("status") or "").lower() == "partial" else None
+    if observed is not None:
+        record["result_status"] = observed
+        status = "partial"
+    elif record["part"] or record["shard"]:
         record["result_status"] = status
         status = "partial"
     record["status"] = status
