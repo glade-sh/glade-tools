@@ -115,17 +115,21 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
     status = {"pass": "passed", "success": "passed", "fail": "failed", "failure": "failed"}.get(status, status)
     blockers = row.get("topOutcomeBlockers")
     blockers = [item for item in blockers if isinstance(item, dict)] if isinstance(blockers, list) else []
+    normalized = row.get("blocker_types")
+    normalized = [item for item in normalized if isinstance(item, str)] if isinstance(normalized, list) else []
     parser_blocked = any(item.get("key") == "parse_error" for item in blockers)
     blocker_types = []
-    if (row.get("timedOut") is True or row.get("exit") == "timeout"
+    if ("timeout" in normalized or row.get("timedOut") is True or row.get("exit") == "timeout"
             or (_count(summary.get("timeout")) or 0) > 0
             or any(item.get("outcome") == "timeout" for item in blockers)):
         blocker_types.append("timeout")
-    if row.get("parse_error") or parser_blocked:
+    if "parse_error" in normalized or row.get("parse_error") or parser_blocked:
         blocker_types.append("parse_error")
-    if (record.get("load_errors") or 0) > 0 or any(item.get("outcome") == "load_error" for item in blockers):
+    if ("load_error" in normalized or (record.get("load_errors") or 0) > 0
+            or any(item.get("outcome") == "load_error" for item in blockers)):
         blocker_types.append("load_error")
-    if (record.get("compile_gaps") or 0) > 0 or any(item.get("outcome") == "compile_gap" for item in blockers):
+    if ("compile_gap" in normalized or (record.get("compile_gaps") or 0) > 0
+            or any(item.get("outcome") == "compile_gap" for item in blockers)):
         blocker_types.append("compile_gap")
     if blocker_types:
         record["blocker_types"] = blocker_types

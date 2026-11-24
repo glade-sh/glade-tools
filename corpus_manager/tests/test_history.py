@@ -83,6 +83,7 @@ class HistoryTests(unittest.TestCase):
     def test_imported_blocker_types_are_validated_and_combined(self):
         cases = [
             (["compile_gap", "parse_error", "parse_error", 1, None, {}, "unknown"], ["parse_error", "load_error", "compile_gap"]),
+            (["timeout"], ["timeout", "load_error"]),
             ("parse_error", ["load_error"]),
             ({"parse_error": True}, ["load_error"]),
             (None, ["load_error"]),
