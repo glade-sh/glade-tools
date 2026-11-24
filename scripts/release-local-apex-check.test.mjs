@@ -3,9 +3,50 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {spawn, spawnSync} from 'node:child_process';
 
 const script = path.resolve('scripts/release-local-apex-check.sh');
+
+test('releases the lock after abrupt termination without allowing a surviving candidate to overlap', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'local-gate-kill-'));
+  let gate, candidate;
+  try {
+    const source = path.join(root, 'source'), bin = path.join(root, 'bin'), output = path.join(root, 'output');
+    fs.mkdirSync(source); fs.mkdirSync(bin); fs.mkdirSync(output);
+    const git = (...args) => { const r = spawnSync('git', ['-C', source, ...args], {encoding: 'utf8'}); assert.equal(r.status, 0, r.stderr); return r.stdout.trim(); };
+    git('init', '-q');
+    git('-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '--allow-empty', '-qm', 'fixture');
+    const sha = git('rev-parse', 'HEAD');
+    const binary = path.join(bin, 'glade'), marker = path.join(root, 'candidate');
+    fs.writeFileSync(binary, `#!${process.execPath}\nrequire('fs').writeFileSync(process.env.MARKER, String(process.pid));\nif (process.env.WAIT_CANDIDATE) setInterval(() => {}, 1000); else process.exit(17);\n`, {mode: 0o755});
+    fs.writeFileSync(path.join(bin, 'go'), '#!/bin/sh\nprintf "build vcs.revision=%s\\nbuild vcs.modified=false\\n" "$REVISION"\n', {mode: 0o755});
+    const env = {...process.env, TMPDIR: output, PATH: `${bin}:${process.env.PATH}`, REVISION: sha, MARKER: marker};
+    gate = spawn('bash', [script, binary, source], {env: {...env, WAIT_CANDIDATE: '1'}, stdio: 'ignore'});
+    const deadline = Date.now() + 10000;
+    while (!fs.existsSync(marker) && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20));
+    assert.ok(fs.existsSync(marker), 'candidate did not start');
+    candidate = Number(fs.readFileSync(marker, 'utf8'));
+    gate.kill('SIGKILL');
+    await new Promise(resolve => gate.once('exit', resolve));
+    const overlap = spawnSync('bash', [script, binary, source], {env, encoding: 'utf8'});
+    assert.match(overlap.stderr, /already running/);
+    assert.equal(Number(fs.readFileSync(marker, 'utf8')), candidate);
+    process.kill(candidate, 'SIGKILL');
+    candidate = undefined;
+    let retry;
+    do {
+      retry = spawnSync('bash', [script, binary, source], {env, encoding: 'utf8'});
+      if (!/already running/.test(retry.stderr)) break;
+      await new Promise(resolve => setTimeout(resolve, 20));
+    } while (Date.now() < deadline);
+    assert.equal(retry.status, 17, retry.stderr);
+    assert.notEqual(Number(fs.readFileSync(marker, 'utf8')), gate.pid);
+  } finally {
+    if (candidate) { try { process.kill(candidate, 'SIGKILL'); } catch {} }
+    if (gate?.exitCode === null && gate?.signalCode === null) gate.kill('SIGKILL');
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
 
 test('rejects missing, mismatched and dirty build identity without leaving a stale receipt', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'local-gate-test-'));

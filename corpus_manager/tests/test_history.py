@@ -80,6 +80,20 @@ class HistoryTests(unittest.TestCase):
         partial = parse_history_data(json.dumps({"repo": "synthetic", "status": "fail", "part": "one", "summary": {"fail": 2, "compileGap": 1}}))['runs'][0]
         self.assertEqual((partial['status'], partial['result_status'], partial['blocker_types']), ('partial', 'failed', ['compile_gap']))
 
+    def test_producer_failure_precedes_blockers(self):
+        for ready in (False, True):
+            with self.subTest(ready=ready):
+                row = parse_history_data(json.dumps({"project": "synthetic", "ready": ready,
+                    "summary": {"fail": 2, "compileGap": 1}}))["runs"][0]
+                self.assertEqual((row["status"], row["failed"], row["blocker_types"]),
+                                 ("failed", 2, ["compile_gap"]))
+
+    def test_producer_preserves_multiple_blockers_without_failure(self):
+        row = parse_history_data(json.dumps({"project": "synthetic", "ready": False, "summary": {},
+            "topOutcomeBlockers": [{"outcome": "load_error"}, {"outcome": "compile_gap"}]}))["runs"][0]
+        self.assertEqual(row["status"], "load_error")
+        self.assertEqual(row["blocker_types"], ["load_error", "compile_gap"])
+
     def test_unaffected_result_matches_origin_record(self):
         # Snapshot from origin/main for a report without blocker fields.
         row = parse_history_data(json.dumps({"repo": "synthetic", "phase": "test", "status": "passed", "summary": {"pass": 1}}))["runs"][0]
