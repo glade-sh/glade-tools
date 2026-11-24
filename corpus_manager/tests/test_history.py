@@ -62,6 +62,24 @@ class HistoryTests(unittest.TestCase):
             self.assertIn(row["failed"], (None, 0))
         self.assertEqual(row["load_errors"], 3)
 
+    def test_explicit_failure_keeps_all_blocker_types(self):
+        cases = [
+            ({"summary": {"fail": 2, "compileGap": 1}}, ["compile_gap"]),
+            ({"summary": {"fail": 2}, "topOutcomeBlockers": [{"outcome": "load_error"}]}, ["load_error"]),
+            ({"summary": {"fail": 2}, "topOutcomeBlockers": [{"key": "parse_error"}]}, ["parse_error"]),
+            ({"summary": {"fail": 2, "compileGap": 1, "loadError": 1}, "parse_error": True},
+             ["parse_error", "load_error", "compile_gap"]),
+            ({"summary": {"fail": 2}, "timedOut": True}, ["timeout"]),
+        ]
+        for evidence, expected in cases:
+            with self.subTest(expected=expected):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "failed", **evidence}))['runs'][0]
+                self.assertEqual(row['status'], 'failed')
+                self.assertEqual(row['failed'], 2)
+                self.assertEqual(row['blocker_types'], expected)
+        partial = parse_history_data(json.dumps({"repo": "synthetic", "status": "fail", "part": "one", "summary": {"fail": 2, "compileGap": 1}}))['runs'][0]
+        self.assertEqual((partial['status'], partial['result_status'], partial['blocker_types']), ('partial', 'failed', ['compile_gap']))
+
     def test_exported_runs_keep_recorded_revision_and_api(self):
         path = self.write("export.json", {"runs": [{
             "repo_url": "https://github.com/synthetic/example", "repo_sha": "c" * 40, "glade_sha": "d" * 40,

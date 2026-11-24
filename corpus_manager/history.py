@@ -107,7 +107,19 @@ def _row(row: dict, metadata: dict, source: str) -> dict | None:
     blockers = row.get("topOutcomeBlockers")
     blockers = [item for item in blockers if isinstance(item, dict)] if isinstance(blockers, list) else []
     parser_blocked = any(item.get("key") == "parse_error" for item in blockers)
-    if row.get("timedOut") is True or row.get("exit") == "timeout":
+    if status == "failed":
+        blocker_types = []
+        if row.get("timedOut") is True or row.get("exit") == "timeout":
+            blocker_types.append("timeout")
+        if row.get("parse_error") or parser_blocked:
+            blocker_types.append("parse_error")
+        if (record["load_errors"] or 0) > 0 or any(item.get("outcome") == "load_error" for item in blockers):
+            blocker_types.append("load_error")
+        if (record["compile_gaps"] or 0) > 0 or any(item.get("outcome") == "compile_gap" for item in blockers):
+            blocker_types.append("compile_gap")
+        if blocker_types:
+            record["blocker_types"] = blocker_types
+    elif row.get("timedOut") is True or row.get("exit") == "timeout":
         status = "timeout"
     elif row.get("parse_error") or parser_blocked:
         status = "parse_error"

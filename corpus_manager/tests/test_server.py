@@ -133,6 +133,15 @@ class HTTPTests(AppTestCase):
         _, checks = self.request("GET", "/api/history?phase=check")
         self.assertEqual(checks["total"], 1)
 
+    def test_failed_filter_keeps_mixed_blocker_result(self):
+        path = self.root / "mixed.json"
+        path.write_text(json.dumps({"repo": "synthetic", "status": "failed", "summary": {"fail": 2, "compileGap": 1}}))
+        self.app.import_history({"path": str(path)})
+        status, result = self.request("GET", "/api/history?phase=test&status=failed")
+        self.assertEqual(status, 200)
+        self.assertEqual(result['total'], 1)
+        self.assertEqual((result['runs'][0]['failed'], result['runs'][0]['compile_gaps'], result['runs'][0]['blocker_types']), (2, 1, ['compile_gap']))
+
     def test_state_exposes_token_only_to_loopback_host(self):
         status, state = self.request("GET", "/api/state")
         self.assertEqual(status, 200)

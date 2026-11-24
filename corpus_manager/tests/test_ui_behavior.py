@@ -96,6 +96,15 @@ class UIBehaviorTests(unittest.TestCase):
           assert.match(renderHistory(), /Test and unrecorded phase/);
         """)
 
+    def test_run_detail_displays_blockers_alongside_failure(self):
+        self.run_ui(r"""
+          historyData.runs=[{id:'mixed',status:'failed',failed:2,blocker_types:['compile_gap','load_error']}];
+          let body='';openModal=(title,subtitle,content)=>{body=content;};
+          showRun('mixed');
+          assert.match(body, /Failed/);
+          assert.match(body, /<dt>Blockers<\/dt><dd>Compile gap, Load failure<\/dd>/);
+        """)
+
     def test_inline_settings_submit_reaches_api_without_modal_error_element(self):
         self.run_ui(r"""
           const form=settingsForm({tiers_file:'/synthetic/tiers.json',
