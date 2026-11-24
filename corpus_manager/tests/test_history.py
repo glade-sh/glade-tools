@@ -178,6 +178,13 @@ class HistoryTests(unittest.TestCase):
                     "result_status": value, "part": "one", "blocker_types": ["compile_gap"]}))["runs"][0]
                 self.assertEqual((row["status"], row["result_status"]), ("partial", "compile_gap"))
 
+    def test_partial_observed_outcome_without_part_or_with_shard(self):
+        for location in ({}, {"shard": "0/2"}):
+            with self.subTest(location=location):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "partial",
+                    "result_status": "failed", "failed": 2, "blocker_types": ["compile_gap"], **location}))["runs"][0]
+                self.assertEqual((row["status"], row["result_status"]), ("partial", "failed"))
+
     def test_exported_runs_keep_recorded_revision_and_api(self):
         path = self.write("export.json", {"runs": [{
             "repo_url": "https://github.com/synthetic/example", "repo_sha": "c" * 40, "glade_sha": "d" * 40,
