@@ -28,6 +28,22 @@ func TestReleaseLocalApexCheck(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	sourceRoot := t.TempDir()
+	for _, args := range [][]string{{"init", "-q"}, {"-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "--allow-empty", "-qm", "fixture"}} {
+		cmd := exec.Command("git", append([]string{"-C", sourceRoot}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git: %v: %s", err, out)
+		}
+	}
+	stubDir := t.TempDir()
+	stub := `#!/bin/sh
+printf 'build vcs.revision=%s\nbuild vcs.modified=false\n' "$TEST_REVISION"
+`
+	if err := os.WriteFile(filepath.Join(stubDir, "go"), []byte(stub), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", stubDir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	t.Setenv("TEST_REVISION", gitOutput(t, sourceRoot, "rev-parse", "HEAD"))
 	fake := filepath.Join(t.TempDir(), "glade")
 	logPath := filepath.Join(t.TempDir(), "calls.log")
 	fakeScript := `#!/bin/sh
@@ -57,7 +73,7 @@ printf '{"status":"passed","exitCode":0,"summary":{"total":%s,"passed":%s,"faile
 
 	t.Run("writes a bound nine-test receipt", func(t *testing.T) {
 		temp := t.TempDir()
-		runReleaseLocalApexCheck(t, fake, toolsRoot, temp, logPath)
+		runReleaseLocalApexCheck(t, fake, sourceRoot, temp, logPath)
 
 		calls, err := os.ReadFile(logPath)
 		if err != nil {
@@ -106,7 +122,7 @@ printf '{"status":"passed","exitCode":0,"summary":{"total":%s,"passed":%s,"faile
 		}
 		wantBinarySHA := sha256.Sum256(binary)
 		commit := gitOutput(t, toolsRoot, "rev-parse", "HEAD")
-		if receipt.Glade.BinarySHA256 != hex.EncodeToString(wantBinarySHA[:]) || receipt.Glade.Commit != commit || receipt.Tools.Commit != commit {
+		if receipt.Glade.BinarySHA256 != hex.EncodeToString(wantBinarySHA[:]) || receipt.Glade.Commit != gitOutput(t, sourceRoot, "rev-parse", "HEAD") || receipt.Tools.Commit != commit {
 			t.Fatalf("receipt bindings = %#v", receipt)
 		}
 		if receipt.Summary.Passed != 9 || receipt.Summary.Total != 9 || len(receipt.Fixtures) != len(releaseLocalApexFixtures) {
@@ -128,7 +144,7 @@ printf '{"status":"passed","exitCode":0,"summary":{"total":%s,"passed":%s,"faile
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			temp := t.TempDir()
-			cmd := exec.Command("bash", "release-local-apex-check.sh", fake, toolsRoot)
+			cmd := exec.Command("bash", "release-local-apex-check.sh", fake, sourceRoot)
 			cmd.Env = append(os.Environ(), "TMPDIR="+temp, "FAKE_GLADE_LOG="+logPath, test.env)
 			if out, err := cmd.CombinedOutput(); err == nil {
 				t.Fatalf("gate unexpectedly passed:\n%s", out)

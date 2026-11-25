@@ -23,6 +23,7 @@ case "$VERSION" in
 esac
 
 mkdir -p "$OUT_DIR"
+OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 rm -f "$OUT_DIR/checksums.txt"
 rm -f "$OUT_DIR/index.json"
 

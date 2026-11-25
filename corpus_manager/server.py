@@ -612,7 +612,7 @@ def handler(app):
                 needle = query.get("q", [""])[0].lower()
                 status = query.get("status", [""])[0]
                 phase = query.get("phase", [""])[0]
-                rows = [r for r in app.store.all("runs") if (not phase or r.get("phase") == phase) and (not repo_id or r.get("repo_id") == repo_id) and (not status or r.get("status") == status) and (not needle or needle in " ".join(str(r.get(k) or "") for k in ("repo_name", "gate_label", "glade_sha", "glade_version", "repo_sha", "host", "status")).lower())]
+                rows = [r for r in app.store.all("runs") if (not phase or r.get("phase") == phase or (phase == "test" and not r.get("phase"))) and (not repo_id or r.get("repo_id") == repo_id) and (not status or r.get("status") == status) and (not needle or needle in " ".join(str(r.get(k) or "") for k in ("repo_name", "gate_label", "glade_sha", "glade_version", "repo_sha", "host", "status")).lower())]
                 rows.sort(key=lambda r: r.get("started_at") or "", reverse=True)
                 return self.respond(200, {"runs": rows[offset:offset+limit], "total": len(rows), "offset": offset, "limit": limit})
             assets = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"), "/style.css": ("style.css", "text/css")}

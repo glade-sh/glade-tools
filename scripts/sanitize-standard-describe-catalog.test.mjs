@@ -286,3 +286,22 @@ test("keeps only known describe url forms and no id-shaped segments", () => inTe
   const other = sanitized(directory, {describes: {Account: describeOf({recordTypeInfos: [{master: true, recordTypeId: "012000000000000AAA", urls: {layout: `${base}/describe/layouts/012AAAAAAAAAAAAAAA`}}]})}});
   assert.deepEqual(readJSON(other.output).describes.Account.recordTypeInfos[0].urls, {});
 }));
+
+test("remaps dependent bitmaps when controller values are filtered", () => inTemp((directory) => {
+  const entry = (value, validFor) => ({value, active: true, ...(validFor === undefined ? {} : {validFor})});
+  const result = sanitized(directory, {describes: {Account: describeOf({fields: [
+    {name: "Control", type: "picklist", picklistValues: [entry("RemoveA"), entry("KeepA"), entry("RemoveB"), entry("KeepB"), entry("KeepC")]},
+    {name: "Dependent", type: "picklist", controllerName: "Control", picklistValues: [entry("All", "WA=="), entry("RemovedOnly", "gA==")]},
+    {name: "Unchanged", type: "picklist", picklistValues: [entry("KeepA"), entry("KeepB")]},
+    {name: "UnchangedDependent", controllerName: "Unchanged", picklistValues: [entry("All", "QA==")]},
+    {name: "Flag", type: "boolean"},
+    {name: "FlagDependent", controllerName: "Flag", picklistValues: [entry("All", "QA==")]},
+  ]})}}, ["KeepA", "KeepB", "KeepC", "All", "RemovedOnly"]);
+  assert.equal(result.run.status, 0, result.run.stderr);
+  const fields = readJSON(result.output).describes.Account.fields;
+  const valuesFor = (name) => fields.find((field) => field.name === name).picklistValues;
+  assert.deepEqual(valuesFor("Control").map(({value}) => value), ["KeepA", "KeepB", "KeepC"]);
+  assert.deepEqual(valuesFor("Dependent").map(({validFor}) => validFor), ["4A==", "AA=="]);
+  assert.equal(valuesFor("UnchangedDependent")[0].validFor, "QA==");
+  assert.equal(valuesFor("FlagDependent")[0].validFor, "QA==");
+}));

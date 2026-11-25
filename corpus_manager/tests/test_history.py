@@ -48,6 +48,143 @@ class HistoryTests(unittest.TestCase):
         self.assertEqual(row["glade_version"], "0.1.0")
         self.assertEqual(row["glade_sha"], "b" * 40)
 
+    def test_blockers_keep_distinct_outcomes_without_assertion_failures(self):
+        baseline = Path(__file__).resolve().parents[2] / "docs/fixtures/local-tests-example-projects.json"
+        row = parse_history(baseline)["runs"][0]
+        self.assertEqual((row["status"], row["compile_gaps"], row["failed"]), ("compile_gap", 3986, 0))
+        cases = [
+            ({"exitCode": 2, "summary": {}, "topOutcomeBlockers": [{"key": "parse_error", "outcome": "internal_error", "phase": "baseline", "count": 1}]}, "parse_error"),
+            ({"exitCode": 0, "summary": {"loadError": 3, "fail": 0}}, "load_error"),
+        ]
+        for evidence, status in cases:
+            row = parse_history_data(json.dumps({"project": "synthetic", **evidence}))["runs"][0]
+            self.assertEqual(row["status"], status)
+            self.assertIn(row["failed"], (None, 0))
+        self.assertEqual(row["load_errors"], 3)
+
+    def test_explicit_failure_keeps_all_blocker_types(self):
+        cases = [
+            ({"summary": {"fail": 2, "compileGap": 1}}, ["compile_gap"]),
+            ({"summary": {"fail": 2}, "topOutcomeBlockers": [{"outcome": "load_error"}]}, ["load_error"]),
+            ({"summary": {"fail": 2}, "topOutcomeBlockers": [{"key": "parse_error"}]}, ["parse_error"]),
+            ({"summary": {"fail": 2, "compileGap": 1, "loadError": 1}, "parse_error": True},
+             ["parse_error", "load_error", "compile_gap"]),
+            ({"summary": {"fail": 2}, "timedOut": True}, ["timeout"]),
+        ]
+        for evidence, expected in cases:
+            with self.subTest(expected=expected):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "failed", **evidence}))['runs'][0]
+                self.assertEqual(row['status'], 'failed')
+                self.assertEqual(row['failed'], 2)
+                self.assertEqual(row['blocker_types'], expected)
+        partial = parse_history_data(json.dumps({"repo": "synthetic", "status": "fail", "part": "one", "summary": {"fail": 2, "compileGap": 1}}))['runs'][0]
+        self.assertEqual((partial['status'], partial['result_status'], partial['blocker_types']), ('partial', 'failed', ['compile_gap']))
+
+    def test_imported_blocker_types_are_validated_and_combined(self):
+        cases = [
+            (["compile_gap", "parse_error", "parse_error", 1, None, {}, "unknown"], ["parse_error", "load_error", "compile_gap"]),
+            (["timeout"], ["timeout", "load_error"]),
+            ("parse_error", ["load_error"]),
+            ({"parse_error": True}, ["load_error"]),
+            (None, ["load_error"]),
+        ]
+        for supplied, expected in cases:
+            with self.subTest(supplied=supplied):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "failed",
+                    "blocker_types": supplied, "summary": {"loadError": 1}}))["runs"][0]
+                self.assertEqual(row["status"], "failed")
+                self.assertEqual(row["blocker_types"], expected)
+
+    def test_producer_failure_precedes_blockers(self):
+        for ready in (False, True):
+            with self.subTest(ready=ready):
+                row = parse_history_data(json.dumps({"project": "synthetic", "ready": ready,
+                    "summary": {"fail": 2, "compileGap": 1}}))["runs"][0]
+                self.assertEqual((row["status"], row["failed"], row["blocker_types"]),
+                                 ("failed", 2, ["compile_gap"]))
+
+    def test_producer_assertion_failures_are_counted_with_other_failures(self):
+        cases = [
+            ({"fail": 0, "assertFail": 2}, 2, None),
+            ({"fail": 0, "assertFail": 2, "compileGap": 1}, 2, ["compile_gap"]),
+            ({"fail": 3, "assertFail": 2}, 5, None),
+            ({"assertFail": 2}, 2, None),
+        ]
+        for summary, failed, blockers in cases:
+            with self.subTest(summary=summary):
+                row = parse_history_data(json.dumps({"project": "synthetic", "ready": True, "summary": summary}))["runs"][0]
+                self.assertEqual((row["status"], row["failed"], row.get("blocker_types")),
+                                 ("failed", failed, blockers))
+        for extra in ({"failed": 7}, {"summary": {"failed": 7, "fail": 3, "assertFail": 2}}):
+            report = {"project": "synthetic", "summary": {"fail": 3, "assertFail": 2}, **extra}
+            self.assertEqual(parse_history_data(json.dumps(report))["runs"][0]["failed"], 7)
+
+    def test_producer_timeout_counts_and_blockers_are_classified(self):
+        cases = [
+            ({"summary": {"timeout": 1}}, "timeout", ["timeout"]),
+            ({"summary": {"timeout": 1, "compileGap": 1}}, "timeout", ["timeout", "compile_gap"]),
+            ({"summary": {"fail": 1, "timeout": 1}}, "failed", ["timeout"]),
+            ({"topOutcomeBlockers": [{"outcome": "timeout"}, {"outcome": "compile_gap"}]},
+             "timeout", ["timeout", "compile_gap"]),
+        ]
+        for evidence, status, blockers in cases:
+            with self.subTest(evidence=evidence):
+                row = parse_history_data(json.dumps({"project": "synthetic", **evidence}))["runs"][0]
+                self.assertEqual((row["status"], row["blocker_types"]), (status, blockers))
+
+    def test_zero_producer_counts_match_origin_neighbor(self):
+        row = parse_history_data(json.dumps({"repo": "synthetic", "status": "passed",
+                                             "summary": {"fail": 0, "assertFail": 0, "timeout": 0}}))["runs"][0]
+        expected = {"api_version": None, "compile_errors": None, "failed": 0, "glade_sha": None,
+                    "glade_version": None, "host": "local", "part": None, "passed": None, "phase": None,
+                    "provenance": "Imported aggregate; repository revision unknown; Glade revision unknown",
+                    "repo_name": "synthetic", "repo_path": None, "repo_sha": None, "repo_url": None,
+                    "runtime_errors": None, "shard": None, "skipped": None, "source": "import:1",
+                    "started_at": None, "status": "passed", "timeouts": 0, "total": None, "unsupported": None}
+        self.assertEqual(json.dumps(row, sort_keys=True), json.dumps(expected, sort_keys=True))
+
+    def test_producer_preserves_multiple_blockers_without_failure(self):
+        row = parse_history_data(json.dumps({"project": "synthetic", "ready": False, "summary": {},
+            "topOutcomeBlockers": [{"outcome": "load_error"}, {"outcome": "compile_gap"}]}))["runs"][0]
+        self.assertEqual(row["status"], "load_error")
+        self.assertEqual(row["blocker_types"], ["load_error", "compile_gap"])
+
+    def test_unaffected_result_matches_origin_record(self):
+        # Snapshot from origin/main for a report without blocker fields.
+        row = parse_history_data(json.dumps({"repo": "synthetic", "phase": "test", "status": "passed", "summary": {"pass": 1}}))["runs"][0]
+        expected = {"api_version": None, "compile_errors": None, "failed": None, "glade_sha": None,
+                    "glade_version": None, "host": "local", "part": None, "passed": 1, "phase": "test",
+                    "provenance": "Imported aggregate; repository revision unknown; Glade revision unknown",
+                    "repo_name": "synthetic", "repo_path": None, "repo_sha": None, "repo_url": None,
+                    "runtime_errors": None, "shard": None, "skipped": None, "source": "import:1",
+                    "started_at": None, "status": "passed", "timeouts": None, "total": None, "unsupported": None}
+        self.assertEqual(json.dumps(row, sort_keys=True), json.dumps(expected, sort_keys=True))
+
+    def test_result_status_on_complete_run_matches_origin_neighbor(self):
+        row = parse_history_data(json.dumps({"repo": "synthetic", "status": "passed",
+                                             "result_status": "failed", "summary": {"pass": 1}}))["runs"][0]
+        expected = {"api_version": None, "compile_errors": None, "failed": None, "glade_sha": None,
+                    "glade_version": None, "host": "local", "part": None, "passed": 1, "phase": None,
+                    "provenance": "Imported aggregate; repository revision unknown; Glade revision unknown",
+                    "repo_name": "synthetic", "repo_path": None, "repo_sha": None, "repo_url": None,
+                    "runtime_errors": None, "shard": None, "skipped": None, "source": "import:1",
+                    "started_at": None, "status": "passed", "timeouts": None, "total": None, "unsupported": None}
+        self.assertEqual(json.dumps(row, sort_keys=True), json.dumps(expected, sort_keys=True))
+
+    def test_partial_invalid_observed_outcomes_fall_back_to_blockers(self):
+        for value in (None, "", "  ", 2, [], {}):
+            with self.subTest(value=value):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "partial",
+                    "result_status": value, "part": "one", "blocker_types": ["compile_gap"]}))["runs"][0]
+                self.assertEqual((row["status"], row["result_status"]), ("partial", "compile_gap"))
+
+    def test_partial_observed_outcome_without_part_or_with_shard(self):
+        for location in ({}, {"shard": "0/2"}):
+            with self.subTest(location=location):
+                row = parse_history_data(json.dumps({"repo": "synthetic", "status": "partial",
+                    "result_status": "failed", "failed": 2, "blocker_types": ["compile_gap"], **location}))["runs"][0]
+                self.assertEqual((row["status"], row["result_status"]), ("partial", "failed"))
+
     def test_exported_runs_keep_recorded_revision_and_api(self):
         path = self.write("export.json", {"runs": [{
             "repo_url": "https://github.com/synthetic/example", "repo_sha": "c" * 40, "glade_sha": "d" * 40,

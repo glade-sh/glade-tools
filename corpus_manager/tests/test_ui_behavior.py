@@ -87,6 +87,32 @@ class UIBehaviorTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_default_history_filter_includes_unrecorded_phase(self):
+        self.run_ui(r"""
+          let requested='';
+          api=async(path)=>{requested=path;return {runs:[],total:0};};
+          await loadHistory();
+          assert.equal(new URL(requested,'http://localhost').searchParams.get('phase'),'test');
+          assert.match(renderHistory(), /Test and unrecorded phase/);
+        """)
+
+    def test_run_detail_displays_blockers_alongside_failure(self):
+        self.run_ui(r"""
+          historyData.runs=[{id:'mixed',status:'failed',failed:2,blocker_types:['compile_gap','load_error']}];
+          let body='';openModal=(title,subtitle,content)=>{body=content;};
+          showRun('mixed');
+          assert.match(body, /Failed/);
+          assert.match(body, /<dt>Blockers<\/dt><dd>Compile gap, Load failure<\/dd>/);
+        """)
+
+    def test_run_detail_omits_unrecorded_blocker_fields(self):
+        self.run_ui(r"""
+          historyData.runs=[{id:'plain',status:'passed'}];
+          let body='';openModal=(title,subtitle,content)=>{body=content;};
+          showRun('plain');
+          assert.doesNotMatch(body, /<dt>(Blockers|Compile gaps|Load failures)<\/dt>/);
+        """)
+
     def test_inline_settings_submit_reaches_api_without_modal_error_element(self):
         self.run_ui(r"""
           const form=settingsForm({tiers_file:'/synthetic/tiers.json',

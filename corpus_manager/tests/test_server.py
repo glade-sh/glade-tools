@@ -121,6 +121,82 @@ class HTTPTests(AppTestCase):
         response = connection.getresponse()
         return response.status, json.loads(response.read())
 
+    def test_imported_baseline_is_visible_in_default_history_filter(self):
+        baseline = Path(__file__).resolve().parents[2] / "docs/fixtures/local-tests-example-projects.json"
+        self.app.import_history({"path": str(baseline)})
+        self.app.save_runs(parse_history_data(json.dumps({"repo": "synthetic", "phase": "check", "status": "passed"})))
+        status, result = self.request("GET", "/api/history?phase=test")
+        self.assertEqual(status, 200)
+        self.assertEqual(result["total"], 6)
+        self.assertEqual(sum(r["status"] == "compile_gap" for r in result["runs"]), 4)
+        self.assertTrue(all(r["phase"] is None for r in result["runs"]))
+        _, checks = self.request("GET", "/api/history?phase=check")
+        self.assertEqual(checks["total"], 1)
+
+    def test_failed_filter_keeps_mixed_blocker_result(self):
+        path = self.root / "mixed.json"
+        path.write_text(json.dumps({"repo": "synthetic", "status": "failed", "summary": {"fail": 2, "compileGap": 1}}))
+        self.app.import_history({"path": str(path)})
+        status, result = self.request("GET", "/api/history?phase=test&status=failed")
+        self.assertEqual(status, 200)
+        self.assertEqual(result['total'], 1)
+        self.assertEqual((result['runs'][0]['failed'], result['runs'][0]['compile_gaps'], result['runs'][0]['blocker_types']), (2, 1, ['compile_gap']))
+
+    def test_export_reimport_preserves_mixed_blockers_and_failed_result(self):
+        for status in ("unknown", "failed"):
+            with self.subTest(status=status):
+                source = self.root / (status + ".json")
+                source.write_text(json.dumps({"repo": "synthetic-" + status, "status": status,
+                    "parse_error": True, "topOutcomeBlockers": [
+                        {"outcome": "load_error"}, {"outcome": "compile_gap"}]}))
+                self.app.import_history({"path": str(source)})
+        status, exported = self.request("GET", "/api/export")
+        self.assertEqual(status, 200)
+        expected = {r["repo_name"]: (r["status"], r["blocker_types"]) for r in exported["runs"]}
+        self.assertEqual(expected, {
+            "synthetic-unknown": ("parse_error", ["parse_error", "load_error", "compile_gap"]),
+            "synthetic-failed": ("failed", ["parse_error", "load_error", "compile_gap"]),
+        })
+        exported_path = self.root / "export.json"
+        exported_path.write_text(json.dumps(exported))
+        self.app.import_history({"path": str(exported_path)})
+        reimported = [r for r in self.app.store.all("runs") if r["source"].startswith(str(exported_path))]
+        self.assertEqual({r["repo_name"]: (r["status"], r.get("blocker_types")) for r in reimported}, expected)
+
+    def test_export_reimport_preserves_all_run_statuses(self):
+        # The exporter passes through open-ended statuses, including future ones.
+        outcomes = ("passed", "failed", "unknown", "error", "timeout", "parse_error",
+                    "load_error", "compile_gap", "future_outcome")
+        for partial in (False, True):
+            for outcome in outcomes:
+                name = f"synthetic-{partial}-{outcome}"
+                source = {"repo": name, "status": outcome}
+                if partial:
+                    source["part"] = "one"
+                if outcome == "failed":
+                    source.update(failed=2, parse_error=True, summary={"loadError": 1, "compileGap": 1})
+                self.app.save_runs(parse_history_data(json.dumps(source), source=name))
+        _, exported = self.request("GET", "/api/export")
+        fields = ("status", "result_status", "failed", "blocker_types")
+        expected = {r["repo_name"]: tuple(r.get(k) for k in fields) for r in exported["runs"]}
+        self.assertEqual(len(expected), 2 * len(outcomes))
+        self.assertEqual(expected["synthetic-True-failed"],
+                         ("partial", "failed", 2, ["parse_error", "load_error", "compile_gap"]))
+        exported_path = self.root / "all-statuses.json"
+        exported_path.write_text(json.dumps(exported))
+        self.app.import_history({"path": str(exported_path)})
+        reimported = [r for r in self.app.store.all("runs") if r["source"].startswith(str(exported_path))]
+        self.assertEqual({r["repo_name"]: tuple(r.get(k) for k in fields) for r in reimported}, expected)
+
+    def test_failed_filter_keeps_producer_failure_with_blocker(self):
+        path = self.root / "producer.json"
+        path.write_text(json.dumps({"project": "synthetic", "ready": False, "summary": {"fail": 2, "compileGap": 1}}))
+        self.app.import_history({"path": str(path)})
+        status, result = self.request("GET", "/api/history?phase=test&status=failed")
+        self.assertEqual(status, 200)
+        self.assertEqual(result["total"], 1)
+        self.assertEqual(result["runs"][0]["blocker_types"], ["compile_gap"])
+
     def test_state_exposes_token_only_to_loopback_host(self):
         status, state = self.request("GET", "/api/state")
         self.assertEqual(status, 200)
