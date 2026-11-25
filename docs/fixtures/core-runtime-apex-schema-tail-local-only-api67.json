@@ -20,7 +20,7 @@
   "name": "core-runtime-apex-schema-tail-local-only-api67",
   "notes": "Exact-candidate executable local-runtime witness for Glade's Apex.EmptyStackException family and constructible Schema value. These shapes are not portable hosted anonymous Apex probes and earn zero Salesforce parity.",
   "profile": {
-    "candidateCommit": "865c756dcca7fb60e6ba448e9a350f648b65174a",
+    "candidateCommit": "e6246a334a95cc521066c92a5dfb6e7862ae52d0",
     "candidateSha256": "80d3b0c5a39672be2516876e5d84f432b463ce96eac644c2d1e10fd6eb6632c1",
     "laneId": "runtime-conversion-apex-schema-tail-local-only-api67",
     "selectedRowCount": 7
