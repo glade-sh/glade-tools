@@ -175,7 +175,7 @@ func TestPublicCapabilityWordingKeepsLocalChecksAndHostedLimitsDistinct(t *testi
 			t.Fatalf("dashboard missing %q:\n%s", want, dashboard.String())
 		}
 	}
-	if !strings.Contains(gaps.String(), "Known limits of the local runtime") {
+	if !strings.Contains(gaps.String(), "These areas are unsupported or partly supported in the local runtime.") {
 		t.Fatalf("gaps do not name local-runtime limits:\n%s", gaps.String())
 	}
 	if strings.HasSuffix(gaps.String(), "\n\n") {
@@ -337,12 +337,37 @@ func TestWriteKnownGapsMarkdown(t *testing.T) {
 	for _, want := range []string{
 		"# Known Gaps",
 		"Generated from the first-party compat plugin capability catalog.",
-		"All required local capability rows are currently `supported`.",
-		"No required local support gaps are currently tracked.",
+		"These areas are unsupported or partly supported in the local runtime.\n" +
+			"See the [known limitations](https://glade.sh/guide/known-limitations) for a guide to current limits.\n\n",
 	} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("known gaps output missing %q: %q", want, text)
 		}
+	}
+	if strings.Contains(text, "Required complete:") || strings.Contains(text, "No required local support gaps are currently tracked.") {
+		t.Fatalf("known gaps output includes readiness wording:\n%s", text)
+	}
+}
+
+func TestWriteKnownGapsMarkdownGroupsInterleavedAreas(t *testing.T) {
+	report := Report{Features: []Feature{
+		{Area: "Apex", ID: "apex.supported", Status: StatusSupported},
+		{Area: "Automation", ID: "automation.first", Name: "First", Status: StatusUnsupported},
+		{Area: "Events", ID: "events.first", Name: "Events", Status: StatusPartial},
+		{Area: "Automation", ID: "automation.second", Name: "Second", Status: StatusStub, Notes: "Gap details.", Blocks: []string{"a", "b"}},
+	}}
+	var out bytes.Buffer
+	if err := WriteKnownGapsMarkdown(&out, report); err != nil {
+		t.Fatal(err)
+	}
+	_, sections, ok := strings.Cut(out.String(), "\n## ")
+	want := "Automation\n\n" +
+		"### `automation.first`: First\n\n- Status: `unsupported`\n\n" +
+		"### `automation.second`: Second\n\n- Status: `stub`\n- Gap: Gap details.\n- Blocks: a, b\n\n" +
+		"## Events\n\n" +
+		"### `events.first`: Events\n\n- Status: `partial`\n"
+	if !ok || sections != want {
+		t.Fatalf("known gaps sections = %q, want %q", sections, want)
 	}
 }
 

@@ -212,59 +212,39 @@ func WriteKnownGapsMarkdown(w io.Writer, report Report) error {
 	if _, err := fmt.Fprintf(w, "Generated from the first-party compat plugin capability catalog.\n\n"); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprintf(w, "## Known limits of the local runtime\n\n"); err != nil {
+	if _, err := io.WriteString(w, "These areas are unsupported or partly supported in the local runtime.\n"+
+		"See the [known limitations](https://glade.sh/guide/known-limitations) for a guide to current limits.\n"); err != nil {
 		return err
-	}
-	if _, err := fmt.Fprintf(w, "This checklist does not establish complete Salesforce parity.\n\n"); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "- Required complete: %d/%d\n", report.Complete, report.Required); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(w, "- Required incomplete: %d\n\n", report.Incomplete); err != nil {
-		return err
-	}
-	if report.Ready {
-		if _, err := fmt.Fprintln(w, "All required local capability rows are currently `supported`."); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprintln(w, "No required local support gaps are currently tracked."); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprintln(w); err != nil {
-			return err
-		}
 	}
 
-	limits := make([]Feature, 0, len(report.Features))
+	var areas []string
+	limitsByArea := make(map[string][]Feature)
 	for _, feature := range report.Features {
-		if feature.Status != StatusSupported {
-			limits = append(limits, feature)
+		if feature.Status == StatusSupported {
+			continue
 		}
+		if _, seen := limitsByArea[feature.Area]; !seen {
+			areas = append(areas, feature.Area)
+		}
+		limitsByArea[feature.Area] = append(limitsByArea[feature.Area], feature)
 	}
-	for i, feature := range limits {
-		if _, err := fmt.Fprintf(w, "## %s\n\n", feature.Area); err != nil {
+	for _, area := range areas {
+		if _, err := fmt.Fprintf(w, "\n## %s\n", area); err != nil {
 			return err
 		}
-		if _, err := fmt.Fprintf(w, "### `%s`: %s\n\n", feature.ID, feature.Name); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprintf(w, "- Status: `%s`\n", feature.Status); err != nil {
-			return err
-		}
-		if feature.Notes != "" {
-			if _, err := fmt.Fprintf(w, "- Gap: %s\n", feature.Notes); err != nil {
+		for _, feature := range limitsByArea[area] {
+			if _, err := fmt.Fprintf(w, "\n### `%s`: %s\n\n- Status: `%s`\n", feature.ID, feature.Name, feature.Status); err != nil {
 				return err
 			}
-		}
-		if len(feature.Blocks) > 0 {
-			if _, err := fmt.Fprintf(w, "- Blocks: %s\n", strings.Join(feature.Blocks, ", ")); err != nil {
-				return err
+			if feature.Notes != "" {
+				if _, err := fmt.Fprintf(w, "- Gap: %s\n", feature.Notes); err != nil {
+					return err
+				}
 			}
-		}
-		if i+1 < len(limits) {
-			if _, err := fmt.Fprintf(w, "\n"); err != nil {
-				return err
+			if len(feature.Blocks) > 0 {
+				if _, err := fmt.Fprintf(w, "- Blocks: %s\n", strings.Join(feature.Blocks, ", ")); err != nil {
+					return err
+				}
 			}
 		}
 	}
